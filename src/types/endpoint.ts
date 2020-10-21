@@ -55,13 +55,13 @@ const USER_CREATE_DM = () =>
 
 //CDN Endpoints
 const CUSTOM_EMOJI = (emojiID: string) => 
-  `${DISCORD_CDN_URL}/emojis${emojiID}.png`
+  `${DISCORD_CDN_URL}/emojis/${emojiID}.png`
 const GUILD_ICON = (guildID: string, iconID: number) =>
   `${DISCORD_CDN_URL}/icons/${guildID}/${iconID}.png`
 const GUILD_SPLASH = (guildID: string, guildSPLASH: string) =>
   `${DISCORD_CDN_URL}/splashes/${guildID}/${guildSPLASH}.png`
 const GUILD_DISCOVERY_SPLASH = (guildID: string, guildDiscoverySplash: string) =>
-  `${DISCORD_CDN_URL}discovery-splashes/${guildID}/${guildDiscoverySplash}.png	`
+  `${DISCORD_CDN_URL}/discovery-splashes/${guildID}/${guildDiscoverySplash}.png	`
 const GUILD_BANNER = (guildID: string, guildBANNER: string) =>
   `${DISCORD_CDN_URL}/banners/${guildID}/${guildBANNER}.png`
 const DEFAULT_USER_AVATAR = (iconID: string) =>
