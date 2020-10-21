@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Used ESLint for linting so block package-lock
+package-lock.json
+yarn.lock
