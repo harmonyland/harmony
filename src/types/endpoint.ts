@@ -24,14 +24,33 @@ const GUILD_ROLE = (guildID: string, roleID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/roles/${roleID}`
 const GUILD_ROLES = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/roles`
-const GUILD_MEMBER_ROLE = (guildID: string, memberID: string, roleID: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/members/${memberID}/roles/${roleID}`
 const GUILD_INTEGRATION = (guildID: string, integrationID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations/${integrationID}`
 const GUILD_INTEGRATIONS = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations`
 const GUILD_INTEGARTION_SYNC = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations?include_appilications=true`
+const GUILD_BAN = (guildID: string, userID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/bans/${userID}`
+const GUILD_BANS = (guildID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/bans`
+const GUILD_CHANNEL = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}`
+const GUILD_CHANNELS = (guildID: string, channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/channels`
+const GUILD_MEMBER = (guildID: string, memberID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/members/${memberID}`
+const GUILD_MEMBER_ROLE = (guildID: string, memberID: string, roleID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/members/${memberID}/roles/${roleID}`
+const GUILD_INVITES = (guildID: string) => 
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/invites`
+const GUILD_LEAVE = (guildID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds/${guildID}`
+const GUILD_PRUNE = (guildID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/prune`
+const VANITY_URL = (guildID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/vanity-url`
+
 
 //Channel Endpoints
 const CHANNEL = (channelID: string) =>
@@ -60,14 +79,18 @@ const CHANNEL_INVITES = (channelID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/invites`
 const CHANNEL_PINS = (channelID: string) => 
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/pins`
-const CHANNEL_WEBHOOKS = (channelID: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/webhooks`
 
 //User Endpoints
 const USER = (userID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/${userID}`
 const USER_CREATE_DM = () =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/channels`
+
+//Webhook Endpoints
+const WEBHOOKS = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/webhooks`
+const GUILD_WEBHOOK = (guildID :string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/webhooks`
 
 //CDN Endpoints
 const CUSTOM_EMOJI = (emojiID: string) => 
