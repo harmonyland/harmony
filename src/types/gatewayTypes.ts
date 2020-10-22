@@ -1,6 +1,7 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
 import { Emoji } from '../structures/emoji.ts'
+import { Member } from '../structures/member.ts'
 import { Role } from '../structures/role.ts'
 import { User } from '../structures/user.ts'
 import { MemberPayload } from './guildTypes.ts'
@@ -360,6 +361,7 @@ interface ActivityAssets {
   small_image?: string
   small_text?: string
 }
+
 interface ActivitySecrets {
   join?: string
   spectate?: string
@@ -373,6 +375,25 @@ enum ActivityFlags {
   JOIN_REQUEST = 1 << 3,
   SYNC = 1 << 4,
   PLAY = 1 << 5
+}
+
+interface TypeStart {
+  channel_id: string
+  guild_id?: string
+  user_id: string
+  timestamp: number
+  member?: Member
+}
+
+interface VoiceServerUpdate {
+  token: string
+  guild_id: string
+  endpoint: string
+}
+
+interface WebhooksUpdate {
+  guild_id: string
+  channel_id: string
 }
 
 //https://discord.com/developers/docs/topics/gateway#typing-start-typing-start-event-fields
