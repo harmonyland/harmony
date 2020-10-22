@@ -1,8 +1,7 @@
-// 와갈, 따꾸, 동한드
 export class Snowflake {
-  id: string;
+  id: string
   constructor(id: string) {
-    this.id = id;
+    this.id = id
   }
 
   deconstruct() {
@@ -12,8 +11,7 @@ export class Snowflake {
       workerId: (snowflake & BigInt(0x3E0000)) >> BigInt(17),
       processId: (snowflake & BigInt(0x1F000)) >> BigInt(12),
       increment: snowflake & BigInt(0xFFF),
-    };
-
-    return res;
+    }
+    return res
   }
 }
