@@ -180,6 +180,10 @@ class Gateway {
     this.websocket.onclose = this.onclose.bind(this)
     this.websocket.onerror = this.onerror.bind(this)
   }
+
+  close () {
+    this.websocket.close(1000)
+  }
 }
 
 export { Gateway }
