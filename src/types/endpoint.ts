@@ -42,22 +42,22 @@ const CHANNEL_CROSSPOST = (channelID: string, messageID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/crosspost`
 const MESSAGE_REACTIONS = (channelID: string, messageID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions`
-const MESSAGE_REACTION = (id: string, messageID: string, emoji: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${id}/messages/${messageID}/reactions/${emoji}`
+const MESSAGE_REACTION = (channelID: string, messageID: string, emoji: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emoji}`
 const MESSAGE_REACTION_ME = (channelID: string, messageID: string, emojiID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emojiID}/@me`
 const MESSAGE_REACTION_USER = (channelID: string, messageID: string, emojiID: string, userID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emojiID}/${userID}`
-const CHANNEL_BULK_DELETE = (id: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${id}/messages/bulk-delete`
-const CHANNEL_FOLLOW = (id: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${id}/followers`
-const CHANNEL_INVITES = (id: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${id}/invites`
-const CHANNEL_PINS = (id: string) => 
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${id}/pins`
-const CHANNEL_WEBHOOKS = (id: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${id}/webhooks`
+const CHANNEL_BULK_DELETE = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/bulk-delete`
+const CHANNEL_FOLLOW = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/followers`
+const CHANNEL_INVITES = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/invites`
+const CHANNEL_PINS = (channelID: string) => 
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/pins`
+const CHANNEL_WEBHOOKS = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/webhooks`
 
 //User Endpoints
 const USER = (userID: string) =>
