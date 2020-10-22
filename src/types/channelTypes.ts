@@ -1,4 +1,4 @@
-interface Channel {
+export interface Channel {
     id: string
     type: number
     guild_id?: string
