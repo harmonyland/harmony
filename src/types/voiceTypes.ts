@@ -11,7 +11,7 @@ enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   RESUME = 7,
   HELLO = 8,
   RESUMED = 9,
-  CLIENT_DISCONNECT = 13
+  CLIENT_DISCONNECT = 13,
 }
 
 enum VoiceCloseCodes {
@@ -25,5 +25,20 @@ enum VoiceCloseCodes {
   UNKNOWN_PROTOCOL = 4012,
   DISCONNECTED = 4014,
   VOICE_SERVER_CRASHED = 4015,
-  UNKNOWN_ENCRYPTION_MODE = 4016
+  UNKNOWN_ENCRYPTION_MODE = 4016,
+}
+
+interface VoiceState {
+  guild_id?: string
+  channel_id: string | undefined 
+  user_id: string
+  member?: GuildMember
+  session_id: string
+  deaf: boolean
+  mute: boolean
+  self_deaf: boolean
+  self_mute: boolean
+  self_stream?: boolean
+  self_video: boolean
+  suppress: boolean
 }
