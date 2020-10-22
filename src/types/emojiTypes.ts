@@ -1,10 +1,12 @@
-interface Emoji {
-    id: string
-    name: string | undefined
-    roles?: []
-    user?: User
-    require_colons?: boolean
-    managed?: boolean
-    animated?: boolean
-    available?: boolean
+import { User } from '../structures/user.ts'
+
+export interface EmojiPayload {
+  id: string
+  name: string
+  roles?: []
+  user?: User
+  require_colons?: boolean
+  managed?: boolean
+  animated?: boolean
+  available?: boolean
 }

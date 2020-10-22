@@ -4,7 +4,7 @@ import {
   DISCORD_API_URL,
   DISCORD_API_VERSION,
   DISCORD_CDN_URL
-} from "../consts/urlsAndVersions"
+} from '../consts/urlsAndVersions.ts'
 
 //Guild Endpoints
 const GUILDS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds`
@@ -71,20 +71,20 @@ const MESSAGE_REACTIONS = (channelID: string, messageID: string) =>
 const MESSAGE_REACTION = (
   channelID: string,
   messageID: string,
-  emoji: string,
+  emoji: string
 ) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emoji}`
 const MESSAGE_REACTION_ME = (
   channelID: string,
   messageID: string,
-  emojiID: string,
+  emojiID: string
 ) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emojiID}/@me`
 const MESSAGE_REACTION_USER = (
   channelID: string,
   messageID: string,
   emojiID: string,
-  userID: string,
+  userID: string
 ) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emojiID}/${userID}`
 const CHANNEL_BULK_DELETE = (channelID: string) =>
@@ -106,11 +106,9 @@ const GROUP_RECIPIENT = (channelID: string, userID: string) =>
 
 //User Endpoints
 const CURRENT_USER = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me`
-const CURRENT_USER_GUILDS =
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds`
+const CURRENT_USER_GUILDS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds`
 const USER_DM = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/channels`
-const USER_CONNECTIONS =
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/connections`
+const USER_CONNECTIONS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/connections`
 const LEAVE_GUILD = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds/${guildID}`
 const USER = (userID: string) =>
@@ -143,7 +141,7 @@ const GUILD_SPLASH = (guildID: string, guildSPLASH: string) =>
   `${DISCORD_CDN_URL}/splashes/${guildID}/${guildSPLASH}.png`
 const GUILD_DISCOVERY_SPLASH = (
   guildID: string,
-  guildDiscoverySplash: string,
+  guildDiscoverySplash: string
 ) =>
   `${DISCORD_CDN_URL}/discovery-splashes/${guildID}/${guildDiscoverySplash}.png	`
 const GUILD_BANNER = (guildID: string, guildBANNER: string) =>
@@ -157,7 +155,7 @@ const APPLICATION_ASSET = (applicationID: string, assetID: number) =>
 const ACHIEVEMENT_ICON = (
   applicationID: string,
   achievementID: string,
-  iconHASH: string,
+  iconHASH: string
 ) =>
   `${DISCORD_CDN_URL}/app-assets/${applicationID}/achievements/${achievementID}/icons/${iconHASH}.png`
 const TEAM_ICON = (teamID: string, iconID: string) =>

@@ -1,4 +1,5 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#voice
+import { Member } from '../structures/member.ts'
 
 enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   IDENTIFY = 0,
@@ -11,7 +12,7 @@ enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   RESUME = 7,
   HELLO = 8,
   RESUMED = 9,
-  CLIENT_DISCONNECT = 13,
+  CLIENT_DISCONNECT = 13
 }
 
 enum VoiceCloseCodes {
@@ -25,14 +26,14 @@ enum VoiceCloseCodes {
   UNKNOWN_PROTOCOL = 4012,
   DISCONNECTED = 4014,
   VOICE_SERVER_CRASHED = 4015,
-  UNKNOWN_ENCRYPTION_MODE = 4016,
+  UNKNOWN_ENCRYPTION_MODE = 4016
 }
 
-interface VoiceState {
+export interface VoiceStatePayload {
   guild_id?: string
-  channel_id: string | undefined 
+  channel_id: string | undefined
   user_id: string
-  member?: GuildMember
+  member?: Member
   session_id: string
   deaf: boolean
   mute: boolean
