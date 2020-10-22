@@ -43,12 +43,6 @@ const CHANNEL_CROSSPOST = (channelID: string, messageID: string) =>
 const MESSAGE_REACTION = (channelID: string, messageID: string, emoji: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions/${emoji}/@me`
 
-//Emoji Endpoints
-const EMOJI = (guildID: string, emojiID: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}//guilds/${guildID}/emojis/${emojiID}`
-const EMOJIS = (guildID: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}//guilds/${guildID}/emojis`
-
 //User Endpoints
 const USER = (userID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/${userID}`
@@ -76,6 +70,20 @@ const ACHIEVEMENT_ICON = (applicationID: string, achievementID: string,  iconHAS
   `${DISCORD_CDN_URL}/app-assets/${applicationID}/achievements/${achievementID}/icons/${iconHASH}.png`
 const TEAM_ICON = (teamID: string, iconID: string) =>
   `${DISCORD_CDN_URL}/team-icons/${teamID}/${iconID}.png`
+
+//Emoji Endpoints
+const EMOJI = (guildID: string, emojiID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis/${emojiID}`
+const EMOJIS = (guildID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis`
+
+//Template Endpoint
+const TEMPLATE = (templateCODE: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/templates/${templateCODE}`
+
+//Invite Endpoint
+const INVITE = (inviteCODE: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/invites/${inviteCODE}`
 
 //Voice Endpoint
 const VOICE_REGIONS= (guildID: string) =>
