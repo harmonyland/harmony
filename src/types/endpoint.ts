@@ -4,7 +4,7 @@ import {
   DISCORD_API_URL,
   DISCORD_API_VERSION,
   DISCORD_CDN_URL
-} from "../consts/urlsAndVersions"
+} from "../consts/urlsAndVersions.ts"
 
 //Guild Endpoints
 const GUILDS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds`
