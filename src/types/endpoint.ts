@@ -1,4 +1,4 @@
-//Being Written by Choi Donghan, Catry
+//Written by Choi Donghan, Catry
 
 import {
   DISCORD_API_URL,
@@ -77,16 +77,34 @@ const CHANNEL_PINS = (channelID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/pins`
 
 //User Endpoints
+const CURRENT_USER = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me`
+const CURRENT_USER_GUILDS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds`
+const USER_DM = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/channels`
+const USER_CONNECTIONS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/connections`
+const LEAVE_GUILD = (guildID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds/${guildID}`
 const USER = (userID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/${userID}`
-const USER_CREATE_DM = () =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/channels`
+
+
 
 //Webhook Endpoints
-const WEBHOOKS = (channelID: string) =>
+const CHANNEL_WEBHOOKS = (channelID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/webhooks`
-const GUILD_WEBHOOK = (guildID :string) =>
+const GUILD_WEBHOOK = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/webhooks`
+const WEBHOOK = (webhookID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${webhookID}`
+const WEBHOOK_WITH_TOKEN = (webhookID: string, webhookTOKEN: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${webhookID}/${webhookTOKEN}`
+const SLACK_WEBHOOK = (webhookID: string, webhookTOKEN: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${webhookID}/${webhookTOKEN}/slack`
+const GITHUB_WEBHOOK = (webhookID: string, webhookTOKEN: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${webhookID}/${webhookTOKEN}/github`
+
+//Gateway Endpoints
+const GATEWAY = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway`
+const GATEWAY_BOT = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway/bot`
 
 //CDN Endpoints
 const CUSTOM_EMOJI = (emojiID: string) => 
