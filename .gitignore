@@ -106,3 +106,6 @@ dist
 # Used ESLint for linting so block package-lock
 package-lock.json
 yarn.lock
+
+# PRIVACY XDDDD
+src/test/config.ts
