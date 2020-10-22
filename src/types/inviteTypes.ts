@@ -1,7 +1,7 @@
 interface Invite {
     code: string
-    guild?: any //guild object
-    channel: any //channel object
+    guild?: Guild
+    channel: Channel
     inviter?: User
     target_user?: User
     target_user_type?: number

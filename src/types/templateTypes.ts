@@ -8,6 +8,6 @@ interface Template {
     created_at: string
     updated_at: string
     source_guild_id: string
-    serialized_source_guild: any //guild object
+    serialized_source_guild: Guild
     is_dirty: boolean | undefined
 }

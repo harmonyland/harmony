@@ -1,4 +1,4 @@
-import { GatewayOpcodes } from '../types/gatewayTypes.ts'
+import { GatewayOpcodes } from '../types/gatewayTypes'
 
 /**
  * Gateway response from Discord.

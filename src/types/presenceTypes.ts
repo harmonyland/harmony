@@ -3,7 +3,7 @@ interface PresenceUpdate {
     guild_id: string
     status: string
     activities: Activity
-    client_status: 
+    client_status: ClientStatus
 }
 
 interface ClientStatus {
@@ -66,7 +66,3 @@ enum ActivityFlags {
     SYNC = 1 << 4,
     PLAY = 1 << 5
 }
-
-// channel 에서 message 부분 하삼 ㄳ
-//시1 오늘 7교시 수업안듣고 이거 ㅋㅋ 에바 온라인수업이라 ㅆㄱㄴ
-//나도 한다 디코에서 알려주셈 뭐하면되는지
