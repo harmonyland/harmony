@@ -1,8 +1,4 @@
 // https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags
-// 귀하는 해갈
-// 그렇습니다
-
-//이거 필요한건가 -와갈드- -UnderC-
 
 enum PermissionFlags {
   CREATE_INSTANT_INVITE = 0x00000001,
