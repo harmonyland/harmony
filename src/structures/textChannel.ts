@@ -23,6 +23,11 @@ export class TextChannel extends GuildChannel implements ChannelPayload {
   parent_id?: string | undefined
   last_pin_timestamp?: string | undefined
 
+
+  get mention () {
+    return `<#${this.id}>`
+  }
+
   constructor (client: Client, data: ChannelPayload) {
     super(client, data)
     this.id = data.id

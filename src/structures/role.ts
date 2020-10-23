@@ -12,6 +12,10 @@ export class Role extends Base implements RolePayload {
   managed: boolean
   mentionable: boolean
 
+  get mention () {
+    return `<@&${this.id}>`
+  }
+
   constructor (client: Client, data: RolePayload) {
     super(client)
     this.id = data.id

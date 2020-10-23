@@ -134,32 +134,32 @@ const GATEWAY_BOT = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway/bot`
 
 //CDN Endpoints
 const CUSTOM_EMOJI = (emojiID: string) =>
-  `${DISCORD_CDN_URL}/emojis/${emojiID}.png`
+  `${DISCORD_CDN_URL}/emojis/${emojiID}`
 const GUILD_ICON = (guildID: string, iconID: number) =>
-  `${DISCORD_CDN_URL}/icons/${guildID}/${iconID}.png`
+  `${DISCORD_CDN_URL}/icons/${guildID}/${iconID}`
 const GUILD_SPLASH = (guildID: string, guildSPLASH: string) =>
-  `${DISCORD_CDN_URL}/splashes/${guildID}/${guildSPLASH}.png`
+  `${DISCORD_CDN_URL}/splashes/${guildID}/${guildSPLASH}`
 const GUILD_DISCOVERY_SPLASH = (
   guildID: string,
   guildDiscoverySplash: string
 ) =>
-  `${DISCORD_CDN_URL}/discovery-splashes/${guildID}/${guildDiscoverySplash}.png	`
+  `${DISCORD_CDN_URL}/discovery-splashes/${guildID}/${guildDiscoverySplash}`
 const GUILD_BANNER = (guildID: string, guildBANNER: string) =>
-  `${DISCORD_CDN_URL}/banners/${guildID}/${guildBANNER}.png`
+  `${DISCORD_CDN_URL}/banners/${guildID}/${guildBANNER}`
 const DEFAULT_USER_AVATAR = (iconID: string) =>
-  `${DISCORD_CDN_URL}/embed/avatars/${iconID}.png`
+  `${DISCORD_CDN_URL}/embed/avatars/${iconID}`
 const USER_AVATAR = (userID: string, iconID: string) =>
-  `${DISCORD_CDN_URL}/avatars/${userID}/${iconID}.png`
+  `${DISCORD_CDN_URL}/avatars/${userID}/${iconID}`
 const APPLICATION_ASSET = (applicationID: string, assetID: number) =>
-  `${DISCORD_CDN_URL}/app-icons/${applicationID}/${assetID}.png`
+  `${DISCORD_CDN_URL}/app-icons/${applicationID}/${assetID}`
 const ACHIEVEMENT_ICON = (
   applicationID: string,
   achievementID: string,
   iconHASH: string
 ) =>
-  `${DISCORD_CDN_URL}/app-assets/${applicationID}/achievements/${achievementID}/icons/${iconHASH}.png`
+  `${DISCORD_CDN_URL}/app-assets/${applicationID}/achievements/${achievementID}/icons/${iconHASH}`
 const TEAM_ICON = (teamID: string, iconID: string) =>
-  `${DISCORD_CDN_URL}/team-icons/${teamID}/${iconID}.png`
+  `${DISCORD_CDN_URL}/team-icons/${teamID}/${iconID}`
 
 //Emoji Endpoints
 const EMOJI = (guildID: string, emojiID: string) =>

@@ -12,6 +12,13 @@ export class Emoji extends Base implements EmojiPayload {
   managed?: boolean
   animated?: boolean
   available?: boolean
+
+  get CustomEmoji () {
+    if (this.animated === false) {
+     return `<:${this.name}:${this.id}>`
+    } else return `<a:${this.name}:${this.id}>`
+  }
+
   constructor (client: Client, data: EmojiPayload) {
     super(client)
     this.id = data.id

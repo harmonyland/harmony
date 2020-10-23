@@ -15,6 +15,11 @@ export class Invite extends Base implements InvitePayload {
   approximate_presence_count?: number
   approximate_member_count?: number
 
+
+  get link () {
+    return `discord.gg/${this.code}`
+  }
+
   constructor (client: Client, data: InvitePayload) {
     super(client)
     this.code = data.code

@@ -1,1 +1,2 @@
 const TOKEN = ''
+export { TOKEN }
