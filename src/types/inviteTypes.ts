@@ -1,13 +1,13 @@
-import { Channel } from '../structures/channel.ts'
-import { Guild } from '../structures/guild.ts'
-import { User } from '../structures/user.ts'
+import { ChannelPayload } from './channelTypes.ts'
+import { GuildPayload } from './guildTypes.ts'
+import { UserPayload } from './userTypes.ts'
 
 export interface InvitePayload {
   code: string
-  guild?: Guild
-  channel: Channel
-  inviter?: User
-  target_user?: User
+  guild?: GuildPayload
+  channel: ChannelPayload
+  inviter?: UserPayload
+  target_user?: UserPayload
   target_user_type?: number
   approximate_presence_count?: number
   approximate_member_count?: number

@@ -1,11 +1,10 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { Emoji } from '../structures/emoji.ts'
-import { Member } from '../structures/member.ts'
-import { Role } from '../structures/role.ts'
-import { User } from '../structures/user.ts'
+import { EmojiPayload } from './emojiTypes.ts'
 import { MemberPayload } from './guildTypes.ts'
 import { ActivityPayload, PresenceUpdatePayload } from './presenceTypes.ts'
+import { RolePayload } from './roleTypes.ts'
+import { UserPayload } from './userTypes.ts'
 
 /**
  * Gateway OPcodes from Discord docs.
@@ -124,7 +123,7 @@ enum UpdateStatus {
 }
 
 interface IdentityConnection {
-  $os: 'linux'
+  $os: 'darwin' | 'windows' | 'linux' | 'custom os'
   $browser: 'discord.deno'
   $device: 'discord.deno'
 }
@@ -139,7 +138,7 @@ interface GuildRequestMembers {
   guild_id: string | string[]
   query?: string
   limit: number
-  presences?: boolean //do you have any problems? tell me! i am so handsome
+  presences?: boolean
   user_ids?: string | string[]
   nonce?: string
 }
@@ -164,7 +163,7 @@ interface Hello {
 
 interface ReadyEvent {
   v: number
-  user: User
+  user: UserPayload
   privateChannels: []
   guilds: []
   session_id: string
@@ -179,12 +178,12 @@ interface ChannelPinsUpdate {
 
 interface GuildBanAdd {
   guild_id: string
-  user: User
+  user: UserPayload
 }
 
 interface GuildBanRemove {
   guild_id: string
-  user: User
+  user: UserPayload
 }
 
 interface GuildEmojiUpdate {
@@ -202,12 +201,12 @@ interface GuildMemberAddExtra {
 
 interface GuildMemberRemove {
   guild_id: string
-  user: User
+  user: UserPayload
 }
 interface GuildMemberUpdate {
   guild_id: string
   roles: string[]
-  user: User
+  user: UserPayload
   nick?: string | undefined
   joined_at: string
   premium_since?: string | undefined
@@ -225,12 +224,12 @@ interface GuildMemberChunk {
 
 interface GuildRoleCreate {
   guild_id: string
-  role: Role
+  role: RolePayload
 }
 
 interface GuildRoleUpdate {
   guild_id: string
-  role: Role
+  role: RolePayload
 }
 
 interface GuildRoleDelete {
@@ -243,10 +242,10 @@ interface InviteCreate {
   code: string
   created_at: string
   guild_id?: string
-  inviter?: User
+  inviter?: UserPayload
   max_age: number
   max_uses: number
-  target_user?: User
+  target_user?: UserPayload
   target_user_type?: number
   temporary: boolean
   uses: number
@@ -275,7 +274,7 @@ interface MessageReactionAdd {
   channel_id: string
   message_id: string
   guild_id?: string
-  emoji: Emoji
+  emoji: EmojiPayload
 }
 
 interface MessageReactionRemove {
@@ -283,25 +282,25 @@ interface MessageReactionRemove {
   channel_id: string
   message_id: string
   guild_id?: string
-  emoji: Emoji
+  emoji: EmojiPayload
 }
 
 interface MessageReactionRemoveAll {
   channel_id: string
   guild_id?: string
   message_id: string
-  emoji: Emoji
+  emoji: EmojiPayload
 }
 
 interface MessageReactionRemove {
   channel_id: string
   guild_id?: string
   message_id: string
-  emoji: Emoji
+  emoji: EmojiPayload
 }
 
 interface PresenceUpdate {
-  user: User
+  user: UserPayload
   guild_id: string
   status: string
   activities: ActivityPayload[]
@@ -323,7 +322,7 @@ interface Activity {
   application_id: string
   details?: string | undefined
   state?: string | undefined
-  emoji?: Emoji | undefined
+  emoji?: EmojiPayload | undefined
   party?: ActivityParty
   assets?: ActivityAssets
   secrets?: ActivitySecrets
@@ -382,7 +381,7 @@ interface TypeStart {
   guild_id?: string
   user_id: string
   timestamp: number
-  member?: Member
+  member?: MemberPayload
 }
 
 interface VoiceServerUpdate {

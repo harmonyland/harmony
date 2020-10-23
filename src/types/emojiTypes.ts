@@ -1,10 +1,10 @@
-import { User } from '../structures/user.ts'
+import { UserPayload } from './userTypes.ts'
 
 export interface EmojiPayload {
   id: string
   name: string
   roles?: []
-  user?: User
+  user?: UserPayload
   require_colons?: boolean
   managed?: boolean
   animated?: boolean

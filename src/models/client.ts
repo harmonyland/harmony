@@ -1,7 +1,7 @@
 import { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gatewayTypes.ts'
 import { Gateway } from './gateway.ts'
-import { Rest } from "./rest.ts"
+import { Rest } from './rest.ts'
 
 /**
  * Discord Client.
@@ -11,6 +11,7 @@ export class Client {
   rest?: Rest
   user?: User
   ping = 0
+  token?: string
 
   constructor () {}
 
@@ -20,6 +21,7 @@ export class Client {
    * @param intents Gateway intents in array. This is required.
    */
   connect (token: string, intents: GatewayIntents[]) {
+    this.token = token
     this.gateway = new Gateway(this, token, intents)
   }
 }

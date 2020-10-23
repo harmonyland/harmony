@@ -1,65 +1,64 @@
-import { Channel } from '../structures/channel.ts'
-import { Emoji } from '../structures/emoji.ts'
-import { Member } from '../structures/member.ts'
-import { Role } from '../structures/role.ts'
-import { User } from '../structures/user.ts'
+import { ChannelPayload } from './channelTypes.ts'
+import { EmojiPayload } from './emojiTypes.ts'
 import { PresenceUpdatePayload } from './presenceTypes.ts'
+import { RolePayload } from './roleTypes.ts'
+import { UserPayload } from './userTypes.ts'
 import { VoiceStatePayload } from './voiceTypes.ts'
 
 interface GuildPayload {
   id: string
   name: string
-  icon: string | undefined
-  icon_hash?: string | undefined
-  splash: string | undefined
-  discovery_splash: string | undefined
+  icon?: string
+  icon_hash?: string
+  splash?: string
+  discovery_splash?: string
   owner?: boolean
   owner_id: string
   permissions?: string
   region: string
-  afk_channel_id: string | undefined
+  afk_channel_id?: string
   afk_timeout: number
   widget_enabled?: boolean
-  widge_channel_id?: string | undefined
+  widge_channel_id?: string
   verification_level: string
   default_message_notifications: string
   explicit_content_filter: string
-  roles: Role[]
-  emojis: Emoji[]
+  roles: RolePayload[]
+  emojis: EmojiPayload[]
   features: GuildFeatures[]
   mfa_level: string
-  application_id: string | undefined
-  system_channel_id: string | undefined
+  application_id?: string
+  system_channel_id?: string
   system_channel_flags: string
-  rules_channel_id: string | undefined
+  rules_channel_id?: string
   joined_at?: string
   large?: boolean
   unavailable: boolean
   member_count?: number
   voice_states?: VoiceStatePayload[]
-  members?: Member[]
-  channels?: Channel[]
+  members?: MemberPayload[]
+  channels?: ChannelPayload[]
   presences?: PresenceUpdatePayload[]
-  max_presences?: number | undefined
+  max_presences?: number
   max_members?: number
-  vanity_url_code: string | undefined
-  description: string | undefined
-  banner: string | undefined
+  vanity_url_code?: string
+  description?: string
+  banner?: string
   premium_tier: number
   premium_subscription_count?: number
   preferred_locale: string
-  public_updates_channel_id: string | undefined
+  public_updates_channel_id?: string
   max_video_channel_users?: number
   approximate_number_count?: number
   approximate_presence_count?: number
 }
 
 interface MemberPayload {
-  user: User
-  nick: string | undefined
-  roles: Role[]
+  user: UserPayload
+  nick?: string
+  roles: RolePayload[]
   joined_at: string
-  premium_since?: string | undefined
+  premium_since?: string
   deaf: boolean
   mute: boolean
 }

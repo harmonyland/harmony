@@ -1,7 +1,7 @@
-import { User } from '../structures/user.ts'
+import { UserPayload } from './userTypes.ts'
 
 interface PresenceUpdatePayload {
-  user: User
+  user: UserPayload
   guild_id: string
   status: string
   activities: ActivityPayload

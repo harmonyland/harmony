@@ -7,7 +7,7 @@ import {
 } from '../consts/urlsAndVersions.ts'
 
 //Guild Endpoints
-const GUILDS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds`
+const GUILDS = () => `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds`
 const GUILD = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}`
 const GUILD_AUDIT_LOGS = (guildID: string) =>
@@ -60,10 +60,10 @@ const CHANNEL = (channelID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}`
 const CHANNELS = (channelID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${channelID}/channels`
-const CHANNEL_MESSAGES = (channelID: string) =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages`
 const CHANNEL_MESSAGE = (channelID: string, messageID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}`
+const CHANNEL_MESSAGES = (channelID: string) =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages`
 const CHANNEL_CROSSPOST = (channelID: string, messageID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/crosspost`
 const MESSAGE_REACTIONS = (channelID: string, messageID: string) =>
@@ -105,10 +105,14 @@ const GROUP_RECIPIENT = (channelID: string, userID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}/recipient/${userID}`
 
 //User Endpoints
-const CURRENT_USER = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me`
-const CURRENT_USER_GUILDS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds`
-const USER_DM = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/channels`
-const USER_CONNECTIONS = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/connections`
+const CURRENT_USER = () =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me`
+const CURRENT_USER_GUILDS = () =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds`
+const USER_DM = () =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/channels`
+const USER_CONNECTIONS = () =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/connections`
 const LEAVE_GUILD = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me/guilds/${guildID}`
 const USER = (userID: string) =>
@@ -129,12 +133,12 @@ const GITHUB_WEBHOOK = (webhookID: string, webhookTOKEN: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${webhookID}/${webhookTOKEN}/github`
 
 //Gateway Endpoints
-const GATEWAY = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway`
-const GATEWAY_BOT = `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway/bot`
+const GATEWAY = () => `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway`
+const GATEWAY_BOT = () =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/gateway/bot`
 
 //CDN Endpoints
-const CUSTOM_EMOJI = (emojiID: string) =>
-  `${DISCORD_CDN_URL}/emojis/${emojiID}`
+const CUSTOM_EMOJI = (emojiID: string) => `${DISCORD_CDN_URL}/emojis/${emojiID}`
 const GUILD_ICON = (guildID: string, iconID: number) =>
   `${DISCORD_CDN_URL}/icons/${guildID}/${iconID}`
 const GUILD_SPLASH = (guildID: string, guildSPLASH: string) =>
@@ -142,8 +146,7 @@ const GUILD_SPLASH = (guildID: string, guildSPLASH: string) =>
 const GUILD_DISCOVERY_SPLASH = (
   guildID: string,
   guildDiscoverySplash: string
-) =>
-  `${DISCORD_CDN_URL}/discovery-splashes/${guildID}/${guildDiscoverySplash}`
+) => `${DISCORD_CDN_URL}/discovery-splashes/${guildID}/${guildDiscoverySplash}`
 const GUILD_BANNER = (guildID: string, guildBANNER: string) =>
   `${DISCORD_CDN_URL}/banners/${guildID}/${guildBANNER}`
 const DEFAULT_USER_AVATAR = (iconID: string) =>
@@ -178,3 +181,75 @@ const INVITE = (inviteCODE: string) =>
 //Voice Endpoint
 const VOICE_REGIONS = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/regions`
+
+export {
+  GUILDS,
+  GUILD,
+  GUILD_AUDIT_LOGS,
+  GUILD_WIDGET,
+  GUILD_EMOJI,
+  GUILD_ROLE,
+  GUILD_ROLES,
+  GUILD_INTEGRATION,
+  GUILD_INTEGRATIONS,
+  GUILD_INTEGARTION_SYNC,
+  GUILD_BAN,
+  GUILD_BANS,
+  GUILD_CHANNEL,
+  GUILD_CHANNELS,
+  GUILD_MEMBER,
+  GUILD_MEMBERS,
+  GUILD_MEMBER_ROLE,
+  GUILD_INVITES,
+  GUILD_LEAVE,
+  GUILD_PRUNE,
+  GUILD_VANITY_URL,
+  GUILD_NICK,
+  GUILD_PREVIEW,
+  CHANNEL,
+  CHANNELS,
+  CHANNEL_MESSAGE,
+  CHANNEL_MESSAGES,
+  CHANNEL_CROSSPOST,
+  MESSAGE_REACTIONS,
+  MESSAGE_REACTION,
+  MESSAGE_REACTION_ME,
+  MESSAGE_REACTION_USER,
+  CHANNEL_BULK_DELETE,
+  CHANNEL_FOLLOW,
+  CHANNEL_INVITES,
+  CHANNEL_PIN,
+  CHANNEL_PINS,
+  CHANNEL_PERMISSION,
+  CHANNEL_TYPING,
+  GROUP_RECIPIENT,
+  CURRENT_USER,
+  CURRENT_USER_GUILDS,
+  USER_DM,
+  USER_CONNECTIONS,
+  LEAVE_GUILD,
+  USER,
+  CHANNEL_WEBHOOKS,
+  GUILD_WEBHOOK,
+  WEBHOOK,
+  WEBHOOK_WITH_TOKEN,
+  SLACK_WEBHOOK,
+  GITHUB_WEBHOOK,
+  GATEWAY,
+  GATEWAY_BOT,
+  CUSTOM_EMOJI,
+  GUILD_ICON,
+  GUILD_SPLASH,
+  GUILD_DISCOVERY_SPLASH,
+  GUILD_BANNER,
+  DEFAULT_USER_AVATAR,
+  USER_AVATAR,
+  APPLICATION_ASSET,
+  ACHIEVEMENT_ICON,
+  TEAM_ICON,
+  EMOJI,
+  EMOJIS,
+  TEMPLATE,
+  INVITE,
+  VOICE_REGIONS
+}

@@ -1,28 +1,58 @@
-import { Member } from '../structures/member.ts'
-import { Role } from '../structures/role.ts'
-import { User } from '../structures/user.ts'
 import { EmojiPayload } from './emojiTypes.ts'
+import { MemberPayload } from './guildTypes.ts'
+import { RolePayload } from './roleTypes.ts'
+import { UserPayload } from './userTypes.ts'
 
 interface ChannelPayload {
   id: string
   type: ChannelTypes
-  guild_id?: string
-  position?: number
-  approximate_member_count?: Overwrite
-  name?: string
-  topic?: string
-  nsfw?: boolean
+}
+
+interface TextChannelPayload extends ChannelPayload {
   last_message_id?: string
-  bitrate?: number
-  user_limit?: number
-  rate_limit_per_user?: number
-  recipients?: User
-  icon?: string
-  owner_id?: string
-  application_id?: string
-  parent_id?: string
   last_pin_timestamp?: string
 }
+
+interface GuildChannelPayload extends ChannelPayload {
+  guild_id: string
+  name: string
+  position: number
+  permission_overwrites: Overwrite[]
+  nsfw: boolean
+  parent_id?: string
+}
+
+interface GuildTextChannelPayload
+  extends TextChannelPayload,
+    GuildChannelPayload {
+  rate_limit_per_user: number
+  topic?: string
+}
+
+interface GuildNewsChannelPayload
+  extends TextChannelPayload,
+    GuildChannelPayload {
+  topic?: string
+}
+
+interface GuildVoiceChannelPayload extends GuildChannelPayload {
+  bitrate: string
+  user_limit: number
+}
+
+interface DMChannelPayload extends TextChannelPayload {
+  recipients: UserPayload[]
+}
+
+interface GroupDMChannelPayload extends DMChannelPayload {
+  name: string
+  icon?: string
+  owner_id: string
+}
+
+interface GuildChannelCategoryPayload
+  extends ChannelPayload,
+    GuildChannelPayload {}
 
 interface Overwrite {
   id: string
@@ -45,15 +75,15 @@ interface MessagePayload {
   id: string
   channel_id: string
   guild_id?: string
-  author: User
-  member?: Member
+  author: UserPayload
+  member?: MemberPayload
   content: string
   timestamp: string
-  edited_timestamp: string | undefined
+  edited_timestamp?: string
   tts: boolean
   mention_everyone: boolean
-  mentions: User[]
-  mention_roles: Role[]
+  mentions: UserPayload[]
+  mention_roles: RolePayload[]
   mention_channels?: ChannelMention[]
   attachments: Attachment[]
   embeds: EmbedPayload[]
@@ -210,12 +240,6 @@ interface FollowedChannel {
   webhook_id: string
 }
 
-interface Reaction {
-  count: number
-  me: boolean
-  emoji: EmojiPayload
-}
-
 interface Overwrite {
   id: string
   type: number
@@ -231,6 +255,15 @@ interface ChannelMention {
 
 export {
   ChannelPayload,
+  TextChannelPayload,
+  GuildChannelPayload,
+  GuildNewsChannelPayload,
+  GuildTextChannelPayload,
+  GuildVoiceChannelPayload,
+  GuildChannelCategoryPayload,
+  DMChannelPayload,
+  GroupDMChannelPayload,
+  Overwrite,
   ChannelTypes,
   ChannelMention,
   Attachment,

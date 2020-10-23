@@ -12,7 +12,7 @@ import {
 } from '../types/channelTypes.ts'
 import { Base } from './base.ts'
 
-export class Embed extends Base implements EmbedPayload {
+export class Embed extends Base {
   title?: string
   type?: EmbedTypes
   description?: string

@@ -1,9 +1,13 @@
 import { Client } from '../models/client.ts'
-import { ChannelPayload } from '../types/channelTypes.ts'
-import { Channel } from './channel.ts'
+import { DMChannelPayload } from '../types/channelTypes.ts'
+import { UserPayload } from '../types/userTypes.ts'
+import { TextChannel } from './textChannel.ts'
 
-export class PrivateChannel extends Channel implements ChannelPayload {
-  constructor (client: Client, data: ChannelPayload) {
+export class DMChannel extends TextChannel {
+  recipients: UserPayload[]
+
+  constructor (client: Client, data: DMChannelPayload) {
     super(client, data)
+    this.recipients = data.recipients
   }
 }

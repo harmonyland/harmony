@@ -15,8 +15,3 @@ export class Snowflake {
     return res
   }
 }
-
-// BigInt라서 이걸 어케 할까 고심끝에 나온게 toString 읍
-// 엄...
-
-// deconstruct가 소멸자임? 색 봐서는 아닌거같은데

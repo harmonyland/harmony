@@ -1,21 +1,22 @@
 import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emojiTypes.ts'
+import { UserPayload } from '../types/userTypes.ts'
 import { Base } from './base.ts'
 import { User } from './user.ts'
 
-export class Emoji extends Base implements EmojiPayload {
+export class Emoji extends Base {
   id: string
   name: string
   roles?: []
-  user?: User
-  require_colons?: boolean
+  user?: UserPayload
+  requireColons?: boolean
   managed?: boolean
   animated?: boolean
   available?: boolean
 
   get CustomEmoji () {
     if (this.animated === false) {
-     return `<:${this.name}:${this.id}>`
+      return `<:${this.name}:${this.id}>`
     } else return `<a:${this.name}:${this.id}>`
   }
 
@@ -25,7 +26,7 @@ export class Emoji extends Base implements EmojiPayload {
     this.name = data.name
     this.roles = data.roles
     this.user = data.user
-    this.require_colons = data.require_colons
+    this.requireColons = data.require_colons
     this.managed = data.managed
     this.animated = data.animated
     this.available = data.available

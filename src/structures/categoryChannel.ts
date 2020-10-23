@@ -1,8 +1,12 @@
 import { Client } from '../models/client.ts'
-import { GuildChannelPayload, Overwrite } from '../types/channelTypes.ts'
 import { Channel } from './channel.ts'
+import { GuildPayload, GuildFeatures } from '../types/guildTypes.ts'
+import {
+  GuildChannelCategoryPayload,
+  Overwrite
+} from '../types/channelTypes.ts'
 
-export class GuildChannel extends Channel {
+export class categoryChannel extends Channel {
   guildID: string
   name: string
   position: number
@@ -10,7 +14,7 @@ export class GuildChannel extends Channel {
   nsfw: boolean
   parentID?: string
 
-  constructor (client: Client, data: GuildChannelPayload) {
+  constructor (client: Client, data: GuildChannelCategoryPayload) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name

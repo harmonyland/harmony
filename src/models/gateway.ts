@@ -10,7 +10,10 @@ import {
   GatewayIntents,
   GatewayEvents
 } from '../types/gatewayTypes.ts'
+import { GuildPayload } from '../types/guildTypes.ts'
 import { User } from '../structures/user.ts'
+import * as cache from './cache.ts'
+import { Guild } from '../structures/guild.ts'
 
 /**
  * Handles Discord gateway connection.
@@ -48,11 +51,11 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  onopen () {
+  private onopen () {
     this.connected = true
   }
 
-  onmessage (event: MessageEvent) {
+  private onmessage (event: MessageEvent) {
     let data = event.data
     if (data instanceof ArrayBuffer) {
       data = new Uint8Array(data)
@@ -114,6 +117,7 @@ class Gateway {
         break
 
       case GatewayOpcodes.DISPATCH:
+        this.heartbeatServerResponded = true
         if (s !== null) {
           this.sequenceID = s
         }
@@ -121,6 +125,9 @@ class Gateway {
           case GatewayEvents.Ready:
             this.client.user = new User(this.client, d.user)
             this.sessionID = d.session_id
+            d.guilds.forEach((guild: GuildPayload) => {
+              cache.set('guilds', guild.id, new Guild(this.client, guild))
+            })
             break
           default:
             break
@@ -131,17 +138,17 @@ class Gateway {
     }
   }
 
-  onclose (event: CloseEvent) {
+  private onclose (event: CloseEvent) {
     // TODO: Handle close event codes.
   }
 
-  onerror (event: Event | ErrorEvent) {
+  private onerror (event: Event | ErrorEvent) {
     const eventError = event as ErrorEvent
 
     console.log(eventError)
   }
 
-  sendIdentify () {
+  private sendIdentify () {
     this.websocket.send(
       JSON.stringify({
         op: GatewayOpcodes.IDENTIFY,
