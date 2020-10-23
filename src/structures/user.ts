@@ -17,6 +17,14 @@ export class User extends Base implements UserPayload {
   premium_type?: 0 | 1 | 2
   public_flags?: number
 
+  get nickMention () {
+    return `<@!${this.id}>`
+  }
+
+  get mention () {
+    return `<@${this.id}>`
+  }
+
   constructor (client: Client, data: UserPayload) {
     super(client)
     this.id = data.id

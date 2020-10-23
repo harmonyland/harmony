@@ -2,5 +2,8 @@
   "deno.enable": true,
   "deno.lint": false,
   "deno.unstable": false,
-  "deepscan.enable": true
+  "deepscan.enable": true,
+  "deno.import_intellisense_origins": {
+    "https://deno.land": true
+  }
 }

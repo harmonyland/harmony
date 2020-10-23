@@ -1,12 +1,14 @@
 import { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gatewayTypes.ts'
 import { Gateway } from './gateway.ts'
+import { Rest } from "./rest.ts"
 
 /**
  * Discord Client.
  */
 export class Client {
   gateway?: Gateway
+  rest?: Rest
   user?: User
   ping = 0
 
