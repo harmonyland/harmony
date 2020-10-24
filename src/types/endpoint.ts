@@ -139,7 +139,7 @@ const GATEWAY_BOT = () =>
 
 //CDN Endpoints
 const CUSTOM_EMOJI = (emojiID: string) => `${DISCORD_CDN_URL}/emojis/${emojiID}`
-const GUILD_ICON = (guildID: string, iconID: number) =>
+const GUILD_ICON = (guildID: string, iconID: string) =>
   `${DISCORD_CDN_URL}/icons/${guildID}/${iconID}`
 const GUILD_SPLASH = (guildID: string, guildSPLASH: string) =>
   `${DISCORD_CDN_URL}/splashes/${guildID}/${guildSPLASH}`
@@ -153,7 +153,7 @@ const DEFAULT_USER_AVATAR = (iconID: string) =>
   `${DISCORD_CDN_URL}/embed/avatars/${iconID}`
 const USER_AVATAR = (userID: string, iconID: string) =>
   `${DISCORD_CDN_URL}/avatars/${userID}/${iconID}`
-const APPLICATION_ASSET = (applicationID: string, assetID: number) =>
+const APPLICATION_ASSET = (applicationID: string, assetID: string) =>
   `${DISCORD_CDN_URL}/app-icons/${applicationID}/${assetID}`
 const ACHIEVEMENT_ICON = (
   applicationID: string,
@@ -182,7 +182,7 @@ const INVITE = (inviteCODE: string) =>
 const VOICE_REGIONS = (guildID: string) =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/regions`
 
-export {
+export default [
   GUILDS,
   GUILD,
   GUILD_AUDIT_LOGS,
@@ -253,4 +253,4 @@ export {
   TEMPLATE,
   INVITE,
   VOICE_REGIONS
-}
+]

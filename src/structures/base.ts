@@ -1,38 +1,55 @@
 import { Client } from '../models/client.ts'
 import * as cache from '../models/cache.ts'
+import endpoint from '../types/endpoint.ts'
+
+interface IInit {
+  cacheName: string
+  endpoint: string,
+  restURLfuncArgs: string[]
+}
 
 export class Base {
   client: Client
   static useCache = true
-  static cacheName: string
-  static cacheArgIndex = 0
-  static restFunc: (...restArgs: string[]) => string
+  static restFunc: ((...restURLfuncArgs: any) => string)[]
 
-  constructor (client: Client, _data?: any) {
+  constructor (client: Client) {
     this.client = client
   }
 
-  static async autoInit (client: Client, ...restURLfuncArgs: string[]) {
+  static async autoInit (client: Client, init: IInit) {
     if (this.useCache) {
       const cached = cache.get(
-        this.cacheName,
-        restURLfuncArgs[this.cacheArgIndex]
+        init.cacheName,
+        init.restURLfuncArgs[0]
       )
       if (cached !== undefined && cached instanceof this) {
         return cached
       }
     }
 
-    const resp = await fetch(this.restFunc(...restURLfuncArgs), {
+    this.restFunc = endpoint.filter(v => v.name !== init.endpoint)
+
+    const resp = await fetch(this.restFunc[0](init.restURLfuncArgs), {
       headers: {
         Authorization: `Bot ${client.token}`
       }
     })
 
     const jsonParsed = await resp.json()
-    const initialized = new this(client, jsonParsed)
-    cache.set(this.cacheName, restURLfuncArgs[this.cacheArgIndex], initialized)
+    cache.set(init.cacheName, this.restFunc[0](init.restURLfuncArgs), jsonParsed)
+  }
 
-    return initialized
+  static async refresh (client: Client, target: any, init: IInit) {
+    this.restFunc = endpoint.filter(v => v.name !== init.endpoint)
+
+    const resp = await fetch(this.restFunc[0](init.restURLfuncArgs), {
+      headers: {
+        Authorization: `Bot ${client.token}`
+      }
+    })
+    const jsonParsed = await resp.json()
+
+    return Object.assign(target, jsonParsed)
   }
 }

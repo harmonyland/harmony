@@ -33,10 +33,6 @@ export class Channel extends Base {
     return `<#${this.id}>`
   }
 
-  static async autoInit (client: Client, channelID: string) {
-    return super.autoInit(client, channelID)
-  }
-
   static from (
     data:
       | GuildChannelCategoryPayload
