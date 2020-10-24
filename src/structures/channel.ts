@@ -10,9 +10,11 @@ import {
   ChannelTypes
 } from '../types/channelTypes.ts'
 import { Base } from './base.ts'
-import { DMChannel } from './dm.ts'
-import { GroupChannel } from './groupChannel.ts'
+import { CategoryChannel } from './guildCategoryChannel.ts'
 import { VoiceChannel } from './guildVoiceChannel.ts'
+import { NewsChannel } from './guildnewsChannel.ts'
+import { DMChannel } from './dmChannel.ts'
+import { GroupChannel } from './groupChannel.ts'
 import { TextChannel } from './textChannel.ts'
 
 export class Channel extends Base {
@@ -41,9 +43,9 @@ export class Channel extends Base {
   ) {
     switch (data.type) {
       case ChannelTypes.GUILD_CATEGORY:
-        return
+        return new CategoryChannel(client, data as GuildChannelCategoryPayload)
       case ChannelTypes.GUILD_NEWS:
-        return
+        return new NewsChannel(client, data as GuildNewsChannelPayload)
       case ChannelTypes.GUILD_TEXT:
         return new TextChannel(client, data as GuildTextChannelPayload)
       case ChannelTypes.GUILD_VOICE:

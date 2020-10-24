@@ -1,7 +1,4 @@
 import { Client } from '../models/client.ts'
-import { Channel } from '../structures/channel.ts'
-import { Guild } from '../structures/guild.ts'
-import { User } from '../structures/user.ts'
 import { ChannelPayload } from '../types/channelTypes.ts'
 import { GuildPayload } from '../types/guildTypes.ts'
 import { InvitePayload } from '../types/inviteTypes.ts'

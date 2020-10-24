@@ -1,4 +1,5 @@
 import { Client } from '../models/client.ts'
+import { Base } from './base.ts'
 import {
   EmbedAuthor,
   EmbedField,
@@ -10,7 +11,6 @@ import {
   EmbedTypes,
   EmbedVideo
 } from '../types/channelTypes.ts'
-import { Base } from './base.ts'
 
 export class Embed extends Base {
   title?: string

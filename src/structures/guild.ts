@@ -11,7 +11,6 @@ import { PresenceUpdatePayload } from '../types/presenceTypes.ts'
 import { RolePayload } from '../types/roleTypes.ts'
 import { VoiceStatePayload } from '../types/voiceTypes.ts'
 import { Base } from './base.ts'
-import { Role } from './role.ts'
 import * as cache from '../models/cache.ts'
 
 export class Guild extends Base {

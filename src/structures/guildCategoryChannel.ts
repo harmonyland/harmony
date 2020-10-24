@@ -1,12 +1,11 @@
 import { Client } from '../models/client.ts'
 import { Channel } from './channel.ts'
-import { GuildPayload, GuildFeatures } from '../types/guildTypes.ts'
 import {
   GuildChannelCategoryPayload,
   Overwrite
 } from '../types/channelTypes.ts'
 
-export class categoryChannel extends Channel {
+export class CategoryChannel extends Channel {
   guildID: string
   name: string
   position: number

@@ -10,9 +10,6 @@ import {
   Reaction
 } from '../types/channelTypes.ts'
 import { Client } from '../models/client.ts'
-import { User } from './user.ts'
-import { Role } from './role.ts'
-import { Embed } from './embed.ts'
 import { UserPayload } from '../types/userTypes.ts'
 import { RolePayload } from '../types/roleTypes.ts'
 
