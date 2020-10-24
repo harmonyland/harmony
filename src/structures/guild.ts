@@ -109,7 +109,7 @@ export class Guild extends Base {
   }
 
   static async autoInit (client: Client, guildID: string) {
-    const cached = cache.get('guilds', guildID)
+    const cached = cache.get('guild', guildID)
     if (cached === undefined || !(cached instanceof Guild)) {
       const resp = await fetch(GUILD(guildID), {
         headers: {
@@ -119,10 +119,68 @@ export class Guild extends Base {
       const guildParsed: GuildPayload = await resp.json()
 
       const newGuild = new Guild(client, guildParsed)
-      cache.set('guilds', guildID, newGuild)
+      cache.set('guild', guildID, newGuild)
       return newGuild
     } else {
       return cached
     }
+  }
+
+  async refresh () {
+    const resp = await fetch(GUILD(this.id), {
+      headers: {
+        Authorization: `Bot ${this.client.token}`
+      }
+    })
+
+    const guildParsed: GuildPayload = await resp.json()
+    /*for (const rawKey of Object.keys(guildParsed)) {
+      const _key: string[] = rawKey.split('_').map((v, i) => i === 0 ? v : v.substr(0, 1).toUpperCase() + v.substr(1))
+      const key = _key.join('')
+      if (this.hasOwnProperty(key)) this[key] // fucking ts
+    }*/
+    this.name = guildParsed.name
+    this.icon = guildParsed.icon
+    this.iconHash = guildParsed.icon_hash
+    this.splash = guildParsed.splash
+    this.discoverySplash = guildParsed.discovery_splash
+    this.owner = guildParsed.owner
+    this.ownerID = guildParsed.owner_id
+    this.permissions = guildParsed.permissions
+    this.region = guildParsed.region
+    this.afkTimeout = guildParsed.afk_timeout
+    this.afkChannelID = guildParsed.afk_channel_id
+    this.widgetEnabled = guildParsed.widget_enabled
+    this.widgetChannelID = guildParsed.widget_channel_id
+    this.verificationLevel = guildParsed.verification_level
+    this.defaultMessageNotifications = guildParsed.default_message_notifications
+    this.explicitContentFilter = guildParsed.explicit_content_filter
+    this.roles = guildParsed.roles
+    this.emojis = guildParsed.emojis
+    this.features = guildParsed.features
+    this.mfaLevel = guildParsed.mfa_level
+    this.systemChannelID = guildParsed.system_channel_id
+    this.systemChannelFlags = guildParsed.system_channel_flags
+    this.rulesChannelID = guildParsed.rules_channel_id
+    this.joinedAt = guildParsed.joined_at
+    this.large = guildParsed.large
+    this.unavailable = guildParsed.unavailable
+    this.memberCount = guildParsed.member_count
+    this.voiceStates = guildParsed.voice_states
+    this.members = guildParsed.members
+    this.channels = guildParsed.channels
+    this.presences = guildParsed.presences
+    this.maxPresences = guildParsed.max_presences
+    this.maxMembers = guildParsed.max_members
+    this.vanityURLCode = guildParsed.vanity_url_code
+    this.description = guildParsed.description
+    this.banner = guildParsed.banner
+    this.premiumTier = guildParsed.premium_tier
+    this.premiumSubscriptionCount = guildParsed.premium_subscription_count
+    this.preferredLocale = guildParsed.preferred_locale
+    this.publicUpdatesChannelID = guildParsed.public_updates_channel_id
+    this.maxVideoChannelUsers = guildParsed.max_video_channel_users
+    this.approximateNumberCount = guildParsed.approximate_number_count
+    this.approximatePresenceCount = guildParsed.approximate_presence_count
   }
 }

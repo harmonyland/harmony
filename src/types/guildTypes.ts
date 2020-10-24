@@ -19,7 +19,7 @@ interface GuildPayload {
   afk_channel_id?: string
   afk_timeout: number
   widget_enabled?: boolean
-  widge_channel_id?: string
+  widget_channel_id?: string
   verification_level: string
   default_message_notifications: string
   explicit_content_filter: string

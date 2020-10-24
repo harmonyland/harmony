@@ -14,12 +14,14 @@ import { CategoryChannel } from './guildCategoryChannel.ts'
 import { VoiceChannel } from './guildVoiceChannel.ts'
 import { NewsChannel } from './guildnewsChannel.ts'
 import { DMChannel } from './dmChannel.ts'
-import { GroupChannel } from './groupChannel.ts'
+import { GroupDMChannel } from './groupChannel.ts'
 import { TextChannel } from './textChannel.ts'
 
 export class Channel extends Base {
   type: ChannelTypes
   id: string
+  static cacheName = 'channel'
+  static cacheArgIndex = 0
 
   constructor (client: Client, data: ChannelPayload) {
     super(client)
@@ -29,6 +31,10 @@ export class Channel extends Base {
 
   get mention () {
     return `<#${this.id}>`
+  }
+
+  static async autoInit (client: Client, channelID: string) {
+    return super.autoInit(client, channelID)
   }
 
   static from (
@@ -53,7 +59,7 @@ export class Channel extends Base {
       case ChannelTypes.DM:
         return new DMChannel(client, data as DMChannelPayload)
       case ChannelTypes.GROUP_DM:
-        return new GroupChannel(client, data as GroupDMChannelPayload)
+        return new GroupDMChannel(client, data as GroupDMChannelPayload)
     }
   }
 }

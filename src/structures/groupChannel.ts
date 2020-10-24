@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { GroupDMChannelPayload } from '../types/channelTypes.ts'
 import { Channel } from './channel.ts'
 
-export class GroupChannel extends Channel {
+export class GroupDMChannel extends Channel {
   name: string
   icon?: string
   ownerID: string

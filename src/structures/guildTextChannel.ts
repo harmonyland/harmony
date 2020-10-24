@@ -1,7 +1,6 @@
 import { Client } from '../models/client.ts'
 import { GuildChannel } from './guildChannel.ts'
 import { GuildTextChannelPayload } from '../types/channelTypes.ts'
-import { User } from './user.ts'
 
 export class GuildTextChannel extends GuildChannel {
   rateLimit: number
