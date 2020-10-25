@@ -17,33 +17,21 @@ bot.connect(TOKEN, [GatewayIntents.GUILD_MEMBERS, GatewayIntents.GUILD_PRESENCES
 const member = <Member> await Member.autoInit(bot, {
   cacheName: 'member',
   endpoint: 'GUILD_MEMBER',
-<<<<<<< HEAD
   restURLfuncArgs: ['', '']
-=======
-  restURLfuncArgs: ['668753256419426314', '333432936390983680']
->>>>>>> 1bf512bcedb9c129c2ec8e35e50d18ff5177b8cb
 })
 console.log('getted (cached) ' + member.id)
 setInterval(async () => {
   //refreshed check
   console.log('refreshed check: ' + member.id)
   //cached
-<<<<<<< HEAD
   console.log('cache: '+(<Member> cache.get('member', '')).id)
-=======
-  console.log('cache: '+(<Member> cache.get('member', '668753256419426314:333432936390983680')).id)
->>>>>>> 1bf512bcedb9c129c2ec8e35e50d18ff5177b8cb
 }, 10000)
 
 setInterval(async() => {
   member.refresh(bot, {
     cacheName: 'member',
     endpoint: 'GUILD_MEMBER',
-<<<<<<< HEAD
     restURLfuncArgs: ['', '']
-=======
-    restURLfuncArgs: ['668753256419426314', '333432936390983680']
->>>>>>> 1bf512bcedb9c129c2ec8e35e50d18ff5177b8cb
   })
   //refreshed
   console.log('refreshed: ' + member.id)
