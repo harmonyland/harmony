@@ -61,7 +61,7 @@ export class Guild extends Base {
   approximatePresenceCount?: number
 
   constructor (client: Client, data: GuildPayload) {
-    super(client)
+    super(client, data)
     this.id = data.id
     this.name = data.name
     this.icon = data.icon

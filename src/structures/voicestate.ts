@@ -19,7 +19,7 @@ export class VoiceState extends Base {
   suppress: boolean
 
   constructor (client: Client, data: VoiceStatePayload) {
-    super(client)
+    super(client, data)
     this.channelID = data.channel_id
     this.sessionID = data.session_id
     this.userID = data.user_id

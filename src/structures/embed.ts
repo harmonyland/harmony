@@ -12,7 +12,7 @@ import {
   EmbedVideo
 } from '../types/channelTypes.ts'
 
-export class Embed extends Base {
+export class Embed {
   title?: string
   type?: EmbedTypes
   description?: string
@@ -26,21 +26,22 @@ export class Embed extends Base {
   provider?: EmbedProvider
   author?: EmbedAuthor
   fields?: EmbedField[]
-  constructor (client: Client, data: EmbedPayload) {
-    super(client)
-    this.title = data.title
-    this.type = data.type
-    this.description = data.description
-    this.url = data.url
-    this.timestamp = data.timestamp
-    this.color = data.color
-    this.footer = data.footer
-    this.image = data.image
-    this.thumbnail = data.thumbnail
-    this.video = data.video
-    this.provider = data.provider
-    this.author = data.author
-    this.fields = data.fields
+  constructor (client: Client, data?: EmbedPayload) {
+    if(data) {
+      this.title = data.title
+      this.type = data.type
+      this.description = data.description
+      this.url = data.url
+      this.timestamp = data.timestamp
+      this.color = data.color
+      this.footer = data.footer
+      this.image = data.image
+      this.thumbnail = data.thumbnail
+      this.video = data.video
+      this.provider = data.provider
+      this.author = data.author
+      this.fields = data.fields
+    }
   }
 
   toJSON () {
