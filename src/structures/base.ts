@@ -30,9 +30,7 @@ export class Base {
         return cached
       }
     }
-    this.restFunc = endpoint.find(((v) => {
-      v.name === init.endpoint
-    }))
+    this.restFunc = endpoint.find(v => v.name === init.endpoint)
     // TODO: Make error for this
     if(this.restFunc) {
       const resp = await fetch(this.restFunc(...init.restURLfuncArgs), {
