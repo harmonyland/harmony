@@ -7,9 +7,17 @@ const bot = new Client()
 
 bot.connect(TOKEN, [GatewayIntents.GUILD_MESSAGES])
 
-Guild.autoInit(bot, '').then(a => console.log(a))
+Guild.autoInit(bot, {
+  cacheName: 'guild',
+  endpoint: 'GUILD',
+  restURLfuncArgs: ['']
+}).then((a) => console.log(a))
 
 setTimeout(async () => {
-  const result = Guild.autoInit(bot, '')
+  const result = Guild.autoInit(bot, {
+    cacheName: 'guild',
+    endpoint: 'GUILD',
+    restURLfuncArgs: ['']
+  })
   console.log(result)
 }, 30000)

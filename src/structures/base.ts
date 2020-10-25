@@ -23,12 +23,12 @@ export class Base {
         init.cacheName,
         init.restURLfuncArgs[0]
       )
-      if (cached !== undefined && cached instanceof this) {
+      if (cached !== undefined) {
         return cached
       }
     }
 
-    this.restFunc = endpoint.filter(v => v.name !== init.endpoint)
+    this.restFunc = endpoint.filter(v => v.name === init.endpoint)
 
     const resp = await fetch(this.restFunc[0](init.restURLfuncArgs), {
       headers: {
@@ -37,7 +37,10 @@ export class Base {
     })
 
     const jsonParsed = await resp.json()
-    cache.set(init.cacheName, this.restFunc[0](init.restURLfuncArgs), jsonParsed)
+
+    cache.set(init.cacheName, init.restURLfuncArgs[0], jsonParsed)
+
+    return jsonParsed
   }
 
   static async refresh (client: Client, target: any, init: IInit) {
