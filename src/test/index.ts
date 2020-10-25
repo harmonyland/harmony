@@ -3,11 +3,7 @@ import { Guild } from '../structures/guild.ts'
 import { GatewayIntents } from '../types/gatewayTypes.ts'
 import { TOKEN } from './config.ts'
 import * as cache from '../models/cache.ts'
-import { Member } from "../structures/member.ts"
-import { User } from "../structures/user.ts"
-import endpoint from "../types/endpoint.ts"
-import { Base } from "../structures/base.ts"
-import { GuildChannel } from "../structures/guildChannel.ts"
+import { Member } from '../structures/member.ts'
 
 const bot = new Client()
 

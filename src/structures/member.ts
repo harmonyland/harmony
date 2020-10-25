@@ -8,7 +8,6 @@ import { Role } from './role.ts'
 import { User } from './user.ts'
 
 export class Member extends User {
-  user: User
   nick?: string
   roles: Role[]
   joinedAt: string
@@ -18,7 +17,6 @@ export class Member extends User {
 
   constructor (client: Client, data: MemberPayload) {
     super(client, data.user)
-    this.user = this
     this.nick = data.nick
     this.roles = data.roles.map(v => new Role(client, v))
     this.joinedAt = data.joined_at

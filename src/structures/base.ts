@@ -12,9 +12,9 @@ interface IInit {
 export class Base {
   client: Client
   static useCache?: boolean = true
-  static restFunc: ((...restURLfuncArgs: any) => string)[]
+  static restFunc?: ((...restURLfuncArgs: string[]) => string)
 
-  constructor (client: Client, _data: any) {
+  constructor (client: Client, _data?: any) {
     this.client = client
   }
 
@@ -30,32 +30,36 @@ export class Base {
         return cached
       }
     }
+    this.restFunc = endpoint.find(((v) => {
+      v.name === init.endpoint
+    }))
+    // TODO: Make error for this
+    if(this.restFunc) {
+      const resp = await fetch(this.restFunc(...init.restURLfuncArgs), {
+        headers: {
+          Authorization: `Bot ${client.token}`
+        }
+      })
+      const jsonParsed = await resp.json()
 
-    this.restFunc = endpoint.filter(v => v.name === init.endpoint)
-
-    const resp = await fetch(this.restFunc[0](init.restURLfuncArgs[0], init.restURLfuncArgs[1], init.restURLfuncArgs[2], init.restURLfuncArgs[3]), {
-      headers: {
-        Authorization: `Bot ${client.token}`
-      }
-    })
-
-    const jsonParsed = await resp.json()
-
-    cache.set(init.cacheName, cacheID, new this(client, jsonParsed))
-
-    return new this(client, jsonParsed)
+      cache.set(init.cacheName, cacheID, new this(client, jsonParsed))
+  
+      return new this(client, jsonParsed)
+    }
   }
 
   async refresh (client: Client, init: IInit) {
-    const restFunc: ((...restURLfuncArgs: any) => string)[] = endpoint.filter(v => v.name === init.endpoint)
-
-    const resp = await fetch(restFunc[0](init.restURLfuncArgs[0], init.restURLfuncArgs[1], init.restURLfuncArgs[3], init.restURLfuncArgs[4]), {
-      headers: {
-        Authorization: `Bot ${client.token}`
-      }
-    })
-    const jsonParsed = await resp.json()
-
-    Object.assign(this, jsonParsed)
+    const restFunc: ((...restURLfuncArgs: string[]) => string) | undefined = endpoint.find(v => v.name === init.endpoint)
+    // TODO: Make error for this
+    if(restFunc) {
+      const resp = await fetch(restFunc(...init.restURLfuncArgs), {
+        headers: {
+          Authorization: `Bot ${client.token}`
+        }
+      })
+      const jsonParsed = await resp.json()
+  
+      Object.assign(this, jsonParsed)
+    }
   }
 }
