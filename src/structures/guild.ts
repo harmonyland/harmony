@@ -75,7 +75,7 @@ export class Guild extends Base {
     this.afkTimeout = data.afk_timeout
     this.afkChannelID = data.afk_channel_id
     this.widgetEnabled = data.widget_enabled
-    this.widgetChannelID = data.widge_channel_id
+    this.widgetChannelID = data.widget_channel_id
     this.verificationLevel = data.verification_level
     this.defaultMessageNotifications = data.default_message_notifications
     this.explicitContentFilter = data.explicit_content_filter
