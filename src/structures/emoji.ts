@@ -20,7 +20,7 @@ export class Emoji extends Base {
   }
 
   constructor (client: Client, data: EmojiPayload) {
-    super(client)
+    super(client, data)
     this.id = data.id
     this.name = data.name
     this.roles = data.roles

@@ -27,7 +27,7 @@ export class User extends Base {
   }
 
   constructor (client: Client, data: UserPayload) {
-    super(client)
+    super(client, data)
     this.id = data.id
     this.username = data.username
     this.discriminator = data.discriminator

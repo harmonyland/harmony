@@ -24,38 +24,12 @@ export class Channel extends Base {
   static cacheArgIndex = 0
 
   constructor (client: Client, data: ChannelPayload) {
-    super(client)
+    super(client, data)
     this.type = data.type
     this.id = data.id
   }
 
   get mention () {
     return `<#${this.id}>`
-  }
-
-  static from (
-    data:
-      | GuildChannelCategoryPayload
-      | GuildNewsChannelPayload
-      | GuildTextChannelPayload
-      | GuildVoiceChannelPayload
-      | DMChannelPayload
-      | GroupDMChannelPayload,
-    client: Client
-  ) {
-    switch (data.type) {
-      case ChannelTypes.GUILD_CATEGORY:
-        return new CategoryChannel(client, data as GuildChannelCategoryPayload)
-      case ChannelTypes.GUILD_NEWS:
-        return new NewsChannel(client, data as GuildNewsChannelPayload)
-      case ChannelTypes.GUILD_TEXT:
-        return new TextChannel(client, data as GuildTextChannelPayload)
-      case ChannelTypes.GUILD_VOICE:
-        return new VoiceChannel(client, data as GuildVoiceChannelPayload)
-      case ChannelTypes.DM:
-        return new DMChannel(client, data as DMChannelPayload)
-      case ChannelTypes.GROUP_DM:
-        return new GroupDMChannel(client, data as GroupDMChannelPayload)
-    }
   }
 }
