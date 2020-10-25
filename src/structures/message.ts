@@ -13,7 +13,7 @@ import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/userTypes.ts'
 import { RolePayload } from '../types/roleTypes.ts'
 
-class Message extends Base {
+export class Message extends Base {
   id: string
   channelID: string
   guildID?: string

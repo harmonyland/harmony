@@ -17,7 +17,7 @@ export class Role extends Base {
   }
 
   constructor (client: Client, data: RolePayload) {
-    super(client)
+    super(client, data)
     this.id = data.id
     this.name = data.name
     this.color = data.color
