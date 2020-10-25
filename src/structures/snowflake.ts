@@ -4,19 +4,19 @@ export class Snowflake {
     this.snowflake = BigInt.asUintN(64, BigInt(id))
   }
 
-  get timestamp () {
-    return ((this.snowflake >> BigInt(22)) + BigInt(1420070400000)).toString()
+  get timestamp (): string {
+    return ((this.snowflake >> 22n) + 1420070400000n).toString()
   }
 
-  get workerID () {
-    return ((this.snowflake & BigInt(0x3e0000)) >> BigInt(17)).toString()
+  get workerID (): string {
+    return ((this.snowflake & 0x3e0000n) >> 17n).toString()
   }
 
-  get processID () {
-    return ((this.snowflake & BigInt(0x1f000)) >> BigInt(12)).toString()
+  get processID (): string {
+    return ((this.snowflake & 0x1f00n) >> 12n).toString()
   }
 
-  get increment () {
-    return (this.snowflake & BigInt(0xfff)).toString()
+  get increment (): string {
+    return (this.snowflake & 0xfffn).toString()
   }
 }

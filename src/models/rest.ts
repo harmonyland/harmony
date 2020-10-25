@@ -5,7 +5,7 @@ class Rest {
   constructor (client: Client) {
     this.client = client
   }
-  //TODO: make endpoints function
+  // TODO: make endpoints function
 }
 
 export { Rest }

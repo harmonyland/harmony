@@ -1,5 +1,4 @@
 import { Client } from '../models/client.ts'
-import { Base } from './base.ts'
 import {
   EmbedAuthor,
   EmbedField,
@@ -27,7 +26,7 @@ export class Embed {
   author?: EmbedAuthor
   fields?: EmbedField[]
   constructor (client: Client, data?: EmbedPayload) {
-    if(data) {
+    if (data !== undefined) {
       this.title = data.title
       this.type = data.type
       this.description = data.description
@@ -41,24 +40,6 @@ export class Embed {
       this.provider = data.provider
       this.author = data.author
       this.fields = data.fields
-    }
-  }
-
-  toJSON () {
-    return {
-      title: this.title,
-      type: this.type,
-      description: this.description,
-      url: this.url,
-      timestamp: this.timestamp,
-      color: this.color,
-      footer: this.footer,
-      image: this.image,
-      thumbnail: this.thumbnail,
-      video: this.video,
-      provider: this.provider,
-      author: this.author,
-      fields: this.fields
     }
   }
 }

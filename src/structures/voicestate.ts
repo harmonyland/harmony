@@ -2,7 +2,6 @@ import { Client } from '../models/client.ts'
 import { MemberPayload } from '../types/guildTypes.ts'
 import { VoiceStatePayload } from '../types/voiceTypes.ts'
 import { Base } from './base.ts'
-import { Member } from './member.ts'
 
 export class VoiceState extends Base {
   guildID?: string

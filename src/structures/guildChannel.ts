@@ -1,8 +1,6 @@
 import { Client } from '../models/client.ts'
 import { GuildChannelPayload, Overwrite } from '../types/channelTypes.ts'
 import { Channel } from './channel.ts'
-import * as cache from '../models/cache.ts'
-import { Guild } from './guild.ts'
 
 export class GuildChannel extends Channel {
   guildID: string
@@ -21,5 +19,4 @@ export class GuildChannel extends Channel {
     this.nsfw = data.nsfw
     this.parentID = data.parent_id
   }
-
 }

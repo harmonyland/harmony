@@ -1,34 +1,26 @@
 import { Client } from '../models/client.ts'
-import { Guild } from '../structures/guild.ts'
 import { GatewayIntents } from '../types/gatewayTypes.ts'
 import { TOKEN } from './config.ts'
 import * as cache from '../models/cache.ts'
 import { Member } from '../structures/member.ts'
+import { Channel } from '../structures/channel.ts'
+import { GuildTextChannel } from '../structures/guildTextChannel.ts'
 
 const bot = new Client()
 
-bot.connect(TOKEN, [GatewayIntents.GUILD_MEMBERS, GatewayIntents.GUILD_PRESENCES, GatewayIntents.GUILD_MESSAGES])
-
-
-const member = <Member> await Member.autoInit(bot, {
-  cacheName: 'member',
-  endpoint: 'GUILD_MEMBER',
-  restURLfuncArgs: ['', '']
+bot.on('ready', () => {
+  console.log('READY!')
 })
-console.log('getted (cached) ' + member.nick)
-setInterval(async () => {
-  //refreshed check
-  console.log('refreshed check: ' + member.nick)
-  //cached
-  console.log('cache: '+(<Member> cache.get('member', '')).nick)
-}, 10000)
 
-setInterval(async() => {
-  member.refresh(bot, {
-    cacheName: 'member',
-    endpoint: 'GUILD_MEMBER',
-    restURLfuncArgs: ['', '']
-  })
-  //refreshed
-  console.log('refreshed: ' + member.nick)
-}, 20000)
+bot.on('channelUpdate', (before: Channel, after: Channel) => {
+  if (before instanceof GuildTextChannel && after instanceof GuildTextChannel) {
+    console.log(before.name)
+    console.log(after.name)
+  }
+})
+
+bot.connect(TOKEN, [
+  GatewayIntents.GUILD_MEMBERS,
+  GatewayIntents.GUILD_PRESENCES,
+  GatewayIntents.GUILD_MESSAGES
+])

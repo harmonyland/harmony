@@ -1,7 +1,6 @@
 import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/userTypes.ts'
 import { Base } from './base.ts'
-import * as cache from '../models/cache.ts'
 
 export class User extends Base {
   id: string
@@ -18,11 +17,11 @@ export class User extends Base {
   premiumType?: 0 | 1 | 2
   publicFlags?: number
 
-  get nickMention () {
+  get nickMention (): string {
     return `<@!${this.id}>`
   }
 
-  get mention () {
+  get mention (): string {
     return `<@${this.id}>`
   }
 

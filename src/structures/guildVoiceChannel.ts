@@ -1,7 +1,5 @@
 import { Client } from '../models/client.ts'
 import { GuildVoiceChannelPayload, Overwrite } from '../types/channelTypes.ts'
-import { Base } from './base.ts'
-import { Member } from './member.ts'
 import { Channel } from './channel.ts'
 
 export class VoiceChannel extends Channel {

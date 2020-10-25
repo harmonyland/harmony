@@ -12,7 +12,7 @@ export class Role extends Base {
   managed: boolean
   mentionable: boolean
 
-  get mention () {
+  get mention (): string {
     return `<@&${this.id}>`
   }
 

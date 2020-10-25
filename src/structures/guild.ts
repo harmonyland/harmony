@@ -1,17 +1,12 @@
 import { Client } from '../models/client.ts'
-import { ChannelPayload } from '../types/channelTypes.ts'
-import { EmojiPayload } from '../types/emojiTypes.ts'
-
-import {
-  GuildFeatures,
-  GuildPayload,
-  MemberPayload
-} from '../types/guildTypes.ts'
+import { GuildFeatures, GuildPayload } from '../types/guildTypes.ts'
 import { PresenceUpdatePayload } from '../types/presenceTypes.ts'
-import { RolePayload } from '../types/roleTypes.ts'
-import { VoiceStatePayload } from '../types/voiceTypes.ts'
 import { Base } from './base.ts'
-import * as cache from '../models/cache.ts'
+import { Channel } from './channel.ts'
+import { Emoji } from './emoji.ts'
+import { Member } from './member.ts'
+import { Role } from './role.ts'
+import { VoiceState } from './voiceState.ts'
 
 export class Guild extends Base {
   id: string
@@ -31,8 +26,8 @@ export class Guild extends Base {
   verificationLevel: string
   defaultMessageNotifications: string
   explicitContentFilter: string
-  roles: RolePayload[]
-  emojis: EmojiPayload[]
+  roles: Role[]
+  emojis: Emoji[]
   features: GuildFeatures[]
   mfaLevel: string
   applicationID?: string
@@ -43,9 +38,9 @@ export class Guild extends Base {
   large?: boolean
   unavailable: boolean
   memberCount?: number
-  voiceStates?: VoiceStatePayload[]
-  members?: MemberPayload[]
-  channels?: ChannelPayload[]
+  voiceStates?: VoiceState[]
+  members?: Member[]
+  channels?: Channel[]
   presences?: PresenceUpdatePayload[]
   maxPresences?: number
   maxMembers?: number
@@ -79,8 +74,8 @@ export class Guild extends Base {
     this.verificationLevel = data.verification_level
     this.defaultMessageNotifications = data.default_message_notifications
     this.explicitContentFilter = data.explicit_content_filter
-    this.roles = data.roles
-    this.emojis = data.emojis
+    this.roles = data.roles.map(v => new Role(client, v))
+    this.emojis = data.emojis.map(v => new Emoji(client, v))
     this.features = data.features
     this.mfaLevel = data.mfa_level
     this.systemChannelID = data.system_channel_id
@@ -90,9 +85,9 @@ export class Guild extends Base {
     this.large = data.large
     this.unavailable = data.unavailable
     this.memberCount = data.member_count
-    this.voiceStates = data.voice_states
-    this.members = data.members
-    this.channels = data.channels
+    this.voiceStates = data.voice_states?.map(v => new VoiceState(client, v))
+    this.members = data.members?.map(v => new Member(client, v))
+    this.channels = data.channels?.map(v => new Channel(client, v))
     this.presences = data.presences
     this.maxPresences = data.max_presences
     this.maxMembers = data.max_members
@@ -107,5 +102,4 @@ export class Guild extends Base {
     this.approximateNumberCount = data.approximate_number_count
     this.approximatePresenceCount = data.approximate_presence_count
   }
-
 }

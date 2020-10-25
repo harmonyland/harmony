@@ -6,7 +6,7 @@ export class GuildTextChannel extends GuildChannel {
   rateLimit: number
   topic?: string
 
-  get mention () {
+  get mention (): string {
     return `<#${this.id}>`
   }
 

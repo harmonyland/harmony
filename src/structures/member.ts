@@ -1,9 +1,5 @@
 import { Client } from '../models/client.ts'
 import { MemberPayload } from '../types/guildTypes.ts'
-import { RolePayload } from '../types/roleTypes.ts'
-import { UserPayload } from '../types/userTypes.ts'
-import { Base } from './base.ts'
-import { Guild } from './guild.ts'
 import { Role } from './role.ts'
 import { User } from './user.ts'
 

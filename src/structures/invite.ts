@@ -15,7 +15,7 @@ export class Invite extends Base {
   approximatePresenceCount?: number
   approximateMemberCount?: number
 
-  get link () {
+  get link (): string {
     return `https://discord.gg/${this.code}`
   }
 
