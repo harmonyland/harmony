@@ -1,36 +1,64 @@
 import { Client } from '../models/client.ts'
-import { GuildChannel } from './guildChannel.ts'
-import { ChannelPayload } from '../types/channelTypes.ts'
-import { User } from './user.ts'
+import { MessageOption, TextChannelPayload } from '../types/channelTypes.ts'
+import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
+import { Channel } from './channel.ts'
+import { Message } from './message.ts'
 
-export class TextChannel extends GuildChannel implements ChannelPayload {
-  id: string
-  type: number
-  guild_id?: string | undefined
-  position?: number | undefined
-  approximate_member_count?: any
-  name?: string | undefined
-  topic?: string | undefined
-  nsfw?: boolean | undefined
-  last_message_id?: string | undefined
-  bitrate?: number | undefined
-  user_limit?: number | undefined
-  rate_limit_per_user?: number | undefined
-  recipients?: User
-  icon?: string | undefined
-  owner_id?: string | undefined
-  application_id?: string | undefined
-  parent_id?: string | undefined
-  last_pin_timestamp?: string | undefined
+export class TextChannel extends Channel {
+  lastMessageID?: string
+  lastPinTimestamp?: string
 
-
-  get mention () {
-    return `<#${this.id}>`
+  constructor (client: Client, data: TextChannelPayload) {
+    super(client, data)
+    this.lastMessageID = data.last_message_id
+    this.lastPinTimestamp = data.last_pin_timestamp
   }
 
-  constructor (client: Client, data: ChannelPayload) {
-    super(client, data)
-    this.id = data.id
-    this.type = data.type
+  async send (text?: string, option?: MessageOption): Promise<Message> {
+    if (text !== undefined && option !== undefined) {
+      throw new Error('Either text or option is necessary.')
+    }
+    const resp = await fetch(CHANNEL_MESSAGES(this.id), {
+      headers: {
+        Authorization: `Bot ${this.client.token}`,
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        content: text,
+        embed: option?.embed,
+        file: option?.file,
+        tts: option?.tts,
+        allowed_mentions: option?.allowedMention
+      })
+    })
+
+    return new Message(this.client, await resp.json())
+  }
+
+  async editMessage (
+    messageID: string,
+    text?: string,
+    option?: MessageOption
+  ): Promise<Message> {
+    if (text !== undefined && option !== undefined) {
+      throw new Error('Either text or option is necessary.')
+    }
+    const resp = await fetch(CHANNEL_MESSAGE(this.id, messageID), {
+      headers: {
+        Authorization: `Bot ${this.client.token}`,
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify({
+        content: text,
+        embed: option?.embed,
+        file: option?.file,
+        tts: option?.tts,
+        allowed_mentions: option?.allowedMention
+      })
+    })
+
+    return new Message(this.client, await resp.json())
   }
 }

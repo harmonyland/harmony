@@ -2,68 +2,100 @@ import { Base } from './base.ts'
 import {
   Attachment,
   ChannelMention,
-  EmbedPayload,
   MessageActivity,
   MessageApplication,
+  MessageOption,
   MessagePayload,
   MessageReference,
   Reaction
 } from '../types/channelTypes.ts'
 import { Client } from '../models/client.ts'
 import { User } from './user.ts'
-import { Role } from './role.ts'
+import { Member } from './member.ts'
 import { Embed } from './embed.ts'
+import { Role } from './role.ts'
+import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 
-class Message extends Base implements MessagePayload {
+export class Message extends Base {
+  // eslint-disable-next-line @typescript-eslint/prefer-readonly
+  private data: MessagePayload
   id: string
-  channel_id: string
-  guild_id?: string | undefined
+  channelID: string
+  guildID?: string
   author: User
-  member?: any
   content: string
   timestamp: string
-  edited_timestamp: string | undefined
+  editedTimestamp?: string
   tts: boolean
-  mention_everyone: boolean
-  mentions: User[]
-  mention_roles: Role[]
-  mention_channels?: ChannelMention[] | undefined
+
+  get member (): Member | undefined {
+    if (this.data.member !== undefined) {
+      return new Member(this.client, this.data.member)
+    }
+  }
+
+  mentionEveryone: boolean
+  mentions: Member[]
+  mentionRoles: Role[]
+  mentionChannels?: ChannelMention[]
   attachments: Attachment[]
-  embeds: EmbedPayload[]
-  reactions?: Reaction[] | undefined
-  nonce?: string | number | undefined
+  embeds: Embed[]
+  reactions?: Reaction[]
+  nonce?: string | number
   pinned: boolean
-  webhook_id?: string | undefined
+  webhookId?: string
   type: number
   activity?: MessageActivity
   application?: MessageApplication
-  message_reference?: MessageReference
-  flags?: number | undefined
+  messageReference?: MessageReference
+  flags?: number
 
   constructor (client: Client, data: MessagePayload) {
     super(client)
+    this.data = data
     this.id = data.id
-    this.channel_id = data.channel_id
-    this.guild_id = data.guild_id
-    this.author = data.author
-    this.member = data.member
+    this.channelID = data.channel_id
+    this.guildID = data.guild_id
+    this.author = new User(client, data.author)
     this.content = data.content
     this.timestamp = data.timestamp
-    this.edited_timestamp = data.edited_timestamp
+    this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
-    this.mention_everyone = data.mention_everyone
-    this.mentions = data.mentions
-    this.mention_roles = data.mention_roles
+    this.mentionEveryone = data.mention_everyone
+    this.mentions = data.mentions.map(v => new Member(client, v))
+    this.mentionRoles = data.mention_roles.map(v => new Role(client, v))
     this.attachments = data.attachments
-    this.embeds = data.embeds
+    this.embeds = data.embeds.map(v => new Embed(client, v))
     this.reactions = data.reactions
     this.nonce = data.nonce
     this.pinned = data.pinned
-    this.webhook_id = data.webhook_id
+    this.webhookId = data.webhook_id
     this.type = data.type
     this.activity = data.activity
     this.application = data.application
-    this.message_reference = data.message_reference
+    this.messageReference = data.message_reference
     this.flags = data.flags
+  }
+
+  async editMessage (text?: string, option?: MessageOption): Promise<Message> {
+    if (text !== undefined && option !== undefined) {
+      throw new Error('Either text or option is necessary.')
+    }
+    const resp = await fetch(CHANNEL_MESSAGE(this.channelID, this.id), {
+      headers: {
+        Authorization: `Bot ${this.client.token}`,
+        'Content-Type': 'application/json'
+      },
+      method: 'PATCH',
+      body: JSON.stringify({
+        content: text,
+        embed: option?.embed,
+        file: option?.file,
+        tts: option?.tts,
+        allowed_mentions: option?.allowedMention
+      })
+    })
+
+    return new Message(this.client, await resp.json())
   }
 }

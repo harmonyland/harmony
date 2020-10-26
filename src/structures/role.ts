@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { Base } from './base.ts'
 import { RolePayload } from '../types/roleTypes.ts'
 
-export class Role extends Base implements RolePayload {
+export class Role extends Base {
   id: string
   name: string
   color: number
@@ -12,12 +12,12 @@ export class Role extends Base implements RolePayload {
   managed: boolean
   mentionable: boolean
 
-  get mention () {
+  get mention (): string {
     return `<@&${this.id}>`
   }
 
   constructor (client: Client, data: RolePayload) {
-    super(client)
+    super(client, data)
     this.id = data.id
     this.name = data.name
     this.color = data.color

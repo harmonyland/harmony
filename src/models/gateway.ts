@@ -10,7 +10,18 @@ import {
   GatewayIntents,
   GatewayEvents
 } from '../types/gatewayTypes.ts'
+import { GuildPayload } from '../types/guildTypes.ts'
 import { User } from '../structures/user.ts'
+import * as cache from './cache.ts'
+import { Guild } from '../structures/guild.ts'
+import { Channel } from '../structures/channel.ts'
+import { ChannelTypes } from '../types/channelTypes.ts'
+import { DMChannel } from '../structures/dmChannel.ts'
+import { GroupDMChannel } from '../structures/groupChannel.ts'
+import { GuildTextChannel } from '../structures/guildTextChannel.ts'
+import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import { NewsChannel } from '../structures/guildNewsChannel.ts'
 
 /**
  * Handles Discord gateway connection.
@@ -24,13 +35,12 @@ class Gateway {
   intents: GatewayIntents[]
   connected = false
   initialized = false
-  heartbeatInterval = 0
-  heartbeatIntervalID?: number
-  heartbeatCheckerIntervalID?: number
-  sequenceID?: number
-  sessionID?: string
+  private heartbeatInterval = 0
+  private heartbeatIntervalID?: number
+  private sequenceID?: number
+  private sessionID?: string
   lastPingTimestemp = 0
-  heartbeatServerResponded = false
+  private heartbeatServerResponded = false
   client: Client
 
   constructor (client: Client, token: string, intents: GatewayIntents[]) {
@@ -38,6 +48,7 @@ class Gateway {
     this.intents = intents
     this.client = client
     this.websocket = new WebSocket(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
       []
     )
@@ -48,11 +59,11 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  onopen () {
+  private onopen (): void {
     this.connected = true
   }
 
-  onmessage (event: MessageEvent) {
+  private onmessage (event: MessageEvent): void {
     let data = event.data
     if (data instanceof ArrayBuffer) {
       data = new Uint8Array(data)
@@ -72,7 +83,6 @@ class Gateway {
             this.heartbeatServerResponded = false
           } else {
             clearInterval(this.heartbeatIntervalID)
-            clearInterval(this.heartbeatCheckerIntervalID)
             this.websocket.close()
             this.initWebsocket()
             return
@@ -91,16 +101,7 @@ class Gateway {
           this.sendIdentify()
           this.initialized = true
         } else {
-          this.websocket.send(
-            JSON.stringify({
-              op: GatewayOpcodes.RESUME,
-              d: {
-                token: this.token,
-                session_id: this.sessionID,
-                seq: this.sequenceID
-              }
-            })
-          )
+          this.sendResume()
         }
         break
 
@@ -110,10 +111,17 @@ class Gateway {
         break
 
       case GatewayOpcodes.INVALID_SESSION:
-        setTimeout(this.sendIdentify, 3000)
+        // Because we know this gonna be bool
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        if (!d) {
+          setTimeout(this.sendResume, 3000)
+        } else {
+          setTimeout(this.sendIdentify, 3000)
+        }
         break
 
       case GatewayOpcodes.DISPATCH:
+        this.heartbeatServerResponded = true
         if (s !== null) {
           this.sequenceID = s
         }
@@ -121,7 +129,87 @@ class Gateway {
           case GatewayEvents.Ready:
             this.client.user = new User(this.client, d.user)
             this.sessionID = d.session_id
+            d.guilds.forEach((guild: GuildPayload) => {
+              Guild.autoInit(this.client, {
+                endpoint: 'guild',
+                restURLfuncArgs: [guild.id]
+              })
+            })
+            this.client.emit('ready')
             break
+          case GatewayEvents.Channel_Create: {
+            let channel: Channel | undefined
+            switch (d.type) {
+              case ChannelTypes.DM:
+                channel = new DMChannel(this.client, d)
+                break
+              case ChannelTypes.GROUP_DM:
+                channel = new GroupDMChannel(this.client, d)
+                break
+              case ChannelTypes.GUILD_TEXT:
+                channel = new GuildTextChannel(this.client, d)
+                break
+              case ChannelTypes.GUILD_VOICE:
+                channel = new VoiceChannel(this.client, d)
+                break
+              case ChannelTypes.GUILD_CATEGORY:
+                channel = new CategoryChannel(this.client, d)
+                break
+              case ChannelTypes.GUILD_NEWS:
+                channel = new NewsChannel(this.client, d)
+                break
+              default:
+                break
+            }
+
+            if (channel !== undefined) {
+              cache.set('channel', channel.id, channel)
+              this.client.emit('channelCreate', channel)
+            }
+            break
+          }
+          case GatewayEvents.Channel_Update: {
+            const oldChannel: Channel = cache.get('channel', d.id)
+
+            if (oldChannel.type !== d.type) {
+              let channel: Channel = oldChannel
+              switch (d.type) {
+                case ChannelTypes.DM:
+                  channel = new DMChannel(this.client, d)
+                  break
+                case ChannelTypes.GROUP_DM:
+                  channel = new GroupDMChannel(this.client, d)
+                  break
+                case ChannelTypes.GUILD_TEXT:
+                  channel = new GuildTextChannel(this.client, d)
+                  break
+                case ChannelTypes.GUILD_VOICE:
+                  channel = new VoiceChannel(this.client, d)
+                  break
+                case ChannelTypes.GUILD_CATEGORY:
+                  channel = new CategoryChannel(this.client, d)
+                  break
+                case ChannelTypes.GUILD_NEWS:
+                  channel = new NewsChannel(this.client, d)
+                  break
+                default:
+                  break
+              }
+              cache.set('channel', channel.id, channel)
+              this.client.emit('channelUpdate', oldChannel, channel)
+            } else {
+              const before = oldChannel.refreshFromData(d)
+              this.client.emit('channelUpdate', before, oldChannel)
+            }
+            break
+          }
+          case GatewayEvents.Channel_Delete: {
+            const channel: Channel = cache.get('channel', d.id)
+            cache.del('channel', d.id)
+
+            this.client.emit('channelDelete', channel)
+            break
+          }
           default:
             break
         }
@@ -131,17 +219,18 @@ class Gateway {
     }
   }
 
-  onclose (event: CloseEvent) {
+  private onclose (event: CloseEvent): void {
+    console.log(event.code)
     // TODO: Handle close event codes.
   }
 
-  onerror (event: Event | ErrorEvent) {
+  private onerror (event: Event | ErrorEvent): void {
     const eventError = event as ErrorEvent
 
     console.log(eventError)
   }
 
-  sendIdentify () {
+  private sendIdentify (): void {
     this.websocket.send(
       JSON.stringify({
         op: GatewayOpcodes.IDENTIFY,
@@ -169,8 +258,22 @@ class Gateway {
     )
   }
 
-  initWebsocket () {
+  private sendResume (): void {
+    this.websocket.send(
+      JSON.stringify({
+        op: GatewayOpcodes.RESUME,
+        d: {
+          token: this.token,
+          session_id: this.sessionID,
+          seq: this.sequenceID
+        }
+      })
+    )
+  }
+
+  initWebsocket (): void {
     this.websocket = new WebSocket(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
       []
     )
@@ -181,7 +284,7 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  close () {
+  close (): void {
     this.websocket.close(1000)
   }
 }
