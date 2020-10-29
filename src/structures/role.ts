@@ -1,3 +1,4 @@
+import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { Base } from './base.ts'
 import { RolePayload } from '../types/roleTypes.ts'
@@ -26,5 +27,17 @@ export class Role extends Base {
     this.permissions = data.permissions
     this.managed = data.managed
     this.mentionable = data.mentionable
+    cache.set('role', this.id, this)
+  }
+
+  readFromData (data: RolePayload): void {
+    super.readFromData(data)
+    this.name = data.name ?? this.name
+    this.color = data.color ?? this.color
+    this.hoist = data.hoist ?? this.hoist
+    this.position = data.position ?? this.position
+    this.permissions = data.permissions ?? this.permissions
+    this.managed = data.managed ?? this.managed
+    this.mentionable = data.mentionable ?? this.mentionable
   }
 }

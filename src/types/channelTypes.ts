@@ -1,7 +1,6 @@
 import { Embed } from '../structures/embed.ts'
 import { EmojiPayload } from './emojiTypes.ts'
 import { MemberPayload } from './guildTypes.ts'
-import { RolePayload } from './roleTypes.ts'
 import { UserPayload } from './userTypes.ts'
 
 interface ChannelPayload {
@@ -83,8 +82,8 @@ interface MessagePayload {
   edited_timestamp?: string
   tts: boolean
   mention_everyone: boolean
-  mentions: MemberPayload[]
-  mention_roles: RolePayload[]
+  mentions: UserPayload[]
+  mention_roles: string[]
   mention_channels?: ChannelMention[]
   attachments: Attachment[]
   embeds: EmbedPayload[]
@@ -281,6 +280,9 @@ export {
   Attachment,
   Reaction,
   MessageActivity,
+  MessageActivityTypes,
+  MessageFlags,
+  FollowedChannel,
   MessageApplication,
   MessageReference,
   MessagePayload,

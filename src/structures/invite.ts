@@ -30,4 +30,18 @@ export class Invite extends Base {
     this.approximateMemberCount = data.approximate_member_count
     this.approximatePresenceCount = data.approximate_presence_count
   }
+
+  readFromData (data: InvitePayload): void {
+    super.readFromData(data)
+    this.code = data.code ?? this.code
+    this.guild = data.guild ?? this.guild
+    this.channel = data.channel ?? this.channel
+    this.inviter = data.inviter ?? this.inviter
+    this.targetUser = data.target_user ?? this.targetUser
+    this.targetUserType = data.target_user_type ?? this.targetUserType
+    this.approximateMemberCount =
+      data.approximate_member_count ?? this.approximateMemberCount
+    this.approximatePresenceCount =
+      data.approximate_presence_count ?? this.approximatePresenceCount
+  }
 }

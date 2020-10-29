@@ -1,3 +1,4 @@
+import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { MessageOption, TextChannelPayload } from '../types/channelTypes.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
@@ -12,6 +13,13 @@ export class TextChannel extends Channel {
     super(client, data)
     this.lastMessageID = data.last_message_id
     this.lastPinTimestamp = data.last_pin_timestamp
+    cache.set('textchannel', this.id, this)
+  }
+
+  readFromData (data: TextChannelPayload): void {
+    super.readFromData(data)
+    this.lastMessageID = data.last_message_id ?? this.lastMessageID
+    this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp
   }
 
   async send (text?: string, option?: MessageOption): Promise<Message> {

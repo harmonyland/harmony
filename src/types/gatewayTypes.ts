@@ -70,7 +70,7 @@ enum GatewayEvents {
   Channel_Create = 'CHANNEL_CREATE',
   Channel_Update = 'CHANNEL_UPDATE',
   Channel_Delete = 'CHANNEL_DELETE',
-  Channel_Pins_Update = 'CHANNEL_PIN_UPDATE',
+  Channel_Pins_Update = 'CHANNEL_PINS_UPDATE',
   Guild_Create = 'GUILD_CREATE',
   Guild_Update = 'GUILD_UPDATE',
   Guild_Delete = 'GUILD_DELETE',

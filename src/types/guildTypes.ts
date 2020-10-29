@@ -56,7 +56,7 @@ interface GuildPayload {
 interface MemberPayload {
   user: UserPayload
   nick?: string
-  roles: RolePayload[]
+  roles: string[]
   joined_at: string
   premium_since?: string
   deaf: boolean

@@ -1,3 +1,4 @@
+import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { ChannelPayload, ChannelTypes } from '../types/channelTypes.ts'
 import { Base } from './base.ts'
@@ -14,5 +15,12 @@ export class Channel extends Base {
     super(client, data)
     this.type = data.type
     this.id = data.id
+    cache.set('channel', this.id, this)
+  }
+
+  readFromData (data: ChannelPayload): void {
+    super.readFromData(data)
+    this.type = data.type ?? this.type
+    this.id = data.id ?? this.id
   }
 }

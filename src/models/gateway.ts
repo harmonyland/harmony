@@ -130,10 +130,7 @@ class Gateway {
             this.client.user = new User(this.client, d.user)
             this.sessionID = d.session_id
             d.guilds.forEach((guild: GuildPayload) => {
-              Guild.autoInit(this.client, {
-                endpoint: 'guild',
-                restURLfuncArgs: [guild.id]
-              })
+              cache.set('guild', guild.id, new Guild(this.client, guild))
             })
             this.client.emit('ready')
             break
@@ -171,43 +168,63 @@ class Gateway {
           case GatewayEvents.Channel_Update: {
             const oldChannel: Channel = cache.get('channel', d.id)
 
-            if (oldChannel.type !== d.type) {
-              let channel: Channel = oldChannel
-              switch (d.type) {
-                case ChannelTypes.DM:
-                  channel = new DMChannel(this.client, d)
-                  break
-                case ChannelTypes.GROUP_DM:
-                  channel = new GroupDMChannel(this.client, d)
-                  break
-                case ChannelTypes.GUILD_TEXT:
-                  channel = new GuildTextChannel(this.client, d)
-                  break
-                case ChannelTypes.GUILD_VOICE:
-                  channel = new VoiceChannel(this.client, d)
-                  break
-                case ChannelTypes.GUILD_CATEGORY:
-                  channel = new CategoryChannel(this.client, d)
-                  break
-                case ChannelTypes.GUILD_NEWS:
-                  channel = new NewsChannel(this.client, d)
-                  break
-                default:
-                  break
+            if (oldChannel !== undefined) {
+              if (oldChannel.type !== d.type) {
+                let channel: Channel = oldChannel
+                switch (d.type) {
+                  case ChannelTypes.DM:
+                    channel = new DMChannel(this.client, d)
+                    break
+                  case ChannelTypes.GROUP_DM:
+                    channel = new GroupDMChannel(this.client, d)
+                    break
+                  case ChannelTypes.GUILD_TEXT:
+                    channel = new GuildTextChannel(this.client, d)
+                    break
+                  case ChannelTypes.GUILD_VOICE:
+                    channel = new VoiceChannel(this.client, d)
+                    break
+                  case ChannelTypes.GUILD_CATEGORY:
+                    channel = new CategoryChannel(this.client, d)
+                    break
+                  case ChannelTypes.GUILD_NEWS:
+                    channel = new NewsChannel(this.client, d)
+                    break
+                  default:
+                    break
+                }
+                cache.set('channel', channel.id, channel)
+                this.client.emit('channelUpdate', oldChannel, channel)
+              } else {
+                const before = oldChannel.refreshFromData(d)
+                this.client.emit('channelUpdate', before, oldChannel)
               }
-              cache.set('channel', channel.id, channel)
-              this.client.emit('channelUpdate', oldChannel, channel)
-            } else {
-              const before = oldChannel.refreshFromData(d)
-              this.client.emit('channelUpdate', before, oldChannel)
             }
             break
           }
           case GatewayEvents.Channel_Delete: {
             const channel: Channel = cache.get('channel', d.id)
-            cache.del('channel', d.id)
-
-            this.client.emit('channelDelete', channel)
+            if (channel !== undefined) {
+              cache.del('channel', d.id)
+              this.client.emit('channelDelete', channel)
+            }
+            break
+          }
+          case GatewayEvents.Channel_Pins_Update: {
+            const channel: Channel = cache.get('channel', d.channel_id)
+            if (channel !== undefined && d.last_pin_timestamp !== null) {
+              channel.refreshFromData({
+                last_pin_timestamp: d.last_pin_timestamp
+              })
+              this.client.emit('channelPinsUpdate', channel)
+            }
+            break
+          }
+          case GatewayEvents.Guild_Create: {
+            const guild: Guild = cache.get('guild', d.id)
+            if (guild !== undefined) {
+              guild.refreshFromData(guild)
+            }
             break
           }
           default:

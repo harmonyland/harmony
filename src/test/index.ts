@@ -16,6 +16,9 @@ bot.on('channelUpdate', (before: Channel, after: Channel) => {
   if (before instanceof GuildTextChannel && after instanceof GuildTextChannel) {
     console.log(before.name)
     console.log(after.name)
+  } else {
+    console.log(before)
+    console.log(after)
   }
 })
 
