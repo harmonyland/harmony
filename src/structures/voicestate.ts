@@ -33,7 +33,7 @@ export class VoiceState extends Base {
     cache.set('voiceState', `${this.guildID}:${this.userID}`, this)
   }
 
-  readFromData (data: VoiceStatePayload): void {
+  protected readFromData (data: VoiceStatePayload): void {
     super.readFromData(data)
     this.channelID = data.channel_id ?? this.channelID
     this.sessionID = data.session_id ?? this.sessionID

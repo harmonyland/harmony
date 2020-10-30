@@ -76,14 +76,14 @@ export class Message extends Base {
     cache.set('message', this.id, this)
   }
 
-  readFromData (data: MessagePayload): void {
+  protected readFromData (data: MessagePayload): void {
     super.readFromData(data)
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
     this.author =
       cache.get('user', data.author.id) ??
-      new User(this.client, data.author) ??
-      this.author
+      this.author ??
+      new User(this.client, data.author)
     this.content = data.content ?? this.content
     this.timestamp = data.timestamp ?? this.timestamp
     this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp

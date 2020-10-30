@@ -1,6 +1,6 @@
 import { UserPayload } from './userTypes.ts'
 
-interface PresenceUpdatePayload {
+export interface PresenceUpdatePayload {
   user: UserPayload
   guild_id: string
   status: string
@@ -14,7 +14,7 @@ interface ClientStatus {
   web?: string
 }
 
-interface ActivityPayload {
+export interface ActivityPayload {
   name: string
   type: 0 | 1 | 2 | 3 | 4 | 5
   url?: string | undefined
@@ -68,5 +68,3 @@ enum ActivityFlags {
   SYNC = 1 << 4,
   PLAY = 1 << 5
 }
-
-export { ActivityPayload, PresenceUpdatePayload }

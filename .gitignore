@@ -110,5 +110,3 @@ yarn.lock
 # PRIVACY XDDDD
 src/test/config.ts
 .vscode
-
-src/test/

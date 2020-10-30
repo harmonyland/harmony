@@ -30,7 +30,7 @@ export class Role extends Base {
     cache.set('role', this.id, this)
   }
 
-  readFromData (data: RolePayload): void {
+  protected readFromData (data: RolePayload): void {
     super.readFromData(data)
     this.name = data.name ?? this.name
     this.color = data.color ?? this.color

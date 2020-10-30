@@ -18,7 +18,7 @@ export class Channel extends Base {
     cache.set('channel', this.id, this)
   }
 
-  readFromData (data: ChannelPayload): void {
+  protected readFromData (data: ChannelPayload): void {
     super.readFromData(data)
     this.type = data.type ?? this.type
     this.id = data.id ?? this.id

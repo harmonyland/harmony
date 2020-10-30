@@ -5,7 +5,7 @@ import { RolePayload } from './roleTypes.ts'
 import { UserPayload } from './userTypes.ts'
 import { VoiceStatePayload } from './voiceTypes.ts'
 
-interface GuildPayload {
+export interface GuildPayload {
   id: string
   name: string
   icon?: string
@@ -53,7 +53,7 @@ interface GuildPayload {
   approximate_presence_count?: number
 }
 
-interface MemberPayload {
+export interface MemberPayload {
   user: UserPayload
   nick?: string
   roles: string[]
@@ -99,7 +99,7 @@ enum SystemChannelFlags {
   SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1
 }
 
-type GuildFeatures =
+export type GuildFeatures =
   | 'INVITE_SPLASH'
   | 'VIP_REGIONS'
   | 'VANITY_URL'
@@ -112,5 +112,3 @@ type GuildFeatures =
   | 'FEATURABLE'
   | 'ANIMATED_ICON'
   | 'BANNER'
-
-export { MemberPayload, GuildPayload, GuildFeatures }

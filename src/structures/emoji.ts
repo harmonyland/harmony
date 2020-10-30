@@ -37,7 +37,7 @@ export class Emoji extends Base {
     this.available = data.available
   }
 
-  readFromData (data: EmojiPayload): void {
+  protected readFromData (data: EmojiPayload): void {
     super.readFromData(data)
     this.id = data.id ?? this.id
     this.name = data.name ?? this.name

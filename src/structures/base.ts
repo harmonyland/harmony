@@ -65,7 +65,7 @@ export class Base {
     return oldOne
   }
 
-  readFromData (data: { [k: string]: any }): void {}
+  protected readFromData (data: { [k: string]: any }): void {}
 
   // toJSON() {}
 }

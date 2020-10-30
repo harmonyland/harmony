@@ -44,7 +44,7 @@ export class User extends Base {
     cache.set('user', this.id, this)
   }
 
-  readFromData (data: UserPayload): void {
+  protected readFromData (data: UserPayload): void {
     super.readFromData(data)
     this.username = data.username ?? this.username
     this.discriminator = data.discriminator ?? this.discriminator

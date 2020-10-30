@@ -17,7 +17,7 @@ export class GroupDMChannel extends Channel {
     cache.set('groupchannel', this.id, this)
   }
 
-  readFromData (data: GroupDMChannelPayload): void {
+  protected readFromData (data: GroupDMChannelPayload): void {
     super.readFromData(data)
     this.name = data.name ?? this.name
     this.icon = data.icon ?? this.icon

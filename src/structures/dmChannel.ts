@@ -13,7 +13,7 @@ export class DMChannel extends TextChannel {
     cache.set('dmchannel', this.id, this)
   }
 
-  readFromData (data: DMChannelPayload): void {
+  protected readFromData (data: DMChannelPayload): void {
     super.readFromData(data)
     this.recipients = data.recipients ?? this.recipients
   }

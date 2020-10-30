@@ -31,7 +31,7 @@ export class Invite extends Base {
     this.approximatePresenceCount = data.approximate_presence_count
   }
 
-  readFromData (data: InvitePayload): void {
+  protected readFromData (data: InvitePayload): void {
     super.readFromData(data)
     this.code = data.code ?? this.code
     this.guild = data.guild ?? this.guild

@@ -16,7 +16,7 @@ export class TextChannel extends Channel {
     cache.set('textchannel', this.id, this)
   }
 
-  readFromData (data: TextChannelPayload): void {
+  protected readFromData (data: TextChannelPayload): void {
     super.readFromData(data)
     this.lastMessageID = data.last_message_id ?? this.lastMessageID
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp

@@ -8,6 +8,7 @@ import { Member } from './member.ts'
 import { Role } from './role.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
+import getChannelByType from '../utils/getChannelByType.ts'
 
 export class Guild extends Base {
   id: string
@@ -103,7 +104,7 @@ export class Guild extends Base {
           new Member(client, v)
       )
       this.channels = data.channels?.map(
-        v => cache.get('channel', v.id) ?? new Channel(client, v)
+        v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
       )
       this.presences = data.presences
       this.maxPresences = data.max_presences
@@ -122,7 +123,7 @@ export class Guild extends Base {
     cache.set('guild', this.id, this)
   }
 
-  readFromData (data: GuildPayload): void {
+  protected readFromData (data: GuildPayload): void {
     super.readFromData(data)
     this.id = data.id ?? this.id
     this.unavailable = data.unavailable ?? this.unavailable
@@ -177,7 +178,7 @@ export class Guild extends Base {
         ) ?? this.members
       this.channels =
         data.channels?.map(
-          v => cache.get('channel', v.id) ?? new Channel(this.client, v)
+          v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
         ) ?? this.members
       this.presences = data.presences ?? this.presences
       this.maxPresences = data.max_presences ?? this.maxPresences
