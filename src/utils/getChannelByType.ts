@@ -8,7 +8,7 @@ import {
   GuildNewsChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload
-} from '../types/channelTypes.ts'
+} from '../types/channel.ts'
 import { DMChannel } from '../structures/dmChannel.ts'
 import { GroupDMChannel } from '../structures/groupChannel.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'

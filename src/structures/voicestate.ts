@@ -1,7 +1,7 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { MemberPayload } from '../types/guildTypes.ts'
-import { VoiceStatePayload } from '../types/voiceTypes.ts'
+import { MemberPayload } from '../types/guild.ts'
+import { VoiceStatePayload } from '../types/voice.ts'
 import { Base } from './base.ts'
 
 export class VoiceState extends Base {

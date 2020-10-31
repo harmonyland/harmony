@@ -1,4 +1,4 @@
-import { UserPayload } from './userTypes.ts'
+import { UserPayload } from './user.ts'
 
 export interface EmojiPayload {
   id: string

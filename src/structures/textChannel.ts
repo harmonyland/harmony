@@ -1,6 +1,6 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { MessageOption, TextChannelPayload } from '../types/channelTypes.ts'
+import { MessageOption, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Message } from './message.ts'

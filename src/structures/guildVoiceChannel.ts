@@ -1,6 +1,6 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { GuildVoiceChannelPayload, Overwrite } from '../types/channelTypes.ts'
+import { GuildVoiceChannelPayload, Overwrite } from '../types/channel.ts'
 import { Channel } from './channel.ts'
 
 export class VoiceChannel extends Channel {

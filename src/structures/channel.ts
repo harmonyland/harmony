@@ -1,6 +1,6 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { ChannelPayload, ChannelTypes } from '../types/channelTypes.ts'
+import { ChannelPayload, ChannelTypes } from '../types/channel.ts'
 import { Base } from './base.ts'
 
 export class Channel extends Base {

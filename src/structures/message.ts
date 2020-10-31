@@ -8,7 +8,7 @@ import {
   MessagePayload,
   MessageReference,
   Reaction
-} from '../types/channelTypes.ts'
+} from '../types/channel.ts'
 import { Client } from '../models/client.ts'
 import { User } from './user.ts'
 import { Member } from './member.ts'

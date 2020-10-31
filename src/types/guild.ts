@@ -1,9 +1,9 @@
-import { ChannelPayload } from './channelTypes.ts'
-import { EmojiPayload } from './emojiTypes.ts'
-import { PresenceUpdatePayload } from './presenceTypes.ts'
-import { RolePayload } from './roleTypes.ts'
-import { UserPayload } from './userTypes.ts'
-import { VoiceStatePayload } from './voiceTypes.ts'
+import { ChannelPayload } from './channel.ts'
+import { EmojiPayload } from './emoji.ts'
+import { PresenceUpdatePayload } from './presence.ts'
+import { RolePayload } from './role.ts'
+import { UserPayload } from './user.ts'
+import { VoiceStatePayload } from './voice.ts'
 
 export interface GuildPayload {
   id: string
