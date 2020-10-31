@@ -5,10 +5,11 @@ import { Base } from './base.ts'
 import { Channel } from './channel.ts'
 import { Emoji } from './emoji.ts'
 import { Member } from './member.ts'
-import { Role } from './role.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
 import getChannelByType from '../utils/getChannelByType.ts'
+import { RolesManager } from "../managers/RolesManager.ts"
+import { Role } from "./role.ts"
 
 export class Guild extends Base {
   id: string
@@ -28,7 +29,7 @@ export class Guild extends Base {
   verificationLevel?: string
   defaultMessageNotifications?: string
   explicitContentFilter?: string
-  roles?: Role[]
+  roles: RolesManager = new RolesManager(this.client, this)
   emojis?: Emoji[]
   features?: GuildFeatures[]
   mfaLevel?: string
@@ -79,9 +80,12 @@ export class Guild extends Base {
       this.verificationLevel = data.verification_level
       this.defaultMessageNotifications = data.default_message_notifications
       this.explicitContentFilter = data.explicit_content_filter
-      this.roles = data.roles.map(
-        v => cache.get('role', v.id) ?? new Role(client, v)
-      )
+      // this.roles = data.roles.map(
+      //   v => cache.get('role', v.id) ?? new Role(client, v)
+      // )
+      data.roles.forEach(role => {
+        this.roles.set(role.id, new Role(client, role))
+      })
       this.emojis = data.emojis.map(
         v => cache.get('emoji', v.id) ?? new Emoji(client, v)
       )
@@ -120,7 +124,6 @@ export class Guild extends Base {
       this.approximateNumberCount = data.approximate_number_count
       this.approximatePresenceCount = data.approximate_presence_count
     }
-    cache.set('guild', this.id, this)
   }
 
   protected readFromData (data: GuildPayload): void {
@@ -147,10 +150,10 @@ export class Guild extends Base {
         data.default_message_notifications ?? this.defaultMessageNotifications
       this.explicitContentFilter =
         data.explicit_content_filter ?? this.explicitContentFilter
-      this.roles =
-        data.roles.map(
-          v => cache.get('role', v.id) ?? new Role(this.client, v)
-        ) ?? this.roles
+      // this.roles =
+      //   data.roles.map(
+      //     v => cache.get('role', v.id) ?? new Role(this.client, v)
+      //   ) ?? this.roles
       this.emojis =
         data.emojis.map(
           v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)

@@ -7,6 +7,8 @@ import {
 import { GatewayResponse } from '../types/gatewayResponse.ts'
 import { GatewayOpcodes, GatewayIntents } from '../types/gatewayTypes.ts'
 import { gatewayHandlers } from './handlers/index.ts'
+import { GATEWAY_BOT } from '../types/endpoint.ts'
+import { GatewayBotPayload } from "../types/gatewayBot.ts"
 
 /**
  * Handles Discord gateway connection.
@@ -24,7 +26,7 @@ class Gateway {
   heartbeatIntervalID?: number
   sequenceID?: number
   sessionID?: string
-  lastPingTimestemp = 0
+  lastPingTimestamp = 0
   private heartbeatServerResponded = false
   client: Client
 
@@ -46,6 +48,7 @@ class Gateway {
 
   private onopen (): void {
     this.connected = true
+    this.debug("Connected to Gateway!")
   }
 
   private onmessage (event: MessageEvent): void {
@@ -63,6 +66,7 @@ class Gateway {
     switch (op) {
       case GatewayOpcodes.HELLO:
         this.heartbeatInterval = d.heartbeat_interval
+        this.debug(`Received HELLO. Heartbeat Interval: ${this.heartbeatInterval}`)
         this.heartbeatIntervalID = setInterval(() => {
           if (this.heartbeatServerResponded) {
             this.heartbeatServerResponded = false
@@ -79,7 +83,7 @@ class Gateway {
               d: this.sequenceID ?? null
             })
           )
-          this.lastPingTimestemp = Date.now()
+          this.lastPingTimestamp = Date.now()
         }, this.heartbeatInterval)
 
         if (!this.initialized) {
@@ -92,7 +96,8 @@ class Gateway {
 
       case GatewayOpcodes.HEARTBEAT_ACK:
         this.heartbeatServerResponded = true
-        this.client.ping = Date.now() - this.lastPingTimestemp
+        this.client.ping = Date.now() - this.lastPingTimestamp
+        this.debug(`Received Heartbeat Ack. Ping Recognized: ${this.client.ping}ms`)
         break
 
       case GatewayOpcodes.INVALID_SESSION:
@@ -135,7 +140,14 @@ class Gateway {
     console.log(eventError)
   }
 
-  private sendIdentify (): void {
+  private async sendIdentify () {
+    this.debug("Fetching /gateway/bot...")
+    let info = await this.client.rest.get(GATEWAY_BOT()) as GatewayBotPayload
+    if(info.session_start_limit.remaining == 0) throw new Error("Session Limit Reached. Retry After " + info.session_start_limit.reset_after + "ms")
+    this.debug("Recommended Shards: " + info.shards)
+    this.debug("=== Session Limit Info ===")
+    this.debug(`Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`)
+    this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
     this.websocket.send(
       JSON.stringify({
         op: GatewayOpcodes.IDENTIFY,
@@ -164,6 +176,7 @@ class Gateway {
   }
 
   private sendResume (): void {
+    this.debug(`Preparing to resume with Session: ${this.sessionID}`)
     this.websocket.send(
       JSON.stringify({
         op: GatewayOpcodes.RESUME,
@@ -174,6 +187,10 @@ class Gateway {
         }
       })
     )
+  }
+
+  debug(msg: string) {
+    this.client.debug("Gateway", msg)
   }
 
   initWebsocket (): void {

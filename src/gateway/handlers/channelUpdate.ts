@@ -1,4 +1,3 @@
-import cache from '../../models/cache.ts'
 import { Channel } from '../../structures/channel.ts'
 import getChannelByType from '../../utils/getChannelByType.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
@@ -7,9 +6,10 @@ export const channelUpdate: GatewayEventHandler = (
   gateway: Gateway,
   d: any
 ) => {
-  const oldChannel: Channel = cache.get('channel', d.id)
+  const oldChannel: Channel = gateway.client.channels.get(d.id)
 
   if (oldChannel !== undefined) {
+    gateway.client.channels.set(d.id, d)
     if (oldChannel.type !== d.type) {
       const channel: Channel = getChannelByType(gateway.client, d) ?? oldChannel
       gateway.client.emit('channelUpdate', oldChannel, channel)

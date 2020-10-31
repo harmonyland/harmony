@@ -8,6 +8,7 @@ export const channelCreate: GatewayEventHandler = (
   const channel = getChannelByType(gateway.client, d)
 
   if (channel !== undefined) {
+    gateway.client.channels.set(d.id, d)
     gateway.client.emit('channelCreate', channel)
   }
 }

@@ -10,8 +10,10 @@ import { User } from '../structures/user.ts'
 const bot = new Client()
 
 bot.on('ready', () => {
-  console.log('READY!')
+  console.log(`[Login] Logged in as ${bot.user?.tag}!`)
 })
+
+bot.on('debug', console.log)
 
 bot.on('channelDelete', (channel: Channel) => {
   console.log('channelDelete', channel.id)

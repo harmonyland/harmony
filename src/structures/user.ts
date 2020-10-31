@@ -18,6 +18,10 @@ export class User extends Base {
   premiumType?: 0 | 1 | 2
   publicFlags?: number
 
+  get tag(): string {
+    return `${this.username}#${this.discriminator}`;
+  }
+
   get nickMention (): string {
     return `<@!${this.id}>`
   }
@@ -58,5 +62,9 @@ export class User extends Base {
     this.flags = data.flags ?? this.flags
     this.premiumType = data.premium_type ?? this.premiumType
     this.publicFlags = data.public_flags ?? this.publicFlags
+  }
+
+  toString() {
+    return this.mention;
   }
 }

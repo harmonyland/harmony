@@ -3,9 +3,9 @@ import cache from '../../models/cache.ts'
 import { Guild } from '../../structures/guild.ts'
 
 export const guildUpdate: GatewayEventHandler = (gateway: Gateway, d: any) => {
-  const after: Guild = cache.get('guild', d.id)
-  if (after !== undefined) {
-    const before: Guild = after.refreshFromData(d)
-    gateway.client.emit('guildUpdate', before, after)
-  }
+  const before: Guild | void = gateway.client.guilds.get(d.id)
+  if(!before) return
+  gateway.client.guilds.set(d.id, d)
+  const after: Guild | void = gateway.client.guilds.get(d.id)
+  gateway.client.emit('guildUpdate', before, after)
 }
