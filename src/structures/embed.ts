@@ -8,7 +8,7 @@ import {
   EmbedThumbnail,
   EmbedTypes,
   EmbedVideo
-} from '../types/channelTypes.ts'
+} from '../types/channel.ts'
 
 export class Embed {
   title?: string

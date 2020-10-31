@@ -1,6 +1,6 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { UserPayload } from '../types/userTypes.ts'
+import { UserPayload } from '../types/user.ts'
 import { Base } from './base.ts'
 
 export class User extends Base {

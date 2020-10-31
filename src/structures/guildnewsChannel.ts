@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { GuildNewsChannelPayload, Overwrite } from '../types/channelTypes.ts'
+import { GuildNewsChannelPayload, Overwrite } from '../types/channel.ts'
 import { TextChannel } from './textChannel.ts'
 
 export class NewsChannel extends TextChannel {

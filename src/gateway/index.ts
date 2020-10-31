@@ -5,7 +5,7 @@ import {
   DISCORD_API_VERSION
 } from '../consts/urlsAndVersions.ts'
 import { GatewayResponse } from '../types/gatewayResponse.ts'
-import { GatewayOpcodes, GatewayIntents } from '../types/gatewayTypes.ts'
+import { GatewayOpcodes, GatewayIntents } from '../types/gateway.ts'
 import { gatewayHandlers } from './handlers/index.ts'
 
 /**

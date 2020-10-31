@@ -1,6 +1,6 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { MemberPayload } from '../types/guildTypes.ts'
+import { MemberPayload } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { User } from './user.ts'
 

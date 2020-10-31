@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { GuildTextChannelPayload, Overwrite } from '../types/channelTypes.ts'
+import { GuildTextChannelPayload, Overwrite } from '../types/channel.ts'
 import cache from '../models/cache.ts'
 import { TextChannel } from './textChannel.ts'
 

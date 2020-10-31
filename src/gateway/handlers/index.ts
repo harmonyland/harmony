@@ -1,5 +1,5 @@
 import { GatewayEventHandler } from '../index.ts'
-import { GatewayEvents } from '../../types/gatewayTypes.ts'
+import { GatewayEvents } from '../../types/gateway.ts'
 import { channelCreate } from './channelCreate.ts'
 import { channelDelete } from './channelDelete.ts'
 import { channelUpdate } from './channelUpdate.ts'
