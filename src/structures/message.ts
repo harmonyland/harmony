@@ -51,14 +51,14 @@ export class Message extends Base {
     this.channelID = data.channel_id
     this.guildID = data.guild_id
     this.author =
-      cache.get('user', data.author.id) ?? new User(this.client, data.author)
+      this.client.users.get(data.author.id) || new User(this.client, data.author)
     this.content = data.content
     this.timestamp = data.timestamp
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
     this.mentionEveryone = data.mention_everyone
     this.mentions = data.mentions.map(
-      v => cache.get('user', v.id) ?? new User(client, v)
+      v => this.client.users.get(v.id) || new User(client, v)
     )
     this.mentionRoles = data.mention_roles
     this.mentionChannels = data.mention_channels
@@ -73,7 +73,7 @@ export class Message extends Base {
     this.application = data.application
     this.messageReference = data.message_reference
     this.flags = data.flags
-    cache.set('message', this.id, this)
+    this.client.messages.set(this.id, data)
   }
 
   protected readFromData (data: MessagePayload): void {
@@ -81,8 +81,8 @@ export class Message extends Base {
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
     this.author =
-      cache.get('user', data.author.id) ??
-      this.author ??
+      this.client.users.get(data.author.id) ||
+      this.author ||
       new User(this.client, data.author)
     this.content = data.content ?? this.content
     this.timestamp = data.timestamp ?? this.timestamp
@@ -91,7 +91,7 @@ export class Message extends Base {
     this.mentionEveryone = data.mention_everyone ?? this.mentionEveryone
     this.mentions =
       data.mentions.map(
-        v => cache.get('user', v.id) ?? new User(this.client, v)
+        v => this.client.users.get(v.id) || new User(this.client, v)
       ) ?? this.mentions
     this.mentionRoles = data.mention_roles ?? this.mentionRoles
     this.mentionChannels = data.mention_channels ?? this.mentionChannels
@@ -109,43 +109,24 @@ export class Message extends Base {
   }
 
   // TODO: We have to seperate fetch()
-  async editMessage (text?: string, option?: MessageOption): Promise<Message> {
+  async edit (text?: string, option?: MessageOption): Promise<Message> {
     if (text !== undefined && option !== undefined) {
       throw new Error('Either text or option is necessary.')
     }
-    const resp = await fetch(CHANNEL_MESSAGE(this.channelID, this.id), {
-      headers: {
-        Authorization: `Bot ${this.client.token}`,
-        'Content-Type': 'application/json'
-      },
-      method: 'PATCH',
-      body: JSON.stringify({
-        content: text,
-        embed: option?.embed.toJSON(),
-        file: option?.file,
-        tts: option?.tts,
-        allowed_mentions: option?.allowedMention
-      })
-    })
 
-    return new Message(this.client, await resp.json())
+    let newMsg = await this.client.rest.patch(CHANNEL_MESSAGE(this.channelID, this.id), {
+      content: text,
+      embed: option?.embed.toJSON(),
+      file: option?.file,
+      tts: option?.tts,
+      allowed_mentions: option?.allowedMention
+    }) as MessagePayload
+
+    return new Message(this.client, newMsg)
   }
 
   // TODO: We have to seperate fetch()
-  async delete (): Promise<void> {
-    const resp = await fetch(CHANNEL_MESSAGE(this.channelID, this.id), {
-      headers: {
-        Authorization: `Bot ${this.client.token}`
-      },
-      method: 'DELETE'
-    })
-
-    // TODO: improve Error and Promise
-    return await new Promise((resolve, reject) => {
-      if (resp.status !== 204) {
-        reject(new Error())
-      }
-      resolve()
-    })
+  delete (): Promise<void> {
+    return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id)) as any
   }
 }

@@ -17,7 +17,7 @@ export class BaseManager<T, T2> {
   }
 
   get(key: string): T2 | void {
-    let raw = this._get(key)
+    const raw = this._get(key)
     if(!raw) return
     return new this.dataType(this.client, raw) as any
   }

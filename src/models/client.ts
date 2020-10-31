@@ -8,6 +8,7 @@ import { UserManager } from "../managers/UsersManager.ts"
 import { GuildManager } from "../managers/GuildsManager.ts"
 import { EmojisManager } from "../managers/EmojisManager.ts"
 import { ChannelsManager } from "../managers/ChannelsManager.ts"
+import { MessagesManager } from "../managers/MessagesManager.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -27,9 +28,11 @@ export class Client extends EventEmitter {
   token?: string
   cache: ICacheAdapter = new DefaultCacheAdapter(this)
   intents?: GatewayIntents[]
+  
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
+  messages: MessagesManager = new MessagesManager(this)
   emojis: EmojisManager = new EmojisManager(this)
 
   constructor (options: ClientOptions = {}) {

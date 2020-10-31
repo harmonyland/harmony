@@ -20,7 +20,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   }
 
   get(cacheName: string, key: string) {
-    let cache = this.data[cacheName]
+    const cache = this.data[cacheName]
     if (!cache) return;
     return cache.get(key)
   }
@@ -35,13 +35,13 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   }
 
   delete(cacheName: string, key: string) {
-    let cache = this.data[cacheName]
+    const cache = this.data[cacheName]
     if (!cache) return false
     return cache.delete(key)
   }
 
   array(cacheName: string) {
-    let cache = this.data[cacheName]
+    const cache = this.data[cacheName]
     if (!cache) return
     return cache.array()
   }

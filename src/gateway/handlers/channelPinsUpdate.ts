@@ -12,7 +12,7 @@ export const channelPinsUpdate: GatewayEventHandler = (
     const before = after.refreshFromData({
       last_pin_timestamp: d.last_pin_timestamp
     })
-    let raw = gateway.client.channels._get(d.channel_id) as ChannelPayload;
+    const raw = gateway.client.channels._get(d.channel_id) ;
     gateway.client.channels.set(after.id, Object.assign(raw, { last_pin_timestamp: d.last_pin_timestamp }))
     gateway.client.emit('channelPinsUpdate', before, after)
   }

@@ -142,7 +142,7 @@ class Gateway {
 
   private async sendIdentify () {
     this.debug("Fetching /gateway/bot...")
-    let info = await this.client.rest.get(GATEWAY_BOT()) as GatewayBotPayload
+    const info = await this.client.rest.get(GATEWAY_BOT()) as GatewayBotPayload
     if(info.session_start_limit.remaining == 0) throw new Error("Session Limit Reached. Retry After " + info.session_start_limit.reset_after + "ms")
     this.debug("Recommended Shards: " + info.shards)
     this.debug("=== Session Limit Info ===")

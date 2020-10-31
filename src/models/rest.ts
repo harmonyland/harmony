@@ -149,7 +149,7 @@ export class RESTManager {
 				`DiscordBot (discord.deno)`,
 		};
 
-		if(!this.client.token) delete headers["Authorization"];
+		if(!this.client.token) delete headers.Authorization;
 	
 		if (method === "get") body = undefined;
 	
@@ -201,7 +201,7 @@ export class RESTManager {
 		const errorStack = new Error("Location In Your Files:");
 		Error.captureStackTrace(errorStack);
 	
-		return new Promise((resolve, reject) => {
+		return await new Promise((resolve, reject) => {
 			const callback = async () => {
 				try {
 					const rateLimitResetIn = await this.checkRatelimits(url);
@@ -349,15 +349,19 @@ export class RESTManager {
 	get(url: string, body?: unknown) {
     return this.runMethod("get", url, body);
   }
+
   post(url: string, body?: unknown) {
     return this.runMethod("post", url, body);
   }
+
   delete(url: string, body?: unknown) {
     return this.runMethod("delete", url, body);
   }
+
   patch(url: string, body?: unknown) {
     return this.runMethod("patch", url, body);
   }
+
   put(url: string, body?: unknown) {
     return this.runMethod("put", url, body);
   }

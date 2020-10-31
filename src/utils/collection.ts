@@ -22,7 +22,7 @@ export class Collection<K, V> extends Map<K, V> {
   }
 
   random() {
-    let arr = [...this.values()]
+    const arr = [...this.values()]
     return arr[Math.floor(Math.random() * arr.length)]
   }
 
@@ -32,7 +32,7 @@ export class Collection<K, V> extends Map<K, V> {
       if (callback(value, key)) return value
     }
     // If nothing matched
-    return;
+    
   }
 
   filter(callback: (value: V, key: K) => boolean) {
