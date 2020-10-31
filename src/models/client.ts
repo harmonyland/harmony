@@ -1,8 +1,9 @@
 import { User } from '../structures/user.ts'
-import { GatewayIntents } from '../types/gatewayTypes.ts'
-import { Gateway } from './gateway.ts'
+import { GatewayIntents } from '../types/gateway.ts'
+import { Gateway } from '../gateway/index.ts'
 import { Rest } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
+
 /**
  * Discord Client.
  */

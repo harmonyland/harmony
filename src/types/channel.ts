@@ -1,20 +1,19 @@
 import { Embed } from '../structures/embed.ts'
-import { EmojiPayload } from './emojiTypes.ts'
-import { MemberPayload } from './guildTypes.ts'
-import { RolePayload } from './roleTypes.ts'
-import { UserPayload } from './userTypes.ts'
+import { EmojiPayload } from './emoji.ts'
+import { MemberPayload } from './guild.ts'
+import { UserPayload } from './user.ts'
 
-interface ChannelPayload {
+export interface ChannelPayload {
   id: string
   type: ChannelTypes
 }
 
-interface TextChannelPayload extends ChannelPayload {
+export interface TextChannelPayload extends ChannelPayload {
   last_message_id?: string
   last_pin_timestamp?: string
 }
 
-interface GuildChannelPayload extends ChannelPayload {
+export interface GuildChannelPayload extends ChannelPayload {
   guild_id: string
   name: string
   position: number
@@ -23,46 +22,46 @@ interface GuildChannelPayload extends ChannelPayload {
   parent_id?: string
 }
 
-interface GuildTextChannelPayload
+export interface GuildTextChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
   rate_limit_per_user: number
   topic?: string
 }
 
-interface GuildNewsChannelPayload
+export interface GuildNewsChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
   topic?: string
 }
 
-interface GuildVoiceChannelPayload extends GuildChannelPayload {
+export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
   user_limit: number
 }
 
-interface DMChannelPayload extends TextChannelPayload {
+export interface DMChannelPayload extends TextChannelPayload {
   recipients: UserPayload[]
 }
 
-interface GroupDMChannelPayload extends DMChannelPayload {
+export interface GroupDMChannelPayload extends DMChannelPayload {
   name: string
   icon?: string
   owner_id: string
 }
 
-interface GuildChannelCategoryPayload
+export interface GuildChannelCategoryPayload
   extends ChannelPayload,
     GuildChannelPayload {}
 
-interface Overwrite {
+export interface Overwrite {
   id: string
   type: number
   allow: string
   deny: string
 }
 
-enum ChannelTypes {
+export enum ChannelTypes {
   GUILD_TEXT = 0,
   DM = 1,
   GUILD_VOICE = 2,
@@ -72,7 +71,7 @@ enum ChannelTypes {
   GUILD_STORE = 6
 }
 
-interface MessagePayload {
+export interface MessagePayload {
   id: string
   channel_id: string
   guild_id?: string
@@ -83,8 +82,8 @@ interface MessagePayload {
   edited_timestamp?: string
   tts: boolean
   mention_everyone: boolean
-  mentions: MemberPayload[]
-  mention_roles: RolePayload[]
+  mentions: UserPayload[]
+  mention_roles: string[]
   mention_channels?: ChannelMention[]
   attachments: Attachment[]
   embeds: EmbedPayload[]
@@ -99,7 +98,7 @@ interface MessagePayload {
   flags?: number
 }
 
-interface MessageOption {
+export interface MessageOption {
   tts: boolean
   embed: Embed
   file: Attachment
@@ -110,14 +109,14 @@ interface MessageOption {
   }
 }
 
-interface ChannelMention {
+export interface ChannelMention {
   id: string
   guild_id: string
   type: ChannelTypes
   name: string
 }
 
-interface Attachment {
+export interface Attachment {
   id: string
   filename: string
   size: number
@@ -127,7 +126,7 @@ interface Attachment {
   width: number | undefined
 }
 
-interface EmbedPayload {
+export interface EmbedPayload {
   title?: string
   type?: EmbedTypes
   description?: string
@@ -143,64 +142,70 @@ interface EmbedPayload {
   fields?: EmbedField[]
 }
 
-type EmbedTypes = 'rich' | 'image' | 'video' | 'gifv' | 'article' | 'link'
+export type EmbedTypes =
+  | 'rich'
+  | 'image'
+  | 'video'
+  | 'gifv'
+  | 'article'
+  | 'link'
 
-interface EmbedField {
+export interface EmbedField {
   name: string
   value: string
   inline?: boolean
 }
 
-interface EmbedAuthor {
+export interface EmbedAuthor {
   name?: string
   url?: string
   icon_url?: string
   proxy_icon_url?: string
 }
 
-interface EmbedFooter {
+export interface EmbedFooter {
   text: string
   icon_url?: string
   proxy_icon_url?: string
 }
 
-interface EmbedImage {
+export interface EmbedImage {
   url?: string
   proxy_url?: string
   height?: number
   width?: number
 }
 
-interface EmbedProvider {
+export interface EmbedProvider {
   name?: string
   url?: string
 }
 
-interface EmbedVideo {
+export interface EmbedVideo {
   url?: string
   height?: number
   width?: number
 }
 
-interface EmbedThumbnail {
+export interface EmbedThumbnail {
   url?: string
   proxy_url?: string
   height?: number
   width?: number
 }
 
-interface Reaction {
+export interface Reaction {
   count: number
   me: boolean
   emoji: EmojiPayload
 }
 
-interface MessageActivity {
+export interface MessageActivity {
   type: MessageTypes
   party_id?: string
 }
 
-interface MessageApplication {
+export interface MessageApplication {
   id: string
   cover_image?: string
   desription: string
@@ -208,13 +213,13 @@ interface MessageApplication {
   name: string
 }
 
-interface MessageReference {
+export interface MessageReference {
   message_id?: string
   channel_id?: string
   guild_id?: string
 }
 
-enum MessageTypes {
+export enum MessageTypes {
   DEFAULT = 0,
   RECIPIENT_ADD = 1,
   RECIPIENT_REMOVE = 2,
@@ -232,14 +237,14 @@ enum MessageTypes {
   GUILD_DISCOVERY_REQUALIFIED = 15
 }
 
-enum MessageActivityTypes {
+export enum MessageActivityTypes {
   JOIN = 1,
   SPECTATE = 2,
   LISTEN = 3,
   JOIN_REQUEST = 4
 }
 
-enum MessageFlags {
+export enum MessageFlags {
   CROSSPOSTED = 1 << 0,
   IS_CROSSPOST = 1 << 1,
   SUPPRESS_EMBEDS = 1 << 2,
@@ -247,51 +252,7 @@ enum MessageFlags {
   URGENT = 1 << 4
 }
 
-interface FollowedChannel {
+export interface FollowedChannel {
   channel_id: string
   webhook_id: string
-}
-
-interface Overwrite {
-  id: string
-  type: number
-  allow: string
-  deny: string
-}
-interface ChannelMention {
-  id: string
-  guild_id: string
-  type: ChannelTypes
-  name: string
-}
-
-export {
-  ChannelPayload,
-  TextChannelPayload,
-  GuildChannelPayload,
-  GuildNewsChannelPayload,
-  GuildTextChannelPayload,
-  GuildVoiceChannelPayload,
-  GuildChannelCategoryPayload,
-  DMChannelPayload,
-  GroupDMChannelPayload,
-  Overwrite,
-  ChannelTypes,
-  ChannelMention,
-  Attachment,
-  Reaction,
-  MessageActivity,
-  MessageApplication,
-  MessageReference,
-  MessagePayload,
-  MessageOption,
-  EmbedPayload,
-  EmbedTypes,
-  EmbedFooter,
-  EmbedImage,
-  EmbedThumbnail,
-  EmbedVideo,
-  EmbedProvider,
-  EmbedAuthor,
-  EmbedField
 }

@@ -1,14 +1,12 @@
-import { GatewayOpcodes, GatewayEvents } from '../types/gatewayTypes.ts'
+import { GatewayOpcodes, GatewayEvents } from './gateway.ts'
 
 /**
  * Gateway response from Discord.
  *
  */
-interface GatewayResponse {
+export interface GatewayResponse {
   op: GatewayOpcodes
   d: any
   s?: number
   t?: GatewayEvents
 }
-
-export { GatewayResponse }

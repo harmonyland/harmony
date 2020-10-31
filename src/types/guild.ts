@@ -1,11 +1,11 @@
-import { ChannelPayload } from './channelTypes.ts'
-import { EmojiPayload } from './emojiTypes.ts'
-import { PresenceUpdatePayload } from './presenceTypes.ts'
-import { RolePayload } from './roleTypes.ts'
-import { UserPayload } from './userTypes.ts'
-import { VoiceStatePayload } from './voiceTypes.ts'
+import { ChannelPayload } from './channel.ts'
+import { EmojiPayload } from './emoji.ts'
+import { PresenceUpdatePayload } from './presence.ts'
+import { RolePayload } from './role.ts'
+import { UserPayload } from './user.ts'
+import { VoiceStatePayload } from './voice.ts'
 
-interface GuildPayload {
+export interface GuildPayload {
   id: string
   name: string
   icon?: string
@@ -53,10 +53,10 @@ interface GuildPayload {
   approximate_presence_count?: number
 }
 
-interface MemberPayload {
+export interface MemberPayload {
   user: UserPayload
   nick?: string
-  roles: RolePayload[]
+  roles: string[]
   joined_at: string
   premium_since?: string
   deaf: boolean
@@ -99,7 +99,7 @@ enum SystemChannelFlags {
   SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1
 }
 
-type GuildFeatures =
+export type GuildFeatures =
   | 'INVITE_SPLASH'
   | 'VIP_REGIONS'
   | 'VANITY_URL'
@@ -112,5 +112,3 @@ type GuildFeatures =
   | 'FEATURABLE'
   | 'ANIMATED_ICON'
   | 'BANNER'
-
-export { MemberPayload, GuildPayload, GuildFeatures }

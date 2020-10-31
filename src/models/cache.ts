@@ -44,4 +44,5 @@ const resetCaches = (): void => {
   caches = {}
 }
 
+export default { get, set, del, deleteCache, resetCaches }
 export { get, set, del, deleteCache, resetCaches }

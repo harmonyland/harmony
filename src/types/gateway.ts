@@ -1,10 +1,10 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { EmojiPayload } from './emojiTypes.ts'
-import { MemberPayload } from './guildTypes.ts'
-import { ActivityPayload, PresenceUpdatePayload } from './presenceTypes.ts'
-import { RolePayload } from './roleTypes.ts'
-import { UserPayload } from './userTypes.ts'
+import { EmojiPayload } from './emoji.ts'
+import { MemberPayload } from './guild.ts'
+import { ActivityPayload, PresenceUpdatePayload } from './presence.ts'
+import { RolePayload } from './role.ts'
+import { UserPayload } from './user.ts'
 
 /**
  * Gateway OPcodes from Discord docs.
@@ -62,15 +62,13 @@ enum GatewayIntents {
 }
 
 enum GatewayEvents {
-  Hello = 'HELLO',
   Ready = 'READY',
   Resumed = 'RESUMED',
   Reconnect = 'RECONNECT',
-  Invalid_Session = 'INVALID_SESSION',
   Channel_Create = 'CHANNEL_CREATE',
   Channel_Update = 'CHANNEL_UPDATE',
   Channel_Delete = 'CHANNEL_DELETE',
-  Channel_Pins_Update = 'CHANNEL_PIN_UPDATE',
+  Channel_Pins_Update = 'CHANNEL_PINS_UPDATE',
   Guild_Create = 'GUILD_CREATE',
   Guild_Update = 'GUILD_UPDATE',
   Guild_Delete = 'GUILD_DELETE',
@@ -89,7 +87,7 @@ enum GatewayEvents {
   Invite_Delete = 'INVITE_DELETE',
   Message_Create = 'MESSAGE_CREATE',
   Message_Update = 'MESSAGE_UPDATE',
-  Message_Delete = 'MESSAG_DELETE',
+  Message_Delete = 'MESSAGE_DELETE',
   Message_Delete_Bulk = 'MESSAGE_DELETE_BULK',
   Message_Reaction_Add = 'MESSAGE_REACTION_ADD',
   Message_Reaction_Remove = 'MESSAGE_REACTION_REMOVE',
@@ -98,7 +96,6 @@ enum GatewayEvents {
   Presence_Update = 'PRESENCE_UPDATE',
   Typing_Start = 'TYPING_START',
   User_Update = 'USER_UPDATE',
-  Voice_State_Update = 'VOICE_STATE_UPDATE',
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
   Webhooks_Update = 'WEBHOOKS_UPDATE'
 }
@@ -395,5 +392,5 @@ interface WebhooksUpdate {
   channel_id: string
 }
 
-//https://discord.com/developers/docs/topics/gateway#typing-start-typing-start-event-fields
+// https://discord.com/developers/docs/topics/gateway#typing-start-typing-start-event-fields
 export { GatewayCloseCodes, GatewayOpcodes, GatewayIntents, GatewayEvents }

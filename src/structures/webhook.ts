@@ -1,6 +1,6 @@
 import { Client } from '../models/client.ts'
-import { UserPayload } from '../types/userTypes.ts'
-import { WebhookPayload } from '../types/webhookTypes.ts'
+import { UserPayload } from '../types/user.ts'
+import { WebhookPayload } from '../types/webhook.ts'
 import { Base } from './base.ts'
 
 export class Webhook extends Base {
