@@ -4,7 +4,7 @@ import {
   GuildChannelCategoryPayload,
   Overwrite
 } from '../types/channel.ts'
-import cache from '../models/cache.ts'
+import { Guild } from "./guild.ts"
 
 export class CategoryChannel extends Channel {
   guildID: string
@@ -12,12 +12,14 @@ export class CategoryChannel extends Channel {
   position: number
   permissionOverwrites: Overwrite[]
   nsfw: boolean
+  guild: Guild
   parentID?: string
 
-  constructor (client: Client, data: GuildChannelCategoryPayload) {
+  constructor (client: Client, data: GuildChannelCategoryPayload, guild: Guild) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name
+    this.guild = guild
     this.position = data.position
     this.permissionOverwrites = data.permission_overwrites
     this.nsfw = data.nsfw

@@ -168,22 +168,22 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at ?? this.joinedAt
       this.large = data.large ?? this.large
       this.memberCount = data.member_count ?? this.memberCount
-      this.voiceStates =
-        data.voice_states?.map(
-          v =>
-            cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
-            new VoiceState(this.client, v)
-        ) ?? this.voiceStates
-      this.members =
-        data.members?.map(
-          v =>
-            cache.get('member', `${this.id}:${v.user.id}`) ??
-            new Member(this.client, v)
-        ) ?? this.members
-      this.channels =
-        data.channels?.map(
-          v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
-        ) ?? this.members
+      // this.voiceStates =
+      //   data.voice_states?.map(
+      //     v =>
+      //       cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
+      //       new VoiceState(this.client, v)
+      //   ) ?? this.voiceStates
+      // this.members =
+      //   data.members?.map(
+      //     v =>
+      //       cache.get('member', `${this.id}:${v.user.id}`) ??
+      //       new Member(this.client, v)
+      //   ) ?? this.members
+      // this.channels =
+      //   data.channels?.map(
+      //     v => cache.get('channel', v.id) ?? getChannelByType(this.client, v, this)
+      //   ) ?? this.members
       this.presences = data.presences ?? this.presences
       this.maxPresences = data.max_presences ?? this.maxPresences
       this.maxMembers = data.max_members ?? this.maxMembers

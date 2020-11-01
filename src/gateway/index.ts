@@ -89,7 +89,7 @@ class Gateway {
         }, this.heartbeatInterval)
 
         if (!this.initialized) {
-          this.sendIdentify()
+          this.sendIdentify(this.client.forceNewSession)
           this.initialized = true
         } else {
           console.log("Calling Resume")

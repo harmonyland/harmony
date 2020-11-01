@@ -12,6 +12,17 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     super(client, "messages", Message)
   }
 
+  async get(key: string): Promise<Message | void> {
+    const raw = await this._get(key)
+    if(!raw) return
+    let channel = await this.client.channels.get(raw.channel_id)
+    if(!channel) channel = await this.client.channels.fetch(raw.channel_id)
+    if(!channel) return
+    let author = new User(this.client, raw.author)
+    let mentions = new MessageMentions()
+    return new this.dataType(this.client, raw, channel, author, mentions) as any
+  }
+
   fetch(channelID: string, id: string) {
     return new Promise((res, rej) => {
       this.client.rest.get(CHANNEL_MESSAGE(channelID, id)).then(async data => {

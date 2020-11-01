@@ -1,5 +1,5 @@
 import { Client } from "../models/client.ts";
-import { Base } from "../structures/base.ts";
+import { Collection } from "../utils/collection.ts";
 
 export class BaseManager<T, T2> {
   client: Client
@@ -22,11 +22,26 @@ export class BaseManager<T, T2> {
     return new this.dataType(this.client, raw) as any
   }
 
-  async set(key: string, value: T) {
+  set(key: string, value: T) {
     return this.client.cache.set(this.cacheName, key, value)
   }
 
-  async delete(key: string) {
+  delete(key: string) {
     return this.client.cache.delete(this.cacheName, key)
+  }
+
+  array(): Promise<void | T2[]> {
+    return (this.client.cache.array(this.cacheName) as T[]).map(e => new this.dataType(this.client, e)) as any
+  }
+
+  async collection(): Promise<Collection<string, T2>> {
+    const arr = await this.array() as void | T2[]
+    if(arr === undefined) return new Collection()
+    let collection = new Collection()
+    for (const elem of arr) {
+      // @ts-ignore
+      collection.set(elem.id, elem)
+    }
+    return collection
   }
 }

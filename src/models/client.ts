@@ -14,7 +14,8 @@ import { MessagesManager } from "../managers/MessagesManager.ts"
 export interface ClientOptions {
   token?: string
   intents?: GatewayIntents[]
-  cache?: ICacheAdapter
+  cache?: ICacheAdapter,
+  forceNewSession?: boolean
 }
 
 /**
@@ -28,6 +29,7 @@ export class Client extends EventEmitter {
   token?: string
   cache: ICacheAdapter = new DefaultCacheAdapter(this)
   intents?: GatewayIntents[]
+  forceNewSession?: boolean
   
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
@@ -39,6 +41,7 @@ export class Client extends EventEmitter {
     super()
     this.token = options.token
     this.intents = options.intents
+    this.forceNewSession = options.forceNewSession
     if(options.cache) this.cache = options.cache
   }
 

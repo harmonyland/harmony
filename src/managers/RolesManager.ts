@@ -1,7 +1,6 @@
 import { Client } from "../models/client.ts";
 import { Guild } from "../structures/guild.ts";
 import { Role } from "../structures/role.ts";
-import { User } from "../structures/user.ts";
 import { GUILD_ROLE } from "../types/endpoint.ts";
 import { RolePayload } from "../types/role.ts";
 import { BaseManager } from "./BaseManager.ts";
@@ -21,5 +20,11 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
         res(new Role(this.client, data as RolePayload))
       }).catch(e => rej(e))
     })
+  }
+
+  async fromPayload(roles: RolePayload[]) {
+    for(const role of roles) {
+      await this.guild.roles.set(role.id, role)
+    }
   }
 }
