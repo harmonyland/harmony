@@ -3,7 +3,7 @@ import { Channel } from './channel.ts'
 import {
   GuildChannelCategoryPayload,
   Overwrite
-} from '../types/channelTypes.ts'
+} from '../types/channel.ts'
 import cache from '../models/cache.ts'
 
 export class CategoryChannel extends Channel {

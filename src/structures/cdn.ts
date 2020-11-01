@@ -1,4 +1,4 @@
-import { ImageFormats, ImageSize } from '../types/cdnTypes.ts'
+import { ImageFormats, ImageSize } from '../types/cdn.ts'
 
 export const ImageURL = (
   url: string,

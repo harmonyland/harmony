@@ -1,5 +1,5 @@
-import { GuildPayload } from './guildTypes.ts'
-import { UserPayload } from './userTypes.ts'
+import { GuildPayload } from './guild.ts'
+import { UserPayload } from './user.ts'
 
 export interface TemplatePayload {
   code: string

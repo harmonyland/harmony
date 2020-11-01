@@ -1,7 +1,7 @@
 import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { DMChannelPayload } from '../types/channelTypes.ts'
-import { UserPayload } from '../types/userTypes.ts'
+import { DMChannelPayload } from '../types/channel.ts'
+import { UserPayload } from '../types/user.ts'
 import { TextChannel } from './textChannel.ts'
 
 export class DMChannel extends TextChannel {
