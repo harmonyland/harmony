@@ -10,6 +10,7 @@ import { guildUpdate } from './guildUpdate.ts'
 import { guildBanAdd } from './guildBanAdd.ts'
 import { ready } from './ready.ts'
 import { guildBanRemove } from './guildBanRemove.ts'
+import { messageCreate } from "./messageCreate.ts"
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -37,7 +38,7 @@ export const gatewayHandlers: {
   GUILD_ROLE_DELETE: undefined,
   INVITE_CREATE: undefined,
   INVITE_DELETE: undefined,
-  MESSAGE_CREATE: undefined,
+  MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: undefined,
   MESSAGE_DELETE: undefined,
   MESSAGE_DELETE_BULK: undefined,

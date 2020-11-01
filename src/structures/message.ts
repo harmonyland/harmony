@@ -15,12 +15,14 @@ import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import cache from '../models/cache.ts'
+import { Channel } from "./channel.ts"
 
 export class Message extends Base {
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private data: MessagePayload
   id: string
   channelID: string
+  channel: Channel
   guildID?: string
   author: User
   member?: Member
@@ -44,7 +46,7 @@ export class Message extends Base {
   messageReference?: MessageReference
   flags?: number
 
-  constructor (client: Client, data: MessagePayload) {
+  constructor (client: Client, data: MessagePayload, channel?: Channel, noSave?: boolean) {
     super(client)
     this.data = data
     this.id = data.id
@@ -73,7 +75,9 @@ export class Message extends Base {
     this.application = data.application
     this.messageReference = data.message_reference
     this.flags = data.flags
-    this.client.messages.set(this.id, data)
+    if(channel) this.channel = channel || this.client.channels.get(this.channelID)
+    else throw new Error("Message received without Channel (neither in cache)") // unlikely to happen
+    if(!noSave) this.client.messages.set(this.id, data)
   }
 
   protected readFromData (data: MessagePayload): void {

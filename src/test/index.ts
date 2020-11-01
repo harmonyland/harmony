@@ -6,6 +6,7 @@ import { GuildTextChannel } from '../structures/guildTextChannel.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 import { Guild } from '../structures/guild.ts'
 import { User } from '../structures/user.ts'
+import { Message } from "../structures/message.ts"
 
 const bot = new Client()
 
@@ -59,6 +60,10 @@ bot.on('guildDelete', (guild: Guild) => {
 
 bot.on('guildUpdate', (before: Guild, after: Guild) => {
   console.log('guildUpdate', before.name, after.name)
+})
+
+bot.on('messageCreate', (msg: Message) => {
+  console.log(`${msg.author.tag}: ${msg.content}`)
 })
 
 bot.connect(TOKEN, [
