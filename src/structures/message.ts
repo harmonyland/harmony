@@ -16,6 +16,8 @@ import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import cache from '../models/cache.ts'
 import { Channel } from "./channel.ts"
+import { MessageMentions } from "./MessageMentions.ts"
+import { TextChannel } from "./textChannel.ts"
 
 export class Message extends Base {
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
@@ -31,7 +33,7 @@ export class Message extends Base {
   editedTimestamp?: string
   tts: boolean
   mentionEveryone: boolean
-  mentions: User[]
+  mentions: MessageMentions
   mentionRoles: string[]
   mentionChannels?: ChannelMention[]
   attachments: Attachment[]
@@ -46,22 +48,24 @@ export class Message extends Base {
   messageReference?: MessageReference
   flags?: number
 
-  constructor (client: Client, data: MessagePayload, channel?: Channel, noSave?: boolean) {
+  constructor (client: Client, data: MessagePayload, channel: Channel, author: User, mentions: MessageMentions) {
     super(client)
     this.data = data
     this.id = data.id
     this.channelID = data.channel_id
     this.guildID = data.guild_id
-    this.author =
-      this.client.users.get(data.author.id) || new User(this.client, data.author)
+    this.author = author
+    // this.author =
+    //   this.client.users.get(data.author.id) || new User(this.client, data.author)
     this.content = data.content
     this.timestamp = data.timestamp
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
     this.mentionEveryone = data.mention_everyone
-    this.mentions = data.mentions.map(
-      v => this.client.users.get(v.id) || new User(client, v)
-    )
+    this.mentions = mentions
+    // this.mentions = data.mentions.map(
+    //   v => this.client.users.get(v.id) || new User(client, v)
+    // )
     this.mentionRoles = data.mention_roles
     this.mentionChannels = data.mention_channels
     this.attachments = data.attachments
@@ -75,28 +79,28 @@ export class Message extends Base {
     this.application = data.application
     this.messageReference = data.message_reference
     this.flags = data.flags
-    if(channel) this.channel = channel || this.client.channels.get(this.channelID)
-    else throw new Error("Message received without Channel (neither in cache)") // unlikely to happen
-    if(!noSave) this.client.messages.set(this.id, data)
+    this.channel = channel
+    // TODO: Cache in Gateway Event Code
+    // if(!noSave) this.client.messages.set(this.id, data)
   }
 
   protected readFromData (data: MessagePayload): void {
     super.readFromData(data)
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
-    this.author =
-      this.client.users.get(data.author.id) ||
-      this.author ||
-      new User(this.client, data.author)
+    // this.author =
+    //   this.client.users.get(data.author.id) ||
+    //   this.author ||
+    //   new User(this.client, data.author)
     this.content = data.content ?? this.content
     this.timestamp = data.timestamp ?? this.timestamp
     this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp
     this.tts = data.tts ?? this.tts
     this.mentionEveryone = data.mention_everyone ?? this.mentionEveryone
-    this.mentions =
-      data.mentions.map(
-        v => this.client.users.get(v.id) || new User(this.client, v)
-      ) ?? this.mentions
+    // this.mentions =
+    //   data.mentions.map(
+    //     v => this.client.users.get(v.id) || new User(this.client, v)
+    //   ) ?? this.mentions
     this.mentionRoles = data.mention_roles ?? this.mentionRoles
     this.mentionChannels = data.mention_channels ?? this.mentionChannels
     this.attachments = data.attachments ?? this.attachments
@@ -112,24 +116,10 @@ export class Message extends Base {
     this.flags = data.flags ?? this.flags
   }
 
-  // TODO: We have to seperate fetch()
-  async edit (text?: string, option?: MessageOption): Promise<Message> {
-    if (text !== undefined && option !== undefined) {
-      throw new Error('Either text or option is necessary.')
-    }
-
-    let newMsg = await this.client.rest.patch(CHANNEL_MESSAGE(this.channelID, this.id), {
-      content: text,
-      embed: option?.embed.toJSON(),
-      file: option?.file,
-      tts: option?.tts,
-      allowed_mentions: option?.allowedMention
-    }) as MessagePayload
-
-    return new Message(this.client, newMsg)
+  edit (text?: string, option?: MessageOption): Promise<Message> {
+    return (this.channel as TextChannel).editMessage(this.id, text, option)  
   }
 
-  // TODO: We have to seperate fetch()
   delete (): Promise<void> {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id)) as any
   }

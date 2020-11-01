@@ -45,7 +45,8 @@ export class User extends Base {
     this.flags = data.flags
     this.premiumType = data.premium_type
     this.publicFlags = data.public_flags
-    cache.set('user', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('user', this.id, this)
   }
 
   protected readFromData (data: UserPayload): void {

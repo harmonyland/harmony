@@ -7,8 +7,14 @@ import { TextChannel } from '../structures/textChannel.ts'
 import { Guild } from '../structures/guild.ts'
 import { User } from '../structures/user.ts'
 import { Message } from "../structures/message.ts"
+import { RedisCacheAdapter } from "../models/CacheAdapter.ts"
 
 const bot = new Client()
+
+bot.setAdapter(new RedisCacheAdapter(bot, {
+  hostname: "127.0.0.1",
+  port: 6379
+}))
 
 bot.on('ready', () => {
   console.log(`[Login] Logged in as ${bot.user?.tag}!`)

@@ -13,8 +13,7 @@ export enum HttpResponseCode {
   NotFound = 404,
   MethodNotAllowed = 405,
   TooManyRequests = 429,
-  GatewayUnavailable = 502,
-  // ServerError left untyped because it's 5xx.
+  GatewayUnavailable = 502
 }
 
 export type RequestMethods =

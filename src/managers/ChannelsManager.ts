@@ -11,11 +11,11 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   }
 
   // Override get method as Generic
-  get<T = Channel>(key: string): T {
+  async get<T = Channel>(key: string): Promise<T> {
     return new this.dataType(this.client, this._get(key)) as any
   }
 
-  fetch(id: string) {
+  fetch(id: string): Promise<Channel> {
     return new Promise((res, rej) => {
       this.client.rest.get(CHANNEL(id)).then(data => {
         this.set(id, data as ChannelPayload)

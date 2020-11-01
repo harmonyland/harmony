@@ -23,7 +23,8 @@ export class VoiceChannel extends Channel {
     this.permissionOverwrites = data.permission_overwrites
     this.nsfw = data.nsfw
     this.parentID = data.parent_id
-    cache.set('guildvoicechannel', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('guildvoicechannel', this.id, this)
   }
 
   protected readFromData (data: GuildVoiceChannelPayload): void {

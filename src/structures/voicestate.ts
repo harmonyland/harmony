@@ -30,7 +30,8 @@ export class VoiceState extends Base {
     this.selfStream = data.self_stream
     this.selfVideo = data.self_video
     this.suppress = data.suppress
-    cache.set('voiceState', `${this.guildID}:${this.userID}`, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('voiceState', `${this.guildID}:${this.userID}`, this)
   }
 
   protected readFromData (data: VoiceStatePayload): void {

@@ -1,4 +1,4 @@
-export class Collection<K, V> extends Map<K, V> {
+export class Collection<K = string, V = any> extends Map<K, V> {
   maxSize?: number;
 
   set(key: K, value: V) {
@@ -83,5 +83,13 @@ export class Collection<K, V> extends Map<K, V> {
     }
 
     return accumulator
+  }
+
+  static fromObject<V>(object: { [key: string]: V }) {
+    return new Collection<string, V>(Object.entries(object))
+  }
+
+  toObject() {
+    return Object.entries(this)
   }
 }

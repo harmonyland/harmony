@@ -42,6 +42,11 @@ export class Client extends EventEmitter {
     if(options.cache) this.cache = options.cache
   }
 
+  setAdapter(adapter: ICacheAdapter) {
+    this.cache = adapter
+    return this
+  }
+
   debug(tag: string, msg: string) {
     this.emit("debug", `[${tag}] ${msg}`)
   }

@@ -83,12 +83,12 @@ export class Guild extends Base {
       // this.roles = data.roles.map(
       //   v => cache.get('role', v.id) ?? new Role(client, v)
       // )
-      data.roles.forEach(role => {
-        this.roles.set(role.id, new Role(client, role))
-      })
-      this.emojis = data.emojis.map(
-        v => cache.get('emoji', v.id) ?? new Emoji(client, v)
-      )
+      // data.roles.forEach(role => {
+      //   this.roles.set(role.id, new Role(client, role))
+      // })
+      // this.emojis = data.emojis.map(
+      //   v => cache.get('emoji', v.id) ?? new Emoji(client, v)
+      // )
       this.features = data.features
       this.mfaLevel = data.mfa_level
       this.systemChannelID = data.system_channel_id
@@ -97,19 +97,20 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at
       this.large = data.large
       this.memberCount = data.member_count
-      this.voiceStates = data.voice_states?.map(
-        v =>
-          cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
-          new VoiceState(client, v)
-      )
-      this.members = data.members?.map(
-        v =>
-          cache.get('member', `${this.id}:${v.user.id}`) ??
-          new Member(client, v)
-      )
-      this.channels = data.channels?.map(
-        v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
-      )
+      // TODO: Cache in Gateway Event code
+      // this.voiceStates = data.voice_states?.map(
+      //   v =>
+      //     cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
+      //     new VoiceState(client, v)
+      // )
+      // this.members = data.members?.map(
+      //   v =>
+      //     cache.get('member', `${this.id}:${v.user.id}`) ??
+      //     new Member(client, v)
+      // )
+      // this.channels = data.channels?.map(
+      //   v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
+      // )
       this.presences = data.presences
       this.maxPresences = data.max_presences
       this.maxMembers = data.max_members
