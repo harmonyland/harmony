@@ -1,17 +1,26 @@
 import { Client } from '../models/client.ts'
-import { GatewayIntents } from '../types/gatewayTypes.ts'
+import { GatewayIntents } from '../types/gateway.ts'
 import { TOKEN } from './config.ts'
 import { Channel } from '../structures/channel.ts'
 import { GuildTextChannel } from '../structures/guildTextChannel.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 import { Guild } from '../structures/guild.ts'
 import { User } from '../structures/user.ts'
+import { Message } from "../structures/message.ts"
+import { RedisCacheAdapter } from "../models/CacheAdapter.ts"
 
 const bot = new Client()
 
+bot.setAdapter(new RedisCacheAdapter(bot, {
+  hostname: "127.0.0.1",
+  port: 6379
+}))
+
 bot.on('ready', () => {
-  console.log('READY!')
+  console.log(`[Login] Logged in as ${bot.user?.tag}!`)
 })
+
+bot.on('debug', console.log)
 
 bot.on('channelDelete', (channel: Channel) => {
   console.log('channelDelete', channel.id)
@@ -57,6 +66,10 @@ bot.on('guildDelete', (guild: Guild) => {
 
 bot.on('guildUpdate', (before: Guild, after: Guild) => {
   console.log('guildUpdate', before.name, after.name)
+})
+
+bot.on('messageCreate', (msg: Message) => {
+  console.log(`${msg.author.tag}: ${msg.content}`)
 })
 
 bot.connect(TOKEN, [

@@ -25,7 +25,8 @@ export class Member extends Base {
     this.premiumSince = data.premium_since
     this.deaf = data.deaf
     this.mute = data.mute
-    cache.set('member', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('member', this.id, this)
   }
 
   protected readFromData (data: MemberPayload): void {

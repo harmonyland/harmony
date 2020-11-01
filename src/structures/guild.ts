@@ -5,10 +5,11 @@ import { Base } from './base.ts'
 import { Channel } from './channel.ts'
 import { Emoji } from './emoji.ts'
 import { Member } from './member.ts'
-import { Role } from './role.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
 import getChannelByType from '../utils/getChannelByType.ts'
+import { RolesManager } from "../managers/RolesManager.ts"
+import { Role } from "./role.ts"
 
 export class Guild extends Base {
   id: string
@@ -28,7 +29,7 @@ export class Guild extends Base {
   verificationLevel?: string
   defaultMessageNotifications?: string
   explicitContentFilter?: string
-  roles?: Role[]
+  roles: RolesManager = new RolesManager(this.client, this)
   emojis?: Emoji[]
   features?: GuildFeatures[]
   mfaLevel?: string
@@ -79,12 +80,15 @@ export class Guild extends Base {
       this.verificationLevel = data.verification_level
       this.defaultMessageNotifications = data.default_message_notifications
       this.explicitContentFilter = data.explicit_content_filter
-      this.roles = data.roles.map(
-        v => cache.get('role', v.id) ?? new Role(client, v)
-      )
-      this.emojis = data.emojis.map(
-        v => cache.get('emoji', v.id) ?? new Emoji(client, v)
-      )
+      // this.roles = data.roles.map(
+      //   v => cache.get('role', v.id) ?? new Role(client, v)
+      // )
+      // data.roles.forEach(role => {
+      //   this.roles.set(role.id, new Role(client, role))
+      // })
+      // this.emojis = data.emojis.map(
+      //   v => cache.get('emoji', v.id) ?? new Emoji(client, v)
+      // )
       this.features = data.features
       this.mfaLevel = data.mfa_level
       this.systemChannelID = data.system_channel_id
@@ -93,19 +97,20 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at
       this.large = data.large
       this.memberCount = data.member_count
-      this.voiceStates = data.voice_states?.map(
-        v =>
-          cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
-          new VoiceState(client, v)
-      )
-      this.members = data.members?.map(
-        v =>
-          cache.get('member', `${this.id}:${v.user.id}`) ??
-          new Member(client, v)
-      )
-      this.channels = data.channels?.map(
-        v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
-      )
+      // TODO: Cache in Gateway Event code
+      // this.voiceStates = data.voice_states?.map(
+      //   v =>
+      //     cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
+      //     new VoiceState(client, v)
+      // )
+      // this.members = data.members?.map(
+      //   v =>
+      //     cache.get('member', `${this.id}:${v.user.id}`) ??
+      //     new Member(client, v)
+      // )
+      // this.channels = data.channels?.map(
+      //   v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
+      // )
       this.presences = data.presences
       this.maxPresences = data.max_presences
       this.maxMembers = data.max_members
@@ -120,7 +125,6 @@ export class Guild extends Base {
       this.approximateNumberCount = data.approximate_number_count
       this.approximatePresenceCount = data.approximate_presence_count
     }
-    cache.set('guild', this.id, this)
   }
 
   protected readFromData (data: GuildPayload): void {
@@ -147,10 +151,10 @@ export class Guild extends Base {
         data.default_message_notifications ?? this.defaultMessageNotifications
       this.explicitContentFilter =
         data.explicit_content_filter ?? this.explicitContentFilter
-      this.roles =
-        data.roles.map(
-          v => cache.get('role', v.id) ?? new Role(this.client, v)
-        ) ?? this.roles
+      // this.roles =
+      //   data.roles.map(
+      //     v => cache.get('role', v.id) ?? new Role(this.client, v)
+      //   ) ?? this.roles
       this.emojis =
         data.emojis.map(
           v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)

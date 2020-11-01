@@ -27,7 +27,8 @@ export class Role extends Base {
     this.permissions = data.permissions
     this.managed = data.managed
     this.mentionable = data.mentionable
-    cache.set('role', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('role', this.id, this)
   }
 
   protected readFromData (data: RolePayload): void {

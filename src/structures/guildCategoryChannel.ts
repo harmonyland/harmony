@@ -22,7 +22,8 @@ export class CategoryChannel extends Channel {
     this.permissionOverwrites = data.permission_overwrites
     this.nsfw = data.nsfw
     this.parentID = data.parent_id
-    cache.set('guildcategorychannel', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('guildcategorychannel', this.id, this)
   }
 
   protected readFromData (data: GuildChannelCategoryPayload): void {

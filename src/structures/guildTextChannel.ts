@@ -27,7 +27,8 @@ export class GuildTextChannel extends TextChannel {
     this.parentID = data.parent_id
     this.topic = data.topic
     this.rateLimit = data.rate_limit_per_user
-    cache.set('guildtextchannel', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('guildtextchannel', this.id, this)
   }
 
   protected readFromData (data: GuildTextChannelPayload): void {

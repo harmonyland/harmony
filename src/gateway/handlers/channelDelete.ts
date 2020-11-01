@@ -1,14 +1,13 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
-import cache from '../../models/cache.ts'
 import { Channel } from '../../structures/channel.ts'
 
-export const channelDelete: GatewayEventHandler = (
+export const channelDelete: GatewayEventHandler = async(
   gateway: Gateway,
   d: any
 ) => {
-  const channel: Channel = cache.get('channel', d.id)
+  const channel: Channel = await gateway.client.channels.get(d.id)
   if (channel !== undefined) {
-    cache.del('channel', d.id)
+    await gateway.client.channels.delete(d.id)
     gateway.client.emit('channelDelete', channel)
   }
 }

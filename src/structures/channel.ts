@@ -15,7 +15,8 @@ export class Channel extends Base {
     super(client, data)
     this.type = data.type
     this.id = data.id
-    cache.set('channel', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // this.client.channels.set(this.id, data)
   }
 
   protected readFromData (data: ChannelPayload): void {
