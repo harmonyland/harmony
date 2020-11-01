@@ -1,6 +1,6 @@
-import { ChannelPayload } from './channelTypes.ts'
-import { GuildPayload } from './guildTypes.ts'
-import { UserPayload } from './userTypes.ts'
+import { ChannelPayload } from './channel.ts'
+import { GuildPayload } from './guild.ts'
+import { UserPayload } from './user.ts'
 
 export interface InvitePayload {
   code: string

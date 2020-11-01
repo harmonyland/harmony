@@ -1,5 +1,5 @@
 import { User } from '../structures/user.ts'
-import { GatewayIntents } from '../types/gatewayTypes.ts'
+import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'

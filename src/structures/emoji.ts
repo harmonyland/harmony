@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { EmojiPayload } from '../types/emojiTypes.ts'
+import { EmojiPayload } from '../types/emoji.ts'
 import { USER } from '../types/endpoint.ts'
 import { Base } from './base.ts'
 import { User } from './user.ts'

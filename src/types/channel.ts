@@ -1,7 +1,7 @@
 import { Embed } from '../structures/embed.ts'
-import { EmojiPayload } from './emojiTypes.ts'
-import { MemberPayload } from './guildTypes.ts'
-import { UserPayload } from './userTypes.ts'
+import { EmojiPayload } from './emoji.ts'
+import { MemberPayload } from './guild.ts'
+import { UserPayload } from './user.ts'
 
 export interface ChannelPayload {
   id: string

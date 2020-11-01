@@ -1,8 +1,8 @@
 import { Client } from '../models/client.ts'
-import { ChannelPayload } from '../types/channelTypes.ts'
-import { GuildPayload } from '../types/guildTypes.ts'
-import { InvitePayload } from '../types/inviteTypes.ts'
-import { UserPayload } from '../types/userTypes.ts'
+import { ChannelPayload } from '../types/channel.ts'
+import { GuildPayload } from '../types/guild.ts'
+import { InvitePayload } from '../types/invite.ts'
+import { UserPayload } from '../types/user.ts'
 import { Base } from './base.ts'
 
 export class Invite extends Base {
