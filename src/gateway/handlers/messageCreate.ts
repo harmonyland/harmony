@@ -3,7 +3,7 @@ import { Message } from "../../structures/message.ts"
 import { MessageMentions } from "../../structures/MessageMentions.ts"
 import { TextChannel } from "../../structures/textChannel.ts"
 import { User } from "../../structures/user.ts"
-import { MessagePayload } from "../../types/channelTypes.ts"
+import { MessagePayload } from "../../types/channel.ts"
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
 export const messageCreate: GatewayEventHandler = async(

@@ -1,7 +1,7 @@
 import { Client } from "../models/client.ts";
 import { User } from "../structures/user.ts";
 import { USER } from "../types/endpoint.ts";
-import { UserPayload } from "../types/userTypes.ts";
+import { UserPayload } from "../types/user.ts";
 import { BaseManager } from "./BaseManager.ts";
 
 export class UserManager extends BaseManager<UserPayload, User> {

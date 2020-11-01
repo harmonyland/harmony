@@ -1,5 +1,5 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#voice
-import { MemberPayload } from './guildTypes.ts'
+import { MemberPayload } from './guild.ts'
 
 enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   IDENTIFY = 0,

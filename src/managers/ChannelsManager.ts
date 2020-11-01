@@ -1,7 +1,7 @@
 import { Client } from "../models/client.ts";
 import { Channel } from "../structures/channel.ts";
 import { User } from "../structures/user.ts";
-import { ChannelPayload } from "../types/channelTypes.ts";
+import { ChannelPayload } from "../types/channel.ts";
 import { CHANNEL } from "../types/endpoint.ts";
 import { BaseManager } from "./BaseManager.ts";
 

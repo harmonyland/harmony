@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { GatewayIntents } from '../types/gatewayTypes.ts'
+import { GatewayIntents } from '../types/gateway.ts'
 import { TOKEN } from './config.ts'
 import { Channel } from '../structures/channel.ts'
 import { GuildTextChannel } from '../structures/guildTextChannel.ts'

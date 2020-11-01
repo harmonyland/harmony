@@ -1,7 +1,7 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import cache from '../../models/cache.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
-import { ChannelPayload } from "../../types/channelTypes.ts"
+import { ChannelPayload } from "../../types/channel.ts"
 
 export const channelPinsUpdate: GatewayEventHandler = async(
   gateway: Gateway,

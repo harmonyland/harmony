@@ -2,9 +2,9 @@ import { Client } from "../models/client.ts";
 import { Message } from "../structures/message.ts";
 import { MessageMentions } from "../structures/MessageMentions.ts";
 import { User } from "../structures/user.ts";
-import { MessagePayload } from "../types/channelTypes.ts";
+import { MessagePayload } from "../types/channel.ts";
 import { CHANNEL_MESSAGE } from "../types/endpoint.ts";
-import { UserPayload } from "../types/userTypes.ts";
+import { UserPayload } from "../types/user.ts";
 import { BaseManager } from "./BaseManager.ts";
 
 export class MessagesManager extends BaseManager<MessagePayload, Message> {
