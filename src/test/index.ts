@@ -8,8 +8,17 @@ import { Guild } from '../structures/guild.ts'
 import { User } from '../structures/user.ts'
 import { Message } from "../structures/message.ts"
 import { RedisCacheAdapter } from "../models/CacheAdapter.ts"
+import { ClientPresence } from "../structures/presence.ts"
 
-const bot = new Client()
+const bot = new Client({
+  presence: new ClientPresence({
+    activity: {
+      name: "Testing",
+      type: 'COMPETING'
+    }
+  }),
+  forceNewSession: true
+})
 
 bot.setAdapter(new RedisCacheAdapter(bot, {
   hostname: "127.0.0.1",
@@ -18,6 +27,10 @@ bot.setAdapter(new RedisCacheAdapter(bot, {
 
 bot.on('ready', () => {
   console.log(`[Login] Logged in as ${bot.user?.tag}!`)
+  bot.setPresence({
+    name: "Test After Ready",
+    type: 'COMPETING'
+  })
 })
 
 bot.on('debug', console.log)

@@ -9,13 +9,15 @@ import { GuildManager } from "../managers/GuildsManager.ts"
 import { EmojisManager } from "../managers/EmojisManager.ts"
 import { ChannelsManager } from "../managers/ChannelsManager.ts"
 import { MessagesManager } from "../managers/MessagesManager.ts"
+import { ActivityGame, ClientActivity, ClientActivityPayload, ClientPresence } from "../structures/presence.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
   token?: string
   intents?: GatewayIntents[]
   cache?: ICacheAdapter,
-  forceNewSession?: boolean
+  forceNewSession?: boolean,
+  presence?: ClientPresence | ClientActivity | ActivityGame
 }
 
 /**
@@ -37,17 +39,27 @@ export class Client extends EventEmitter {
   messages: MessagesManager = new MessagesManager(this)
   emojis: EmojisManager = new EmojisManager(this)
 
+  presence: ClientPresence = new ClientPresence()
+
   constructor (options: ClientOptions = {}) {
     super()
     this.token = options.token
     this.intents = options.intents
     this.forceNewSession = options.forceNewSession
     if(options.cache) this.cache = options.cache
+    if(options.presence) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
   }
 
   setAdapter(adapter: ICacheAdapter) {
     this.cache = adapter
     return this
+  }
+
+  setPresence(presence: ClientPresence | ClientActivity | ActivityGame) {
+    if(presence instanceof ClientPresence) {
+      this.presence = presence
+    } else this.presence = new ClientPresence(presence)
+    this.gateway?.sendPresence(this.presence.create())
   }
 
   debug(tag: string, msg: string) {

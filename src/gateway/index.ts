@@ -10,6 +10,7 @@ import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
 import { GatewayBotPayload } from "../types/gatewayBot.ts"
 import { GatewayCache } from "../managers/GatewayCache.ts"
+import { ClientActivityPayload } from "../structures/presence.ts"
 
 /**
  * Handles Discord gateway connection.
@@ -32,7 +33,7 @@ class Gateway {
   client: Client
   cache: GatewayCache
 
-  constructor (client: Client, token: string, intents: GatewayIntents[]) {
+  constructor(client: Client, token: string, intents: GatewayIntents[]) {
     this.token = token
     this.intents = intents
     this.client = client
@@ -49,12 +50,12 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  private onopen (): void {
+  private onopen(): void {
     this.connected = true
     this.debug("Connected to Gateway!")
   }
 
-  private async onmessage (event: MessageEvent): Promise<void> {
+  private async onmessage(event: MessageEvent): Promise<void> {
     let data = event.data
     if (data instanceof ArrayBuffer) {
       data = new Uint8Array(data)
@@ -79,12 +80,10 @@ class Gateway {
             return
           }
 
-          this.websocket.send(
-            JSON.stringify({
-              op: GatewayOpcodes.HEARTBEAT,
-              d: this.sequenceID ?? null
-            })
-          )
+          this.send({
+            op: GatewayOpcodes.HEARTBEAT,
+            d: this.sequenceID ?? null
+          })
           this.lastPingTimestamp = Date.now()
         }, this.heartbeatInterval)
 
@@ -142,38 +141,38 @@ class Gateway {
     }
   }
 
-  private onclose (event: CloseEvent): void {
+  private onclose(event: CloseEvent): void {
     this.debug("Connection Closed with code: " + event.code)
 
-    if(event.code == GatewayCloseCodes.UNKNOWN_ERROR) {
+    if (event.code == GatewayCloseCodes.UNKNOWN_ERROR) {
       this.debug("API has encountered Unknown Error. Reconnecting...")
       this.reconnect()
-    } else if(event.code == GatewayCloseCodes.UNKNOWN_OPCODE) {
+    } else if (event.code == GatewayCloseCodes.UNKNOWN_OPCODE) {
       throw new Error("Unknown OP Code was sent. This shouldn't happen!")
-    } else if(event.code == GatewayCloseCodes.DECODE_ERROR) {
+    } else if (event.code == GatewayCloseCodes.DECODE_ERROR) {
       throw new Error("Invalid Payload was sent. This shouldn't happen!")
-    } else if(event.code == GatewayCloseCodes.NOT_AUTHENTICATED) {
+    } else if (event.code == GatewayCloseCodes.NOT_AUTHENTICATED) {
       throw new Error("Not Authorized: Payload was sent before Identifying.")
-    } else if(event.code == GatewayCloseCodes.AUTHENTICATION_FAILED) {
+    } else if (event.code == GatewayCloseCodes.AUTHENTICATION_FAILED) {
       throw new Error("Invalid Token provided!")
-    } else if(event.code == GatewayCloseCodes.INVALID_SEQ) {
+    } else if (event.code == GatewayCloseCodes.INVALID_SEQ) {
       this.debug("Invalid Seq was sent. Reconnecting.")
       this.reconnect()
-    } else if(event.code == GatewayCloseCodes.RATE_LIMITED) {
+    } else if (event.code == GatewayCloseCodes.RATE_LIMITED) {
       throw new Error("You're ratelimited. Calm down.")
-    } else if(event.code == GatewayCloseCodes.SESSION_TIMED_OUT) {
+    } else if (event.code == GatewayCloseCodes.SESSION_TIMED_OUT) {
       this.debug("Session Timeout. Reconnecting.")
       this.reconnect(true)
-    } else if(event.code == GatewayCloseCodes.INVALID_SHARD) {
+    } else if (event.code == GatewayCloseCodes.INVALID_SHARD) {
       this.debug("Invalid Shard was sent. Reconnecting.")
       this.reconnect()
-    } else if(event.code == GatewayCloseCodes.SHARDING_REQUIRED) {
+    } else if (event.code == GatewayCloseCodes.SHARDING_REQUIRED) {
       throw new Error("Couldn't connect. Sharding is requried!")
-    } else if(event.code == GatewayCloseCodes.INVALID_API_VERSION) {
+    } else if (event.code == GatewayCloseCodes.INVALID_API_VERSION) {
       throw new Error("Invalid API Version was used. This shouldn't happen!")
-    } else if(event.code == GatewayCloseCodes.INVALID_INTENTS) {
+    } else if (event.code == GatewayCloseCodes.INVALID_INTENTS) {
       throw new Error("Invalid Intents")
-    } else if(event.code == GatewayCloseCodes.DISALLOWED_INTENTS) {
+    } else if (event.code == GatewayCloseCodes.DISALLOWED_INTENTS) {
       throw new Error("Given Intents aren't allowed")
     } else {
       this.debug("Unknown Close code, probably connection error. Reconnecting.")
@@ -181,59 +180,52 @@ class Gateway {
     }
   }
 
-  private onerror (event: Event | ErrorEvent): void {
+  private onerror(event: Event | ErrorEvent): void {
     const eventError = event as ErrorEvent
     console.log(eventError)
   }
 
-  private async sendIdentify (forceNewSession?: boolean) {
+  private async sendIdentify(forceNewSession?: boolean) {
     this.debug("Fetching /gateway/bot...")
     const info = await this.client.rest.get(GATEWAY_BOT()) as GatewayBotPayload
-    if(info.session_start_limit.remaining == 0) throw new Error("Session Limit Reached. Retry After " + info.session_start_limit.reset_after + "ms")
+    if (info.session_start_limit.remaining == 0) throw new Error("Session Limit Reached. Retry After " + info.session_start_limit.reset_after + "ms")
     this.debug("Recommended Shards: " + info.shards)
     this.debug("=== Session Limit Info ===")
     this.debug(`Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`)
     this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
-    if(!forceNewSession) {
+    if (!forceNewSession) {
       let sessionIDCached = await this.cache.get("session_id")
-      if(sessionIDCached) {
+      if (sessionIDCached) {
         this.debug("Found Cached SessionID: " + sessionIDCached)
         this.sessionID = sessionIDCached
         return this.sendResume()
       }
     }
-    this.websocket.send(
-      JSON.stringify({
-        op: GatewayOpcodes.IDENTIFY,
-        d: {
-          token: this.token,
-          properties: {
-            $os: Deno.build.os,
-            $browser: 'discord.deno',
-            $device: 'discord.deno'
-          },
-          compress: true,
-          shard: [0, 1], // TODO: Make sharding possible
-          intents: this.intents.reduce(
-            (previous, current) => previous | current,
-            0
-          ),
-          presence: {
-            // TODO: User should can customize this
-            status: 'online',
-            since: null,
-            afk: false
-          }
-        }
-      })
-    )
+    this.send({
+      op: GatewayOpcodes.IDENTIFY,
+      d: {
+        token: this.token,
+        properties: {
+          $os: Deno.build.os,
+          $browser: 'discord.deno',
+          $device: 'discord.deno'
+        },
+        compress: true,
+        shard: [0, 1], // TODO: Make sharding possible
+        intents: this.intents.reduce(
+          (previous, current) => previous | current,
+          0
+        ),
+        presence: this.client.presence.create()
+      }
+    })
   }
 
-  private async sendResume (): Promise<void> {
+  private async sendResume(): Promise<void> {
     this.debug(`Preparing to resume with Session: ${this.sessionID}`)
-    if(this.sequenceID === undefined) {
+    if (this.sequenceID === undefined) {
       let cached = await this.cache.get("seq")
-      if(cached) this.sequenceID = typeof cached == "string" ? parseInt(cached) : cached
+      if (cached) this.sequenceID = typeof cached == "string" ? parseInt(cached) : cached
     }
     const resumePayload = {
       op: GatewayOpcodes.RESUME,
@@ -243,9 +235,7 @@ class Gateway {
         seq: this.sequenceID || null
       }
     }
-    this.websocket.send(
-      JSON.stringify(resumePayload)
-    )
+    this.send(resumePayload)
   }
 
   debug(msg: string) {
@@ -254,12 +244,12 @@ class Gateway {
 
   async reconnect(forceNew?: boolean) {
     clearInterval(this.heartbeatIntervalID)
-    if(forceNew) await this.cache.delete("session_id")
+    if (forceNew) await this.cache.delete("session_id")
     this.close()
     this.initWebsocket()
   }
 
-  initWebsocket (): void {
+  initWebsocket(): void {
     this.websocket = new WebSocket(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
@@ -272,8 +262,26 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  close (): void {
+  close(): void {
     this.websocket.close(1000)
+  }
+
+  send(data: GatewayResponse) {
+    if (this.websocket.readyState != this.websocket.OPEN) return false
+    this.websocket.send(JSON.stringify({
+      op: data.op,
+      d: data.d,
+      s: typeof data.s == "number" ? data.s : null,
+      t: data.t || null,
+    }))
+    return true
+  }
+
+  sendPresence(data: ClientActivityPayload) {
+    this.send({
+      op: GatewayOpcodes.PRESENCE_UPDATE,
+      d: data
+    })
   }
 }
 
