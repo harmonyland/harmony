@@ -1,4 +1,3 @@
-import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { MemberPayload } from '../types/guild.ts'
 import { VoiceStatePayload } from '../types/voice.ts'

@@ -1,20 +1,23 @@
-import { Client } from "../models/client.ts";
-import { Emoji } from "../structures/emoji.ts";
-import { EmojiPayload } from "../types/emoji.ts";
-import { CHANNEL } from "../types/endpoint.ts";
-import { BaseManager } from "./BaseManager.ts";
+import { Client } from '../models/client.ts'
+import { Emoji } from '../structures/emoji.ts'
+import { EmojiPayload } from '../types/emoji.ts'
+import { CHANNEL } from '../types/endpoint.ts'
+import { BaseManager } from './BaseManager.ts'
 
 export class EmojisManager extends BaseManager<EmojiPayload, Emoji> {
-  constructor(client: Client) {
-    super(client, "emojis", Emoji)
+  constructor (client: Client) {
+    super(client, 'emojis', Emoji)
   }
 
-  fetch(id: string) {
-    return new Promise((res, rej) => {
-      this.client.rest.get(CHANNEL(id)).then(data => {
-        this.set(id, data as EmojiPayload)
-        res(new Emoji(this.client, data as EmojiPayload))
-      }).catch(e => rej(e))
+  async fetch (id: string): Promise<Emoji> {
+    return await new Promise((resolve, reject) => {
+      this.client.rest
+        .get(CHANNEL(id))
+        .then(data => {
+          this.set(id, data as EmojiPayload)
+          resolve(new Emoji(this.client, data as EmojiPayload))
+        })
+        .catch(e => reject(e))
     })
   }
 }

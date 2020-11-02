@@ -1,4 +1,3 @@
-import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { Base } from './base.ts'
 import { RolePayload } from '../types/role.ts'

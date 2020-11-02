@@ -1,4 +1,3 @@
-import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/user.ts'
 import { Base } from './base.ts'
@@ -18,8 +17,8 @@ export class User extends Base {
   premiumType?: 0 | 1 | 2
   publicFlags?: number
 
-  get tag(): string {
-    return `${this.username}#${this.discriminator}`;
+  get tag (): string {
+    return `${this.username}#${this.discriminator}`
   }
 
   get nickMention (): string {
@@ -65,7 +64,7 @@ export class User extends Base {
     this.publicFlags = data.public_flags ?? this.publicFlags
   }
 
-  toString() {
-    return this.mention;
+  toString (): string {
+    return this.mention
   }
 }

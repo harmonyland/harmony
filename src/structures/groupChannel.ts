@@ -1,4 +1,3 @@
-import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { GroupDMChannelPayload } from '../types/channel.ts'
 import { Channel } from './channel.ts'

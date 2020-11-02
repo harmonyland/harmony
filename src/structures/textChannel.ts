@@ -1,11 +1,9 @@
-import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
-import { MessageOption, MessagePayload, TextChannelPayload } from '../types/channel.ts'
+import { MessageOption, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Message } from './message.ts'
-import { MessageMentions } from "./MessageMentions.ts"
-import { User } from "./user.ts"
+import { MessageMentions } from './MessageMentions.ts'
 
 export class TextChannel extends Channel {
   lastMessageID?: string
@@ -29,6 +27,10 @@ export class TextChannel extends Channel {
     if (text !== undefined && option !== undefined) {
       throw new Error('Either text or option is necessary.')
     }
+    if (this.client.user === undefined) {
+      throw new Error('Client user has not initialized.')
+    }
+
     const resp = await fetch(CHANNEL_MESSAGES(this.id), {
       headers: {
         Authorization: `Bot ${this.client.token}`,
@@ -44,7 +46,13 @@ export class TextChannel extends Channel {
       })
     })
 
-    return new Message(this.client, await resp.json(), this, this.client.user as User, new MessageMentions())
+    return new Message(
+      this.client,
+      await resp.json(),
+      this,
+      this.client.user,
+      new MessageMentions()
+    )
   }
 
   async editMessage (
@@ -52,21 +60,31 @@ export class TextChannel extends Channel {
     text?: string,
     option?: MessageOption
   ): Promise<Message> {
-    if (text !== undefined && option !== undefined) {
+    if (text === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
     }
 
-    let newMsg = await this.client.rest.patch(CHANNEL_MESSAGE(this.id, typeof message == "string" ? message : message.id), {
-      content: text,
-      embed: option?.embed.toJSON(),
-      file: option?.file,
-      tts: option?.tts,
-      allowed_mentions: option?.allowedMention
-    }) as MessagePayload
+    if (this.client.user === undefined) {
+      throw new Error('Client user has not initialized.')
+    }
+
+    const newMsg = await this.client.rest.patch(
+      CHANNEL_MESSAGE(
+        this.id,
+        typeof message === 'string' ? message : message.id
+      ),
+      {
+        content: text,
+        embed: option?.embed.toJSON(),
+        file: option?.file,
+        tts: option?.tts,
+        allowed_mentions: option?.allowedMention
+      }
+    )
 
     // TODO: Actually construct this object
-    let mentions = new MessageMentions()
+    const mentions = new MessageMentions()
 
-    return new Message(this.client, newMsg, this, this.client.user as User, mentions)
+    return new Message(this.client, newMsg, this, this.client.user, mentions)
   }
 }

@@ -3,12 +3,12 @@ import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
-import { DefaultCacheAdapter, ICacheAdapter } from "./CacheAdapter.ts"
-import { UserManager } from "../managers/UsersManager.ts"
-import { GuildManager } from "../managers/GuildsManager.ts"
-import { EmojisManager } from "../managers/EmojisManager.ts"
-import { ChannelsManager } from "../managers/ChannelsManager.ts"
-import { MessagesManager } from "../managers/MessagesManager.ts"
+import { DefaultCacheAdapter, ICacheAdapter } from './CacheAdapter.ts'
+import { UserManager } from '../managers/UsersManager.ts'
+import { GuildManager } from '../managers/GuildsManager.ts'
+import { EmojisManager } from '../managers/EmojisManager.ts'
+import { ChannelsManager } from '../managers/ChannelsManager.ts'
+import { MessagesManager } from '../managers/MessagesManager.ts'
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -28,7 +28,7 @@ export class Client extends EventEmitter {
   token?: string
   cache: ICacheAdapter = new DefaultCacheAdapter(this)
   intents?: GatewayIntents[]
-  
+
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
@@ -39,16 +39,16 @@ export class Client extends EventEmitter {
     super()
     this.token = options.token
     this.intents = options.intents
-    if(options.cache) this.cache = options.cache
+    if (options.cache !== undefined) this.cache = options.cache
   }
 
-  setAdapter(adapter: ICacheAdapter) {
+  setAdapter (adapter: ICacheAdapter): Client {
     this.cache = adapter
     return this
   }
 
-  debug(tag: string, msg: string) {
-    this.emit("debug", `[${tag}] ${msg}`)
+  debug (tag: string, msg: string): void {
+    this.emit('debug', `[${tag}] ${msg}`)
   }
 
   /**
@@ -57,16 +57,15 @@ export class Client extends EventEmitter {
    * @param intents Gateway intents in array. This is required.
    */
   connect (token?: string, intents?: GatewayIntents[]): void {
-    if(!token && this.token) token = this.token
-    else if(!this.token && token) {
+    if (token === undefined && this.token !== undefined) token = this.token
+    else if (this.token === undefined && token !== undefined) {
       this.token = token
-    }
-    else throw new Error("No Token Provided")
-    if(!intents && this.intents) intents = this.intents
-    else if(intents && !this.intents) {
+    } else throw new Error('No Token Provided')
+    if (intents === undefined && this.intents !== undefined)
+      intents = this.intents
+    else if (intents !== undefined && this.intents === undefined) {
       this.intents = intents
-    }
-    else throw new Error("No Gateway Intents were provided")
+    } else throw new Error('No Gateway Intents were provided')
     this.gateway = new Gateway(this, token, intents)
   }
 }

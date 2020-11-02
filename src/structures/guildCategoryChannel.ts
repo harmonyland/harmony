@@ -1,10 +1,6 @@
 import { Client } from '../models/client.ts'
 import { Channel } from './channel.ts'
-import {
-  GuildChannelCategoryPayload,
-  Overwrite
-} from '../types/channel.ts'
-import cache from '../models/cache.ts'
+import { GuildChannelCategoryPayload, Overwrite } from '../types/channel.ts'
 
 export class CategoryChannel extends Channel {
   guildID: string

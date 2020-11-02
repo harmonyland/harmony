@@ -1,9 +1,10 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Channel } from '../../structures/channel.ts'
+import { ChannelPayload } from '../../types/channel.ts'
 
-export const channelDelete: GatewayEventHandler = async(
+export const channelDelete: GatewayEventHandler = async (
   gateway: Gateway,
-  d: any
+  d: ChannelPayload
 ) => {
   const channel: Channel = await gateway.client.channels.get(d.id)
   if (channel !== undefined) {

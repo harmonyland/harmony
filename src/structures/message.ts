@@ -14,10 +14,9 @@ import { User } from './user.ts'
 import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
-import cache from '../models/cache.ts'
-import { Channel } from "./channel.ts"
-import { MessageMentions } from "./MessageMentions.ts"
-import { TextChannel } from "./textChannel.ts"
+import { Channel } from './channel.ts'
+import { MessageMentions } from './MessageMentions.ts'
+import { TextChannel } from './textChannel.ts'
 
 export class Message extends Base {
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
@@ -48,7 +47,13 @@ export class Message extends Base {
   messageReference?: MessageReference
   flags?: number
 
-  constructor (client: Client, data: MessagePayload, channel: Channel, author: User, mentions: MessageMentions) {
+  constructor (
+    client: Client,
+    data: MessagePayload,
+    channel: Channel,
+    author: User,
+    mentions: MessageMentions
+  ) {
     super(client)
     this.data = data
     this.id = data.id
@@ -116,11 +121,13 @@ export class Message extends Base {
     this.flags = data.flags ?? this.flags
   }
 
-  edit (text?: string, option?: MessageOption): Promise<Message> {
-    return (this.channel as TextChannel).editMessage(this.id, text, option)  
+  async edit (text?: string, option?: MessageOption): Promise<Message> {
+    // Seriously eslint?
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return (this.channel as TextChannel).editMessage(this.id, text, option)
   }
 
-  delete (): Promise<void> {
-    return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id)) as any
+  async delete (): Promise<void> {
+    return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
   }
 }

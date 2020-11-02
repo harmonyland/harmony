@@ -1,9 +1,10 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import getChannelByType from '../../utils/getChannelByType.ts'
+import { ChannelPayload } from '../../types/channel.ts'
 
 export const channelCreate: GatewayEventHandler = async (
   gateway: Gateway,
-  d: any
+  d: ChannelPayload
 ) => {
   const channel = getChannelByType(gateway.client, d)
   if (channel !== undefined) {
