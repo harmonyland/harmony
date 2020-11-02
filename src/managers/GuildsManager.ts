@@ -7,8 +7,8 @@ import { BaseManager } from "./BaseManager.ts";
 import { MembersManager } from "./MembersManager.ts";
 
 export class GuildManager extends BaseManager<GuildPayload, Guild> {
-  constructor(client: Client) {
-    super(client, "guilds", Guild)
+  constructor (client: Client) {
+    super(client, 'guilds', Guild)
   }
 
   fetch(id: string) {

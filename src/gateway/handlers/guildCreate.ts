@@ -7,7 +7,7 @@ import { RolePayload } from "../../types/role.ts"
 import { RolesManager } from "../../managers/RolesManager.ts"
 
 export const guildCreate: GatewayEventHandler = async(gateway: Gateway, d: GuildPayload) => {
-  let guild: Guild | void = await gateway.client.guilds.get(d.id)
+  let guild: Guild | undefined = await gateway.client.guilds.get(d.id)
   if (guild !== undefined) {
     // It was just lazy load, so we don't fire the event as its gonna fire for every guild bot is in
     await gateway.client.guilds.set(d.id, d)
@@ -47,6 +47,7 @@ export const guildCreate: GatewayEventHandler = async(gateway: Gateway, d: Guild
       guild.roles = roles
     }
     await guild.roles.fromPayload(d.roles)
+    guild = new Guild(gateway.client, d)
     gateway.client.emit('guildCreate', guild)
   }
 }

@@ -14,7 +14,6 @@ import { User } from './user.ts'
 import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
-import cache from '../models/cache.ts'
 import { Channel } from "./channel.ts"
 import { MessageMentions } from "./MessageMentions.ts"
 import { TextChannel } from "./textChannel.ts"
@@ -51,7 +50,13 @@ export class Message extends Base {
   messageReference?: MessageReference
   flags?: number
 
-  constructor (client: Client, data: MessagePayload, channel: TextChannel, author: User, mentions: MessageMentions) {
+  constructor (
+    client: Client,
+    data: MessagePayload,
+    channel: TextChannel,
+    author: User,
+    mentions: MessageMentions
+  ) {
     super(client)
     this.data = data
     this.id = data.id
@@ -120,7 +125,7 @@ export class Message extends Base {
   }
 
   edit (text?: string, option?: MessageOption): Promise<Message> {
-    return (this.channel as TextChannel).edit(this.id, text, option)  
+    return this.channel.edit(this.id, text, option)  
   }
 
   reply(text: string, options?: MessageOption) {
@@ -129,7 +134,7 @@ export class Message extends Base {
     return this.channel.send(`${this.author.mention}, ${text}`, options)
   }
 
-  delete (): Promise<void> {
-    return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id)) as any
+  async delete (): Promise<void> {
+    return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
   }
 }

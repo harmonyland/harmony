@@ -1,23 +1,27 @@
-import { Client } from "../models/client.ts";
+import { Client } from '../models/client.ts'
 
 export class GatewayCache {
-    client: Client
-    cacheName: string = "discord_gateway_cache"
-    
-    constructor(client: Client, cacheName?: string) {
-        this.client = client
-        if(cacheName) this.cacheName = cacheName
-    }
+  client: Client
+  cacheName: string = 'discord_gateway_cache'
 
-    get(key: string) {
-        return this.client.cache.get(this.cacheName, key)
-    }
+  constructor (client: Client, cacheName?: string) {
+    this.client = client
+    if (cacheName !== undefined) this.cacheName = cacheName
+  }
 
-    set(key: string, value: any) {
-        return this.client.cache.set(this.cacheName, key, value)
-    }
+  async get (key: string): Promise<undefined | any> {
+    const result = await this.client.cache.get(this.cacheName, key)
+    return result
+  }
 
-    delete(key: string) {
-        return this.client.cache.delete(this.cacheName, key)
-    }
+  async set (key: string, value: any): Promise<any> {
+    const result = await this.client.cache.set(this.cacheName, key, value)
+    return result
+  }
+
+  async delete (key: string): Promise<boolean> {
+    console.log(`[GatewayCache] DEL ${key}`)
+    const result = await this.client.cache.delete(this.cacheName, key)
+    return result
+  }
 }

@@ -9,8 +9,8 @@ import { UserPayload } from "../types/user.ts";
 import { BaseManager } from "./BaseManager.ts";
 
 export class MessagesManager extends BaseManager<MessagePayload, Message> {
-  constructor(client: Client) {
-    super(client, "messages", Message)
+  constructor (client: Client) {
+    super(client, 'messages', Message)
   }
 
   async get(key: string): Promise<Message | void> {

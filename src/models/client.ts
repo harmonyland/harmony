@@ -32,7 +32,6 @@ export class Client extends EventEmitter {
   cache: ICacheAdapter = new DefaultCacheAdapter(this)
   intents?: GatewayIntents[]
   forceNewSession?: boolean
-  
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
@@ -46,11 +45,11 @@ export class Client extends EventEmitter {
     this.token = options.token
     this.intents = options.intents
     this.forceNewSession = options.forceNewSession
-    if(options.cache) this.cache = options.cache
-    if(options.presence) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
+    if (options.cache !== undefined) this.cache = options.cache
+    if (options.presence !== undefined) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
   }
 
-  setAdapter(adapter: ICacheAdapter) {
+  setAdapter (adapter: ICacheAdapter): Client {
     this.cache = adapter
     return this
   }
@@ -72,16 +71,15 @@ export class Client extends EventEmitter {
    * @param intents Gateway intents in array. This is required.
    */
   connect (token?: string, intents?: GatewayIntents[]): void {
-    if(!token && this.token) token = this.token
-    else if(!this.token && token) {
+    if (token === undefined && this.token !== undefined) token = this.token
+    else if (this.token === undefined && token !== undefined) {
       this.token = token
-    }
-    else throw new Error("No Token Provided")
-    if(!intents && this.intents) intents = this.intents
-    else if(intents && !this.intents) {
+    } else throw new Error('No Token Provided')
+    if (intents === undefined && this.intents !== undefined)
+      intents = this.intents
+    else if (intents !== undefined && this.intents === undefined) {
       this.intents = intents
-    }
-    else throw new Error("No Gateway Intents were provided")
+    } else throw new Error('No Gateway Intents were provided')
     this.gateway = new Gateway(this, token, intents)
   }
 }

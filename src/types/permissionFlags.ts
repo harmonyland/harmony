@@ -39,3 +39,5 @@ enum PermissionFlags {
   MANAGE_WEBHOOKS = 0x20000000,
   MANAGE_EMOJIS = 0x40000000
 }
+
+export { PermissionFlags }

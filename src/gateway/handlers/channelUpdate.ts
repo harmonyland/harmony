@@ -1,11 +1,12 @@
 import { Channel } from '../../structures/channel.ts'
 import { Guild } from "../../structures/guild.ts"
+import { ChannelPayload } from '../../types/channel.ts'
 import getChannelByType from '../../utils/getChannelByType.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
 export const channelUpdate: GatewayEventHandler = async (
   gateway: Gateway,
-  d: any
+  d: ChannelPayload
 ) => {
   const oldChannel: Channel | void = await gateway.client.channels.get(d.id)
 
