@@ -18,7 +18,6 @@ export class GatewayCache {
     }
 
     delete(key: string) {
-        console.log(`[GatewayCache] DEL ${key}`)
         return this.client.cache.delete(this.cacheName, key)
     }
 }

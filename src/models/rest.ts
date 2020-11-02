@@ -196,7 +196,6 @@ export class RESTManager {
 		retryCount = 0,
 		bucketID?: string | null,
 	) {
-	
 		const errorStack = new Error("Location In Your Files:");
 		Error.captureStackTrace(errorStack);
 	
@@ -217,11 +216,12 @@ export class RESTManager {
 					const urlToUse = method === "get" && query ? `${url}?${query}` : url;
 
 					const response = await fetch(urlToUse, this.createRequestBody(body, method));
-					const bucketIDFromHeaders = this.processHeaders(url, response.headers);
-					this.handleStatusCode(response, errorStack);
-	
-					// Sometimes Discord returns an empty 204 response that can't be made to JSON.
+          const bucketIDFromHeaders = this.processHeaders(url, response.headers);
+          
+          // Sometimes Discord returns an empty 204 response that can't be made to JSON.
 					if (response.status === 204) return resolve();
+
+					this.handleStatusCode(response, errorStack);
 	
 					const json = await response.json();
 					if (
@@ -265,8 +265,8 @@ export class RESTManager {
 		}
 	}
 
-	handleStatusCode(response: Response, errorStack?: unknown) {
-		const status = response.status;
+	async handleStatusCode(response: Response, errorStack?: unknown) {
+    const status = response.status
 	
 		if (
 			(status >= 200 && status < 400) ||
@@ -283,9 +283,9 @@ export class RESTManager {
 			case HttpResponseCode.Forbidden:
 			case HttpResponseCode.NotFound:
 			case HttpResponseCode.MethodNotAllowed:
-				throw new Error("Request Client Error");
+				throw new Error("Request Client Error. Code: " + status);
 			case HttpResponseCode.GatewayUnavailable:
-				throw new Error("Request Server Error");
+				throw new Error("Request Server Error. Code: " + status);
 		}
 	
 		// left are all unknown
@@ -321,7 +321,6 @@ export class RESTManager {
 			}
 		}
 	
-		// If there is no remaining global limit, we save it in cache
 		if (global) {
 			const reset = Date.now() + Number(retryAfter);
 			this.globallyRateLimited = true;

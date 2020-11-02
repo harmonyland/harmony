@@ -1,4 +1,5 @@
 import { Client } from "../models/client.ts";
+import { Collection } from "../utils/collection.ts";
 import { BaseManager } from "./BaseManager.ts";
 
 export class BaseChildManager<T, T2> {
@@ -20,5 +21,20 @@ export class BaseChildManager<T, T2> {
 
   async delete(key: string): Promise<any> {
     return false
+  }
+
+  async array(): Promise<any> {
+    return await this.parent.array()
+  }
+
+  async collection(): Promise<Collection<string, T2>> {
+    const arr = await this.array() as void | T2[]
+    if(arr === undefined) return new Collection()
+    let collection = new Collection()
+    for (const elem of arr) {
+      // @ts-ignore
+      collection.set(elem.id, elem)
+    }
+    return collection
   }
 }

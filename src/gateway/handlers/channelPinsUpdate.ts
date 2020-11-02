@@ -7,7 +7,7 @@ export const channelPinsUpdate: GatewayEventHandler = async(
   gateway: Gateway,
   d: any
 ) => {
-  const after: TextChannel = await gateway.client.channels.get(d.channel_id)
+  const after: TextChannel | void = await gateway.client.channels.get<TextChannel>(d.channel_id)
   if (after !== undefined) {
     const before = after.refreshFromData({
       last_pin_timestamp: d.last_pin_timestamp

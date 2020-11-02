@@ -30,8 +30,9 @@ export class BaseManager<T, T2> {
     return this.client.cache.delete(this.cacheName, key)
   }
 
-  array(): Promise<void | T2[]> {
-    return (this.client.cache.array(this.cacheName) as T[]).map(e => new this.dataType(this.client, e)) as any
+  async array(): Promise<void | T2[]> {
+    let arr = await (this.client.cache.array(this.cacheName) as T[])
+    return arr.map(e => new this.dataType(this.client, e)) as any
   }
 
   async collection(): Promise<Collection<string, T2>> {
@@ -43,5 +44,9 @@ export class BaseManager<T, T2> {
       collection.set(elem.id, elem)
     }
     return collection
+  }
+
+  flush() {
+    return this.client.cache.deleteCache(this.cacheName)
   }
 }

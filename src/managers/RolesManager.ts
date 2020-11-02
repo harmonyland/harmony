@@ -24,7 +24,8 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
 
   async fromPayload(roles: RolePayload[]) {
     for(const role of roles) {
-      await this.guild.roles.set(role.id, role)
+      await this.set(role.id, role)
     }
+    return true
   }
 }

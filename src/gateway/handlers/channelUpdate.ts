@@ -7,7 +7,7 @@ export const channelUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: any
 ) => {
-  const oldChannel: Channel = await gateway.client.channels.get(d.id)
+  const oldChannel: Channel | void = await gateway.client.channels.get(d.id)
 
   if (oldChannel !== undefined) {
     await gateway.client.channels.set(d.id, d)

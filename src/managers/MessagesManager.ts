@@ -1,6 +1,7 @@
 import { Client } from "../models/client.ts";
 import { Message } from "../structures/message.ts";
 import { MessageMentions } from "../structures/MessageMentions.ts";
+import { TextChannel } from "../structures/textChannel.ts";
 import { User } from "../structures/user.ts";
 import { MessagePayload } from "../types/channel.ts";
 import { CHANNEL_MESSAGE } from "../types/endpoint.ts";
@@ -27,8 +28,8 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     return new Promise((res, rej) => {
       this.client.rest.get(CHANNEL_MESSAGE(channelID, id)).then(async data => {
         this.set(id, data as MessagePayload)
-        let channel = await this.client.channels.get(channelID)
-        if(!channel) channel = await this.client.channels.fetch(channelID)
+        let channel = await this.client.channels.get<TextChannel>(channelID)
+        if(!channel) channel = await this.client.channels.fetch(channelID) as TextChannel
         let author = new User(this.client, (data as MessagePayload).author as UserPayload)
         await this.client.users.set(author.id, (data as MessagePayload).author)
         // TODO: Make this thing work (MessageMentions)

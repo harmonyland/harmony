@@ -1,11 +1,6 @@
 import { Client } from '../models/client.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { TOKEN } from './config.ts'
-import { Channel } from '../structures/channel.ts'
-import { GuildTextChannel } from '../structures/guildTextChannel.ts'
-import { TextChannel } from '../structures/textChannel.ts'
-import { Guild } from '../structures/guild.ts'
-import { User } from '../structures/user.ts'
 import { Message } from "../structures/message.ts"
 import { RedisCacheAdapter } from "../models/CacheAdapter.ts"
 import { ClientPresence } from "../structures/presence.ts"
@@ -20,10 +15,10 @@ const bot = new Client({
   forceNewSession: true
 })
 
-bot.setAdapter(new RedisCacheAdapter(bot, {
-  hostname: "127.0.0.1",
-  port: 6379
-}))
+// bot.setAdapter(new RedisCacheAdapter(bot, {
+//   hostname: "127.0.0.1",
+//   port: 6379
+// }))
 
 bot.on('ready', () => {
   console.log(`[Login] Logged in as ${bot.user?.tag}!`)
@@ -35,54 +30,35 @@ bot.on('ready', () => {
 
 bot.on('debug', console.log)
 
-bot.on('channelDelete', (channel: Channel) => {
-  console.log('channelDelete', channel.id)
-})
-
-bot.on('channelUpdate', (before: Channel, after: Channel) => {
-  if (before instanceof GuildTextChannel && after instanceof GuildTextChannel) {
-    console.log('channelUpdate', before.name)
-    console.log('channelUpdate', after.name)
-  } else {
-    console.log('channelUpdate', before.id)
-    console.log('channelUpdate', after.id)
+bot.on('messageCreate', async (msg: Message) => {
+  if (msg.author.bot) return
+  console.log(`${msg.author.tag} (${msg.channel + ""}): ${msg.content}`)
+  if (msg.content == "!ping") {
+    msg.reply("Pong! API Ping: " + bot.ping + "ms")
+  } else if (msg.content == "!members") {
+    let col = await msg.guild?.members.collection()
+    let data = col?.array().map((c, i) => {
+      return `${i + 1}. ${c.user.tag}`
+    }).join("\n")
+    msg.channel.send("Member List:\n" + data)
+  } else if (msg.content == "!guilds") {
+    let guilds = await msg.client.guilds.collection()
+    msg.channel.send("Guild List:\n" + guilds.array().map((c, i) => {
+      return `${i + 1}. ${c.name} - ${c.memberCount} members`
+    }).join("\n"))
+  } else if (msg.content == "!roles") {
+    let col = await msg.guild?.roles.collection()
+    let data = col?.array().map((c, i) => {
+      return `${i + 1}. ${c.name}`
+    }).join("\n")
+    msg.channel.send("Roles List:\n" + data)
+  } else if (msg.content == "!channels") {
+    let col = await msg.guild?.channels.array()
+    let data = col?.map((c, i) => {
+      return `${i + 1}. ${c.name}`
+    }).join("\n")
+    msg.channel.send("Channels List:\n" + data)
   }
-})
-
-bot.on('channelCreate', (channel: Channel) => {
-  console.log('channelCreate', channel.id)
-})
-
-bot.on('channelPinsUpdate', (before: TextChannel, after: TextChannel) => {
-  console.log(
-    'channelPinsUpdate',
-    before.lastPinTimestamp,
-    after.lastPinTimestamp
-  )
-})
-
-bot.on('guildBanAdd', (guild: Guild, user: User) => {
-  console.log('guildBanAdd', guild.id, user.id)
-})
-
-bot.on('guildBanRemove', (guild: Guild, user: User) => {
-  console.log('guildBanRemove', guild.id, user.id)
-})
-
-bot.on('guildCreate', (guild: Guild) => {
-  console.log('guildCreate', guild.id)
-})
-
-bot.on('guildDelete', (guild: Guild) => {
-  console.log('guildDelete', guild.id)
-})
-
-bot.on('guildUpdate', (before: Guild, after: Guild) => {
-  console.log('guildUpdate', before.name, after.name)
-})
-
-bot.on('messageCreate', (msg: Message) => {
-  console.log(`${msg.author.tag}: ${msg.content}`)
 })
 
 bot.connect(TOKEN, [

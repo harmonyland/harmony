@@ -1,4 +1,5 @@
 import { Client } from "../models/client.ts";
+import { Channel } from "../structures/channel.ts";
 import { Guild } from "../structures/guild.ts";
 import { CategoryChannel } from "../structures/guildCategoryChannel.ts";
 import { GuildTextChannel } from "../structures/guildTextChannel.ts";
@@ -7,6 +8,7 @@ import { GuildChannelCategoryPayload, GuildTextChannelPayload, GuildVoiceChannel
 import { CHANNEL } from "../types/endpoint.ts";
 import { BaseChildManager } from "./BaseChildManager.ts";
 import { BaseManager } from "./BaseManager.ts";
+import { ChannelsManager } from "./ChannelsManager.ts";
 
 export type GuildChannelPayload = GuildTextChannelPayload | GuildVoiceChannelPayload | GuildChannelCategoryPayload
 export type GuildChannel = GuildTextChannel | VoiceChannel | CategoryChannel
@@ -14,8 +16,8 @@ export type GuildChannel = GuildTextChannel | VoiceChannel | CategoryChannel
 export class GuildChannelsManager extends BaseChildManager<GuildChannelPayload, GuildChannel> {
   guild: Guild
 
-  constructor(client: Client, parent: BaseManager<GuildChannelPayload, GuildChannel>, guild: Guild) {
-    super(client, parent)
+  constructor(client: Client, parent: ChannelsManager, guild: Guild) {
+    super(client, parent as any)
     this.guild = guild
   }
 
@@ -27,5 +29,18 @@ export class GuildChannelsManager extends BaseChildManager<GuildChannelPayload, 
 
   delete(id: string) {
     return this.client.rest.delete(CHANNEL(id))
+  }
+
+  async array(): Promise<GuildChannel[]> {
+    let arr = await this.parent.array() as Channel[]
+    return arr as any//.filter((c: any) => c.guild && c.guild.id == this.guild.id) as any
+  }
+
+  async flush() {
+    let arr = await this.array()
+    for (let elem of arr) {
+      this.parent.delete(elem.id)
+    }
+    return true
   }
 }

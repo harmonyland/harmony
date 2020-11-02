@@ -10,12 +10,17 @@ export const messageCreate: GatewayEventHandler = async(
   gateway: Gateway,
   d: MessagePayload
 ) => {
-  let channel = await gateway.client.channels.get(d.channel_id)
+  let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   // Fetch the channel if not cached
   if(!channel) channel = (await gateway.client.channels.fetch(d.channel_id) as any) as TextChannel
   let user = new User(gateway.client, d.author)
   await gateway.client.users.set(d.author.id, d.author)
+  let guild
+  if(d.guild_id) {
+    guild = await gateway.client.guilds.get(d.guild_id)
+  }
   let mentions = new MessageMentions()
   let message = new Message(gateway.client, d, channel, user, mentions)
+  if(guild) message.guild = guild
   gateway.client.emit('messageCreate', message)
 }

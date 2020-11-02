@@ -18,14 +18,17 @@ import cache from '../models/cache.ts'
 import { Channel } from "./channel.ts"
 import { MessageMentions } from "./MessageMentions.ts"
 import { TextChannel } from "./textChannel.ts"
+import { DMChannel } from "./dmChannel.ts"
+import { Guild } from "./guild.ts"
 
 export class Message extends Base {
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private data: MessagePayload
   id: string
   channelID: string
-  channel: Channel
+  channel: TextChannel
   guildID?: string
+  guild?: Guild
   author: User
   member?: Member
   content: string
@@ -48,7 +51,7 @@ export class Message extends Base {
   messageReference?: MessageReference
   flags?: number
 
-  constructor (client: Client, data: MessagePayload, channel: Channel, author: User, mentions: MessageMentions) {
+  constructor (client: Client, data: MessagePayload, channel: TextChannel, author: User, mentions: MessageMentions) {
     super(client)
     this.data = data
     this.id = data.id
@@ -117,7 +120,13 @@ export class Message extends Base {
   }
 
   edit (text?: string, option?: MessageOption): Promise<Message> {
-    return (this.channel as TextChannel).editMessage(this.id, text, option)  
+    return (this.channel as TextChannel).edit(this.id, text, option)  
+  }
+
+  reply(text: string, options?: MessageOption) {
+    // TODO: Use inline replies once they're out
+    if(this.channel instanceof DMChannel) return this.channel.send(text, options)
+    return this.channel.send(`${this.author.mention}, ${text}`, options)
   }
 
   delete (): Promise<void> {

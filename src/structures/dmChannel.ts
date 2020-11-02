@@ -10,7 +10,6 @@ export class DMChannel extends TextChannel {
   constructor (client: Client, data: DMChannelPayload) {
     super(client, data)
     this.recipients = data.recipients
-    // cache.set('dmchannel', this.id, this)
   }
 
   protected readFromData (data: DMChannelPayload): void {

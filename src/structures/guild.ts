@@ -10,6 +10,9 @@ import cache from '../models/cache.ts'
 import getChannelByType from '../utils/getChannelByType.ts'
 import { RolesManager } from "../managers/RolesManager.ts"
 import { Role } from "./role.ts"
+import { GuildChannelsManager } from "../managers/GuildChannelsManager.ts"
+import { MembersManager } from "../managers/MembersManager.ts"
+import { ChannelsManager } from "../managers/ChannelsManager.ts"
 
 export class Guild extends Base {
   id: string
@@ -29,7 +32,7 @@ export class Guild extends Base {
   verificationLevel?: string
   defaultMessageNotifications?: string
   explicitContentFilter?: string
-  roles: RolesManager = new RolesManager(this.client, this)
+  roles: RolesManager
   emojis?: Emoji[]
   features?: GuildFeatures[]
   mfaLevel?: string
@@ -42,8 +45,8 @@ export class Guild extends Base {
   unavailable: boolean
   memberCount?: number
   voiceStates?: VoiceState[]
-  members?: Member[]
-  channels?: Channel[]
+  members: MembersManager 
+  channels: GuildChannelsManager
   presences?: PresenceUpdatePayload[]
   maxPresences?: number
   maxMembers?: number
@@ -62,6 +65,9 @@ export class Guild extends Base {
     super(client, data)
     this.id = data.id
     this.unavailable = data.unavailable
+    this.members = new MembersManager(this.client, this)
+    this.channels = new GuildChannelsManager(this.client, this.client.channels, this)
+    this.roles = new RolesManager(this.client, this)
 
     if (!this.unavailable) {
       this.name = data.name

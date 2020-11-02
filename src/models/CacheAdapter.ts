@@ -8,6 +8,7 @@ export interface ICacheAdapter {
   set: (cacheName: string, key: string, value: any) => Promise<any> | any
   delete: (cacheName: string, key: string) => Promise<boolean> | boolean
   array: (cacheName: string) => void | any[] | Promise<any[] | void>
+  deleteCache: (cacheName: string) => any
 }
 
 export class DefaultCacheAdapter implements ICacheAdapter {
@@ -43,8 +44,12 @@ export class DefaultCacheAdapter implements ICacheAdapter {
 
   async array(cacheName: string) {
     const cache = this.data[cacheName]
-    if (!cache) return
+    if (!cache) return []
     return cache.array()
+  }
+
+  async deleteCache(cacheName: string) {
+    return delete this.data[cacheName]
   }
 }
 
@@ -94,5 +99,10 @@ export class RedisCacheAdapter implements ICacheAdapter {
     await this._checkReady()
     let data = await this.redis?.hvals(cacheName)
     return data?.map((e: string) => JSON.parse(e))
+  }
+
+  async deleteCache(cacheName: string) {
+    await this._checkReady()
+    return await this.redis?.del(cacheName)
   }
 }

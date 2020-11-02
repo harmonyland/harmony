@@ -29,25 +29,18 @@ export class TextChannel extends Channel {
     if (text !== undefined && option !== undefined) {
       throw new Error('Either text or option is necessary.')
     }
-    const resp = await fetch(CHANNEL_MESSAGES(this.id), {
-      headers: {
-        Authorization: `Bot ${this.client.token}`,
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify({
+    const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), {
         content: text,
         embed: option?.embed,
         file: option?.file,
         tts: option?.tts,
         allowed_mentions: option?.allowedMention
-      })
     })
 
-    return new Message(this.client, await resp.json(), this, this.client.user as User, new MessageMentions())
+    return new Message(this.client, resp as any, this, this.client.user as User, new MessageMentions())
   }
 
-  async editMessage (
+  async edit (
     message: Message | string,
     text?: string,
     option?: MessageOption
