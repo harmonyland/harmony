@@ -21,6 +21,6 @@ export const messageCreate: GatewayEventHandler = async (
   }
   const mentions = new MessageMentions()
   const message = new Message(gateway.client, d, channel as any, user, mentions)
-  if(guild !== undefined) message.guild = guild
+  if (guild !== undefined) message.guild = guild
   gateway.client.emit('messageCreate', message)
 }

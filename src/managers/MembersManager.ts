@@ -23,7 +23,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   }
 
   async fromPayload(members: MemberPayload[]): Promise<void> {
-    for(const member of members) {
+    for (const member of members) {
       await this.set(member.user.id, member)
     }
   }

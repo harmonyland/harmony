@@ -22,7 +22,7 @@ export class GuildChannelsManager extends BaseChildManager<GuildChannelPayloads,
 
   async get(id: string): Promise<GuildChannel | undefined> {
     const res = await this.parent.get(id)
-    if(res !== undefined && res.guild.id === this.guild.id) return res
+    if (res !== undefined && res.guild.id === this.guild.id) return res
     else return undefined
   }
 
