@@ -14,7 +14,6 @@ import { User } from './user.ts'
 import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
-import { Channel } from "./channel.ts"
 import { MessageMentions } from "./MessageMentions.ts"
 import { TextChannel } from "./textChannel.ts"
 import { DMChannel } from "./dmChannel.ts"
@@ -124,11 +123,11 @@ export class Message extends Base {
     this.flags = data.flags ?? this.flags
   }
 
-  edit (text?: string, option?: MessageOption): Promise<Message> {
+  async edit (text?: string, option?: MessageOption): Promise<Message> {
     return this.channel.edit(this.id, text, option)  
   }
 
-  reply(text: string, options?: MessageOption) {
+  async reply(text: string, options?: MessageOption): Promise<Message> {
     // TODO: Use inline replies once they're out
     if(this.channel instanceof DMChannel) return this.channel.send(text, options)
     return this.channel.send(`${this.author.mention}, ${text}`, options)

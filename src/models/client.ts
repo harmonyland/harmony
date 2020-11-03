@@ -9,7 +9,7 @@ import { GuildManager } from "../managers/GuildsManager.ts"
 import { EmojisManager } from "../managers/EmojisManager.ts"
 import { ChannelsManager } from "../managers/ChannelsManager.ts"
 import { MessagesManager } from "../managers/MessagesManager.ts"
-import { ActivityGame, ClientActivity, ClientActivityPayload, ClientPresence } from "../structures/presence.ts"
+import { ActivityGame, ClientActivity, ClientPresence } from "../structures/presence.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -54,14 +54,14 @@ export class Client extends EventEmitter {
     return this
   }
 
-  setPresence(presence: ClientPresence | ClientActivity | ActivityGame) {
+  setPresence(presence: ClientPresence | ClientActivity | ActivityGame): void {
     if(presence instanceof ClientPresence) {
       this.presence = presence
     } else this.presence = new ClientPresence(presence)
     this.gateway?.sendPresence(this.presence.create())
   }
 
-  debug(tag: string, msg: string) {
+  debug(tag: string, msg: string): void {
     this.emit("debug", `[${tag}] ${msg}`)
   }
 

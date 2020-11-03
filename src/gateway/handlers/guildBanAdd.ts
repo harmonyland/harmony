@@ -2,7 +2,6 @@ import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
 import { User } from '../../structures/user.ts'
 import { GuildBanAddPayload } from '../../types/gateway.ts'
-import { Member } from "../../structures/member.ts"
 
 export const guildBanAdd: GatewayEventHandler = async (
   gateway: Gateway,

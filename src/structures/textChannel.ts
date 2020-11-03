@@ -4,7 +4,6 @@ import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Message } from './message.ts'
 import { MessageMentions } from './MessageMentions.ts'
-import { User } from "./user.ts"
 
 export class TextChannel extends Channel {
   lastMessageID?: string
@@ -36,7 +35,7 @@ export class TextChannel extends Channel {
         allowed_mentions: option?.allowedMention
     })
 
-    return new Message(this.client, resp as any, this, this.client.user as User, new MessageMentions())
+    return new Message(this.client, resp as any, this, this.client.user as any, new MessageMentions())
   }
 
   async edit (

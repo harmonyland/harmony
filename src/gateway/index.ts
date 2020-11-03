@@ -12,7 +12,6 @@ import {
 } from '../types/gateway.ts'
 import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
-import { GatewayBotPayload } from "../types/gatewayBot.ts"
 import { GatewayCache } from "../managers/GatewayCache.ts"
 import { ClientActivityPayload } from "../structures/presence.ts"
 
@@ -95,10 +94,9 @@ class Gateway {
         }, this.heartbeatInterval)
 
         if (!this.initialized) {
-          this.sendIdentify(this.client.forceNewSession)
           this.initialized = true
+          await this.sendIdentify(this.client.forceNewSession)
         } else {
-          console.log('Calling Resume')
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.sendResume()
         }
@@ -290,18 +288,18 @@ class Gateway {
     this.websocket.close(1000)
   }
 
-  send(data: GatewayResponse) {
-    if (this.websocket.readyState != this.websocket.OPEN) return false
+  send(data: GatewayResponse): boolean {
+    if (this.websocket.readyState !== this.websocket.OPEN) return false
     this.websocket.send(JSON.stringify({
       op: data.op,
       d: data.d,
-      s: typeof data.s == "number" ? data.s : null,
-      t: data.t || null,
+      s: typeof data.s === "number" ? data.s : null,
+      t: data.t === undefined ? null : data.t,
     }))
     return true
   }
 
-  sendPresence(data: ClientActivityPayload) {
+  sendPresence(data: ClientActivityPayload): void {
     this.send({
       op: GatewayOpcodes.PRESENCE_UPDATE,
       d: data

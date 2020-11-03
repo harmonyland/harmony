@@ -1,18 +1,13 @@
 import { Client } from '../models/client.ts'
 import { GuildFeatures, GuildPayload } from '../types/guild.ts'
-import { PresenceUpdatePayload } from '../types/presence.ts'
+import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
-import { Channel } from './channel.ts'
 import { Emoji } from './emoji.ts'
-import { Member } from './member.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
-import getChannelByType from '../utils/getChannelByType.ts'
 import { RolesManager } from "../managers/RolesManager.ts"
-import { Role } from "./role.ts"
 import { GuildChannelsManager } from "../managers/GuildChannelsManager.ts"
 import { MembersManager } from "../managers/MembersManager.ts"
-import { ChannelsManager } from "../managers/ChannelsManager.ts"
 
 export class Guild extends Base {
   id: string

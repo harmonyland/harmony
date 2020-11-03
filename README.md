@@ -4,7 +4,7 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-Discord Deno API that is easy to use
+An easy to use Discord API Library for Deno
 
 ## Table of Contents
 
@@ -43,10 +43,10 @@ Not made yet
 
 See [the contributing file](CONTRIBUTING.md)!
 
-PRs accepted.
+PRs are accepted.
 
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## License
 
-MIT © 2020 Helloyunho
+[MIT © 2020 Helloyunho](LICENSE)

@@ -5,7 +5,6 @@ import { TextChannel } from "../structures/textChannel.ts";
 import { User } from "../structures/user.ts";
 import { MessagePayload } from "../types/channel.ts";
 import { CHANNEL_MESSAGE } from "../types/endpoint.ts";
-import { UserPayload } from "../types/user.ts";
 import { BaseManager } from "./BaseManager.ts";
 
 export class MessagesManager extends BaseManager<MessagePayload, Message> {
@@ -15,27 +14,27 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
 
   async get(key: string): Promise<Message | undefined> {
     const raw = await this._get(key)
-    if(!raw) return
+    if(raw === undefined) return
     let channel = await this.client.channels.get(raw.channel_id)
-    if(!channel) channel = await this.client.channels.fetch(raw.channel_id)
-    if(!channel) return
-    let author = new User(this.client, raw.author)
-    let mentions = new MessageMentions()
+    if(channel === undefined) channel = await this.client.channels.fetch(raw.channel_id)
+    if(channel === undefined) return
+    const author = new User(this.client, raw.author)
+    const mentions = new MessageMentions()
     return new this.DataType(this.client, raw, channel, author, mentions) as any
   }
 
-  fetch(channelID: string, id: string) {
-    return new Promise((res, rej) => {
+  async fetch(channelID: string, id: string): Promise<Message> {
+    return await new Promise((resolve, reject) => {
       this.client.rest.get(CHANNEL_MESSAGE(channelID, id)).then(async data => {
         this.set(id, data as MessagePayload)
-        let channel = await this.client.channels.get<TextChannel>(channelID)
-        if(!channel) channel = await this.client.channels.fetch(channelID) as TextChannel
-        let author = new User(this.client, (data as MessagePayload).author as UserPayload)
+        let channel: any = await this.client.channels.get<TextChannel>(channelID)
+        if(channel === undefined) channel = await this.client.channels.fetch(channelID)
+        const author = new User(this.client, (data as MessagePayload).author)
         await this.client.users.set(author.id, (data as MessagePayload).author)
         // TODO: Make this thing work (MessageMentions)
-        let mentions = new MessageMentions()
-        res(new Message(this.client, data as MessagePayload, channel, author, mentions))
-      }).catch(e => rej(e))
+        const mentions = new MessageMentions()
+        resolve(new Message(this.client, data as MessagePayload, channel as TextChannel, author, mentions))
+      }).catch(e => reject(e))
     })
   }
 }

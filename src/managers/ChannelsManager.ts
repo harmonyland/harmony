@@ -1,6 +1,5 @@
 import { Client } from "../models/client.ts";
 import { Channel } from "../structures/channel.ts";
-import { User } from "../structures/user.ts";
 import { ChannelPayload } from "../types/channel.ts";
 import { CHANNEL } from "../types/endpoint.ts";
 import getChannelByType from "../utils/getChannelByType.ts";
@@ -13,39 +12,39 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
 
   // Override get method as Generic
   async get<T = Channel>(key: string): Promise<T | undefined> {
-    let data = await this._get(key) as any
-    if(!data) return
+    const data = await this._get(key)
+    if(data === undefined) return
     let guild
-    if(data.guild_id) {
-      guild = await this.client.guilds.get(data.guild_id)
+    if((data as any).guild_id !== undefined) {
+      guild = await this.client.guilds.get((data as any).guild_id)
     }
-    let res = getChannelByType(this.client, data as ChannelPayload, guild || undefined)
+    const res = getChannelByType(this.client, data, guild)
     return res as any
   }
 
-  async array(): Promise<void | Channel[]> {
-    let arr = await (this.client.cache.array(this.cacheName) as ChannelPayload[])
-    let result: any[] = []
-    for(let elem of arr) {
+  async array(): Promise<undefined | Channel[]> {
+    const arr = await (this.client.cache.array(this.cacheName) as ChannelPayload[])
+    const result: any[] = []
+    for(const elem of arr) {
       let guild
-      if((elem as any).guild_id) {
+      if((elem as any).guild_id !== undefined) {
         guild = await this.client.guilds.get((elem as any).guild_id)
       }
-      result.push(getChannelByType(this.client, elem as ChannelPayload, guild || undefined))
+      result.push(getChannelByType(this.client, elem, guild))
     }
     return result
   }
 
-  fetch(id: string): Promise<Channel> {
-    return new Promise((res, rej) => {
+  async fetch(id: string): Promise<Channel> {
+    return await new Promise((resolve, reject) => {
       this.client.rest.get(CHANNEL(id)).then(async data => {
         this.set(id, data as ChannelPayload)
         let guild
-        if((data as any).guild_id) {
-          guild = await this.client.guilds.get((data as any).guild_id)
+        if(data.guild_id !== undefined) {
+          guild = await this.client.guilds.get(data.guild_id)
         }
-        res(getChannelByType(this.client, data as ChannelPayload, guild || undefined))
-      }).catch(e => rej(e))
+        resolve(getChannelByType(this.client, data as ChannelPayload, guild))
+      }).catch(e => reject(e))
     })
   }
 }

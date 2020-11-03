@@ -1,5 +1,6 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
+import { StatusType } from "../../mod.ts"
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import { ActivityPayload } from './presence.ts'
@@ -291,7 +292,7 @@ export interface MessageReactionRemoveAllPayload {
 export interface PresenceUpdatePayload {
   user: UserPayload
   guild_id: string
-  status: string
+  status: StatusType
   activities: ActivityPayload[]
   client_status: UpdateStatus[]
 }

@@ -52,7 +52,8 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     return cache.array()
   }
 
-  async deleteCache(cacheName: string) {
+  async deleteCache(cacheName: string): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     return delete this.data[cacheName]
   }
 }
@@ -120,8 +121,8 @@ export class RedisCacheAdapter implements ICacheAdapter {
     return data?.map((e: string) => JSON.parse(e))
   }
 
-  async deleteCache(cacheName: string) {
+  async deleteCache(cacheName: string): Promise<boolean> {
     await this._checkReady()
-    return await this.redis?.del(cacheName)
+    return await this.redis?.del(cacheName) !== 0
   }
 }

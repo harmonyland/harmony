@@ -37,13 +37,13 @@ export class ClientPresence {
   afk?: boolean
 
   constructor(data?: ClientActivity | ClientActivityPayload | ActivityGame) {
-    if (data) {
+    if (data !== undefined) {
       if((data as ClientActivity).activity !== undefined) {
         Object.assign(this, data)
       } else if((data as ClientActivityPayload).activities !== undefined) {
         
       } else if((data as ActivityGame).name !== undefined) {
-        if(!this.activity) {
+        if(this.activity === undefined) {
           this.activity = data as ActivityGame
         } else if(this.activity instanceof Array) {
           this.activity.push(data as ActivityGame)
@@ -52,68 +52,71 @@ export class ClientPresence {
     }
   }
 
-  parse(payload: ClientActivityPayload) {
+  parse(payload: ClientActivityPayload): ClientPresence {
     this.afk = payload.afk
     this.activity = payload.activities ?? undefined
     this.since = payload.since
     this.status = payload.status
+    return this
   }
 
-  static parse(payload: ClientActivityPayload) {
+  static parse(payload: ClientActivityPayload): ClientPresence {
     return new ClientPresence().parse(payload)
   }
 
   create(): ClientActivityPayload {
     return {
-      afk: this.afk || false,
+      afk: this.afk === undefined ? false : this.afk,
       activities: this.createActivity(),
-      since: this.since || null,
-      status: this.status || 'online'
+      since: this.since === undefined ? null : this.since,
+      status: this.status === undefined ? 'online' : this.status
     }
   }
 
-  createActivity() {
-    let activity = this.activity == undefined ? null : (this.activity instanceof Array ? this.activity : [this.activity]) || null
-    if(activity == null) return activity
+  createActivity(): ActivityGame[] | null {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    const activity = this.activity === undefined ? null : (this.activity instanceof Array ? this.activity : [this.activity]) || null
+    if(activity === null) return activity
     else {
       activity.map(e => {
-        if(typeof e.type == "string") e.type = ActivityTypes[e.type]
+        if(typeof e.type === "string") e.type = ActivityTypes[e.type]
         return e
       })
       return activity
     }
   }
 
-  setStatus(status: StatusType) {
+  setStatus(status: StatusType): ClientPresence {
     this.status = status
     return this
   }
 
-  setActivity(activity: ActivityGame) {
+  setActivity(activity: ActivityGame): ClientPresence {
     this.activity = activity
     return this
   }
 
-  setActivities(activities: ActivityGame[]) {
+  setActivities(activities: ActivityGame[]): ClientPresence {
     this.activity = activities
     return this
   }
 
-  setAFK(afk: boolean) {
+  setAFK(afk: boolean): ClientPresence {
     this.afk = afk
+    return this
   }
 
-  removeAFK() {
+  removeAFK(): ClientPresence {
     this.afk = false
     return this
   }
 
-  toggleAFK() {
-    this.afk = !(this.afk || true)
+  toggleAFK(): ClientPresence {
+    this.afk = this.afk === undefined ? true : !this.afk
     return this
   }
 
-  setSince(since?: number) {
+  setSince(since?: number): ClientPresence {
     this.since = since
     return this
   }

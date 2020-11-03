@@ -1,15 +1,9 @@
 export class Collection<K = string, V = any> extends Map<K, V> {
-  maxSize?: number;
-
-  set(key: K, value: V) {
-    if (this.maxSize || this.maxSize === 0) {
-      if (this.size >= this.maxSize) return this
-    }
-
+  set(key: K, value: V): this {
     return super.set(key, value)
   }
 
-  array() {
+  array(): V[] {
     return [...this.values()]
   }
 
@@ -21,53 +15,49 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     return [...this.values()][this.size - 1]
   }
 
-  random() {
+  random(): V {
     const arr = [...this.values()]
     return arr[Math.floor(Math.random() * arr.length)]
   }
 
-  find(callback: (value: V, key: K) => boolean) {
+  find(callback: (value: V, key: K) => boolean): V | undefined {
     for (const key of this.keys()) {
-      const value = this.get(key)!
+      const value = this.get(key) as V
+      // eslint-disable-next-line standard/no-callback-literal
       if (callback(value, key)) return value
     }
-    // If nothing matched
-    
   }
 
-  filter(callback: (value: V, key: K) => boolean) {
+  filter(callback: (value: V, key: K) => boolean): Collection<K, V> {
     const relevant = new Collection<K, V>()
     this.forEach((value, key) => {
       if (callback(value, key)) relevant.set(key, value)
-    });
-
-    return relevant;
+    })
+    return relevant
   }
 
-  map<T>(callback: (value: V, key: K) => T) {
+  map<T>(callback: (value: V, key: K) => T): T[] {
     const results = []
     for (const key of this.keys()) {
-      const value = this.get(key)!
+      const value = this.get(key) as V
       results.push(callback(value, key))
     }
     return results
   }
 
-  some(callback: (value: V, key: K) => boolean) {
+  some(callback: (value: V, key: K) => boolean): boolean {
     for (const key of this.keys()) {
-      const value = this.get(key)!
+      const value = this.get(key) as V
       if (callback(value, key)) return true
     }
-
     return false
   }
 
-  every(callback: (value: V, key: K) => boolean) {
+  every(callback: (value: V, key: K) => boolean): boolean {
     for (const key of this.keys()) {
-      const value = this.get(key)!
+      const value = this.get(key) as V
       if (!callback(value, key)) return false
     }
-
     return true
   }
 
@@ -75,21 +65,21 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     callback: (accumulator: T, value: V, key: K) => T,
     initialValue?: T,
   ): T {
-    let accumulator: T = initialValue!
+    let accumulator: T = initialValue as T
 
     for (const key of this.keys()) {
-      const value = this.get(key)!
+      const value = this.get(key) as V
       accumulator = callback(accumulator, value, key)
     }
 
     return accumulator
   }
 
-  static fromObject<V>(object: { [key: string]: V }) {
+  static fromObject<V>(object: { [key: string]: V }): Collection<string, V> {
     return new Collection<string, V>(Object.entries(object))
   }
 
-  toObject() {
-    return Object.entries(this)
+  toObject(): { [name: string]: V } {
+    return Object.fromEntries(this)
   }
 }

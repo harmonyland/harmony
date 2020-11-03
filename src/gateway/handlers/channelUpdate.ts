@@ -1,4 +1,3 @@
-import { GuildChannelPayload } from "../../managers/GuildChannelsManager.ts"
 import { Channel } from '../../structures/channel.ts'
 import { Guild } from "../../structures/guild.ts"
 import { ChannelPayload } from '../../types/channel.ts'
@@ -9,13 +8,13 @@ export const channelUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: ChannelPayload
 ) => {
-  const oldChannel: Channel | void = await gateway.client.channels.get(d.id)
+  const oldChannel: Channel | undefined = await gateway.client.channels.get(d.id)
 
   if (oldChannel !== undefined) {
     await gateway.client.channels.set(d.id, d)
     let guild: undefined | Guild;
-    if((d as GuildChannelPayload).guild_id) {
-      guild = await gateway.client.guilds.get((d as GuildChannelPayload).guild_id) || undefined
+    if((d as any).guild_id !== undefined) {
+      guild = await gateway.client.guilds.get((d as any).guild_id) as Guild | undefined
     }
     if (oldChannel.type !== d.type) {
       const channel: Channel = getChannelByType(gateway.client, d, guild) ?? oldChannel

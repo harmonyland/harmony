@@ -11,39 +11,40 @@ export const guildCreate: GatewayEventHandler = async(gateway: Gateway, d: Guild
   if (guild !== undefined) {
     // It was just lazy load, so we don't fire the event as its gonna fire for every guild bot is in
     await gateway.client.guilds.set(d.id, d)
-    if((d as GuildPayload).members) {
-      let members = new MembersManager(gateway.client, guild)
-      await members.fromPayload((d as GuildPayload).members as MemberPayload[])
+    if((d as any).members !== undefined) {
+      const members = new MembersManager(gateway.client, guild)
+      await members.fromPayload((d as any).members as MemberPayload[])
       guild.members = members
     }
-    if((d as GuildPayload).channels) {
-      for (let ch of (d as GuildPayload).channels as ChannelPayload[]) {
+    if((d as any).channels !== undefined) {
+      for (const ch of (d as any).channels as ChannelPayload[]) {
         (ch as any).guild_id = d.id
         await gateway.client.channels.set(ch.id, ch)
       }
     }
-    if((d as GuildPayload).roles) {
-      let roles = new RolesManager(gateway.client, guild)
-      await roles.fromPayload((d as GuildPayload).roles as RolePayload[])
+    if((d as any).roles !== undefined) {
+      const roles = new RolesManager(gateway.client, guild)
+      await roles.fromPayload((d as any).roles as RolePayload[])
       guild.roles = roles
     }
     guild.refreshFromData(d)
   } else {
     await gateway.client.guilds.set(d.id, d)
-    guild = new Guild(gateway.client, d as GuildPayload)
-    if((d as GuildPayload).members) {
-      let members = new MembersManager(gateway.client, guild)
-      await members.fromPayload((d as GuildPayload).members as MemberPayload[])
+    guild = new Guild(gateway.client, d)
+    if((d as any).members !== undefined) {
+      const members = new MembersManager(gateway.client, guild)
+      await members.fromPayload((d as any).members as MemberPayload[])
       guild.members = members
     }
-    if((d as GuildPayload).channels) {
-      for (let ch of (d as GuildPayload).channels as ChannelPayload[]) {
+    if((d as any).channels !== undefined) {
+      for (const ch of (d as any).channels as ChannelPayload[]) {
+        (ch as any).guild_id = d.id
         await gateway.client.channels.set(ch.id, ch)
       }
     }
-    if((d as GuildPayload).roles) {
-      let roles = new RolesManager(gateway.client, guild)
-      await roles.fromPayload((d as GuildPayload).roles as RolePayload[])
+    if((d as any).roles !== undefined) {
+      const roles = new RolesManager(gateway.client, guild)
+      await roles.fromPayload((d as any).roles as RolePayload[])
       guild.roles = roles
     }
     await guild.roles.fromPayload(d.roles)
