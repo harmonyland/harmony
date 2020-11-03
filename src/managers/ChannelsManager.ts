@@ -25,7 +25,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   async array(): Promise<undefined | Channel[]> {
     const arr = await (this.client.cache.array(this.cacheName) as ChannelPayload[])
     const result: any[] = []
-    for(const elem of arr) {
+    for (const elem of arr) {
       let guild
       if ((elem as any).guild_id !== undefined) {
         guild = await this.client.guilds.get((elem as any).guild_id)

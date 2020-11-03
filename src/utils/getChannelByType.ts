@@ -39,16 +39,16 @@ const getChannelByType = (
   | undefined => {
   switch (data.type) {
     case ChannelTypes.GUILD_CATEGORY:
-      if(guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
       return new CategoryChannel(client, data as GuildChannelCategoryPayload, guild)
     case ChannelTypes.GUILD_NEWS:
-      if(guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
       return new NewsChannel(client, data as GuildNewsChannelPayload, guild)
     case ChannelTypes.GUILD_TEXT:
-      if(guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
       return new GuildTextChannel(client, data as GuildTextChannelPayload, guild)
     case ChannelTypes.GUILD_VOICE:
-      if(guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
       return new VoiceChannel(client, data as GuildVoiceChannelPayload, guild)
     case ChannelTypes.DM:
       return new DMChannel(client, data as DMChannelPayload)

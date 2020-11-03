@@ -29,7 +29,7 @@ export class BaseChildManager<T, T2> {
 
   async collection(): Promise<Collection<string, T2>> {
     const arr = await this.array() as undefined | T2[]
-    if(arr === undefined) return new Collection()
+    if (arr === undefined) return new Collection()
     const collection = new Collection()
     for (const elem of arr) {
       // @ts-expect-error
