@@ -4,6 +4,9 @@ import { TOKEN } from './config.ts'
 import { Message } from "../structures/message.ts"
 import { RedisCacheAdapter } from "../models/CacheAdapter.ts"
 import { ClientPresence } from "../structures/presence.ts"
+import { Member } from "../structures/member.ts"
+import { Role } from "../structures/role.ts"
+import { GuildChannel } from "../managers/GuildChannelsManager.ts"
 
 const bot = new Client({
   presence: new ClientPresence({
@@ -12,7 +15,6 @@ const bot = new Client({
       type: 'COMPETING'
     }
   }),
-  forceNewSession: true
 })
 
 bot.setAdapter(new RedisCacheAdapter(bot, {
@@ -31,32 +33,31 @@ bot.on('ready', () => {
 bot.on('debug', console.log)
 
 bot.on('messageCreate', async (msg: Message) => {
-  if (msg.author.bot) return
-  console.log(`${msg.author.tag} (${msg.channel + ""}): ${msg.content}`)
-  if (msg.content == "!ping") {
-    msg.reply("Pong! API Ping: " + bot.ping + "ms")
-  } else if (msg.content == "!members") {
-    let col = await msg.guild?.members.collection()
-    let data = col?.array().map((c, i) => {
+  if (msg.author.bot === true) return
+  if (msg.content === "!ping") {
+    msg.reply(`Pong! Ping: ${bot.ping}ms`)
+  } else if (msg.content === "!members") {
+    const col = await msg.guild?.members.collection()
+    const data = col?.array().map((c: Member, i: number) => {
       return `${i + 1}. ${c.user.tag}`
-    }).join("\n")
+    }).join("\n") as string
     msg.channel.send("Member List:\n" + data)
-  } else if (msg.content == "!guilds") {
-    let guilds = await msg.client.guilds.collection()
-    msg.channel.send("Guild List:\n" + guilds.array().map((c, i) => {
+  } else if (msg.content === "!guilds") {
+    const guilds = await msg.client.guilds.collection()
+    msg.channel.send("Guild List:\n" + (guilds.array().map((c, i: number) => {
       return `${i + 1}. ${c.name} - ${c.memberCount} members`
-    }).join("\n"))
-  } else if (msg.content == "!roles") {
-    let col = await msg.guild?.roles.collection()
-    let data = col?.array().map((c, i) => {
+    }).join("\n") as string))
+  } else if (msg.content === "!roles") {
+    const col = await msg.guild?.roles.collection()
+    const data = col?.array().map((c: Role, i: number) => {
       return `${i + 1}. ${c.name}`
-    }).join("\n")
+    }).join("\n") as string
     msg.channel.send("Roles List:\n" + data)
-  } else if (msg.content == "!channels") {
-    let col = await msg.guild?.channels.array()
-    let data = col?.map((c, i) => {
+  } else if (msg.content === "!channels") {
+    const col = await msg.guild?.channels.array()
+    const data = col?.map((c: GuildChannel, i: number) => {
       return `${i + 1}. ${c.name}`
-    }).join("\n")
+    }).join("\n") as string
     msg.channel.send("Channels List:\n" + data)
   }
 })
