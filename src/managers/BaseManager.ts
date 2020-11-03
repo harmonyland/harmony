@@ -32,7 +32,7 @@ export class BaseManager<T, T2> {
 
   async array(): Promise<void | T2[]> {
     let arr = await (this.client.cache.array(this.cacheName) as T[])
-    return arr.map(e => new this.dataType(this.client, e)) as any
+    return arr.map(e => new this.DataType(this.client, e)) as any
   }
 
   async collection(): Promise<Collection<string, T2>> {

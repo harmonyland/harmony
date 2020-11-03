@@ -15,10 +15,10 @@ const bot = new Client({
   forceNewSession: true
 })
 
-// bot.setAdapter(new RedisCacheAdapter(bot, {
-//   hostname: "127.0.0.1",
-//   port: 6379
-// }))
+bot.setAdapter(new RedisCacheAdapter(bot, {
+  hostname: "127.0.0.1",
+  port: 6379
+}))
 
 bot.on('ready', () => {
   console.log(`[Login] Logged in as ${bot.user?.tag}!`)

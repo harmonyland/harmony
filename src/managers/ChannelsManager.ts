@@ -12,7 +12,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   }
 
   // Override get method as Generic
-  async get<T = Channel>(key: string): Promise<T | void> {
+  async get<T = Channel>(key: string): Promise<T | undefined> {
     let data = await this._get(key) as any
     if(!data) return
     let guild

@@ -1,6 +1,6 @@
 import { Client } from '../models/client.ts'
 import { GuildFeatures, GuildPayload } from '../types/guild.ts'
-import { PresenceUpdatePayload } from '../types/gateway.ts'
+import { PresenceUpdatePayload } from '../types/presence.ts'
 import { Base } from './base.ts'
 import { Channel } from './channel.ts'
 import { Emoji } from './emoji.ts'

@@ -2,6 +2,7 @@ import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
 import { User } from '../../structures/user.ts'
 import { GuildBanAddPayload } from '../../types/gateway.ts'
+import { Member } from "../../structures/member.ts"
 
 export const guildBanAdd: GatewayEventHandler = async (
   gateway: Gateway,
@@ -13,7 +14,7 @@ export const guildBanAdd: GatewayEventHandler = async (
     new User(gateway.client, d.user)
 
   if (guild !== undefined) {
-    guild.members = guild.members?.filter(member => member.id !== d.user.id)
+    await guild.members.delete(user.id)
     gateway.client.emit('guildBanAdd', guild, user)
   }
 }

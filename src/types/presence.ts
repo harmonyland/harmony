@@ -1,3 +1,6 @@
+import { StatusType } from "../structures/presence.ts";
+import { User } from "../structures/user.ts";
+
 export interface ClientStatus {
   desktop?: string
   mobile?: string
@@ -50,7 +53,7 @@ export interface ActivitySecrets {
   match?: string
 }
 
-enum ActivityFlags {
+export enum ActivityFlags {
   INSTANCE = 1 << 0,
   JOIN = 1 << 1,
   SPECTATE = 1 << 2,
@@ -59,4 +62,10 @@ enum ActivityFlags {
   PLAY = 1 << 5
 }
 
-export { ActivityFlags }
+export interface PresenceUpdatePayload {
+  user: User
+  guild_id: string
+  status: StatusType
+  activities: ActivityPayload
+  client_status: ClientStatus
+}
