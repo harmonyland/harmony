@@ -5,9 +5,9 @@ import { Base } from './base.ts'
 import { Emoji } from './emoji.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
-import { RolesManager } from "../managers/RolesManager.ts"
-import { GuildChannelsManager } from "../managers/guildChannelsManager.ts"
-import { MembersManager } from "../managers/membersManager.ts"
+import { RolesManager } from "../managers/roles.ts"
+import { GuildChannelsManager } from "../managers/guildChannels.ts"
+import { MembersManager } from "../managers/members.ts"
 
 export class Guild extends Base {
   id: string
