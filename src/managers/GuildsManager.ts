@@ -15,7 +15,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
       this.client.rest.get(GUILD(id)).then(async (data: any) => {
         this.set(id, data)
         const guild = new Guild(this.client, data)
-        if((data as GuildPayload).members !== undefined) {
+        if ((data as GuildPayload).members !== undefined) {
           const members = new MembersManager(this.client, guild)
           await members.fromPayload((data as GuildPayload).members as MemberPayload[])
           guild.members = members

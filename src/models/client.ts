@@ -54,14 +54,14 @@ export class Client extends EventEmitter {
     return this
   }
 
-  setPresence(presence: ClientPresence | ClientActivity | ActivityGame): void {
-    if(presence instanceof ClientPresence) {
+  setPresence (presence: ClientPresence | ClientActivity | ActivityGame): void {
+    if (presence instanceof ClientPresence) {
       this.presence = presence
     } else this.presence = new ClientPresence(presence)
     this.gateway?.sendPresence(this.presence.create())
   }
 
-  debug(tag: string, msg: string): void {
+  debug (tag: string, msg: string): void {
     this.emit("debug", `[${tag}] ${msg}`)
   }
 

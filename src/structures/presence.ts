@@ -38,14 +38,14 @@ export class ClientPresence {
 
   constructor(data?: ClientActivity | ClientActivityPayload | ActivityGame) {
     if (data !== undefined) {
-      if((data as ClientActivity).activity !== undefined) {
+      if ((data as ClientActivity).activity !== undefined) {
         Object.assign(this, data)
-      } else if((data as ClientActivityPayload).activities !== undefined) {
+      } else if ((data as ClientActivityPayload).activities !== undefined) {
         
-      } else if((data as ActivityGame).name !== undefined) {
-        if(this.activity === undefined) {
+      } else if ((data as ActivityGame).name !== undefined) {
+        if (this.activity === undefined) {
           this.activity = data as ActivityGame
-        } else if(this.activity instanceof Array) {
+        } else if (this.activity instanceof Array) {
           this.activity.push(data as ActivityGame)
         } else this.activity = [ this.activity, data as ActivityGame ]
       }
@@ -76,10 +76,10 @@ export class ClientPresence {
   createActivity(): ActivityGame[] | null {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     const activity = this.activity === undefined ? null : (this.activity instanceof Array ? this.activity : [this.activity]) || null
-    if(activity === null) return activity
+    if (activity === null) return activity
     else {
       activity.map(e => {
-        if(typeof e.type === "string") e.type = ActivityTypes[e.type]
+        if (typeof e.type === "string") e.type = ActivityTypes[e.type]
         return e
       })
       return activity

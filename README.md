@@ -4,13 +4,13 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-An easy to use Discord API Library for Deno
+**An easy to use Discord API Library for Deno**
 
 ## Table of Contents
 
 - [Usage](#usage)
 - [Docs](#docs)
-- [Maintainers](#maintainers)
+- [Maintainer](#maintainer)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -35,7 +35,7 @@ bot.connect(TOKEN, [GatewayIntents.GUILD_MESSAGES])
 
 Not made yet
 
-## Maintainers
+## Maintainer
 
 [@Helloyunho](https://github.com/Helloyunho)
 

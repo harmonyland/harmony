@@ -12,12 +12,13 @@ import { ready } from './ready.ts'
 import { guildBanRemove } from './guildBanRemove.ts'
 import { messageCreate } from "./messageCreate.ts"
 import { resume } from "./resume.ts"
+import { reconnect } from './reconnect.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
 } = {
   READY: ready,
-  RECONNECT: undefined,
+  RECONNECT: reconnect,
   RESUMED: resume,
   CHANNEL_CREATE: channelCreate,
   CHANNEL_DELETE: channelDelete,

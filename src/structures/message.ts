@@ -129,7 +129,7 @@ export class Message extends Base {
 
   async reply(text: string, options?: MessageOption): Promise<Message> {
     // TODO: Use inline replies once they're out
-    if(this.channel instanceof DMChannel) return this.channel.send(text, options)
+    if (this.channel instanceof DMChannel) return this.channel.send(text, options)
     return this.channel.send(`${this.author.mention}, ${text}`, options)
   }
 
