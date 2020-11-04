@@ -14,17 +14,19 @@ import { User } from './user.ts'
 import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
-import { Channel } from './channel.ts'
-import { MessageMentions } from './MessageMentions.ts'
-import { TextChannel } from './textChannel.ts'
+import { MessageMentions } from "./MessageMentions.ts"
+import { TextChannel } from "./textChannel.ts"
+import { DMChannel } from "./dmChannel.ts"
+import { Guild } from "./guild.ts"
 
 export class Message extends Base {
   // eslint-disable-next-line @typescript-eslint/prefer-readonly
   private data: MessagePayload
   id: string
   channelID: string
-  channel: Channel
+  channel: TextChannel
   guildID?: string
+  guild?: Guild
   author: User
   member?: Member
   content: string
@@ -50,7 +52,7 @@ export class Message extends Base {
   constructor (
     client: Client,
     data: MessagePayload,
-    channel: Channel,
+    channel: TextChannel,
     author: User,
     mentions: MessageMentions
   ) {
@@ -122,9 +124,13 @@ export class Message extends Base {
   }
 
   async edit (text?: string, option?: MessageOption): Promise<Message> {
-    // Seriously eslint?
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    return (this.channel as TextChannel).editMessage(this.id, text, option)
+    return this.channel.edit(this.id, text, option)  
+  }
+
+  async reply(text: string, options?: MessageOption): Promise<Message> {
+    // TODO: Use inline replies once they're out
+    if (this.channel instanceof DMChannel) return this.channel.send(text, options)
+    return this.channel.send(`${this.author.mention}, ${text}`, options)
   }
 
   async delete (): Promise<void> {

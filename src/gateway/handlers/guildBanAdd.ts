@@ -13,7 +13,7 @@ export const guildBanAdd: GatewayEventHandler = async (
     new User(gateway.client, d.user)
 
   if (guild !== undefined) {
-    guild.members = guild.members?.filter(member => member.id !== d.user.id)
+    await guild.members.delete(user.id)
     gateway.client.emit('guildBanAdd', guild, user)
   }
 }

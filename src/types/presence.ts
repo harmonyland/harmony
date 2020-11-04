@@ -50,7 +50,7 @@ export interface ActivitySecrets {
   match?: string
 }
 
-enum ActivityFlags {
+export enum ActivityFlags {
   INSTANCE = 1 << 0,
   JOIN = 1 << 1,
   SPECTATE = 1 << 2,
@@ -58,5 +58,3 @@ enum ActivityFlags {
   SYNC = 1 << 4,
   PLAY = 1 << 5
 }
-
-export { ActivityFlags }

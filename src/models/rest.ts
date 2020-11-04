@@ -52,7 +52,7 @@ export class RESTManager {
 
   constructor (client: Client) {
     this.client = client
-    setTimeout(this.processRateLimitedPaths, 1000)
+    setTimeout(() => this.processRateLimitedPaths, 1000)
   }
 
   async processRateLimitedPaths (): Promise<void> {
@@ -158,7 +158,7 @@ export class RESTManager {
       'User-Agent': `DiscordBot (discord.deno)`
     }
 
-    if (this.client.token !== undefined) delete headers.Authorization
+    if (this.client.token === undefined) delete headers.Authorization
 
     if (method === 'get') body = undefined
 
@@ -233,9 +233,11 @@ export class RESTManager {
           const urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
 
+          const requestData = this.createRequestBody(body, method)
+
           const response = await fetch(
             urlToUse,
-            this.createRequestBody(body, method)
+            requestData
           )
           const bucketIDFromHeaders = this.processHeaders(url, response.headers)
           this.handleStatusCode(response, errorStack)
@@ -302,15 +304,17 @@ export class RESTManager {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.logErrors(response, errorStack)
 
+    if(status === HttpResponseCode.Unauthorized) throw new Error("Request was not successful. Invalid Token.")
+
     switch (status) {
       case HttpResponseCode.BadRequest:
       case HttpResponseCode.Unauthorized:
       case HttpResponseCode.Forbidden:
       case HttpResponseCode.NotFound:
       case HttpResponseCode.MethodNotAllowed:
-        throw new Error('Request Client Error')
+        throw new Error('Request Client Error.')
       case HttpResponseCode.GatewayUnavailable:
-        throw new Error('Request Server Error')
+        throw new Error('Request Server Error.')
     }
 
     // left are all unknown

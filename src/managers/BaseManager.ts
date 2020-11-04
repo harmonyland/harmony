@@ -1,4 +1,5 @@
-import { Client } from '../models/client.ts'
+import { Client } from "../models/client.ts";
+import { Collection } from "../utils/collection.ts";
 
 export class BaseManager<T, T2> {
   client: Client
@@ -27,5 +28,25 @@ export class BaseManager<T, T2> {
 
   async delete (key: string): Promise<boolean> {
     return this.client.cache.delete(this.cacheName, key)
+  }
+
+  async array (): Promise<undefined | T2[]> {
+    const arr = await (this.client.cache.array(this.cacheName) as T[])
+    return arr.map(e => new this.DataType(this.client, e)) as any
+  }
+
+  async collection (): Promise<Collection<string, T2>> {
+    const arr = await this.array()
+    if (arr === undefined) return new Collection()
+    const collection = new Collection()
+    for (const elem of arr) {
+      // @ts-expect-error
+      collection.set(elem.id, elem)
+    }
+    return collection
+  }
+
+  flush(): any {
+    return this.client.cache.deleteCache(this.cacheName)
   }
 }

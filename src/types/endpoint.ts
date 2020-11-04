@@ -187,6 +187,10 @@ const INVITE = (inviteCODE: string): string =>
 const VOICE_REGIONS = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/regions`
 
+// Client User Endpoint
+const CLIENT_USER = (): string =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me`
+
 export default [
   GUILDS,
   GUILD,
@@ -204,6 +208,7 @@ export default [
   GUILD_CHANNEL,
   GUILD_CHANNELS,
   GUILD_MEMBER,
+  CLIENT_USER,
   GUILD_MEMBERS,
   GUILD_MEMBER_ROLE,
   GUILD_INVITES,
@@ -319,6 +324,7 @@ export {
   CUSTOM_EMOJI,
   GUILD_ICON,
   GUILD_SPLASH,
+  CLIENT_USER,
   GUILD_DISCOVERY_SPLASH,
   GUILD_BANNER,
   DEFAULT_USER_AVATAR,

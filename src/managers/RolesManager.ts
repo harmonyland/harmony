@@ -24,4 +24,11 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
         .catch(e => reject(e))
     })
   }
+
+  async fromPayload(roles: RolePayload[]): Promise<boolean> {
+    for (const role of roles) {
+      await this.set(role.id, role)
+    }
+    return true
+  }
 }

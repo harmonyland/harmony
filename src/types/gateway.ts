@@ -1,5 +1,6 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
+import { StatusType } from "../../mod.ts"
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import { ActivityPayload } from './presence.ts'
@@ -9,7 +10,7 @@ import { UserPayload } from './user.ts'
 /**
  * Gateway OPcodes from Discord docs.
  */
-enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있다. - UnderC -
+export enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있다. - UnderC -
   DISPATCH = 0,
   HEARTBEAT = 1,
   IDENTIFY = 2,
@@ -26,7 +27,7 @@ enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있�
 /**
  * Gateway Close Codes from Discord docs.
  */
-enum GatewayCloseCodes {
+export enum GatewayCloseCodes {
   UNKNOWN_ERROR = 4000,
   UNKNOWN_OPCODE = 4001,
   DECODE_ERROR = 4002,
@@ -43,7 +44,7 @@ enum GatewayCloseCodes {
   DISALLOWED_INTENTS = 4014
 }
 
-enum GatewayIntents {
+export enum GatewayIntents {
   GUILDS = 1 << 0,
   GUILD_MEMBERS = 1 << 1,
   GUILD_BANS = 1 << 2,
@@ -61,7 +62,7 @@ enum GatewayIntents {
   DIRECT_MESSAGE_TYPING = 1 << 13
 }
 
-enum GatewayEvents {
+export enum GatewayEvents {
   Ready = 'READY',
   Resumed = 'RESUMED',
   Reconnect = 'RECONNECT',
@@ -111,7 +112,7 @@ export interface IdentityPayload {
   intents: number
 }
 
-enum UpdateStatus {
+export enum UpdateStatus {
   online = 'online',
   dnd = 'dnd',
   afk = 'idle',
@@ -291,7 +292,7 @@ export interface MessageReactionRemoveAllPayload {
 export interface PresenceUpdatePayload {
   user: UserPayload
   guild_id: string
-  status: string
+  status: StatusType
   activities: ActivityPayload[]
   client_status: UpdateStatus[]
 }
@@ -313,13 +314,4 @@ export interface VoiceServerUpdatePayload {
 export interface WebhooksUpdatePayload {
   guild_id: string
   channel_id: string
-}
-
-// https://discord.com/developers/docs/topics/gateway#typing-start-typing-start-event-fields
-export {
-  GatewayCloseCodes,
-  GatewayOpcodes,
-  GatewayIntents,
-  GatewayEvents,
-  UpdateStatus
 }

@@ -2,13 +2,12 @@ import { Client } from '../models/client.ts'
 import { GuildFeatures, GuildPayload } from '../types/guild.ts'
 import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
-import { Channel } from './channel.ts'
 import { Emoji } from './emoji.ts'
-import { Member } from './member.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
-import getChannelByType from '../utils/getChannelByType.ts'
-import { RolesManager } from '../managers/RolesManager.ts'
+import { RolesManager } from "../managers/RolesManager.ts"
+import { GuildChannelsManager } from "../managers/GuildChannelsManager.ts"
+import { MembersManager } from "../managers/MembersManager.ts"
 
 export class Guild extends Base {
   id: string
@@ -28,7 +27,7 @@ export class Guild extends Base {
   verificationLevel?: string
   defaultMessageNotifications?: string
   explicitContentFilter?: string
-  roles: RolesManager = new RolesManager(this.client, this)
+  roles: RolesManager
   emojis?: Emoji[]
   features?: GuildFeatures[]
   mfaLevel?: string
@@ -41,8 +40,8 @@ export class Guild extends Base {
   unavailable: boolean
   memberCount?: number
   voiceStates?: VoiceState[]
-  members?: Member[]
-  channels?: Channel[]
+  members: MembersManager 
+  channels: GuildChannelsManager
   presences?: PresenceUpdatePayload[]
   maxPresences?: number
   maxMembers?: number
@@ -61,6 +60,9 @@ export class Guild extends Base {
     super(client, data)
     this.id = data.id
     this.unavailable = data.unavailable
+    this.members = new MembersManager(this.client, this)
+    this.channels = new GuildChannelsManager(this.client, this.client.channels, this)
+    this.roles = new RolesManager(this.client, this)
 
     if (!this.unavailable) {
       this.name = data.name
@@ -167,22 +169,22 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at ?? this.joinedAt
       this.large = data.large ?? this.large
       this.memberCount = data.member_count ?? this.memberCount
-      this.voiceStates =
-        data.voice_states?.map(
-          v =>
-            cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
-            new VoiceState(this.client, v)
-        ) ?? this.voiceStates
-      this.members =
-        data.members?.map(
-          v =>
-            cache.get('member', `${this.id}:${v.user.id}`) ??
-            new Member(this.client, v)
-        ) ?? this.members
-      this.channels =
-        data.channels?.map(
-          v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
-        ) ?? this.members
+      // this.voiceStates =
+      //   data.voice_states?.map(
+      //     v =>
+      //       cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
+      //       new VoiceState(this.client, v)
+      //   ) ?? this.voiceStates
+      // this.members =
+      //   data.members?.map(
+      //     v =>
+      //       cache.get('member', `${this.id}:${v.user.id}`) ??
+      //       new Member(this.client, v)
+      //   ) ?? this.members
+      // this.channels =
+      //   data.channels?.map(
+      //     v => cache.get('channel', v.id) ?? getChannelByType(this.client, v, this)
+      //   ) ?? this.members
       this.presences = data.presences ?? this.presences
       this.maxPresences = data.max_presences ?? this.maxPresences
       this.maxMembers = data.max_members ?? this.maxMembers

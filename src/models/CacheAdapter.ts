@@ -8,10 +8,11 @@ import {
 
 export interface ICacheAdapter {
   client: Client
-  get: (cacheName: string, key: string) => Promise<undefined | any>
-  set: (cacheName: string, key: string, value: any) => Promise<any>
-  delete: (cacheName: string, key: string) => Promise<boolean>
-  array: (cacheName: string) => Promise<any[] | undefined>
+  get: (cacheName: string, key: string) => Promise<any> | any
+  set: (cacheName: string, key: string, value: any) => Promise<any> | any
+  delete: (cacheName: string, key: string) => Promise<boolean> | boolean
+  array: (cacheName: string) => undefined | any[] | Promise<any[] | undefined>
+  deleteCache: (cacheName: string) => any
 }
 
 export class DefaultCacheAdapter implements ICacheAdapter {
@@ -49,6 +50,11 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     const cache = this.data[cacheName]
     if (cache === undefined) return
     return cache.array()
+  }
+
+  async deleteCache(cacheName: string): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    return delete this.data[cacheName]
   }
 }
 
@@ -113,5 +119,10 @@ export class RedisCacheAdapter implements ICacheAdapter {
     await this._checkReady()
     const data = await this.redis?.hvals(cacheName)
     return data?.map((e: string) => JSON.parse(e))
+  }
+
+  async deleteCache(cacheName: string): Promise<boolean> {
+    await this._checkReady()
+    return await this.redis?.del(cacheName) !== 0
   }
 }

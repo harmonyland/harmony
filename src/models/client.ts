@@ -3,18 +3,21 @@ import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
-import { DefaultCacheAdapter, ICacheAdapter } from './CacheAdapter.ts'
-import { UserManager } from '../managers/UsersManager.ts'
-import { GuildManager } from '../managers/GuildsManager.ts'
-import { EmojisManager } from '../managers/EmojisManager.ts'
-import { ChannelsManager } from '../managers/ChannelsManager.ts'
-import { MessagesManager } from '../managers/MessagesManager.ts'
+import { DefaultCacheAdapter, ICacheAdapter } from "./CacheAdapter.ts"
+import { UserManager } from "../managers/UsersManager.ts"
+import { GuildManager } from "../managers/GuildsManager.ts"
+import { EmojisManager } from "../managers/EmojisManager.ts"
+import { ChannelsManager } from "../managers/ChannelsManager.ts"
+import { MessagesManager } from "../managers/MessagesManager.ts"
+import { ActivityGame, ClientActivity, ClientPresence } from "../structures/presence.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
   token?: string
   intents?: GatewayIntents[]
-  cache?: ICacheAdapter
+  cache?: ICacheAdapter,
+  forceNewSession?: boolean,
+  presence?: ClientPresence | ClientActivity | ActivityGame
 }
 
 /**
@@ -28,18 +31,22 @@ export class Client extends EventEmitter {
   token?: string
   cache: ICacheAdapter = new DefaultCacheAdapter(this)
   intents?: GatewayIntents[]
-
+  forceNewSession?: boolean
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
   messages: MessagesManager = new MessagesManager(this)
   emojis: EmojisManager = new EmojisManager(this)
 
+  presence: ClientPresence = new ClientPresence()
+
   constructor (options: ClientOptions = {}) {
     super()
     this.token = options.token
     this.intents = options.intents
+    this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
+    if (options.presence !== undefined) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
   }
 
   setAdapter (adapter: ICacheAdapter): Client {
@@ -47,8 +54,15 @@ export class Client extends EventEmitter {
     return this
   }
 
+  setPresence (presence: ClientPresence | ClientActivity | ActivityGame): void {
+    if (presence instanceof ClientPresence) {
+      this.presence = presence
+    } else this.presence = new ClientPresence(presence)
+    this.gateway?.sendPresence(this.presence.create())
+  }
+
   debug (tag: string, msg: string): void {
-    this.emit('debug', `[${tag}] ${msg}`)
+    this.emit("debug", `[${tag}] ${msg}`)
   }
 
   /**

@@ -1,4 +1,3 @@
-import { Channel } from '../../structures/channel.ts'
 import { Message } from '../../structures/message.ts'
 import { MessageMentions } from '../../structures/MessageMentions.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
@@ -10,13 +9,18 @@ export const messageCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: MessagePayload
 ) => {
-  let channel = (await gateway.client.channels.get(d.channel_id)) as TextChannel
+  let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   // Fetch the channel if not cached
   if (channel === undefined)
-    channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
+    channel = (await gateway.client.channels.fetch(d.channel_id)) as any
   const user = new User(gateway.client, d.author)
   await gateway.client.users.set(d.author.id, d.author)
+  let guild
+  if(d.guild_id !== undefined) {
+    guild = await gateway.client.guilds.get(d.guild_id)
+  }
   const mentions = new MessageMentions()
-  const message = new Message(gateway.client, d, channel, user, mentions)
+  const message = new Message(gateway.client, d, channel as any, user, mentions)
+  if (guild !== undefined) message.guild = guild
   gateway.client.emit('messageCreate', message)
 }
