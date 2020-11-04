@@ -227,7 +227,7 @@ class Gateway {
         token: this.token,
         properties: {
           $os: Deno.build.os,
-          $browser: 'discord.deno', //TODO: Change lib name
+          $browser: 'discord.deno', // TODO: Change lib name
           $device: 'discord.deno'
         },
         compress: true,

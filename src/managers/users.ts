@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { User } from '../structures/user.ts'
 import { USER } from '../types/endpoint.ts'
 import { UserPayload } from '../types/user.ts'
-import { BaseManager } from './BaseManager.ts'
+import { BaseManager } from './base.ts'
 
 export class UserManager extends BaseManager<UserPayload, User> {
   constructor (client: Client) {

@@ -2,11 +2,14 @@ import { Client } from '../models/client.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { TOKEN } from './config.ts'
 import { Message } from "../structures/message.ts"
-import { RedisCacheAdapter } from "../models/CacheAdapter.ts"
+import { DefaultCacheAdapter } from "../models/cacheAdapter.ts"
 import { ClientPresence } from "../structures/presence.ts"
 import { Member } from "../structures/member.ts"
 import { Role } from "../structures/role.ts"
-import { GuildChannel } from "../managers/GuildChannelsManager.ts"
+import { GuildChannel } from "../managers/guildChannels.ts"
+import { TextChannel } from "../structures/textChannel.ts"
+import { Embed } from "../structures/embed.ts"
+import { Guild } from "../structures/guild.ts"
 
 const bot = new Client({
   presence: new ClientPresence({
@@ -17,10 +20,7 @@ const bot = new Client({
   }),
 })
 
-bot.setAdapter(new RedisCacheAdapter(bot, {
-  hostname: "127.0.0.1",
-  port: 6379
-}))
+bot.setAdapter(new DefaultCacheAdapter(bot))
 
 bot.on('ready', () => {
   console.log(`[Login] Logged in as ${bot.user?.tag}!`)
@@ -31,6 +31,15 @@ bot.on('ready', () => {
 })
 
 bot.on('debug', console.log)
+
+bot.on('channelPinsUpdate', (before: TextChannel, after: TextChannel) => {
+  console.log(before.send('', {
+    embed: new Embed({
+      title: 'Test',
+      description: 'Test Embed'
+    })
+  }))
+})
 
 bot.on('messageCreate', async (msg: Message) => {
   if (msg.author.bot === true) return
@@ -44,7 +53,7 @@ bot.on('messageCreate', async (msg: Message) => {
     msg.channel.send("Member List:\n" + data)
   } else if (msg.content === "!guilds") {
     const guilds = await msg.client.guilds.collection()
-    msg.channel.send("Guild List:\n" + (guilds.array().map((c, i: number) => {
+    msg.channel.send("Guild List:\n" + (guilds.array().map((c: Guild, i: number) => {
       return `${i + 1}. ${c.name} - ${c.memberCount} members`
     }).join("\n") as string))
   } else if (msg.content === "!roles") {

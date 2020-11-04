@@ -3,7 +3,7 @@ import { MessageOption, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Message } from './message.ts'
-import { MessageMentions } from './MessageMentions.ts'
+import { MessageMentions } from './messageMentions.ts'
 
 export class TextChannel extends Channel {
   lastMessageID?: string
@@ -24,7 +24,7 @@ export class TextChannel extends Channel {
   }
 
   async send (text?: string, option?: MessageOption): Promise<Message> {
-    if (text !== undefined && option !== undefined) {
+    if (text === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
     }
     const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), {

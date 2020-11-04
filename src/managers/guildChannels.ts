@@ -6,8 +6,8 @@ import { GuildTextChannel } from "../structures/guildTextChannel.ts";
 import { VoiceChannel } from "../structures/guildVoiceChannel.ts";
 import { GuildChannelCategoryPayload, GuildTextChannelPayload, GuildVoiceChannelPayload } from "../types/channel.ts";
 import { CHANNEL } from "../types/endpoint.ts";
-import { BaseChildManager } from "./BaseChildManager.ts";
-import { ChannelsManager } from "./ChannelsManager.ts";
+import { BaseChildManager } from "./baseChild.ts";
+import { ChannelsManager } from "./channels.ts";
 
 export type GuildChannelPayloads = GuildTextChannelPayload | GuildVoiceChannelPayload | GuildChannelCategoryPayload
 export type GuildChannel = GuildTextChannel | VoiceChannel | CategoryChannel

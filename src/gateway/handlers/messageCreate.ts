@@ -1,5 +1,5 @@
 import { Message } from '../../structures/message.ts'
-import { MessageMentions } from '../../structures/MessageMentions.ts'
+import { MessageMentions } from '../../structures/messageMentions.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
 import { User } from '../../structures/user.ts'
 import { MessagePayload } from '../../types/channel.ts'
@@ -12,7 +12,8 @@ export const messageCreate: GatewayEventHandler = async (
   let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   // Fetch the channel if not cached
   if (channel === undefined)
-    channel = (await gateway.client.channels.fetch(d.channel_id)) as any
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
   const user = new User(gateway.client, d.author)
   await gateway.client.users.set(d.author.id, d.author)
   let guild

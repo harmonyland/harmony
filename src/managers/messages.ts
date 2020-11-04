@@ -1,11 +1,11 @@
 import { Client } from "../models/client.ts";
 import { Message } from "../structures/message.ts";
-import { MessageMentions } from "../structures/MessageMentions.ts";
+import { MessageMentions } from "../structures/messageMentions.ts";
 import { TextChannel } from "../structures/textChannel.ts";
 import { User } from "../structures/user.ts";
 import { MessagePayload } from "../types/channel.ts";
 import { CHANNEL_MESSAGE } from "../types/endpoint.ts";
-import { BaseManager } from "./BaseManager.ts";
+import { BaseManager } from "./base.ts";
 
 export class MessagesManager extends BaseManager<MessagePayload, Message> {
   constructor (client: Client) {

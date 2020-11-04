@@ -3,12 +3,12 @@ import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
-import { DefaultCacheAdapter, ICacheAdapter } from "./CacheAdapter.ts"
-import { UserManager } from "../managers/UsersManager.ts"
-import { GuildManager } from "../managers/GuildsManager.ts"
-import { EmojisManager } from "../managers/EmojisManager.ts"
-import { ChannelsManager } from "../managers/ChannelsManager.ts"
-import { MessagesManager } from "../managers/MessagesManager.ts"
+import { DefaultCacheAdapter, ICacheAdapter } from "./cacheAdapter.ts"
+import { UserManager } from "../managers/users.ts"
+import { GuildManager } from "../managers/guilds.ts"
+import { EmojisManager } from "../managers/emojis.ts"
+import { ChannelsManager } from "../managers/channels.ts"
+import { MessagesManager } from "../managers/messages.ts"
 import { ActivityGame, ClientActivity, ClientPresence } from "../structures/presence.ts"
 
 /** Some Client Options to modify behaviour */
