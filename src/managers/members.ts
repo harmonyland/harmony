@@ -3,7 +3,7 @@ import { Guild } from "../structures/guild.ts";
 import { Member } from "../structures/member.ts";
 import { GUILD_MEMBER } from "../types/endpoint.ts";
 import { MemberPayload } from "../types/guild.ts";
-import { BaseManager } from "./BaseManager.ts";
+import { BaseManager } from "./base.ts";
 
 export class MembersManager extends BaseManager<MemberPayload, Member> {
   guild: Guild

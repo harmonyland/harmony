@@ -3,7 +3,7 @@ import { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE } from '../types/endpoint.ts'
 import { RolePayload } from '../types/role.ts'
-import { BaseManager } from './BaseManager.ts'
+import { BaseManager } from './base.ts'
 
 export class RolesManager extends BaseManager<RolePayload, Role> {
   guild: Guild
