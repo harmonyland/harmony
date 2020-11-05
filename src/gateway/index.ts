@@ -12,7 +12,7 @@ import {
 } from '../types/gateway.ts'
 import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
-import { GatewayCache } from "../managers/GatewayCache.ts"
+import { GatewayCache } from "../managers/gatewayCache.ts"
 import { ClientActivityPayload } from "../structures/presence.ts"
 
 /**
