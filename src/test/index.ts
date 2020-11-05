@@ -25,7 +25,7 @@ bot.setAdapter(new DefaultCacheAdapter(bot))
 bot.on('ready', () => {
   console.log(`[Login] Logged in as ${bot.user?.tag}!`)
   bot.setPresence({
-    name: "Test After Ready",
+    name: "Test - Ready",
     type: 'COMPETING'
   })
 })
