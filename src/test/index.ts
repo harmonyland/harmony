@@ -1,15 +1,16 @@
-import { Client } from '../models/client.ts'
-import { GatewayIntents } from '../types/gateway.ts'
+// import { Client } from '../models/client.ts'
+// import { GatewayIntents } from '../types/gateway.ts'
 import { TOKEN } from './config.ts'
-import { Message } from "../structures/message.ts"
-import { DefaultCacheAdapter } from "../models/cacheAdapter.ts"
-import { ClientPresence } from "../structures/presence.ts"
-import { Member } from "../structures/member.ts"
-import { Role } from "../structures/role.ts"
-import { GuildChannel } from "../managers/guildChannels.ts"
-import { TextChannel } from "../structures/textChannel.ts"
-import { Embed } from "../structures/embed.ts"
-import { Guild } from "../structures/guild.ts"
+// import { Message } from "../structures/message.ts"
+// import { DefaultCacheAdapter } from "../models/cacheAdapter.ts"
+// import { ClientPresence } from "../structures/presence.ts"
+// import { Member } from "../structures/member.ts"
+// import { Role } from "../structures/role.ts"
+// import { GuildChannel } from "../managers/guildChannels.ts"
+// import { TextChannel } from "../structures/textChannel.ts"
+// import { Embed } from "../structures/embed.ts"
+// import { Guild } from "../structures/guild.ts"
+import { Client, GatewayIntents, Message, DefaultCacheAdapter, ClientPresence, Member, Role, GuildChannel, TextChannel, Embed, Guild } from '../../mod.ts';
 
 const bot = new Client({
   presence: new ClientPresence({
