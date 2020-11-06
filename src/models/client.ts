@@ -29,7 +29,7 @@ export class Client extends EventEmitter {
   user?: User
   ping = 0
   token?: string
-  cache: ICacheAdapter = new DefaultCacheAdapter(this)
+  cache: ICacheAdapter = new DefaultCacheAdapter()
   intents?: GatewayIntents[]
   forceNewSession?: boolean
   users: UserManager = new UserManager(this)
