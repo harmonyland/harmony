@@ -1,39 +1,25 @@
-// import { Client } from '../models/client.ts'
-// import { GatewayIntents } from '../types/gateway.ts'
+import { Client, GuildTextChannel, GatewayIntents, Message, DefaultCacheAdapter, ClientPresence, Member, Role, GuildChannel, TextChannel, Embed, Guild } from '../../mod.ts';
+import { Intents } from "../utils/intents.ts";
 import { TOKEN } from './config.ts'
-// import { Message } from "../structures/message.ts"
-// import { DefaultCacheAdapter } from "../models/cacheAdapter.ts"
-// import { ClientPresence } from "../structures/presence.ts"
-// import { Member } from "../structures/member.ts"
-// import { Role } from "../structures/role.ts"
-// import { GuildChannel } from "../managers/guildChannels.ts"
-// import { TextChannel } from "../structures/textChannel.ts"
-// import { Embed } from "../structures/embed.ts"
-// import { Guild } from "../structures/guild.ts"
-import { Client, GatewayIntents, Message, DefaultCacheAdapter, ClientPresence, Member, Role, GuildChannel, TextChannel, Embed, Guild } from '../../mod.ts';
 
-const bot = new Client({
+const client = new Client({
   presence: new ClientPresence({
     activity: {
-      name: "Testing",
+      name: "Pokémon Sword",
       type: 'COMPETING'
     }
   }),
 })
 
-bot.setAdapter(new DefaultCacheAdapter(bot))
+client.setAdapter(new DefaultCacheAdapter(client))
 
-bot.on('ready', () => {
-  console.log(`[Login] Logged in as ${bot.user?.tag}!`)
-  bot.setPresence({
-    name: "Test - Ready",
-    type: 'COMPETING'
-  })
+client.on('ready', () => {
+  console.log(`[Login] Logged in as ${client.user?.tag}!`)
 })
 
-bot.on('debug', console.log)
+client.on('debug', console.log)
 
-bot.on('channelPinsUpdate', (before: TextChannel, after: TextChannel) => {
+client.on('channelPinsUpdate', (before: TextChannel, after: TextChannel) => {
   console.log(before.send('', {
     embed: new Embed({
       title: 'Test',
@@ -42,10 +28,19 @@ bot.on('channelPinsUpdate', (before: TextChannel, after: TextChannel) => {
   }))
 })
 
-bot.on('messageCreate', async (msg: Message) => {
+client.on('channelUpdate', (before: GuildTextChannel, after: GuildTextChannel) => {
+  console.log(before.send('', {
+    embed: new Embed({
+      title: 'Channel Update',
+      description: `Name Before: ${before.name}\nName After: ${after.name}`
+    })
+  }))
+})
+
+client.on('messageCreate', async (msg: Message) => {
   if (msg.author.bot === true) return
   if (msg.content === "!ping") {
-    msg.reply(`Pong! Ping: ${bot.ping}ms`)
+    msg.reply(`Pong! Ping: ${client.ping}ms`)
   } else if (msg.content === "!members") {
     const col = await msg.guild?.members.collection()
     const data = col?.array().map((c: Member, i: number) => {
@@ -72,20 +67,4 @@ bot.on('messageCreate', async (msg: Message) => {
   }
 })
 
-bot.connect(TOKEN, [
-  GatewayIntents.GUILD_MEMBERS,
-  GatewayIntents.GUILD_PRESENCES,
-  GatewayIntents.GUILD_MESSAGES,
-  GatewayIntents.DIRECT_MESSAGES,
-  GatewayIntents.DIRECT_MESSAGE_REACTIONS,
-  GatewayIntents.DIRECT_MESSAGE_TYPING,
-  GatewayIntents.GUILDS,
-  GatewayIntents.GUILD_BANS,
-  GatewayIntents.GUILD_EMOJIS,
-  GatewayIntents.GUILD_INTEGRATIONS,
-  GatewayIntents.GUILD_INVITES,
-  GatewayIntents.GUILD_MESSAGE_REACTIONS,
-  GatewayIntents.GUILD_MESSAGE_TYPING,
-  GatewayIntents.GUILD_VOICE_STATES,
-  GatewayIntents.GUILD_WEBHOOKS
-])
+client.connect(TOKEN, Intents.All)
