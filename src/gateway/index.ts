@@ -76,21 +76,10 @@ class Gateway {
         this.debug(
           `Received HELLO. Heartbeat Interval: ${this.heartbeatInterval}`
         )
-        this.heartbeatIntervalID = setInterval(() => {
-          if (this.heartbeatServerResponded) {
-            this.heartbeatServerResponded = false
-          } else {
-            clearInterval(this.heartbeatIntervalID)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.reconnect()
-            return
-          }
 
-          this.send({
-            op: GatewayOpcodes.HEARTBEAT,
-            d: this.sequenceID ?? null
-          })
-          this.lastPingTimestamp = Date.now()
+        this.sendHeartbeat()
+        this.heartbeatIntervalID = setInterval(() => {
+          this.heartbeat()
         }, this.heartbeatInterval)
 
         if (!this.initialized) {
@@ -304,6 +293,29 @@ class Gateway {
       op: GatewayOpcodes.PRESENCE_UPDATE,
       d: data
     })
+  }
+
+  sendHeartbeat() {
+    const payload = {
+      op: GatewayOpcodes.HEARTBEAT,
+      d: this.sequenceID ?? null
+    };
+
+    this.send(payload)
+    this.lastPingTimestamp = Date.now()
+  }
+
+  heartbeat() {
+    if (this.heartbeatServerResponded) {
+      this.heartbeatServerResponded = false
+    } else {
+      clearInterval(this.heartbeatIntervalID)
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.reconnect()
+      return
+    }
+
+    this.sendHeartbeat()    
   }
 }
 
