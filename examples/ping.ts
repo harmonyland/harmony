@@ -21,8 +21,8 @@ if(!token) {
     Deno.exit();
 }
 
-const intents = prompt("Input Intents (0 = All, 1 = Presence, 2 = Server Members):");
-if(!intents || !["0", "1", "2"].includes(intents)) {
+const intents = prompt("Input Intents (0 = All, 1 = Presence, 2 = Server Members, 3 = None):");
+if(!intents || !["0", "1", "2", "3"].includes(intents)) {
     console.log("No intents provided");
     Deno.exit();
 }
@@ -32,8 +32,10 @@ if(intents == "0") {
     ints = Intents.All;
 } else if(intents == "1") {
     ints = Intents.Presence;
-} else {
+} else if(intents == "2") {
     ints = Intents.GuildMembers;
+} else {
+    ints = Intents.None;
 }
 
 client.connect(token, ints);

@@ -1,5 +1,7 @@
 # discord-deno
 
+![banner](banner.png)
+
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 **An easy to use Discord API Library for Deno.**
@@ -36,16 +38,19 @@ import { Client, Message, Intents } from 'https://raw.githubusercontent.com/disc
 
 const client = new Client()
 
+// Listen for event when client is ready (Identified through gateway / Resumed)
 client.on('ready', () => {
   console.log(`Ready! User: ${client.user?.tag}`)
 })
 
+// Listen for event whenever a Message is sent
 client.on('messageCreate', (msg: Message): void => {
   if (msg.content === '!ping') {
     msg.channel.send(`Pong! WS Ping: ${client.ping}`)
   }
 })
 
+// Connect to gateway
 // Replace with your bot's token and intents (Intents.All, Intents.Presence, Intents.GuildMembers)
 client.connect('super secret token comes here', Intents.All)
 ```

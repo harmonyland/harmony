@@ -18,6 +18,8 @@ export interface ClientOptions {
   cache?: ICacheAdapter,
   forceNewSession?: boolean,
   presence?: ClientPresence | ClientActivity | ActivityGame
+  bot?: boolean
+  canary?: boolean
 }
 
 /**
@@ -37,6 +39,8 @@ export class Client extends EventEmitter {
   channels: ChannelsManager = new ChannelsManager(this)
   messages: MessagesManager = new MessagesManager(this)
   emojis: EmojisManager = new EmojisManager(this)
+  bot: boolean = true
+  canary: boolean = false
 
   presence: ClientPresence = new ClientPresence()
 
@@ -47,6 +51,8 @@ export class Client extends EventEmitter {
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
     if (options.presence !== undefined) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
+    if (options.bot === false) this.bot = false
+    if (options.canary === true) this.canary = true
   }
 
   setAdapter (adapter: ICacheAdapter): Client {

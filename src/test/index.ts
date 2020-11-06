@@ -1,5 +1,4 @@
-import { Client, GuildTextChannel, Message, RedisCacheAdapter, ClientPresence, Member, Role, GuildChannel, TextChannel, Embed, Guild } from '../../mod.ts';
-import { Intents } from "../utils/intents.ts";
+import { Client, Intents, GuildTextChannel, Message, ClientPresence, Member, Role, GuildChannel, Embed, Guild } from '../../mod.ts';
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -7,6 +6,7 @@ const client = new Client({
       name: 'Pokémon Sword',
       type: 'COMPETING'
   }),
+  // bot: false,
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
   //   port: 6379
@@ -30,6 +30,7 @@ client.on('channelUpdate', (before: GuildTextChannel, after: GuildTextChannel) =
 
 client.on('messageCreate', async (msg: Message) => {
   if (msg.author.bot === true) return
+  console.log(`${msg.author.tag}: ${msg.content}`)
   if (msg.content === '!ping') {
     msg.reply(`Pong! Ping: ${client.ping}ms`)
   } else if (msg.content === '!members') {
@@ -58,4 +59,4 @@ client.on('messageCreate', async (msg: Message) => {
   }
 })
 
-client.connect(TOKEN, Intents.All)
+client.connect(TOKEN, Intents.None)

@@ -1,4 +1,4 @@
-import { unzlib } from 'https://deno.land/x/denoflate/mod.ts'
+import { unzlib } from 'https://deno.land/x/denoflate@1.1/mod.ts'
 import { Client } from '../models/client.ts'
 import {
   DISCORD_GATEWAY_URL,
@@ -140,7 +140,7 @@ class Gateway {
     }
   }
 
-  private onclose (event: CloseEvent): void {
+  private onclose(event: CloseEvent): void {
     this.debug(`Connection Closed with code: ${event.code}`)
 
     if (event.code === GatewayCloseCodes.UNKNOWN_ERROR) {
@@ -189,28 +189,31 @@ class Gateway {
     console.log(eventError)
   }
 
-  private async sendIdentify (forceNewSession?: boolean): Promise<void> {
-    this.debug('Fetching /gateway/bot...')
-    const info = await this.client.rest.get(GATEWAY_BOT())
-    if (info.session_start_limit.remaining === 0)
-      throw new Error(
-        `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
+  private async sendIdentify(forceNewSession?: boolean): Promise<void> {
+    if (this.client.bot === true) {
+      this.debug('Fetching /gateway/bot...')
+      const info = await this.client.rest.get(GATEWAY_BOT())
+      if (info.session_start_limit.remaining === 0)
+        throw new Error(
+          `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
+        )
+      this.debug(`Recommended Shards: ${info.shards}`)
+      this.debug('=== Session Limit Info ===')
+      this.debug(
+        `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
       )
-    this.debug(`Recommended Shards: ${info.shards}`)
-    this.debug('=== Session Limit Info ===')
-    this.debug(
-      `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
-    )
-    this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
-    if (forceNewSession === undefined || !forceNewSession) {
-      const sessionIDCached = await this.cache.get('session_id')
-      if (sessionIDCached !== undefined) {
-        this.debug(`Found Cached SessionID: ${sessionIDCached}`)
-        this.sessionID = sessionIDCached
-        return await this.sendResume()
+      this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
+      if (forceNewSession === undefined || !forceNewSession) {
+        const sessionIDCached = await this.cache.get('session_id')
+        if (sessionIDCached !== undefined) {
+          this.debug(`Found Cached SessionID: ${sessionIDCached}`)
+          this.sessionID = sessionIDCached
+          return await this.sendResume()
+        }
       }
     }
-    this.send({
+
+    let payload: any = {
       op: GatewayOpcodes.IDENTIFY,
       d: {
         token: this.token,
@@ -227,7 +230,24 @@ class Gateway {
         ),
         presence: this.client.presence.create()
       }
-    })
+    }
+
+    if(this.client.bot === false) {
+      // TODO: Complete Selfbot support
+      this.debug("Modify Identify Payload for Self-bot..")
+      // delete payload.d['intents']
+      // payload.d.intents = Intents.None
+      payload.d.presence = null
+      payload.d.properties = {
+        $os: "Windows",
+        $browser: "Firefox",
+        $device: ""
+      }
+
+      this.debug("Warn: Support for selfbots is incomplete")
+    }
+
+    this.send(payload)
   }
 
   private async sendResume(): Promise<void> {
@@ -248,11 +268,11 @@ class Gateway {
     this.send(resumePayload)
   }
 
-  debug (msg: string): void {
+  debug(msg: string): void {
     this.client.debug('Gateway', msg)
   }
 
-  async reconnect (forceNew?: boolean): Promise<void> {
+  async reconnect(forceNew?: boolean): Promise<void> {
     clearInterval(this.heartbeatIntervalID)
     if (forceNew === undefined || !forceNew)
       await this.cache.delete('session_id')
@@ -315,7 +335,7 @@ class Gateway {
       return
     }
 
-    this.sendHeartbeat()    
+    this.sendHeartbeat()
   }
 }
 
