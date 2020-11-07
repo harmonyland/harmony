@@ -14,8 +14,8 @@ export const getBuildInfo = (client: Client) => {
     let browser_version = '83.0'
     let browser_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 ' + browser + '/' + browser_version
     // TODO: Use current OS properties, but also browser_user_agent accordingly
-    // if(Deno.build.os === 'darwin') os = 'MacOS'
-    // else if(Deno.build.os === 'linux') os = 'Ubuntu'
+    // if (Deno.build.os === 'darwin') os = 'MacOS'
+    // else if (Deno.build.os === 'linux') os = 'Ubuntu'
 
     return {
         os,

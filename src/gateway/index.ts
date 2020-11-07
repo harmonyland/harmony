@@ -232,7 +232,7 @@ class Gateway {
       }
     }
 
-    if(this.client.bot === false) {
+    if (this.client.bot === false) {
       // TODO: Complete Selfbot support
       this.debug("Modify Identify Payload for Self-bot..")
       // delete payload.d['intents']

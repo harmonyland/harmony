@@ -182,7 +182,7 @@ export class RESTManager {
       method: method.toUpperCase()
     }
 
-    if(this.client.bot === false) {
+    if (this.client.bot === false) {
       // This is a selfbot. Use requests similar to Discord Client
       data.headers['authorization'] = this.client.token as string
       data.headers['accept-language'] = 'en-US'
@@ -252,7 +252,7 @@ export class RESTManager {
           let urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
 
-          if(this.client.canary) {
+          if (this.client.canary) {
             let split = urlToUse.split('//')
             urlToUse = split[0] + '//canary.' + split[1]
           }
@@ -328,7 +328,7 @@ export class RESTManager {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.logErrors(response, errorStack)
 
-    if(status === HttpResponseCode.Unauthorized) throw new Error("Request was not successful. Invalid Token.")
+    if (status === HttpResponseCode.Unauthorized) throw new Error("Request was not successful. Invalid Token.")
 
     switch (status) {
       case HttpResponseCode.BadRequest:

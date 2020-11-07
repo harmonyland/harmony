@@ -7,7 +7,7 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", (msg: Message) => {
-    if(msg.content === "!ping") {
+    if (msg.content === "!ping") {
         console.log("Command Used: Ping");
         msg.reply("pong!");
     }
@@ -16,23 +16,23 @@ client.on("messageCreate", (msg: Message) => {
 console.log("discord.deno - ping example");
 
 const token = prompt("Input Bot Token:");
-if(!token) {
+if (!token) {
     console.log("No token provided");
     Deno.exit();
 }
 
 const intents = prompt("Input Intents (0 = All, 1 = Presence, 2 = Server Members, 3 = None):");
-if(!intents || !["0", "1", "2", "3"].includes(intents)) {
+if (!intents || !["0", "1", "2", "3"].includes(intents)) {
     console.log("No intents provided");
     Deno.exit();
 }
 
 let ints;
-if(intents == "0") {
+if (intents == "0") {
     ints = Intents.All;
-} else if(intents == "1") {
+} else if (intents == "1") {
     ints = Intents.Presence;
-} else if(intents == "2") {
+} else if (intents == "2") {
     ints = Intents.GuildMembers;
 } else {
     ints = Intents.None;
