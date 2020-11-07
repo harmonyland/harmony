@@ -17,11 +17,26 @@ export const messageCreate: GatewayEventHandler = async (
   const user = new User(gateway.client, d.author)
   await gateway.client.users.set(d.author.id, d.author)
   let guild
+  let member
   if (d.guild_id !== undefined) {
     guild = await gateway.client.guilds.get(d.guild_id)
   }
+  if (guild !== undefined && d.member !== undefined) {
+    d.member.user = d.author
+    await guild.members.set(d.author.id, d.member)
+    member = await guild.members.get(d.author.id)
+  }
   const mentions = new MessageMentions()
   const message = new Message(gateway.client, d, channel as any, user, mentions)
+  message.member = member
   if (guild !== undefined) message.guild = guild
+  if (message.member !== undefined) {
+    if(message.member.user === undefined) {
+      const user = await gateway.client.users.get(message.member.id)
+      if(user !== undefined) {
+        message.member.user = user
+      }
+    }
+  }
   gateway.client.emit('messageCreate', message)
 }

@@ -1,5 +1,4 @@
 import { Client } from '../models/client.ts'
-import * as cache from '../models/cache.ts'
 
 interface IInit {
   useCache?: boolean
@@ -25,18 +24,13 @@ export class Base {
     this.useCache = useCache
     const cacheID = restURLfuncArgs.join(':')
     if (this.useCache !== undefined) {
-      const cached = cache.get(this.cacheName ?? this.name, cacheID)
+      const cached = await client.cache.get(this.cacheName ?? this.name, cacheID)
       if (cached !== undefined) {
         return cached
       }
     }
 
-    const resp = await fetch(endpoint(...restURLfuncArgs), {
-      headers: {
-        Authorization: `Bot ${client.token}`
-      }
-    })
-    const jsonParsed = await resp.json()
+    const jsonParsed = await client.rest.get(endpoint(...restURLfuncArgs))
 
     return new this(client, jsonParsed)
   }
@@ -47,12 +41,7 @@ export class Base {
   ): Promise<this> {
     const oldOne = Object.assign(Object.create(this), this)
 
-    const resp = await fetch(endpoint(...restURLfuncArgs), {
-      headers: {
-        Authorization: `Bot ${client.token}`
-      }
-    })
-    const jsonParsed = await resp.json()
+    const jsonParsed = await client.rest.get(endpoint(...restURLfuncArgs))
 
     this.readFromData(jsonParsed)
 

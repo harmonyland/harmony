@@ -4,7 +4,6 @@ import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { Emoji } from './emoji.ts'
 import { VoiceState } from './voiceState.ts'
-import cache from '../models/cache.ts'
 import { RolesManager } from "../managers/roles.ts"
 import { GuildChannelsManager } from "../managers/guildChannels.ts"
 import { MembersManager } from "../managers/members.ts"
@@ -156,10 +155,10 @@ export class Guild extends Base {
       //   data.roles.map(
       //     v => cache.get('role', v.id) ?? new Role(this.client, v)
       //   ) ?? this.roles
-      this.emojis =
-        data.emojis.map(
-          v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)
-        ) ?? this.emojis
+      // this.emojis =
+      //   data.emojis.map(
+      //     v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)
+      //   ) ?? this.emojis
       this.features = data.features ?? this.features
       this.mfaLevel = data.mfa_level ?? this.mfaLevel
       this.systemChannelID = data.system_channel_id ?? this.systemChannelID
