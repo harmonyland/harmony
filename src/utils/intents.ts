@@ -1,5 +1,6 @@
 import { GatewayIntents } from "../types/gateway.ts";
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Intents {
   static All: number[] = [
     GatewayIntents.GUILD_MEMBERS,

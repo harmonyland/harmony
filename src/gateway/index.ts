@@ -213,7 +213,7 @@ class Gateway {
       }
     }
 
-    let payload: any = {
+    const payload: any = {
       op: GatewayOpcodes.IDENTIFY,
       d: {
         token: this.token,
@@ -315,7 +315,7 @@ class Gateway {
     })
   }
 
-  sendHeartbeat() {
+  sendHeartbeat(): void {
     const payload = {
       op: GatewayOpcodes.HEARTBEAT,
       d: this.sequenceID ?? null
@@ -325,7 +325,7 @@ class Gateway {
     this.lastPingTimestamp = Date.now()
   }
 
-  heartbeat() {
+  heartbeat(): void {
     if (this.heartbeatServerResponded) {
       this.heartbeatServerResponded = false
     } else {

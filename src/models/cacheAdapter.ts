@@ -1,5 +1,4 @@
 import { Collection } from '../utils/collection.ts'
-import { Client } from './client.ts'
 import {
   connect,
   Redis,

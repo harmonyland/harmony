@@ -176,7 +176,7 @@ export class RESTManager {
       headers['Content-Type'] = 'application/json'
     }
 
-    let data: { [name: string]: any } = {
+    const data: { [name: string]: any } = {
       headers,
       body: body?.file ?? JSON.stringify(body),
       method: method.toUpperCase()
@@ -184,18 +184,18 @@ export class RESTManager {
 
     if (this.client.bot === false) {
       // This is a selfbot. Use requests similar to Discord Client
-      data.headers['authorization'] = this.client.token as string
+      data.headers.authorization = this.client.token as string
       data.headers['accept-language'] = 'en-US'
-      data.headers['accept'] = '*/*'
+      data.headers.accept = '*/*'
       data.headers['sec-fetch-dest'] = 'empty'
       data.headers['sec-fetch-mode'] = 'cors'
       data.headers['sec-fetch-site'] = 'same-origin'
       data.headers['x-super-properties'] = btoa(JSON.stringify(getBuildInfo(this.client)))
       delete data.headers['User-Agent']
-      delete data.headers['Authorization']
-      headers['credentials'] = 'include'
-      headers['mode'] = 'cors'
-      headers['referrerPolicy'] = 'no-referrer-when-downgrade'
+      delete data.headers.Authorization
+      headers.credentials = 'include'
+      headers.mode = 'cors'
+      headers.referrerPolicy = 'no-referrer-when-downgrade'
     }
 
     return data
@@ -252,8 +252,8 @@ export class RESTManager {
           let urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
 
-          if (this.client.canary) {
-            let split = urlToUse.split('//')
+          if (this.client.canary === true) {
+            const split = urlToUse.split('//')
             urlToUse = split[0] + '//canary.' + split[1]
           }
 
