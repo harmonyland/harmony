@@ -6,6 +6,10 @@
 
 **An easy to use Discord API Library for Deno.**
 * Lightweight and easy to use.
+* Built-in Command Framework,
+  * Easily build Commands on the fly.
+  * Compltely Customizable.
+  * Complete Object-Oriented approach.
 * 100% Discord API Coverage.
 * Customizable caching.
   * Built in support for Redis.
@@ -49,6 +53,35 @@ client.on('messageCreate', (msg: Message): void => {
     msg.channel.send(`Pong! WS Ping: ${client.ping}`)
   }
 })
+
+// Connect to gateway
+// Replace with your bot's token and intents (Intents.All, Intents.Presence, Intents.GuildMembers)
+client.connect('super secret token comes here', Intents.All)
+```
+
+Or with CommandClient!
+```ts
+import { CommandClient, Command, CommandContext, Message, Intents } from 'https://raw.githubusercontent.com/discord-deno/discord.deno/main/mod.ts'
+
+const client = new CommandClient({
+  prefix: '!'
+})
+
+// Listen for event when client is ready (Identified through gateway / Resumed)
+client.on('ready', () => {
+  console.log(`Ready! User: ${client.user?.tag}`)
+})
+
+// Create a new Command
+class PingCommand extends Command {
+  name = "ping"
+
+  execute(ctx: CommandContext) {
+    ctx.message.reply(`pong! Ping: ${ctx.client.ping}ms`)
+  }
+}
+
+client.commands.add(PingCommand)
 
 // Connect to gateway
 // Replace with your bot's token and intents (Intents.All, Intents.Presence, Intents.GuildMembers)
