@@ -47,7 +47,7 @@ export class Command {
   /** Whether the Command can only be used by Bot Owners */
   ownerOnly?: boolean
 
-  execute(ctx?: CommandContext): any {}
+  execute(ctx?: CommandContext): any { }
 }
 
 export class CommandsManager {
@@ -60,15 +60,15 @@ export class CommandsManager {
 
   /** Find a Command by name/alias */
   find(search: string): Command | undefined {
-    if(this.client.caseSensitive === false) search = search.toLowerCase()
+    if (this.client.caseSensitive === false) search = search.toLowerCase()
     return this.list.find((cmd: Command): boolean => {
       const name = this.client.caseSensitive === true ? cmd.name : cmd.name.toLowerCase()
-      if(name === search) return true
-      else if(cmd.aliases !== undefined) {
+      if (name === search) return true
+      else if (cmd.aliases !== undefined) {
         let aliases: string[]
-        if(typeof cmd.aliases === "string") aliases = [cmd.aliases]
+        if (typeof cmd.aliases === "string") aliases = [cmd.aliases]
         else aliases = cmd.aliases
-        if(this.client.caseSensitive === false) aliases = aliases.map(e => e.toLowerCase())
+        if (this.client.caseSensitive === false) aliases = aliases.map(e => e.toLowerCase())
         return aliases.includes(search)
       } else return false
     })
@@ -77,10 +77,10 @@ export class CommandsManager {
   /** Check whether a Command exists or not */
   exists(search: Command | string): boolean {
     let exists = false
-    if(typeof search === "string") return this.find(search) !== undefined
+    if (typeof search === "string") return this.find(search) !== undefined
     else {
       exists = this.find(search.name) !== undefined
-      if(search.aliases !== undefined) {
+      if (search.aliases !== undefined) {
         const aliases: string[] = typeof search.aliases === "string" ? [search.aliases] : search.aliases
         exists = aliases.map(alias => this.find(alias) !== undefined).find(e => e) ?? false
       }
@@ -91,8 +91,8 @@ export class CommandsManager {
   /** Add a Command */
   add(cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
-    if(!(cmd instanceof Command))  cmd = new cmd()
-    if(this.exists(cmd)) return false
+    if (!(cmd instanceof Command)) cmd = new cmd()
+    if (this.exists(cmd)) return false
     this.list.set(cmd.name, cmd)
     return true
   }
@@ -100,8 +100,8 @@ export class CommandsManager {
   /** Delete a Command */
   delete(cmd: string | Command): boolean {
     const find = typeof cmd === "string" ? this.find(cmd) : cmd
-    if(find === undefined) return false
-    else return this.list.delete(find.name) 
+    if (find === undefined) return false
+    else return this.list.delete(find.name)
   }
 }
 
@@ -113,7 +113,7 @@ export interface ParsedCommand {
 
 export const parseCommand = (client: CommandClient, msg: Message, prefix: string): ParsedCommand => {
   let content = msg.content.slice(prefix.length)
-  if(client.spacesAfterPrefix === true) content = content.trim() 
+  if (client.spacesAfterPrefix === true) content = content.trim()
   const args = content.split(client.betterArgs === true ? /[\S\s]*/ : / +/)
   const name = args.shift() as string
   const argString = content.slice(name.length).trim()

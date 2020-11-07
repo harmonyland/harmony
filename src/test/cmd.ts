@@ -3,7 +3,7 @@ import PingCommand from "./cmds/ping.ts";
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
-  prefix: [ "pls", "!" ],
+  prefix: ["pls", "!"],
   spacesAfterPrefix: true
 })
 
