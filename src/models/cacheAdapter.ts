@@ -1,5 +1,4 @@
 import { Collection } from '../utils/collection.ts'
-import { Client } from './client.ts'
 import {
   connect,
   Redis,
@@ -7,7 +6,6 @@ import {
 } from 'https://denopkg.com/keroxp/deno-redis/mod.ts'
 
 export interface ICacheAdapter {
-  client: Client
   get: (cacheName: string, key: string) => Promise<any> | any
   set: (cacheName: string, key: string, value: any) => Promise<any> | any
   delete: (cacheName: string, key: string) => Promise<boolean> | boolean
@@ -16,14 +14,9 @@ export interface ICacheAdapter {
 }
 
 export class DefaultCacheAdapter implements ICacheAdapter {
-  client: Client
   data: {
     [name: string]: Collection<string, any>
   } = {}
-
-  constructor (client: Client) {
-    this.client = client
-  }
 
   async get (cacheName: string, key: string): Promise<undefined | any> {
     const cache = this.data[cacheName]
@@ -59,13 +52,11 @@ export class DefaultCacheAdapter implements ICacheAdapter {
 }
 
 export class RedisCacheAdapter implements ICacheAdapter {
-  client: Client
   _redis: Promise<Redis>
   redis?: Redis
   ready: boolean = false
 
-  constructor (client: Client, options: RedisConnectOptions) {
-    this.client = client
+  constructor (options: RedisConnectOptions) {
     this._redis = connect(options)
     this._redis.then(
       redis => {

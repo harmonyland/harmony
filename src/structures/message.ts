@@ -88,7 +88,7 @@ export class Message extends Base {
     this.flags = data.flags
     this.channel = channel
     // TODO: Cache in Gateway Event Code
-    // if(!noSave) this.client.messages.set(this.id, data)
+    // if (!noSave) this.client.messages.set(this.id, data)
   }
 
   protected readFromData (data: MessagePayload): void {

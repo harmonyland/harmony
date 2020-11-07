@@ -13,7 +13,7 @@ export const channelUpdate: GatewayEventHandler = async (
   if (oldChannel !== undefined) {
     await gateway.client.channels.set(d.id, d)
     let guild: undefined | Guild;
-    if('guild_id' in d) {
+    if ('guild_id' in d) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       guild = await gateway.client.guilds.get((d as GuildChannelPayload).guild_id) as Guild | undefined
     }

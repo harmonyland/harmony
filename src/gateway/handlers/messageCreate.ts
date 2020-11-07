@@ -17,7 +17,7 @@ export const messageCreate: GatewayEventHandler = async (
   const user = new User(gateway.client, d.author)
   await gateway.client.users.set(d.author.id, d.author)
   let guild
-  if(d.guild_id !== undefined) {
+  if (d.guild_id !== undefined) {
     guild = await gateway.client.guilds.get(d.guild_id)
   }
   const mentions = new MessageMentions()
