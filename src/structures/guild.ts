@@ -4,9 +4,9 @@ import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { Emoji } from './emoji.ts'
 import { VoiceState } from './voiceState.ts'
-import { RolesManager } from "../managers/roles.ts"
-import { GuildChannelsManager } from "../managers/guildChannels.ts"
-import { MembersManager } from "../managers/members.ts"
+import { RolesManager } from '../managers/roles.ts'
+import { GuildChannelsManager } from '../managers/guildChannels.ts'
+import { MembersManager } from '../managers/members.ts'
 
 export class Guild extends Base {
   id: string

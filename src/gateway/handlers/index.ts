@@ -10,8 +10,8 @@ import { guildUpdate } from './guildUpdate.ts'
 import { guildBanAdd } from './guildBanAdd.ts'
 import { ready } from './ready.ts'
 import { guildBanRemove } from './guildBanRemove.ts'
-import { messageCreate } from "./messageCreate.ts"
-import { resume } from "./resume.ts"
+import { messageCreate } from './messageCreate.ts'
+import { resume } from './resume.ts'
 import { reconnect } from './reconnect.ts'
 
 export const gatewayHandlers: {

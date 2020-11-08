@@ -4,7 +4,7 @@ import {
   GuildChannelCategoryPayload,
   Overwrite
 } from '../types/channel.ts'
-import { Guild } from "./guild.ts"
+import { Guild } from './guild.ts'
 
 export class CategoryChannel extends Channel {
   guildID: string

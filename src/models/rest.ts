@@ -1,7 +1,7 @@
 import { delay } from '../utils/index.ts'
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Client } from './client.ts'
-import { getBuildInfo } from "../utils/buildInfo.ts"
+import { getBuildInfo } from '../utils/buildInfo.ts'
 
 export enum HttpResponseCode {
   Ok = 200,

@@ -1,9 +1,9 @@
-import { Client } from "../models/client.ts";
-import { Guild } from "../structures/guild.ts";
-import { GUILD } from "../types/endpoint.ts";
-import { GuildPayload, MemberPayload } from "../types/guild.ts";
-import { BaseManager } from "./base.ts";
-import { MembersManager } from "./members.ts";
+import { Client } from '../models/client.ts'
+import { Guild } from '../structures/guild.ts'
+import { GUILD } from '../types/endpoint.ts'
+import { GuildPayload, MemberPayload } from '../types/guild.ts'
+import { BaseManager } from './base.ts'
+import { MembersManager } from './members.ts'
 
 export class GuildManager extends BaseManager<GuildPayload, Guild> {
   constructor (client: Client) {

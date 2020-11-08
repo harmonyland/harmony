@@ -1,6 +1,6 @@
-import { Client } from "../models/client.ts";
-import { Collection } from "../utils/collection.ts";
-import { BaseManager } from "./base.ts";
+import { Client } from '../models/client.ts'
+import { Collection } from '../utils/collection.ts'
+import { BaseManager } from './base.ts'
 
 export class BaseChildManager<T, T2> {
   client: Client

@@ -31,9 +31,9 @@ export const messageCreate: GatewayEventHandler = async (
   message.member = member
   if (guild !== undefined) message.guild = guild
   if (message.member !== undefined) {
-    if(message.member.user === undefined) {
+    if (message.member.user === undefined) {
       const user = await gateway.client.users.get(message.member.id)
-      if(user !== undefined) {
+      if (user !== undefined) {
         message.member.user = user
       }
     }

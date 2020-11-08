@@ -1,4 +1,4 @@
-import { GatewayIntents } from "../types/gateway.ts";
+import { GatewayIntents } from '../types/gateway.ts'
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Intents {

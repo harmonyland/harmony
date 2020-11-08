@@ -1,4 +1,4 @@
-import { Command, Member, CommandContext, Embed } from "../../../mod.ts";
+import { Command, Member, CommandContext, Embed } from '../../../mod.ts'
 
 export default class UserinfoCommand extends Command {
     name = "userinfo"

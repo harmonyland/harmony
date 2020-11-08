@@ -1,7 +1,7 @@
 import { Client } from '../models/client.ts'
 import { MemberPayload } from '../types/guild.ts'
 import { Base } from './base.ts'
-import { Role } from "./role.ts"
+import { Role } from './role.ts'
 import { User } from './user.ts'
 
 export class Member extends Base {

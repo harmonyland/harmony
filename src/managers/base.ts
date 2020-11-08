@@ -1,5 +1,5 @@
-import { Client } from "../models/client.ts";
-import { Collection } from "../utils/collection.ts";
+import { Client } from '../models/client.ts'
+import { Collection } from '../utils/collection.ts'
 
 export class BaseManager<T, T2> {
   client: Client

@@ -1,8 +1,8 @@
-import { Message } from "../structures/message.ts"
-import { TextChannel } from "../structures/textChannel.ts"
-import { User } from "../structures/user.ts"
-import { Collection } from "../utils/collection.ts"
-import { CommandClient } from "./commandClient.ts"
+import { Message } from '../structures/message.ts'
+import { TextChannel } from '../structures/textChannel.ts'
+import { User } from '../structures/user.ts'
+import { Collection } from '../utils/collection.ts'
+import { CommandClient } from './commandClient.ts'
 
 export interface CommandContext {
   /** The Client object */

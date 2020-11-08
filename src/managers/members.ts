@@ -1,10 +1,10 @@
-import { User } from "../structures/user.ts";
-import { Client } from "../models/client.ts";
-import { Guild } from "../structures/guild.ts";
-import { Member } from "../structures/member.ts";
-import { GUILD_MEMBER } from "../types/endpoint.ts";
-import { MemberPayload } from "../types/guild.ts";
-import { BaseManager } from "./base.ts";
+import { User } from '../structures/user.ts'
+import { Client } from '../models/client.ts'
+import { Guild } from '../structures/guild.ts'
+import { Member } from '../structures/member.ts'
+import { GUILD_MEMBER } from '../types/endpoint.ts'
+import { MemberPayload } from '../types/guild.ts'
+import { BaseManager } from './base.ts'
 
 export class MembersManager extends BaseManager<MemberPayload, Member> {
   guild: Guild
@@ -21,7 +21,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
     const res = new this.DataType(this.client, raw, user)
     for (const roleid of res.roleIDs as string[]) {
       const role = await this.guild.roles.get(roleid)
-      if(role !== undefined) res.roles.push(role)
+      if (role !== undefined) res.roles.push(role)
     }
     return res
   }
@@ -34,7 +34,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
         const res = new Member(this.client, data as MemberPayload, user)
         for (const roleid of res.roleIDs as string[]) {
           const role = await this.guild.roles.get(roleid)
-          if(role !== undefined) res.roles.push(role)
+          if (role !== undefined) res.roles.push(role)
         }
         resolve(res)
       }).catch(e => reject(e))

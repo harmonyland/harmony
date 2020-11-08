@@ -1,10 +1,10 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
-import { GuildPayload, MemberPayload } from "../../types/guild.ts"
-import { MembersManager } from "../../managers/members.ts"
-import { GuildChannelPayload } from "../../types/channel.ts"
-import { RolePayload } from "../../types/role.ts"
-import { RolesManager } from "../../managers/roles.ts"
+import { GuildPayload, MemberPayload } from '../../types/guild.ts'
+import { MembersManager } from '../../managers/members.ts'
+import { GuildChannelPayload } from '../../types/channel.ts'
+import { RolePayload } from '../../types/role.ts'
+import { RolesManager } from '../../managers/roles.ts'
 
 export const guildCreate: GatewayEventHandler = async(gateway: Gateway, d: GuildPayload) => {
   let guild: Guild | undefined = await gateway.client.guilds.get(d.id)

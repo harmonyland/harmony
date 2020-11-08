@@ -1,9 +1,9 @@
-import { Client } from "../models/client.ts";
-import { Channel } from "../structures/channel.ts";
-import { ChannelPayload } from "../types/channel.ts";
-import { CHANNEL } from "../types/endpoint.ts";
-import getChannelByType from "../utils/getChannelByType.ts";
-import { BaseManager } from "./base.ts";
+import { Client } from '../models/client.ts'
+import { Channel } from '../structures/channel.ts'
+import { ChannelPayload } from '../types/channel.ts'
+import { CHANNEL } from '../types/endpoint.ts'
+import getChannelByType from '../utils/getChannelByType.ts'
+import { BaseManager } from './base.ts'
 
 export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   constructor(client: Client) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client } from "../models/client.ts";
+import { Client } from '../models/client.ts'
 
 export const getBuildInfo = (client: Client): {
     os: string

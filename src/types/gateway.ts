@@ -1,6 +1,6 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { StatusType } from "../../mod.ts"
+import { StatusType } from '../../mod.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import { ActivityPayload } from './presence.ts'

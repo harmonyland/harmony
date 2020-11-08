@@ -1,6 +1,6 @@
-import { CommandClient, Intents } from '../../mod.ts';
-import PingCommand from "./cmds/ping.ts";
-import UserinfoCommand from "./cmds/userinfo.ts";
+import { CommandClient, Intents } from '../../mod.ts'
+import PingCommand from './cmds/ping.ts'
+import UserinfoCommand from './cmds/userinfo.ts'
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
