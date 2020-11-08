@@ -2,6 +2,7 @@ import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
 import { USER } from '../types/endpoint.ts'
 import { Base } from './base.ts'
+import { Guild } from "./guild.ts"
 import { User } from './user.ts'
 
 export class Emoji extends Base {
@@ -9,6 +10,7 @@ export class Emoji extends Base {
   name: string
   roles?: string[]
   user?: User
+  guild?: Guild
   requireColons?: boolean
   managed?: boolean
   animated?: boolean
@@ -20,17 +22,16 @@ export class Emoji extends Base {
     } else return `<a:${this.name}:${this.id}>`
   }
 
+  toString(): string {
+    return this.getEmojiString
+  }
+
   constructor (client: Client, data: EmojiPayload) {
     super(client, data)
     this.id = data.id
     this.name = data.name
+    if(data.user !== undefined) this.user = new User(this.client, data.user)
     this.roles = data.roles
-    if (data.user !== undefined) {
-      User.autoInit(this.client, {
-        endpoint: USER,
-        restURLfuncArgs: [data.user.id]
-      }).then(user => (this.user = user))
-    }
     this.requireColons = data.require_colons
     this.managed = data.managed
     this.animated = data.animated

@@ -6,7 +6,8 @@ import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
-import { Emoji } from "./emoji.ts"
+import { Role } from "./role.ts"
+import { GuildEmojisManager } from "../managers/guildEmojis.ts"
 
 export class Guild extends Base {
   id: string
@@ -27,7 +28,7 @@ export class Guild extends Base {
   defaultMessageNotifications?: string
   explicitContentFilter?: string
   roles: RolesManager
-  emojis: Emoji[] = []
+  emojis: GuildEmojisManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -66,6 +67,7 @@ export class Guild extends Base {
       this
     )
     this.roles = new RolesManager(this.client, this)
+    this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
 
     if (!this.unavailable) {
       this.name = data.name
@@ -207,5 +209,9 @@ export class Guild extends Base {
       this.approximatePresenceCount =
         data.approximate_presence_count ?? this.approximatePresenceCount
     }
+  }
+
+  async getEveryoneRole(): Promise<Role> {
+    return (await this.roles.array().then(arr => arr?.sort((b, a) => a.position - b.position)[0]) as any) as Role
   }
 }

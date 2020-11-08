@@ -14,6 +14,8 @@ const GUILD_WIDGET = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/widget`
 const GUILD_EMOJI = (guildID: string, emojiID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis/${emojiID}`
+const GUILD_EMOJIS = (guildID: string): string =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis`
 const GUILD_ROLE = (guildID: string, roleID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/roles/${roleID}`
 const GUILD_ROLES = (guildID: string): string =>
@@ -172,8 +174,6 @@ const TEAM_ICON = (teamID: string, iconID: string): string =>
 // Emoji Endpoints
 const EMOJI = (guildID: string, emojiID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis/${emojiID}`
-const EMOJIS = (guildID: string): string =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis`
 
 // Template Endpoint
 const TEMPLATE = (templateCODE: string): string =>
@@ -259,7 +259,7 @@ export default [
   ACHIEVEMENT_ICON,
   TEAM_ICON,
   EMOJI,
-  EMOJIS,
+  GUILD_EMOJIS,
   TEMPLATE,
   INVITE,
   VOICE_REGIONS
@@ -305,6 +305,7 @@ export {
   CHANNEL_PIN,
   CHANNEL_PINS,
   CHANNEL_PERMISSION,
+  GUILD_EMOJIS,
   CHANNEL_TYPING,
   GROUP_RECIPIENT,
   CURRENT_USER,
@@ -333,7 +334,6 @@ export {
   ACHIEVEMENT_ICON,
   TEAM_ICON,
   EMOJI,
-  EMOJIS,
   TEMPLATE,
   INVITE,
   VOICE_REGIONS
