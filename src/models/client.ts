@@ -6,7 +6,6 @@ import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
 import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
 import { UserManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
-import { EmojisManager } from '../managers/emojis.ts'
 import { ChannelsManager } from '../managers/channels.ts'
 import { MessagesManager } from '../managers/messages.ts'
 import {
@@ -35,14 +34,13 @@ export class Client extends EventEmitter {
   user?: User
   ping = 0
   token?: string
-  cache: ICacheAdapter = new DefaultCacheAdapter(this)
+  cache: ICacheAdapter = new DefaultCacheAdapter()
   intents?: GatewayIntents[]
   forceNewSession?: boolean
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
   messages: MessagesManager = new MessagesManager(this)
-  emojis: EmojisManager = new EmojisManager(this)
   bot: boolean = true
   canary: boolean = false
 

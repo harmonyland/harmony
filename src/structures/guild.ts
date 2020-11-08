@@ -5,9 +5,10 @@ import { Base } from './base.ts'
 import { Emoji } from './emoji.ts'
 import { VoiceState } from './voiceState.ts'
 import cache from '../models/cache.ts'
-import { RolesManager } from "../managers/roles.ts"
-import { GuildChannelsManager } from "../managers/guildChannels.ts"
-import { MembersManager } from "../managers/members.ts"
+import { RolesManager } from '../managers/roles.ts'
+import { GuildChannelsManager } from '../managers/guildChannels.ts'
+import { MembersManager } from '../managers/members.ts'
+import { EmojisManager } from '../managers/emojis.ts'
 
 export class Guild extends Base {
   id: string
@@ -28,7 +29,7 @@ export class Guild extends Base {
   defaultMessageNotifications?: string
   explicitContentFilter?: string
   roles: RolesManager
-  emojis?: Emoji[]
+  emojis: EmojisManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -40,7 +41,7 @@ export class Guild extends Base {
   unavailable: boolean
   memberCount?: number
   voiceStates?: VoiceState[]
-  members: MembersManager 
+  members: MembersManager
   channels: GuildChannelsManager
   presences?: PresenceUpdatePayload[]
   maxPresences?: number
@@ -61,8 +62,13 @@ export class Guild extends Base {
     this.id = data.id
     this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
-    this.channels = new GuildChannelsManager(this.client, this.client.channels, this)
+    this.channels = new GuildChannelsManager(
+      this.client,
+      this.client.channels,
+      this
+    )
     this.roles = new RolesManager(this.client, this)
+    this.emojis = new EmojisManager(this.client, this)
 
     if (!this.unavailable) {
       this.name = data.name
@@ -156,10 +162,6 @@ export class Guild extends Base {
       //   data.roles.map(
       //     v => cache.get('role', v.id) ?? new Role(this.client, v)
       //   ) ?? this.roles
-      this.emojis =
-        data.emojis.map(
-          v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)
-        ) ?? this.emojis
       this.features = data.features ?? this.features
       this.mfaLevel = data.mfa_level ?? this.mfaLevel
       this.systemChannelID = data.system_channel_id ?? this.systemChannelID
