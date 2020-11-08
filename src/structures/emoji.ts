@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
 import { USER } from '../types/endpoint.ts'
 import { Base } from './base.ts'
-import { Guild } from "./guild.ts"
+import { Guild } from './guild.ts'
 import { User } from './user.ts'
 
 export class Emoji extends Base {

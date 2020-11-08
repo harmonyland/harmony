@@ -6,8 +6,8 @@ import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
-import { Role } from "./role.ts"
-import { GuildEmojisManager } from "../managers/guildEmojis.ts"
+import { Role } from './role.ts'
+import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 
 export class Guild extends Base {
   id: string

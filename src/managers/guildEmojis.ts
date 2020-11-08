@@ -1,11 +1,11 @@
 import { Client } from '../models/client.ts'
-import { Emoji } from "../structures/emoji.ts"
+import { Emoji } from '../structures/emoji.ts'
 import { Guild } from '../structures/guild.ts'
-import { Role } from "../structures/role.ts"
-import { EmojiPayload } from "../types/emoji.ts"
+import { Role } from '../structures/role.ts'
+import { EmojiPayload } from '../types/emoji.ts'
 import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
-import { EmojisManager } from "./emojis.ts"
+import { EmojisManager } from './emojis.ts'
 import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
 
 export class GuildEmojisManager extends BaseChildManager<

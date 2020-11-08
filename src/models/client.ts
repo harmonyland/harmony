@@ -13,7 +13,7 @@ import {
   ClientActivity,
   ClientPresence
 } from '../structures/presence.ts'
-import { EmojisManager } from "../managers/emojis.ts"
+import { EmojisManager } from '../managers/emojis.ts'
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {

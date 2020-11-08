@@ -2,7 +2,7 @@ import { delay } from '../utils/index.ts'
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Client } from './client.ts'
 import { getBuildInfo } from '../utils/buildInfo.ts'
-import { Collection } from "../utils/collection.ts"
+import { Collection } from '../utils/collection.ts'
 
 export type RequestMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
 
