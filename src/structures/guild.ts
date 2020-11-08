@@ -211,7 +211,7 @@ export class Guild extends Base {
     }
   }
 
-  async getEveryoneRole(): Promise<Role> {
+  async getEveryoneRole (): Promise<Role> {
     return (await this.roles.array().then(arr => arr?.sort((b, a) => a.position - b.position)[0]) as any) as Role
   }
 }

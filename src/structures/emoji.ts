@@ -30,7 +30,7 @@ export class Emoji extends Base {
     super(client, data)
     this.id = data.id
     this.name = data.name
-    if(data.user !== undefined) this.user = new User(this.client, data.user)
+    if (data.user !== undefined) this.user = new User(this.client, data.user)
     this.roles = data.roles
     this.requireColons = data.require_colons
     this.managed = data.managed

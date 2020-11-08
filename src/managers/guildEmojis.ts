@@ -53,8 +53,8 @@ export class GuildEmojisManager extends BaseChildManager<
       let roleIDs: string[] = []
       if (roles !== undefined && typeof roles === "string") roleIDs = [roles]
       else if (roles !== undefined) {
-        if(roles?.length === 0) reject(new Error("Empty Roles array was provided"))
-        if(roles[0] instanceof Role) roleIDs = (roles as any).map((r: Role) => r.id)
+        if (roles?.length === 0) reject(new Error("Empty Roles array was provided"))
+        if (roles[0] instanceof Role) roleIDs = (roles as any).map((r: Role) => r.id)
         else roleIDs = roles as string[]
       } else roles = [this.guild.id]
       this.client.rest
