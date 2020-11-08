@@ -3,20 +3,24 @@ import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
-import { DefaultCacheAdapter, ICacheAdapter } from "./cacheAdapter.ts"
-import { UserManager } from "../managers/users.ts"
-import { GuildManager } from "../managers/guilds.ts"
-import { EmojisManager } from "../managers/emojis.ts"
-import { ChannelsManager } from "../managers/channels.ts"
-import { MessagesManager } from "../managers/messages.ts"
-import { ActivityGame, ClientActivity, ClientPresence } from "../structures/presence.ts"
+import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
+import { UserManager } from '../managers/users.ts'
+import { GuildManager } from '../managers/guilds.ts'
+import { EmojisManager } from '../managers/emojis.ts'
+import { ChannelsManager } from '../managers/channels.ts'
+import { MessagesManager } from '../managers/messages.ts'
+import {
+  ActivityGame,
+  ClientActivity,
+  ClientPresence
+} from '../structures/presence.ts'
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
   token?: string
   intents?: GatewayIntents[]
-  cache?: ICacheAdapter,
-  forceNewSession?: boolean,
+  cache?: ICacheAdapter
+  forceNewSession?: boolean
   presence?: ClientPresence | ClientActivity | ActivityGame
   bot?: boolean
   canary?: boolean
@@ -31,7 +35,7 @@ export class Client extends EventEmitter {
   user?: User
   ping = 0
   token?: string
-  cache: ICacheAdapter = new DefaultCacheAdapter()
+  cache: ICacheAdapter = new DefaultCacheAdapter(this)
   intents?: GatewayIntents[]
   forceNewSession?: boolean
   users: UserManager = new UserManager(this)
@@ -50,7 +54,11 @@ export class Client extends EventEmitter {
     this.intents = options.intents
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
-    if (options.presence !== undefined) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
+    if (options.presence !== undefined)
+      this.presence =
+        options.presence instanceof ClientPresence
+          ? options.presence
+          : new ClientPresence(options.presence)
     if (options.bot === false) this.bot = false
     if (options.canary === true) this.canary = true
   }
@@ -68,7 +76,7 @@ export class Client extends EventEmitter {
   }
 
   debug (tag: string, msg: string): void {
-    this.emit("debug", `[${tag}] ${msg}`)
+    this.emit('debug', `[${tag}] ${msg}`)
   }
 
   /**

@@ -1,9 +1,9 @@
 {
-  "name": "discord.deno",
+  "name": "harmony",
   "version": "1.0.0",
   "description": "Discord Deno API that is easy to use.",
   "main": "index.js",
-  "repository": "https://github.com/Helloyunho/discord.deno.git",
+  "repository": "https://github.com/harmony/harmony.git",
   "author": "Helloyunho <yunho050840@gmail.com>",
   "license": "MIT",
   "devDependencies": {

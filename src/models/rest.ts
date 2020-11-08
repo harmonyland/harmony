@@ -1,7 +1,7 @@
 import { delay } from '../utils/index.ts'
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Client } from './client.ts'
-import { getBuildInfo } from "../utils/buildInfo.ts"
+import { getBuildInfo } from '../utils/buildInfo.ts'
 
 export enum HttpResponseCode {
   Ok = 200,
@@ -156,7 +156,7 @@ export class RESTManager {
   ): { [key: string]: any } {
     const headers: { [key: string]: string } = {
       Authorization: `Bot ${this.client.token}`,
-      'User-Agent': `DiscordBot (discord.deno)`
+      'User-Agent': `DiscordBot (harmony)`
     }
 
     if (this.client.token === undefined) delete headers.Authorization
@@ -190,7 +190,9 @@ export class RESTManager {
       data.headers['sec-fetch-dest'] = 'empty'
       data.headers['sec-fetch-mode'] = 'cors'
       data.headers['sec-fetch-site'] = 'same-origin'
-      data.headers['x-super-properties'] = btoa(JSON.stringify(getBuildInfo(this.client)))
+      data.headers['x-super-properties'] = btoa(
+        JSON.stringify(getBuildInfo(this.client))
+      )
       delete data.headers['User-Agent']
       delete data.headers.Authorization
       headers.credentials = 'include'
@@ -259,10 +261,7 @@ export class RESTManager {
 
           const requestData = this.createRequestBody(body, method)
 
-          const response = await fetch(
-            urlToUse,
-            requestData
-          )
+          const response = await fetch(urlToUse, requestData)
           const bucketIDFromHeaders = this.processHeaders(url, response.headers)
           this.handleStatusCode(response, errorStack)
 
@@ -328,7 +327,8 @@ export class RESTManager {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.logErrors(response, errorStack)
 
-    if (status === HttpResponseCode.Unauthorized) throw new Error("Request was not successful. Invalid Token.")
+    if (status === HttpResponseCode.Unauthorized)
+      throw new Error('Request was not successful. Invalid Token.')
 
     switch (status) {
       case HttpResponseCode.BadRequest:
