@@ -38,7 +38,7 @@ And input your bot's token and Intents.
 
 Here is a small example of how to use harmony,
 ```ts
-import { Client, Message, Intents } from 'https://raw.githubusercontent.com//harmony-org/harmony/main/mod.ts'
+import { Client, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new Client()
 
