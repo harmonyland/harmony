@@ -13,33 +13,41 @@ import { CHANNEL } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { ChannelsManager } from './channels.ts'
 
-export type GuildChannelPayloads = GuildTextChannelPayload | GuildVoiceChannelPayload | GuildChannelCategoryPayload
+export type GuildChannelPayloads =
+  | GuildTextChannelPayload
+  | GuildVoiceChannelPayload
+  | GuildChannelCategoryPayload
 export type GuildChannel = GuildTextChannel | VoiceChannel | CategoryChannel
 
-export class GuildChannelsManager extends BaseChildManager<GuildChannelPayloads, GuildChannel> {
+export class GuildChannelsManager extends BaseChildManager<
+  GuildChannelPayloads,
+  GuildChannel
+> {
   guild: Guild
 
-  constructor(client: Client, parent: ChannelsManager, guild: Guild) {
+  constructor (client: Client, parent: ChannelsManager, guild: Guild) {
     super(client, parent as any)
     this.guild = guild
   }
 
-  async get(id: string): Promise<GuildChannel | undefined> {
+  async get (id: string): Promise<GuildChannel | undefined> {
     const res = await this.parent.get(id)
     if (res !== undefined && res.guild.id === this.guild.id) return res
     else return undefined
   }
-
+  
   async delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
   }
 
-  async array(): Promise<GuildChannel[]> {
-    const arr = await this.parent.array() as Channel[]
-    return arr.filter((c: any) => c.guild !== undefined && c.guild.id === this.guild.id) as any
+  async array (): Promise<GuildChannel[]> {
+    const arr = (await this.parent.array()) as Channel[]
+    return arr.filter(
+      (c: any) => c.guild !== undefined && c.guild.id === this.guild.id
+    ) as any
   }
 
-  async flush(): Promise<boolean> {
+  async flush (): Promise<boolean> {
     const arr = await this.array()
     for (const elem of arr) {
       this.parent.delete(elem.id)

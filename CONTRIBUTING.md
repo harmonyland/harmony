@@ -16,6 +16,18 @@ const example = (): void => {}
 ```
 
 - Do not make unused variables or unused imports.
+- Make a space before a new block, Parentheses, equal, etc. Ex:
+
+```ts
+//Here   Here
+if (true) {
+}
+
+//   Here    Here
+const example = ''
+```
+
+- Use 'single quote' instead of "double quote".
 
 These are not on standard.js but we want you to follow.
 

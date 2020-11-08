@@ -10,10 +10,12 @@ export const guildDelte: GatewayEventHandler = async (
 
   if (guild !== undefined) {
     guild.refreshFromData(d)
+
     await guild.members.flush()
     await guild.channels.flush()
     await guild.roles.flush()
     await gateway.client.guilds.delete(d.id)
+
     gateway.client.emit('guildDelete', guild)
   }
 }

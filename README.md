@@ -1,4 +1,4 @@
-# discord-deno
+# harmony
 
 ![banner](banner.png)
 
@@ -28,17 +28,17 @@ Note: Library is yet under development and not completely usable. You're still a
 
 ## Usage
 Right now, the package is not published anywhere, as its not completely usable.
-You can import it from this Raw GitHub URL: https://raw.githubusercontent.com/discord-deno/discord.deno/main/mod.ts
+You can import it from this Raw GitHub URL: https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts
 
 For a quick example, run this:
 ```bash
-deno run --allow-net https://raw.githubusercontent.com/discord-deno/discord.deno/main/examples/ping.ts
+deno run --allow-net https://raw.githubusercontent.com/harmony-org/harmony/main/examples/ping.ts
 ```
 And input your bot's token and Intents.
 
-Here is a small example of how to use discord.deno,
+Here is a small example of how to use harmony,
 ```ts
-import { Client, Message, Intents } from 'https://raw.githubusercontent.com/discord-deno/discord.deno/main/mod.ts'
+import { Client, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new Client()
 
@@ -61,7 +61,7 @@ client.connect('super secret token comes here', Intents.All)
 
 Or with CommandClient!
 ```ts
-import { CommandClient, Command, CommandContext, Message, Intents } from 'https://raw.githubusercontent.com/discord-deno/discord.deno/main/mod.ts'
+import { CommandClient, Command, CommandContext, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new CommandClient({
   prefix: '!'

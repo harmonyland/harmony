@@ -73,7 +73,11 @@ export class Client extends EventEmitter {
     this.intents = options.intents
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
-    if (options.presence !== undefined) this.presence = options.presence instanceof ClientPresence ? options.presence : new ClientPresence(options.presence)
+    if (options.presence !== undefined)
+      this.presence =
+        options.presence instanceof ClientPresence
+          ? options.presence
+          : new ClientPresence(options.presence)
     if (options.bot === false) this.bot = false
     if (options.canary === true) this.canary = true
   }
@@ -94,7 +98,7 @@ export class Client extends EventEmitter {
 
   /** Emit debug event */
   debug (tag: string, msg: string): void {
-    this.emit("debug", `[${tag}] ${msg}`)
+    this.emit('debug', `[${tag}] ${msg}`)
   }
 
   /**

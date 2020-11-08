@@ -6,7 +6,7 @@ import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
-import { EmojisManager } from "../managers/emojis.ts"
+import { Emoji } from "./emoji.ts"
 
 export class Guild extends Base {
   id: string
@@ -27,7 +27,7 @@ export class Guild extends Base {
   defaultMessageNotifications?: string
   explicitContentFilter?: string
   roles: RolesManager
-  emojis: EmojisManager
+  emojis: Emoji[] = []
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -39,7 +39,7 @@ export class Guild extends Base {
   unavailable: boolean
   memberCount?: number
   voiceStates?: VoiceState[]
-  members: MembersManager 
+  members: MembersManager
   channels: GuildChannelsManager
   presences?: PresenceUpdatePayload[]
   maxPresences?: number

@@ -36,7 +36,7 @@ class Gateway {
   client: Client
   cache: GatewayCache
 
-  constructor(client: Client, token: string, intents: GatewayIntents[]) {
+  constructor (client: Client, token: string, intents: GatewayIntents[]) {
     this.token = token
     this.intents = intents
     this.client = client
@@ -53,12 +53,12 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  private onopen(): void {
+  private onopen (): void {
     this.connected = true
     this.debug('Connected to Gateway!')
   }
 
-  private async onmessage(event: MessageEvent): Promise<void> {
+  private async onmessage (event: MessageEvent): Promise<void> {
     let data = event.data
     if (data instanceof ArrayBuffer) {
       data = new Uint8Array(data)
@@ -140,7 +140,7 @@ class Gateway {
     }
   }
 
-  private onclose(event: CloseEvent): void {
+  private onclose (event: CloseEvent): void {
     this.debug(`Connection Closed with code: ${event.code}`)
 
     if (event.code === GatewayCloseCodes.UNKNOWN_ERROR) {
@@ -184,12 +184,12 @@ class Gateway {
     }
   }
 
-  private onerror(event: Event | ErrorEvent): void {
+  private onerror (event: Event | ErrorEvent): void {
     const eventError = event as ErrorEvent
     console.log(eventError)
   }
 
-  private async sendIdentify(forceNewSession?: boolean): Promise<void> {
+  private async sendIdentify (forceNewSession?: boolean): Promise<void> {
     if (this.client.bot === true) {
       this.debug('Fetching /gateway/bot...')
       const info = await this.client.rest.get(GATEWAY_BOT())
@@ -219,8 +219,8 @@ class Gateway {
         token: this.token,
         properties: {
           $os: Deno.build.os,
-          $browser: 'discord.deno', // TODO: Change lib name
-          $device: 'discord.deno'
+          $browser: 'harmony', // TODO: Change lib name
+          $device: 'harmony'
         },
         compress: true,
         shard: [0, 1], // TODO: Make sharding possible
@@ -234,23 +234,23 @@ class Gateway {
 
     if (this.client.bot === false) {
       // TODO: Complete Selfbot support
-      this.debug("Modify Identify Payload for Self-bot..")
+      this.debug('Modify Identify Payload for Self-bot..')
       // delete payload.d['intents']
       // payload.d.intents = Intents.None
       payload.d.presence = null
       payload.d.properties = {
-        $os: "Windows",
-        $browser: "Firefox",
-        $device: ""
+        $os: 'Windows',
+        $browser: 'Firefox',
+        $device: ''
       }
 
-      this.debug("Warn: Support for selfbots is incomplete")
+      this.debug('Warn: Support for selfbots is incomplete')
     }
 
     this.send(payload)
   }
 
-  private async sendResume(): Promise<void> {
+  private async sendResume (): Promise<void> {
     this.debug(`Preparing to resume with Session: ${this.sessionID}`)
     if (this.sequenceID === undefined) {
       const cached = await this.cache.get('seq')
@@ -268,11 +268,11 @@ class Gateway {
     this.send(resumePayload)
   }
 
-  debug(msg: string): void {
+  debug (msg: string): void {
     this.client.debug('Gateway', msg)
   }
 
-  async reconnect(forceNew?: boolean): Promise<void> {
+  async reconnect (forceNew?: boolean): Promise<void> {
     clearInterval(this.heartbeatIntervalID)
     if (forceNew === undefined || !forceNew)
       await this.cache.delete('session_id')
@@ -280,7 +280,7 @@ class Gateway {
     this.initWebsocket()
   }
 
-  initWebsocket(): void {
+  initWebsocket (): void {
     this.websocket = new WebSocket(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
@@ -293,39 +293,41 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  close(): void {
+  close (): void {
     this.websocket.close(1000)
   }
 
-  send(data: GatewayResponse): boolean {
+  send (data: GatewayResponse): boolean {
     if (this.websocket.readyState !== this.websocket.OPEN) return false
-    this.websocket.send(JSON.stringify({
-      op: data.op,
-      d: data.d,
-      s: typeof data.s === "number" ? data.s : null,
-      t: data.t === undefined ? null : data.t,
-    }))
+    this.websocket.send(
+      JSON.stringify({
+        op: data.op,
+        d: data.d,
+        s: typeof data.s === 'number' ? data.s : null,
+        t: data.t === undefined ? null : data.t
+      })
+    )
     return true
   }
 
-  sendPresence(data: ClientActivityPayload): void {
+  sendPresence (data: ClientActivityPayload): void {
     this.send({
       op: GatewayOpcodes.PRESENCE_UPDATE,
       d: data
     })
   }
 
-  sendHeartbeat(): void {
+  sendHeartbeat (): void {
     const payload = {
       op: GatewayOpcodes.HEARTBEAT,
       d: this.sequenceID ?? null
-    };
+    }
 
     this.send(payload)
     this.lastPingTimestamp = Date.now()
   }
 
-  heartbeat(): void {
+  heartbeat (): void {
     if (this.heartbeatServerResponded) {
       this.heartbeatServerResponded = false
     } else {

@@ -122,8 +122,8 @@ export enum UpdateStatus {
 
 export interface IdentityConnection {
   $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'discord.deno'
-  $device: 'discord.deno'
+  $browser: 'harmony'
+  $device: 'harmony'
 }
 
 export interface Resume {
