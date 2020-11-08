@@ -9,7 +9,6 @@ import {
   GuildTextChannelPayload,
   GuildVoiceChannelPayload
 } from '../types/channel.ts'
-import { CHANNEL } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { ChannelsManager } from './channels.ts'
 
