@@ -1,8 +1,9 @@
-import { Message } from "../structures/message.ts"
-import { TextChannel } from "../structures/textChannel.ts"
-import { User } from "../structures/user.ts"
-import { Collection } from "../utils/collection.ts"
-import { CommandClient } from "./commandClient.ts"
+import { Guild } from '../structures/guild.ts'
+import { Message } from '../structures/message.ts'
+import { TextChannel } from '../structures/textChannel.ts'
+import { User } from '../structures/user.ts'
+import { Collection } from '../utils/collection.ts'
+import { CommandClient } from './commandClient.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -23,11 +24,13 @@ export interface CommandContext {
   args: string[]
   /** Complete Raw String of Arguments */
   argString: string
+  /** Guild which the command has called */
+  guild?: Guild
 }
 
 export class Command {
   /** Name of the Command */
-  name: string = ""
+  name: string = ''
   /** Description of the Command */
   description?: string
   /** Array of Aliases of Command, or only string */
@@ -47,49 +50,54 @@ export class Command {
   /** Whether the Command can only be used by Bot Owners */
   ownerOnly?: boolean
 
-  execute(ctx?: CommandContext): any { }
+  execute (ctx?: CommandContext): any {}
 }
 
 export class CommandsManager {
   client: CommandClient
   list: Collection<string, Command> = new Collection()
 
-  constructor(client: CommandClient) {
+  constructor (client: CommandClient) {
     this.client = client
   }
 
   /** Find a Command by name/alias */
-  find(search: string): Command | undefined {
+  find (search: string): Command | undefined {
     if (this.client.caseSensitive === false) search = search.toLowerCase()
     return this.list.find((cmd: Command): boolean => {
-      const name = this.client.caseSensitive === true ? cmd.name : cmd.name.toLowerCase()
+      const name =
+        this.client.caseSensitive === true ? cmd.name : cmd.name.toLowerCase()
       if (name === search) return true
       else if (cmd.aliases !== undefined) {
         let aliases: string[]
-        if (typeof cmd.aliases === "string") aliases = [cmd.aliases]
+        if (typeof cmd.aliases === 'string') aliases = [cmd.aliases]
         else aliases = cmd.aliases
-        if (this.client.caseSensitive === false) aliases = aliases.map(e => e.toLowerCase())
+        if (this.client.caseSensitive === false)
+          aliases = aliases.map(e => e.toLowerCase())
         return aliases.includes(search)
       } else return false
     })
   }
 
   /** Check whether a Command exists or not */
-  exists(search: Command | string): boolean {
+  exists (search: Command | string): boolean {
     let exists = false
-    if (typeof search === "string") return this.find(search) !== undefined
+    if (typeof search === 'string') return this.find(search) !== undefined
     else {
       exists = this.find(search.name) !== undefined
       if (search.aliases !== undefined) {
-        const aliases: string[] = typeof search.aliases === "string" ? [search.aliases] : search.aliases
-        exists = aliases.map(alias => this.find(alias) !== undefined).find(e => e) ?? false
+        const aliases: string[] =
+          typeof search.aliases === 'string' ? [search.aliases] : search.aliases
+        exists =
+          aliases.map(alias => this.find(alias) !== undefined).find(e => e) ??
+          false
       }
       return exists
     }
   }
 
   /** Add a Command */
-  add(cmd: Command | typeof Command): boolean {
+  add (cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
     if (!(cmd instanceof Command)) cmd = new cmd()
     if (this.exists(cmd)) return false
@@ -98,8 +106,8 @@ export class CommandsManager {
   }
 
   /** Delete a Command */
-  delete(cmd: string | Command): boolean {
-    const find = typeof cmd === "string" ? this.find(cmd) : cmd
+  delete (cmd: string | Command): boolean {
+    const find = typeof cmd === 'string' ? this.find(cmd) : cmd
     if (find === undefined) return false
     else return this.list.delete(find.name)
   }
@@ -111,7 +119,11 @@ export interface ParsedCommand {
   argString: string
 }
 
-export const parseCommand = (client: CommandClient, msg: Message, prefix: string): ParsedCommand => {
+export const parseCommand = (
+  client: CommandClient,
+  msg: Message,
+  prefix: string
+): ParsedCommand => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
   const args = content.split(client.betterArgs === true ? /[\S\s]*/ : / +/)
