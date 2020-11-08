@@ -252,41 +252,36 @@ export class RESTManager {
     return rateLimited ? bucket : undefined
   }
 
-  handleStatusCode(
+  async handleStatusCode(
     response: Response
-  ): undefined | boolean {
+  ): Promise<undefined> {
     const status = response.status
 
-    if (
-      (status >= 200 && status < 400) ||
-      status === HttpResponseCode.TooManyRequests
-    ) {
-      return true
-    }
+    if ((status >= 200 && status < 400) || status === HttpResponseCode.TooManyRequests) return
+
+    const body = await response.json()
+    const text = Deno.inspect(body.errors)
 
     if (status === HttpResponseCode.Unauthorized)
-      throw new Error('Request was not successful. Invalid Token.')
+      throw new Error(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
 
-    switch (status) {
-      case HttpResponseCode.BadRequest:
-      case HttpResponseCode.Unauthorized:
-      case HttpResponseCode.Forbidden:
-      case HttpResponseCode.NotFound:
-      case HttpResponseCode.MethodNotAllowed:
-        throw new Error('Request Client Error.')
-      case HttpResponseCode.GatewayUnavailable:
-        throw new Error('Request Server Error.')
-    }
-
-    // left are all unknown
-    throw new Error('Request Unknown Error')
+    if ([
+      HttpResponseCode.BadRequest,
+      HttpResponseCode.NotFound,
+      HttpResponseCode.Forbidden,
+      HttpResponseCode.MethodNotAllowed
+    ].includes(status)) {
+      throw new Error(`Request - Client Error. Code: ${status}\n${text}`)
+    } else if (status === HttpResponseCode.GatewayUnavailable) {
+      throw new Error(`Request - Server Error. Code: ${status}\n${text}`)
+    } else throw new Error('Request - Unknown Error')
   }
 
   async make(
     method: RequestMethods,
     url: string,
     body?: unknown,
-    retryCount = 0,
+    maxRetries = 0,
     bucket?: string | null
   ): Promise<any> {
     return await new Promise((resolve, reject) => {
@@ -324,6 +319,7 @@ export class RESTManager {
 
           const response = await fetch(urlToUse, requestData)
           const bucketFromHeaders = this.processHeaders(url, response.headers)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.handleStatusCode(response)
 
           if (response.status === 204) return resolve(undefined)
@@ -333,7 +329,7 @@ export class RESTManager {
             json.retry_after !== undefined ||
             json.message === 'You are being rate limited.'
           ) {
-            if (retryCount > 10) {
+            if (maxRetries > 10) {
               throw new Error('Max RateLimit Retries hit')
             }
 
