@@ -141,7 +141,12 @@ export class CommandClient extends Client {
       this.emit('commandUsed', { context: ctx })
       command.execute(ctx)
     } catch (e) {
-      if (this.texts.ERROR !== undefined) this.sendProcessedText(msg, this.texts.ERROR, Object.assign(baseReplaces, { error: e.message }))
+      if (this.texts.ERROR !== undefined)
+        return this.sendProcessedText(
+          msg,
+          this.texts.ERROR,
+          Object.assign(baseReplaces, { error: e.message })
+        )
       this.emit('commandError', { command, parsed, error: e })
     }
   }

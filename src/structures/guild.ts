@@ -2,11 +2,11 @@ import { Client } from '../models/client.ts'
 import { GuildFeatures, GuildPayload } from '../types/guild.ts'
 import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
-import { Emoji } from './emoji.ts'
 import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
+import { EmojisManager } from "../managers/emojis.ts"
 
 export class Guild extends Base {
   id: string
@@ -27,7 +27,7 @@ export class Guild extends Base {
   defaultMessageNotifications?: string
   explicitContentFilter?: string
   roles: RolesManager
-  emojis?: Emoji[]
+  emojis: EmojisManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -60,8 +60,13 @@ export class Guild extends Base {
     this.id = data.id
     this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
-    this.channels = new GuildChannelsManager(this.client, this.client.channels, this)
+    this.channels = new GuildChannelsManager(
+      this.client, 
+      this.client.channels, 
+      this
+    )
     this.roles = new RolesManager(this.client, this)
+    this.emojis = new EmojisManager(this.client)
 
     if (!this.unavailable) {
       this.name = data.name

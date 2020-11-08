@@ -4,7 +4,11 @@ import { Guild } from '../structures/guild.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import { GuildTextChannel } from '../structures/guildTextChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
-import { GuildChannelCategoryPayload, GuildTextChannelPayload, GuildVoiceChannelPayload } from '../types/channel.ts'
+import {
+  GuildChannelCategoryPayload,
+  GuildTextChannelPayload,
+  GuildVoiceChannelPayload
+} from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { ChannelsManager } from './channels.ts'
