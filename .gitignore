@@ -110,3 +110,6 @@ yarn.lock
 # PRIVACY XDDDD
 src/test/config.ts
 .vscode
+
+# macOS is shit xD
+**/.DS_Store

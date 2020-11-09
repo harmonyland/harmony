@@ -1,15 +1,16 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
+import { StatusType } from '../../mod.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
-import { ActivityPayload, PresenceUpdatePayload } from './presence.ts'
+import { ActivityPayload } from './presence.ts'
 import { RolePayload } from './role.ts'
 import { UserPayload } from './user.ts'
 
 /**
  * Gateway OPcodes from Discord docs.
  */
-enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있다. - UnderC -
+export enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있다. - UnderC -
   DISPATCH = 0,
   HEARTBEAT = 1,
   IDENTIFY = 2,
@@ -26,7 +27,7 @@ enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있�
 /**
  * Gateway Close Codes from Discord docs.
  */
-enum GatewayCloseCodes {
+export enum GatewayCloseCodes {
   UNKNOWN_ERROR = 4000,
   UNKNOWN_OPCODE = 4001,
   DECODE_ERROR = 4002,
@@ -43,7 +44,7 @@ enum GatewayCloseCodes {
   DISALLOWED_INTENTS = 4014
 }
 
-enum GatewayIntents {
+export enum GatewayIntents {
   GUILDS = 1 << 0,
   GUILD_MEMBERS = 1 << 1,
   GUILD_BANS = 1 << 2,
@@ -61,7 +62,7 @@ enum GatewayIntents {
   DIRECT_MESSAGE_TYPING = 1 << 13
 }
 
-enum GatewayEvents {
+export enum GatewayEvents {
   Ready = 'READY',
   Resumed = 'RESUMED',
   Reconnect = 'RECONNECT',
@@ -100,7 +101,7 @@ enum GatewayEvents {
   Webhooks_Update = 'WEBHOOKS_UPDATE'
 }
 
-interface IdentityPayload {
+export interface IdentityPayload {
   token: string
   properties: IdentityConnection
   compress?: boolean
@@ -111,7 +112,7 @@ interface IdentityPayload {
   intents: number
 }
 
-enum UpdateStatus {
+export enum UpdateStatus {
   online = 'online',
   dnd = 'dnd',
   afk = 'idle',
@@ -119,19 +120,19 @@ enum UpdateStatus {
   offline = 'offline'
 }
 
-interface IdentityConnection {
+export interface IdentityConnection {
   $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'discord.deno'
-  $device: 'discord.deno'
+  $browser: 'harmony'
+  $device: 'harmony'
 }
 
-interface Resume {
+export interface Resume {
   token: string
   session_id: string
   seq: number
 }
 
-interface GuildRequestMembers {
+export interface GuildRequestMembers {
   guild_id: string | string[]
   query?: string
   limit: number
@@ -140,25 +141,25 @@ interface GuildRequestMembers {
   nonce?: string
 }
 
-interface GatewayVoiceStateUpdate {
+export interface GatewayVoiceStateUpdate {
   guild_id: string
   channel_id: string
   self_mute: boolean
   self_deaf: boolean
 }
 
-interface GatewayStatusUpdate {
+export interface GatewayStatusUpdate {
   since: number | undefined
   activities: ActivityPayload[]
   status: string
   afk: boolean
 }
 
-interface Hello {
+export interface Hello {
   heartbeat_interval: number
 }
 
-interface ReadyEvent {
+export interface ReadyEvent {
   v: number
   user: UserPayload
   privateChannels: []
@@ -167,40 +168,40 @@ interface ReadyEvent {
   shard?: number[]
 }
 
-interface ChannelPinsUpdate {
+export interface ChannelPinsUpdatePayload {
   guild_id?: string
   channel_id: string
   last_pin_timestamp?: string
 }
 
-interface GuildBanAdd {
+export interface GuildBanAddPayload {
   guild_id: string
   user: UserPayload
 }
 
-interface GuildBanRemove {
+export interface GuildBanRemovePayload {
   guild_id: string
   user: UserPayload
 }
 
-interface GuildEmojiUpdate {
+export interface GuildEmojiUpdatePayload {
   guild_id: string
   emojis: []
 }
 
-interface GuildIntegrationsUpdate {
+export interface GuildIntegrationsUpdatePayload {
   guild_id: string
 }
 
-interface GuildMemberAddExtra {
+export interface GuildMemberAddPayload {
   guild_id: string
 }
 
-interface GuildMemberRemove {
+export interface GuildMemberRemovePayload {
   guild_id: string
   user: UserPayload
 }
-interface GuildMemberUpdate {
+export interface GuildMemberUpdatePayload {
   guild_id: string
   roles: string[]
   user: UserPayload
@@ -209,7 +210,7 @@ interface GuildMemberUpdate {
   premium_since?: string | undefined
 }
 
-interface GuildMemberChunk {
+export interface GuildMemberChunkPayload {
   guild_id: string
   members: MemberPayload[]
   chunk_index: number
@@ -219,22 +220,22 @@ interface GuildMemberChunk {
   nonce?: string
 }
 
-interface GuildRoleCreate {
+export interface GuildRoleCreatePayload {
   guild_id: string
   role: RolePayload
 }
 
-interface GuildRoleUpdate {
+export interface GuildRoleUpdatePayload {
   guild_id: string
   role: RolePayload
 }
 
-interface GuildRoleDelete {
+export interface GuildRoleDeletePayload {
   guild_id: string
   role_id: string
 }
 
-interface InviteCreate {
+export interface InviteCreatePayload {
   channel_id: string
   code: string
   created_at: string
@@ -248,25 +249,25 @@ interface InviteCreate {
   uses: number
 }
 
-interface InviteDelete {
+export interface InviteDeletePayload {
   channel_id: string
   guild_id?: string
   code: string
 }
 
-interface MessageDelete {
+export interface MessageDeletePayload {
   id: string
   channel_id: string
   guild_id?: string
 }
 
-interface MessageDeleteBulk {
+export interface MessageDeleteBulkPayload {
   ids: string[]
   channel_id: string
   guild_id: string
 }
 
-interface MessageReactionAdd {
+export interface MessageReactionAddPayload {
   user_id: string
   channel_id: string
   message_id: string
@@ -274,7 +275,7 @@ interface MessageReactionAdd {
   emoji: EmojiPayload
 }
 
-interface MessageReactionRemove {
+export interface MessageReactionRemovePayload {
   user_id: string
   channel_id: string
   message_id: string
@@ -282,98 +283,21 @@ interface MessageReactionRemove {
   emoji: EmojiPayload
 }
 
-interface MessageReactionRemoveAll {
+export interface MessageReactionRemoveAllPayload {
   channel_id: string
   guild_id?: string
   message_id: string
-  emoji: EmojiPayload
 }
 
-interface MessageReactionRemove {
-  channel_id: string
-  guild_id?: string
-  message_id: string
-  emoji: EmojiPayload
-}
-
-interface PresenceUpdate {
+export interface PresenceUpdatePayload {
   user: UserPayload
   guild_id: string
-  status: string
+  status: StatusType
   activities: ActivityPayload[]
   client_status: UpdateStatus[]
 }
 
-interface CilentStatus {
-  desktop?: string
-  moblie?: string
-  web?: string
-}
-
-interface Activity {
-  name: string
-  type: number
-  url?: string | undefined
-  created_at: number
-  timestamps?: string
-  application_id: string
-  details?: string | undefined
-  state?: string | undefined
-  emoji?: EmojiPayload | undefined
-  party?: ActivityParty
-  assets?: ActivityAssets
-  secrets?: ActivitySecrets
-  instance?: boolean
-  flags?: number
-}
-
-enum ActivityTypes {
-  GAME = 0,
-  STREAMING = 1,
-  LISTENING = 2,
-  CUSTOM = 4,
-  COMPETING = 5
-}
-
-interface ActivityTimestamps {
-  start?: number
-  end?: number
-}
-
-interface ActivityEmoji {
-  name: string
-  id?: string
-  animated?: boolean
-}
-
-interface ActivityParty {
-  id?: string
-  size?: number[]
-}
-
-interface ActivityAssets {
-  large_image?: string
-  large_text?: string
-  small_image?: string
-  small_text?: string
-}
-
-interface ActivitySecrets {
-  join?: string
-  spectate?: string
-  match?: string
-}
-
-enum ActivityFlags {
-  INSTANCE = 1 << 0,
-  JOIN = 1 << 1,
-  SPECTATE = 1 << 2,
-  JOIN_REQUEST = 1 << 3,
-  SYNC = 1 << 4,
-  PLAY = 1 << 5
-}
-
-interface TypeStart {
+export interface TypeStart {
   channel_id: string
   guild_id?: string
   user_id: string
@@ -381,16 +305,13 @@ interface TypeStart {
   member?: MemberPayload
 }
 
-interface VoiceServerUpdate {
+export interface VoiceServerUpdatePayload {
   token: string
   guild_id: string
   endpoint: string
 }
 
-interface WebhooksUpdate {
+export interface WebhooksUpdatePayload {
   guild_id: string
   channel_id: string
 }
-
-// https://discord.com/developers/docs/topics/gateway#typing-start-typing-start-event-fields
-export { GatewayCloseCodes, GatewayOpcodes, GatewayIntents, GatewayEvents }

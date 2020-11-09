@@ -14,6 +14,8 @@ const GUILD_WIDGET = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/widget`
 const GUILD_EMOJI = (guildID: string, emojiID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis/${emojiID}`
+const GUILD_EMOJIS = (guildID: string): string =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis`
 const GUILD_ROLE = (guildID: string, roleID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/roles/${roleID}`
 const GUILD_ROLES = (guildID: string): string =>
@@ -172,8 +174,6 @@ const TEAM_ICON = (teamID: string, iconID: string): string =>
 // Emoji Endpoints
 const EMOJI = (guildID: string, emojiID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis/${emojiID}`
-const EMOJIS = (guildID: string): string =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/emojis`
 
 // Template Endpoint
 const TEMPLATE = (templateCODE: string): string =>
@@ -186,6 +186,10 @@ const INVITE = (inviteCODE: string): string =>
 // Voice Endpoint
 const VOICE_REGIONS = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/regions`
+
+// Client User Endpoint
+const CLIENT_USER = (): string =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/users/@me`
 
 export default [
   GUILDS,
@@ -204,6 +208,7 @@ export default [
   GUILD_CHANNEL,
   GUILD_CHANNELS,
   GUILD_MEMBER,
+  CLIENT_USER,
   GUILD_MEMBERS,
   GUILD_MEMBER_ROLE,
   GUILD_INVITES,
@@ -254,7 +259,7 @@ export default [
   ACHIEVEMENT_ICON,
   TEAM_ICON,
   EMOJI,
-  EMOJIS,
+  GUILD_EMOJIS,
   TEMPLATE,
   INVITE,
   VOICE_REGIONS
@@ -300,6 +305,7 @@ export {
   CHANNEL_PIN,
   CHANNEL_PINS,
   CHANNEL_PERMISSION,
+  GUILD_EMOJIS,
   CHANNEL_TYPING,
   GROUP_RECIPIENT,
   CURRENT_USER,
@@ -319,6 +325,7 @@ export {
   CUSTOM_EMOJI,
   GUILD_ICON,
   GUILD_SPLASH,
+  CLIENT_USER,
   GUILD_DISCOVERY_SPLASH,
   GUILD_BANNER,
   DEFAULT_USER_AVATAR,
@@ -327,7 +334,6 @@ export {
   ACHIEVEMENT_ICON,
   TEAM_ICON,
   EMOJI,
-  EMOJIS,
   TEMPLATE,
   INVITE,
   VOICE_REGIONS

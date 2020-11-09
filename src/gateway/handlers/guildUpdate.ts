@@ -1,11 +1,14 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
-import cache from '../../models/cache.ts'
 import { Guild } from '../../structures/guild.ts'
+import { GuildPayload } from '../../types/guild.ts'
 
-export const guildUpdate: GatewayEventHandler = (gateway: Gateway, d: any) => {
-  const after: Guild = cache.get('guild', d.id)
-  if (after !== undefined) {
-    const before: Guild = after.refreshFromData(d)
-    gateway.client.emit('guildUpdate', before, after)
-  }
+export const guildUpdate: GatewayEventHandler = async (
+  gateway: Gateway,
+  d: GuildPayload
+) => {
+  const after: Guild | undefined = await gateway.client.guilds.get(d.id)
+  if (after === undefined) return
+  const before = after.refreshFromData(d)
+  await gateway.client.guilds.set(d.id, d)
+  gateway.client.emit('guildUpdate', before, after)
 }

@@ -99,9 +99,9 @@ export interface MessagePayload {
 }
 
 export interface MessageOption {
-  tts: boolean
+  tts?: boolean
   embed: Embed
-  file: Attachment
+  file?: Attachment
   allowedMention?: {
     parse: ['everyone', 'users', 'roles']
     roles: string[]

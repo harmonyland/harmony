@@ -1,6 +1,6 @@
 import { ChannelPayload } from './channel.ts'
 import { EmojiPayload } from './emoji.ts'
-import { PresenceUpdatePayload } from './presence.ts'
+import { PresenceUpdatePayload } from './gateway.ts'
 import { RolePayload } from './role.ts'
 import { UserPayload } from './user.ts'
 import { VoiceStatePayload } from './voice.ts'
@@ -63,23 +63,23 @@ export interface MemberPayload {
   mute: boolean
 }
 
-enum MessageNotification {
+export enum MessageNotification {
   ALL_MESSAGES = 0,
   ONLY_MENTIONS = 1
 }
 
-enum ContentFilter {
+export enum ContentFilter {
   DISABLED = 0,
   MEMBERS_WITHOUT_ROLES = 1,
   ALL_MEMBERS = 3
 }
 
-enum MFA {
+export enum MFA {
   NONE = 0,
   ELEVATED = 1
 }
 
-enum Verification {
+export enum Verification {
   NONE = 0,
   LOW = 1,
   MEDIUM = 2,
@@ -87,14 +87,14 @@ enum Verification {
   VERY_HIGH = 4
 }
 
-enum PremiumTier {
+export enum PremiumTier {
   NONE = 0,
   TIER_1 = 1,
   TIER_2 = 2,
   TIER_3 = 3
 }
 
-enum SystemChannelFlags {
+export enum SystemChannelFlags {
   SUPPRESS_JOIN_NOTIFICATIONS = 1 << 0,
   SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1
 }

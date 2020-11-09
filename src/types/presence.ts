@@ -1,14 +1,4 @@
-import { UserPayload } from './user.ts'
-
-export interface PresenceUpdatePayload {
-  user: UserPayload
-  guild_id: string
-  status: string
-  activities: ActivityPayload
-  client_status: ClientStatus
-}
-
-interface ClientStatus {
+export interface ClientStatus {
   desktop?: string
   mobile?: string
   web?: string
@@ -31,36 +21,36 @@ export interface ActivityPayload {
   flags?: number
 }
 
-interface ActivityTimestamps {
+export interface ActivityTimestamps {
   start?: number
   end?: number
 }
 
-interface ActivityEmoji {
+export interface ActivityEmoji {
   name: string
   id?: string
   animated?: boolean
 }
 
-interface ActivityParty {
+export interface ActivityParty {
   id?: string
   size?: number[]
 }
 
-interface ActivityAssets {
+export interface ActivityAssets {
   large_image?: string
   large_text?: string
   small_image?: string
   small_text?: string
 }
 
-interface ActivitySecrets {
+export interface ActivitySecrets {
   join?: string
   spectate?: string
   match?: string
 }
 
-enum ActivityFlags {
+export enum ActivityFlags {
   INSTANCE = 1 << 0,
   JOIN = 1 << 1,
   SPECTATE = 1 << 2,

@@ -1,4 +1,3 @@
-import cache from '../models/cache.ts'
 import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/user.ts'
 import { Base } from './base.ts'
@@ -17,6 +16,10 @@ export class User extends Base {
   flags?: number
   premiumType?: 0 | 1 | 2
   publicFlags?: number
+
+  get tag (): string {
+    return `${this.username}#${this.discriminator}`
+  }
 
   get nickMention (): string {
     return `<@!${this.id}>`
@@ -41,7 +44,8 @@ export class User extends Base {
     this.flags = data.flags
     this.premiumType = data.premium_type
     this.publicFlags = data.public_flags
-    cache.set('user', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('user', this.id, this)
   }
 
   protected readFromData (data: UserPayload): void {
@@ -58,5 +62,9 @@ export class User extends Base {
     this.flags = data.flags ?? this.flags
     this.premiumType = data.premium_type ?? this.premiumType
     this.publicFlags = data.public_flags ?? this.publicFlags
+  }
+
+  toString (): string {
+    return this.mention
   }
 }

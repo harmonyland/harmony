@@ -1,7 +1,7 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#voice
-import { MemberPayload } from './guildTypes.ts'
+import { MemberPayload } from './guild.ts'
 
-enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
+export enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   IDENTIFY = 0,
   SELECT_PROTOCOL = 1,
   READY = 2,
@@ -15,7 +15,7 @@ enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   CLIENT_DISCONNECT = 13
 }
 
-enum VoiceCloseCodes {
+export enum VoiceCloseCodes {
   UNKNOWN_OPCODE = 4001,
   NOT_AUTHENTICATED = 4003,
   AUTHENTICATION_FAILED = 4004,

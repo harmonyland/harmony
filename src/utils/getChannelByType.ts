@@ -14,6 +14,8 @@ import { GroupDMChannel } from '../structures/groupChannel.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import { NewsChannel } from '../structures/guildNewsChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { Guild } from '../structures/guild.ts'
+import { GuildTextChannel } from '../structures/guildTextChannel.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 
 const getChannelByType = (
@@ -25,7 +27,8 @@ const getChannelByType = (
     | GuildVoiceChannelPayload
     | DMChannelPayload
     | GroupDMChannelPayload
-    | ChannelPayload
+    | ChannelPayload,
+  guild?: Guild
 ):
   | CategoryChannel
   | NewsChannel
@@ -36,13 +39,17 @@ const getChannelByType = (
   | undefined => {
   switch (data.type) {
     case ChannelTypes.GUILD_CATEGORY:
-      return new CategoryChannel(client, data as GuildChannelCategoryPayload)
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      return new CategoryChannel(client, data as GuildChannelCategoryPayload, guild)
     case ChannelTypes.GUILD_NEWS:
-      return new NewsChannel(client, data as GuildNewsChannelPayload)
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      return new NewsChannel(client, data as GuildNewsChannelPayload, guild)
     case ChannelTypes.GUILD_TEXT:
-      return new TextChannel(client, data as GuildTextChannelPayload)
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      return new GuildTextChannel(client, data as GuildTextChannelPayload, guild)
     case ChannelTypes.GUILD_VOICE:
-      return new VoiceChannel(client, data as GuildVoiceChannelPayload)
+      if (guild === undefined) throw new Error("No Guild was provided to construct Channel")
+      return new VoiceChannel(client, data as GuildVoiceChannelPayload, guild)
     case ChannelTypes.DM:
       return new DMChannel(client, data as DMChannelPayload)
     case ChannelTypes.GROUP_DM:

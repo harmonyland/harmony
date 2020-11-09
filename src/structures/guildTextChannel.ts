@@ -1,7 +1,7 @@
 import { Client } from '../models/client.ts'
 import { GuildTextChannelPayload, Overwrite } from '../types/channel.ts'
-import cache from '../models/cache.ts'
 import { TextChannel } from './textChannel.ts'
+import { Guild } from './guild.ts'
 
 export class GuildTextChannel extends TextChannel {
   guildID: string
@@ -12,22 +12,25 @@ export class GuildTextChannel extends TextChannel {
   parentID?: string
   rateLimit: number
   topic?: string
+  guild: Guild
 
   get mention (): string {
     return `<#${this.id}>`
   }
 
-  constructor (client: Client, data: GuildTextChannelPayload) {
+  constructor (client: Client, data: GuildTextChannelPayload, guild: Guild) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name
+    this.guild = guild
     this.position = data.position
     this.permissionOverwrites = data.permission_overwrites
     this.nsfw = data.nsfw
     this.parentID = data.parent_id
     this.topic = data.topic
     this.rateLimit = data.rate_limit_per_user
-    cache.set('guildtextchannel', this.id, this)
+    // TODO: Cache in Gateway Event Code
+    // cache.set('guildtextchannel', this.id, this)
   }
 
   protected readFromData (data: GuildTextChannelPayload): void {

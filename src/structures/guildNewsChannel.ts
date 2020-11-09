@@ -1,9 +1,11 @@
 import { Client } from '../models/client.ts'
 import { GuildNewsChannelPayload, Overwrite } from '../types/channel.ts'
+import { Guild } from './guild.ts'
 import { TextChannel } from './textChannel.ts'
 
 export class NewsChannel extends TextChannel {
   guildID: string
+  guild: Guild
   name: string
   position: number
   permissionOverwrites: Overwrite[]
@@ -11,10 +13,11 @@ export class NewsChannel extends TextChannel {
   parentID?: string
   topic?: string
 
-  constructor (client: Client, data: GuildNewsChannelPayload) {
+  constructor (client: Client, data: GuildNewsChannelPayload, guild: Guild) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name
+    this.guild = guild
     this.position = data.position
     this.permissionOverwrites = data.permission_overwrites
     this.nsfw = data.nsfw
