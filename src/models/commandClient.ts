@@ -152,7 +152,8 @@ export class CommandClient extends Client implements CommandClientOptions {
       message: msg,
       author: msg.author,
       command,
-      channel: msg.channel
+      channel: msg.channel,
+      guild: msg.guild
     }
 
     try {
