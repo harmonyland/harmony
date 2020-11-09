@@ -14,6 +14,7 @@ import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
 import { GatewayCache } from '../managers/gatewayCache.ts'
 import { ClientActivityPayload } from '../structures/presence.ts'
+import { delay } from "../utils/delay.ts"
 
 /**
  * Handles Discord gateway connection.
@@ -140,7 +141,7 @@ class Gateway {
     }
   }
 
-  private onclose (event: CloseEvent): void {
+  private async onclose (event: CloseEvent): Promise<void> {
     this.debug(`Connection Closed with code: ${event.code}`)
 
     if (event.code === GatewayCloseCodes.UNKNOWN_ERROR) {
@@ -178,7 +179,8 @@ class Gateway {
     } else if (event.code === GatewayCloseCodes.DISALLOWED_INTENTS) {
       throw new Error("Given Intents aren't allowed")
     } else {
-      this.debug('Unknown Close code, probably connection error. Reconnecting.')
+      this.debug('Unknown Close code, probably connection error. Reconnecting in 5s.')
+      await delay(5000)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.reconnect()
     }
@@ -219,7 +221,7 @@ class Gateway {
         token: this.token,
         properties: {
           $os: Deno.build.os,
-          $browser: 'harmony', // TODO: Change lib name
+          $browser: 'harmony',
           $device: 'harmony'
         },
         compress: true,
@@ -233,18 +235,17 @@ class Gateway {
     }
 
     if (this.client.bot === false) {
-      // TODO: Complete Selfbot support
       this.debug('Modify Identify Payload for Self-bot..')
-      // delete payload.d['intents']
-      // payload.d.intents = Intents.None
+      delete payload.d.intents
       payload.d.presence = null
       payload.d.properties = {
         $os: 'Windows',
         $browser: 'Firefox',
-        $device: ''
+        $device: '',
+        $referrer: '',
+        $referring_domain: ''
       }
-
-      this.debug('Warn: Support for selfbots is incomplete')
+      payload.d.synced_guilds = []
     }
 
     this.send(payload)

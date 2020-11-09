@@ -1,5 +1,4 @@
 import { Message } from '../../structures/message.ts'
-import { MessageMentions } from '../../structures/messageMentions.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
 import { User } from '../../structures/user.ts'
 import { MessagePayload } from '../../types/channel.ts'
@@ -26,10 +25,10 @@ export const messageCreate: GatewayEventHandler = async (
     await guild.members.set(d.author.id, d.member)
     member = await guild.members.get(d.author.id)
   }
-  const mentions = new MessageMentions()
-  const message = new Message(gateway.client, d, channel as any, user, mentions)
-  message.member = member
+  const message = new Message(gateway.client, d, channel as any, user)
   if (guild !== undefined) message.guild = guild
+  await message.mentions.fromPayload(d)
+  message.member = member
   if (message.member !== undefined) {
     if (message.member.user === undefined) {
       const user = await gateway.client.users.get(message.member.id)

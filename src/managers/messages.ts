@@ -1,6 +1,5 @@
 import { Client } from '../models/client.ts'
 import { Message } from '../structures/message.ts'
-import { MessageMentions } from '../structures/messageMentions.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'
 import { MessagePayload } from '../types/channel.ts'
@@ -21,9 +20,10 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
       channel = await this.client.channels.fetch(raw.channel_id)
 
     const author = new User(this.client, raw.author)
-    const mentions = new MessageMentions()
 
-    return new this.DataType(this.client, raw, channel, author, mentions) as any
+    const res = new this.DataType(this.client, raw, channel, author) as any
+    await res.mentions.fromPayload(raw)
+    return res
   }
 
   async fetch (channelID: string, id: string): Promise<Message> {
@@ -45,18 +45,16 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
             (data as MessagePayload).author
           )
 
-          // TODO: Make this thing work (MessageMentions)
-          const mentions = new MessageMentions()
-
-          resolve(
-            new Message(
-              this.client,
-              data as MessagePayload,
-              channel as TextChannel,
-              author,
-              mentions
-            )
+          const res = new Message(
+            this.client,
+            data as MessagePayload,
+            channel as TextChannel,
+            author
           )
+
+          await res.mentions.fromPayload(data)
+
+          resolve(res)
         })
         .catch(e => reject(e))
     })

@@ -19,9 +19,9 @@ import { TextChannel } from './textChannel.ts'
 import { DMChannel } from './dmChannel.ts'
 import { Guild } from './guild.ts'
 
+type AllMessageOptions = MessageOption | Embed
+
 export class Message extends Base {
-  // eslint-disable-next-line @typescript-eslint/prefer-readonly
-  private data: MessagePayload
   id: string
   channelID: string
   channel: TextChannel
@@ -53,26 +53,19 @@ export class Message extends Base {
     client: Client,
     data: MessagePayload,
     channel: TextChannel,
-    author: User,
-    mentions: MessageMentions
+    author: User
   ) {
     super(client)
-    this.data = data
     this.id = data.id
     this.channelID = data.channel_id
     this.guildID = data.guild_id
     this.author = author
-    // this.author =
-    //   this.client.users.get(data.author.id) || new User(this.client, data.author)
     this.content = data.content
     this.timestamp = data.timestamp
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
     this.mentionEveryone = data.mention_everyone
-    this.mentions = mentions
-    // this.mentions = data.mentions.map(
-    //   v => this.client.users.get(v.id) || new User(client, v)
-    // )
+    this.mentions = new MessageMentions(this.client, this)
     this.mentionRoles = data.mention_roles
     this.mentionChannels = data.mention_channels
     this.attachments = data.attachments
@@ -87,27 +80,17 @@ export class Message extends Base {
     this.messageReference = data.message_reference
     this.flags = data.flags
     this.channel = channel
-    // TODO: Cache in Gateway Event Code
-    // if (!noSave) this.client.messages.set(this.id, data)
   }
 
   protected readFromData (data: MessagePayload): void {
     super.readFromData(data)
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
-    // this.author =
-    //   this.client.users.get(data.author.id) ||
-    //   this.author ||
-    //   new User(this.client, data.author)
     this.content = data.content ?? this.content
     this.timestamp = data.timestamp ?? this.timestamp
     this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp
     this.tts = data.tts ?? this.tts
     this.mentionEveryone = data.mention_everyone ?? this.mentionEveryone
-    // this.mentions =
-    //   data.mentions.map(
-    //     v => this.client.users.get(v.id) || new User(this.client, v)
-    //   ) ?? this.mentions
     this.mentionRoles = data.mention_roles ?? this.mentionRoles
     this.mentionChannels = data.mention_channels ?? this.mentionChannels
     this.attachments = data.attachments ?? this.attachments
@@ -124,13 +107,13 @@ export class Message extends Base {
   }
 
   async edit (text?: string, option?: MessageOption): Promise<Message> {
-    return this.channel.edit(this.id, text, option)  
+    return this.channel.editMessage(this.id, text, option)  
   }
 
-  async reply(text: string, options?: MessageOption): Promise<Message> {
+  async reply(text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
     // TODO: Use inline replies once they're out
-    if (this.channel instanceof DMChannel) return this.channel.send(text, options)
-    return this.channel.send(`${this.author.mention}, ${text}`, options)
+    if (this.channel instanceof DMChannel) return this.channel.send(text, option)
+    return this.channel.send(`${this.author.mention}, ${text}`, option)
   }
 
   async delete (): Promise<void> {
