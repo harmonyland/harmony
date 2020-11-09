@@ -34,7 +34,7 @@ export class Member extends Base {
   protected readFromData (data: MemberPayload): void {
     super.readFromData(data.user)
     this.nick = data.nick ?? this.nick
-    this.roleIDs = data.roles ?? this.roles
+    this.roleIDs = data.roles ?? this.roles.map(r => r.id)
     this.joinedAt = data.joined_at ?? this.joinedAt
     this.premiumSince = data.premium_since ?? this.premiumSince
     this.deaf = data.deaf ?? this.deaf
