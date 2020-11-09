@@ -18,11 +18,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
     const raw = await this._get(key)
     if (raw === undefined) return
     const user = new User(this.client, raw.user)
-    const res = new this.DataType(this.client, raw, user)
-    for (const roleid of res.roleIDs as string[]) {
-      const role = await this.guild.roles.get(roleid)
-      if (role !== undefined) res.roles.push(role)
-    }
+    const res = new this.DataType(this.client, raw, user, this.guild)
     return res
   }
 
@@ -31,11 +27,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
       this.client.rest.get(GUILD_MEMBER(this.guild.id, id)).then(async data => {
         await this.set(id, data as MemberPayload)
         const user: User = new User(this.client, data.user)
-        const res = new Member(this.client, data as MemberPayload, user)
-        for (const roleid of res.roleIDs as string[]) {
-          const role = await this.guild.roles.get(roleid)
-          if (role !== undefined) res.roles.push(role)
-        }
+        const res = new Member(this.client, data as MemberPayload, user, this.guild)
         resolve(res)
       }).catch(e => reject(e))
     })

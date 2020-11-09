@@ -208,7 +208,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       command.afterExecute(ctx, result)
     } catch (e) {
       if (this.texts.ERROR !== undefined)
-        return this.sendProcessedText(
+        this.sendProcessedText(
           msg,
           this.texts.ERROR,
           Object.assign(baseReplaces, { error: e.message })
