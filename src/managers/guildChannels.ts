@@ -9,6 +9,7 @@ import {
   GuildTextChannelPayload,
   GuildVoiceChannelPayload
 } from '../types/channel.ts'
+import { CHANNEL } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { ChannelsManager } from './channels.ts'
 
@@ -33,6 +34,10 @@ export class GuildChannelsManager extends BaseChildManager<
     const res = await this.parent.get(id)
     if (res !== undefined && res.guild.id === this.guild.id) return res
     else return undefined
+  }
+  
+  async delete(id: string): Promise<boolean> {
+    return this.client.rest.delete(CHANNEL(id))
   }
 
   async array (): Promise<GuildChannel[]> {

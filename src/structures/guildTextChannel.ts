@@ -1,7 +1,7 @@
 import { Client } from '../models/client.ts'
 import { GuildTextChannelPayload, Overwrite } from '../types/channel.ts'
 import { TextChannel } from './textChannel.ts'
-import { Guild } from "./guild.ts"
+import { Guild } from './guild.ts'
 
 export class GuildTextChannel extends TextChannel {
   guildID: string

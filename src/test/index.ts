@@ -1,4 +1,4 @@
-import { Client, Intents, GuildTextChannel, Message, ClientPresence, Member, Role, GuildChannel, Embed, Guild } from '../../mod.ts';
+import { Client, Intents, GuildTextChannel, Message, ClientPresence, Member, Role, GuildChannel, Embed, Guild } from '../../mod.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({

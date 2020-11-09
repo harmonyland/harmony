@@ -1,9 +1,11 @@
-import { Client } from "../models/client.ts";
-import { Collection } from "../utils/collection.ts";
+import { Client } from '../models/client.ts'
+import { Collection } from '../utils/collection.ts'
 
 export class BaseManager<T, T2> {
   client: Client
+  /** Cache Name or Key used to differentiate caches */
   cacheName: string
+  /** Which data type does this cache have */
   DataType: any
 
   constructor (client: Client, cacheName: string, DataType: any) {

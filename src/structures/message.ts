@@ -14,10 +14,10 @@ import { User } from './user.ts'
 import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
-import { MessageMentions } from "./messageMentions.ts"
-import { TextChannel } from "./textChannel.ts"
-import { DMChannel } from "./dmChannel.ts"
-import { Guild } from "./guild.ts"
+import { MessageMentions } from './messageMentions.ts'
+import { TextChannel } from './textChannel.ts'
+import { DMChannel } from './dmChannel.ts'
+import { Guild } from './guild.ts'
 
 export class Message extends Base {
   // eslint-disable-next-line @typescript-eslint/prefer-readonly

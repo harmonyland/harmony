@@ -8,7 +8,7 @@
 * Lightweight and easy to use.
 * Built-in Command Framework,
   * Easily build Commands on the fly.
-  * Compltely Customizable.
+  * Completely Customizable.
   * Complete Object-Oriented approach.
 * 100% Discord API Coverage.
 * Customizable caching.

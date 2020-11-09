@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { MessageOption, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
-import { Embed } from "./embed.ts"
+import { Embed } from './embed.ts'
 import { Message } from './message.ts'
 import { MessageMentions } from './messageMentions.ts'
 
@@ -27,14 +27,14 @@ export class TextChannel extends Channel {
   }
 
   async send (text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
-    if(typeof text === "object") {
+    if (typeof text === "object") {
       option = text
       text = undefined
     }
     if (text === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
     }
-    if(option instanceof Embed) option = {
+    if (option instanceof Embed) option = {
       embed: option
     }
     

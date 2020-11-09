@@ -6,7 +6,8 @@ import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
-import { EmojisManager } from '../managers/emojis.ts'
+import { Role } from './role.ts'
+import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 
 export class Guild extends Base {
   id: string
@@ -27,7 +28,7 @@ export class Guild extends Base {
   defaultMessageNotifications?: string
   explicitContentFilter?: string
   roles: RolesManager
-  emojis: EmojisManager
+  emojis: GuildEmojisManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -61,12 +62,12 @@ export class Guild extends Base {
     this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
     this.channels = new GuildChannelsManager(
-      this.client,
-      this.client.channels,
+      this.client, 
+      this.client.channels, 
       this
     )
     this.roles = new RolesManager(this.client, this)
-    this.emojis = new EmojisManager(this.client, this)
+    this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
 
     if (!this.unavailable) {
       this.name = data.name
@@ -160,6 +161,10 @@ export class Guild extends Base {
       //   data.roles.map(
       //     v => cache.get('role', v.id) ?? new Role(this.client, v)
       //   ) ?? this.roles
+      // this.emojis =
+      //   data.emojis.map(
+      //     v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)
+      //   ) ?? this.emojis
       this.features = data.features ?? this.features
       this.mfaLevel = data.mfa_level ?? this.mfaLevel
       this.systemChannelID = data.system_channel_id ?? this.systemChannelID
@@ -204,5 +209,9 @@ export class Guild extends Base {
       this.approximatePresenceCount =
         data.approximate_presence_count ?? this.approximatePresenceCount
     }
+  }
+
+  async getEveryoneRole (): Promise<Role> {
+    return (await this.roles.array().then(arr => arr?.sort((b, a) => a.position - b.position)[0]) as any) as Role
   }
 }

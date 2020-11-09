@@ -14,9 +14,9 @@ import { GroupDMChannel } from '../structures/groupChannel.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import { NewsChannel } from '../structures/guildNewsChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
-import { Guild } from "../structures/guild.ts"
-import { GuildTextChannel } from "../structures/guildTextChannel.ts"
-import { TextChannel } from "../structures/textChannel.ts"
+import { Guild } from '../structures/guild.ts'
+import { GuildTextChannel } from '../structures/guildTextChannel.ts'
+import { TextChannel } from '../structures/textChannel.ts'
 
 const getChannelByType = (
   client: Client,

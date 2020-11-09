@@ -2,6 +2,9 @@ import { delay } from '../utils/index.ts'
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Client } from './client.ts'
 import { getBuildInfo } from '../utils/buildInfo.ts'
+import { Collection } from '../utils/collection.ts'
+
+export type RequestMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
 
 export enum HttpResponseCode {
   Ok = 200,
@@ -17,122 +20,102 @@ export enum HttpResponseCode {
   GatewayUnavailable = 502
 }
 
-export type RequestMethods =
-  | 'get'
-  | 'post'
-  | 'put'
-  | 'patch'
-  | 'head'
-  | 'delete'
+export interface RequestHeaders {
+  [name: string]: string
+}
 
-export interface QueuedRequest {
-  callback: () => Promise<
-    | {
-        rateLimited: any
-        beforeFetch: boolean
-        bucketID?: string | null
-      }
-    | undefined
-  >
-  bucketID?: string | null
+export interface QueuedItem {
+  onComplete: () => Promise<{
+    rateLimited: any
+    bucket?: string | null
+    before: boolean
+  } | undefined>
+  bucket?: string | null
   url: string
 }
 
-export interface RateLimitedPath {
+export interface RateLimit {
   url: string
-  resetTimestamp: number
-  bucketID: string | null
+  resetAt: number
+  bucket: string | null
 }
 
 export class RESTManager {
   client: Client
-  globallyRateLimited: boolean = false
-  queueInProcess: boolean = false
-  pathQueues: { [key: string]: QueuedRequest[] } = {}
-  ratelimitedPaths = new Map<string, RateLimitedPath>()
+  queues: { [key: string]: QueuedItem[] } = {}
+  rateLimits = new Collection<string, RateLimit>()
+  globalRateLimit: boolean = false
+  processing: boolean = false
 
-  constructor (client: Client) {
+  constructor(client: Client) {
     this.client = client
-    setTimeout(() => this.processRateLimitedPaths, 1000)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.handleRateLimits()
   }
 
-  async processRateLimitedPaths (): Promise<void> {
-    const now = Date.now()
-    this.ratelimitedPaths.forEach((value, key) => {
-      if (value.resetTimestamp > now) return
-      this.ratelimitedPaths.delete(key)
-      if (key === 'global') this.globallyRateLimited = false
+  async checkQueues(): Promise<void> {
+    Object.entries(this.queues).forEach(([key, value]) => {
+      if (value.length === 0) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete this.queues[key]
+      }
     })
   }
 
-  addToQueue (request: QueuedRequest): void {
+  queue(request: QueuedItem): void {
     const route = request.url.substring(
       // eslint seriously?
       // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       baseEndpoints.DISCORD_API_URL.length + 1
     )
     const parts = route.split('/')
-    // Remove the major param
     parts.shift()
     const [id] = parts
 
-    if (this.pathQueues[id] !== undefined) {
-      this.pathQueues[id].push(request)
+    if (this.queues[id] !== undefined) {
+      this.queues[id].push(request)
     } else {
-      this.pathQueues[id] = [request]
+      this.queues[id] = [request]
     }
   }
 
-  async cleanupQueues (): Promise<void> {
-    Object.entries(this.pathQueues).forEach(([key, value]) => {
-      if (value.length === 0) {
-        // Remove it entirely
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete this.pathQueues[key]
-      }
-    })
-  }
-
-  async processQueue (): Promise<void> {
-    if (
-      Object.keys(this.pathQueues).length !== 0 &&
-      !this.globallyRateLimited
-    ) {
+  async processQueue(): Promise<void> {
+    if (Object.keys(this.queues).length !== 0 && !this.globalRateLimit) {
       await Promise.allSettled(
-        Object.values(this.pathQueues).map(async pathQueue => {
+        Object.values(this.queues).map(async pathQueue => {
           const request = pathQueue.shift()
           if (request === undefined) return
 
-          const rateLimitedURLResetIn = await this.checkRatelimits(request.url)
+          const rateLimitedURLResetIn = await this.isRateLimited(request.url)
 
-          if (typeof request.bucketID === 'string') {
-            const rateLimitResetIn = await this.checkRatelimits(
-              request.bucketID
+          if (typeof request.bucket === 'string') {
+            const rateLimitResetIn = await this.isRateLimited(
+              request.bucket
             )
             if (rateLimitResetIn !== false) {
               // This request is still rate limited read to queue
-              this.addToQueue(request)
+              this.queue(request)
             } else {
               // This request is not rate limited so it should be run
-              const result = await request.callback()
+              const result = await request.onComplete()
               if (result?.rateLimited !== undefined) {
-                this.addToQueue({
+                this.queue({
                   ...request,
-                  bucketID: result.bucketID ?? request.bucketID
+                  bucket: result.bucket ?? request.bucket
                 })
               }
             }
           } else {
             if (rateLimitedURLResetIn !== false) {
               // This URL is rate limited readd to queue
-              this.addToQueue(request)
+              this.queue(request)
             } else {
               // This request has no bucket id so it should be processed
-              const result = await request.callback()
+              const result = await request.onComplete()
               if (result?.rateLimited !== undefined) {
-                this.addToQueue({
+                this.queue({
                   ...request,
-                  bucketID: result.bucketID ?? request.bucketID
+                  bucket: result.bucket ?? request.bucket
                 })
               }
             }
@@ -141,27 +124,28 @@ export class RESTManager {
       )
     }
 
-    if (Object.keys(this.pathQueues).length !== 0) {
+    if (Object.keys(this.queues).length !== 0) {
       await delay(1000)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.processQueue()
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.cleanupQueues()
-    } else this.queueInProcess = false
+      this.checkQueues()
+    } else this.processing = false
   }
 
-  createRequestBody (
+  prepare(
     body: any,
     method: RequestMethods
   ): { [key: string]: any } {
-    const headers: { [key: string]: string } = {
-      Authorization: `Bot ${this.client.token}`,
-      'User-Agent': `DiscordBot (harmony)`
+
+    const headers: RequestHeaders = {
+      'Authorization': `Bot ${this.client.token}`,
+      'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
     }
 
     if (this.client.token === undefined) delete headers.Authorization
 
-    if (method === 'get') body = undefined
+    if (method === 'get' || method === 'head' || method === 'delete') body = undefined
 
     if (body?.reason !== undefined) {
       headers['X-Audit-Log-Reason'] = encodeURIComponent(body.reason)
@@ -203,53 +187,125 @@ export class RESTManager {
     return data
   }
 
-  async checkRatelimits (url: string): Promise<number | false> {
-    const ratelimited = this.ratelimitedPaths.get(url)
-    const global = this.ratelimitedPaths.get('global')
+  async isRateLimited(url: string): Promise<number | false> {
+    const global = this.rateLimits.get('global')
+    const rateLimited = this.rateLimits.get(url)
     const now = Date.now()
 
-    if (ratelimited !== undefined && now < ratelimited.resetTimestamp) {
-      return ratelimited.resetTimestamp - now
+    if (rateLimited !== undefined && now < rateLimited.resetAt) {
+      return rateLimited.resetAt - now
     }
-    if (global !== undefined && now < global.resetTimestamp) {
-      return global.resetTimestamp - now
+    if (global !== undefined && now < global.resetAt) {
+      return global.resetAt - now
     }
 
     return false
   }
 
-  async runMethod (
+  processHeaders(url: string, headers: Headers): string | null | undefined {
+    let rateLimited = false
+
+    const global = headers.get('x-ratelimit-global')
+    const bucket = headers.get('x-ratelimit-bucket')
+    const remaining = headers.get('x-ratelimit-remaining')
+    const resetAt = headers.get('x-ratelimit-reset')
+    const retryAfter = headers.get('retry-after')
+
+    if (remaining !== null && remaining === '0') {
+      rateLimited = true
+
+      this.rateLimits.set(url, {
+        url,
+        resetAt: Number(resetAt) * 1000,
+        bucket
+      })
+
+      if (bucket !== null) {
+        this.rateLimits.set(bucket, {
+          url,
+          resetAt: Number(resetAt) * 1000,
+          bucket
+        })
+      }
+    }
+
+    if (global !== null) {
+      const reset = Date.now() + Number(retryAfter)
+      this.globalRateLimit = true
+      rateLimited = true
+
+      this.rateLimits.set('global', {
+        url: 'global',
+        resetAt: reset,
+        bucket
+      })
+
+      if (bucket !== null) {
+        this.rateLimits.set(bucket, {
+          url: 'global',
+          resetAt: reset,
+          bucket
+        })
+      }
+    }
+
+    return rateLimited ? bucket : undefined
+  }
+
+  async handleStatusCode(
+    response: Response
+  ): Promise<undefined> {
+    const status = response.status
+
+    if ((status >= 200 && status < 400) || status === HttpResponseCode.TooManyRequests) return
+
+    const body = await response.json()
+    const text = Deno.inspect(body.errors)
+
+    if (status === HttpResponseCode.Unauthorized)
+      throw new Error(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
+
+    if ([
+      HttpResponseCode.BadRequest,
+      HttpResponseCode.NotFound,
+      HttpResponseCode.Forbidden,
+      HttpResponseCode.MethodNotAllowed
+    ].includes(status)) {
+      throw new Error(`Request - Client Error. Code: ${status}\n${text}`)
+    } else if (status === HttpResponseCode.GatewayUnavailable) {
+      throw new Error(`Request - Server Error. Code: ${status}\n${text}`)
+    } else throw new Error('Request - Unknown Error')
+  }
+
+  async make(
     method: RequestMethods,
     url: string,
     body?: unknown,
-    retryCount = 0,
-    bucketID?: string | null
+    maxRetries = 0,
+    bucket?: string | null
   ): Promise<any> {
-    const errorStack = new Error('Location In Your Files:')
-    Error.captureStackTrace(errorStack)
-
     return await new Promise((resolve, reject) => {
-      const callback = async (): Promise<undefined | any> => {
+      const onComplete = async (): Promise<undefined | any> => {
         try {
-          const rateLimitResetIn = await this.checkRatelimits(url)
+          const rateLimitResetIn = await this.isRateLimited(url)
           if (rateLimitResetIn !== false) {
             return {
               rateLimited: rateLimitResetIn,
-              beforeFetch: true,
-              bucketID
+              before: true,
+              bucket
             }
           }
 
           const query =
             method === 'get' && body !== undefined
               ? Object.entries(body as any)
-                  .map(
-                    ([key, value]) =>
-                      `${encodeURIComponent(key)}=${encodeURIComponent(
-                        value as any
-                      )}`
-                  )
-                  .join('&')
+                .map(
+                  ([key, value]) =>
+                    `${encodeURIComponent(key)}=${encodeURIComponent(
+                      value as any
+                    )}`
+                )
+                .join('&')
               : ''
           let urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
@@ -259,13 +315,13 @@ export class RESTManager {
             urlToUse = split[0] + '//canary.' + split[1]
           }
 
-          const requestData = this.createRequestBody(body, method)
+          const requestData = this.prepare(body, method)
 
           const response = await fetch(urlToUse, requestData)
-          const bucketIDFromHeaders = this.processHeaders(url, response.headers)
-          this.handleStatusCode(response, errorStack)
+          const bucketFromHeaders = this.processHeaders(url, response.headers)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          this.handleStatusCode(response)
 
-          // Sometimes Discord returns an empty 204 response that can't be made to JSON.
           if (response.status === 204) return resolve(undefined)
 
           const json = await response.json()
@@ -273,14 +329,14 @@ export class RESTManager {
             json.retry_after !== undefined ||
             json.message === 'You are being rate limited.'
           ) {
-            if (retryCount > 10) {
+            if (maxRetries > 10) {
               throw new Error('Max RateLimit Retries hit')
             }
 
             return {
               rateLimited: json.retry_after,
-              beforeFetch: false,
-              bucketID: bucketIDFromHeaders
+              before: false,
+              bucket: bucketFromHeaders
             }
           }
           return resolve(json)
@@ -289,132 +345,45 @@ export class RESTManager {
         }
       }
 
-      this.addToQueue({
-        callback,
-        bucketID,
+      this.queue({
+        onComplete,
+        bucket,
         url
       })
-      if (!this.queueInProcess) {
-        this.queueInProcess = true
+      if (!this.processing) {
+        this.processing = true
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.processQueue()
       }
     })
   }
 
-  async logErrors (response: Response, errorStack?: unknown): Promise<void> {
-    try {
-      const error = await response.json()
-      console.error(error)
-    } catch {
-      console.error(response)
-    }
+  async handleRateLimits(): Promise<void> {
+    const now = Date.now()
+    this.rateLimits.forEach((value, key) => {
+      if (value.resetAt > now) return
+      this.rateLimits.delete(key)
+      if (key === 'global') this.globalRateLimit = false
+    })
   }
 
-  handleStatusCode (
-    response: Response,
-    errorStack?: unknown
-  ): undefined | boolean {
-    const status = response.status
-
-    if (
-      (status >= 200 && status < 400) ||
-      status === HttpResponseCode.TooManyRequests
-    ) {
-      return true
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.logErrors(response, errorStack)
-
-    if (status === HttpResponseCode.Unauthorized)
-      throw new Error('Request was not successful. Invalid Token.')
-
-    switch (status) {
-      case HttpResponseCode.BadRequest:
-      case HttpResponseCode.Unauthorized:
-      case HttpResponseCode.Forbidden:
-      case HttpResponseCode.NotFound:
-      case HttpResponseCode.MethodNotAllowed:
-        throw new Error('Request Client Error.')
-      case HttpResponseCode.GatewayUnavailable:
-        throw new Error('Request Server Error.')
-    }
-
-    // left are all unknown
-    throw new Error('Request Unknown Error')
+  async get(url: string, body?: unknown): Promise<any> {
+    return await this.make('get', url, body)
   }
 
-  processHeaders (url: string, headers: Headers): string | null | undefined {
-    let ratelimited = false
-
-    // Get all useful headers
-    const remaining = headers.get('x-ratelimit-remaining')
-    const resetTimestamp = headers.get('x-ratelimit-reset')
-    const retryAfter = headers.get('retry-after')
-    const global = headers.get('x-ratelimit-global')
-    const bucketID = headers.get('x-ratelimit-bucket')
-
-    // If there is no remaining rate limit for this endpoint, we save it in cache
-    if (remaining !== null && remaining === '0') {
-      ratelimited = true
-
-      this.ratelimitedPaths.set(url, {
-        url,
-        resetTimestamp: Number(resetTimestamp) * 1000,
-        bucketID
-      })
-
-      if (bucketID !== null) {
-        this.ratelimitedPaths.set(bucketID, {
-          url,
-          resetTimestamp: Number(resetTimestamp) * 1000,
-          bucketID
-        })
-      }
-    }
-
-    // If there is no remaining global limit, we save it in cache
-    if (global !== null) {
-      const reset = Date.now() + Number(retryAfter)
-      this.globallyRateLimited = true
-      ratelimited = true
-
-      this.ratelimitedPaths.set('global', {
-        url: 'global',
-        resetTimestamp: reset,
-        bucketID
-      })
-
-      if (bucketID !== null) {
-        this.ratelimitedPaths.set(bucketID, {
-          url: 'global',
-          resetTimestamp: reset,
-          bucketID
-        })
-      }
-    }
-
-    return ratelimited ? bucketID : undefined
+  async post(url: string, body?: unknown): Promise<any> {
+    return await this.make('post', url, body)
   }
 
-  async get (url: string, body?: unknown): Promise<any> {
-    return await this.runMethod('get', url, body)
+  async delete(url: string, body?: unknown): Promise<any> {
+    return await this.make('delete', url, body)
   }
 
-  async post (url: string, body?: unknown): Promise<any> {
-    return await this.runMethod('post', url, body)
+  async patch(url: string, body?: unknown): Promise<any> {
+    return await this.make('patch', url, body)
   }
 
-  async delete (url: string, body?: unknown): Promise<any> {
-    return await this.runMethod('delete', url, body)
-  }
-
-  async patch (url: string, body?: unknown): Promise<any> {
-    return await this.runMethod('patch', url, body)
-  }
-
-  async put (url: string, body?: unknown): Promise<any> {
-    return await this.runMethod('put', url, body)
+  async put(url: string, body?: unknown): Promise<any> {
+    return await this.make('put', url, body)
   }
 }

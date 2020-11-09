@@ -13,15 +13,23 @@ import {
   ClientActivity,
   ClientPresence
 } from '../structures/presence.ts'
+import { EmojisManager } from '../managers/emojis.ts'
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
+  /** Token of the Bot/User */
   token?: string
+  /** Gateway Intents */
   intents?: GatewayIntents[]
-  cache?: ICacheAdapter
-  forceNewSession?: boolean
+  /** Cache Adapter to use, defaults to Collections one */
+  cache?: ICacheAdapter,
+  /** Force New Session and don't use cached Session (by persistent caching) */
+  forceNewSession?: boolean,
+  /** Startup presence of client */
   presence?: ClientPresence | ClientActivity | ActivityGame
+  /** Whether it's a bot user or not? Use this if selfbot! */
   bot?: boolean
+  /** Force all requests to Canary API */
   canary?: boolean
 }
 
@@ -29,21 +37,34 @@ export interface ClientOptions {
  * Discord Client.
  */
 export class Client extends EventEmitter {
+  /** Gateway object */
   gateway?: Gateway
+  /** REST Manager - used to make all requests */
   rest: RESTManager = new RESTManager(this)
+  /** User which Client logs in to, undefined until logs in */
   user?: User
+  /** WebSocket ping of Client */
   ping = 0
+  /** Token of the Bot/User */
   token?: string
+  /** Cache Adapter */
   cache: ICacheAdapter = new DefaultCacheAdapter()
+  /** Gateway Intents */
   intents?: GatewayIntents[]
+  /** Whether to force new session or not */
   forceNewSession?: boolean
+
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
   messages: MessagesManager = new MessagesManager(this)
+  emojis: EmojisManager = new EmojisManager(this)
+  
+  /** Whether this client will login as bot user or not */
   bot: boolean = true
+  /** Whether the REST Manager will use Canary API or not */
   canary: boolean = false
-
+  /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
 
   constructor (options: ClientOptions = {}) {
@@ -61,11 +82,13 @@ export class Client extends EventEmitter {
     if (options.canary === true) this.canary = true
   }
 
+  /** Set Cache Adapter */
   setAdapter (adapter: ICacheAdapter): Client {
     this.cache = adapter
     return this
   }
 
+  /** Change Presence of Client */
   setPresence (presence: ClientPresence | ClientActivity | ActivityGame): void {
     if (presence instanceof ClientPresence) {
       this.presence = presence
@@ -73,6 +96,7 @@ export class Client extends EventEmitter {
     this.gateway?.sendPresence(this.presence.create())
   }
 
+  /** Emit debug event */
   debug (tag: string, msg: string): void {
     this.emit('debug', `[${tag}] ${msg}`)
   }
