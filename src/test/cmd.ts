@@ -11,6 +11,7 @@ client.on('debug', console.log)
 
 client.on('ready', () => {
   console.log(`[Login] Logged in as ${client.user?.tag}!`)
+  client.rest.get('https://discord.com/api/v8/users/123')
 })
 
 client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
