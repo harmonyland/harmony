@@ -1,5 +1,4 @@
 import { Client } from '../models/client.ts'
-import { CHANNEL } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { RolePayload } from "../types/role.ts"
 import { Role } from "../structures/role.ts"
@@ -23,10 +22,6 @@ export class MemberRolesManager extends BaseChildManager<
     const mem = await (this.parent as any).guild.members._get(this.member.id) as MemberPayload
     if (res !== undefined && mem.roles.includes(res.id) === true) return res
     else return undefined
-  }
-  
-  async delete(id: string): Promise<boolean> {
-    return this.client.rest.delete(CHANNEL(id))
   }
 
   async array (): Promise<Role[]> {
