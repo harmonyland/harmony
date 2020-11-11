@@ -1,7 +1,9 @@
-import { Embed, Message } from '../../mod.ts'
+import { Message } from "../../mod.ts"
+import { Embed } from "../structures/embed.ts"
 import { awaitSync } from "../utils/mixedPromise.ts"
 import { Client, ClientOptions } from './client.ts'
 import { CommandContext, CommandsManager, parseCommand } from './command.ts'
+import { ExtensionsManager } from "./extensions.ts"
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 
@@ -62,6 +64,7 @@ export class CommandClient extends Client implements CommandClientOptions {
   allowBots: boolean
   allowDMs: boolean
   caseSensitive: boolean
+  extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
   texts: CommandTexts = DefaultCommandTexts
 

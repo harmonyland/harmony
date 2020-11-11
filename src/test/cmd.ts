@@ -1,4 +1,7 @@
-import { CommandClient, Intents } from '../../mod.ts'
+import { Command, CommandClient, Intents } from '../../mod.ts'
+import { GuildChannel } from "../managers/guildChannels.ts"
+import { CommandContext } from "../models/command.ts"
+import { Extension } from "../models/extensions.ts"
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
@@ -16,6 +19,29 @@ client.on('ready', () => {
 // client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
 
 client.on("commandError", console.error)
+
+class ChannelLog extends Extension {
+
+  onChannelCreate(ext: Extension, channel: GuildChannel): void {
+    console.log(`Channel Created: ${channel.name}`)
+  }
+
+  load(): void {
+    this.listen('channelCreate', this.onChannelCreate)
+
+    class Pong extends Command {
+      name = 'Pong'
+
+      execute(ctx: CommandContext): any {
+        ctx.message.reply('Ping!')
+      }
+    }
+
+    this.commands.add(Pong)
+  }
+}
+
+client.extensions.load(ChannelLog)
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 ;(async() => {
