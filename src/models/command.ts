@@ -35,6 +35,8 @@ export class Command {
   description?: string
   /** Array of Aliases of Command, or only string */
   aliases?: string | string[]
+  /** Category of the Command */
+  category?: string
   /** Usage of Command, only Argument Names */
   usage?: string | string[]
   /** Usage Example of Command, only Arguments (without Prefix and Name) */
@@ -50,19 +52,29 @@ export class Command {
   /** Whether the Command can only be used by Bot Owners */
   ownerOnly?: boolean
 
-  execute (ctx?: CommandContext): any {}
+  /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
+  beforeExecute(ctx: CommandContext): boolean | Promise<boolean> { return true }
+  /** Actual command code, which is executed when all checks have passed. */
+  execute(ctx: CommandContext): any { }
+  /** Method executed after executing command, passes on CommandContext and the value returned by execute too. (optional) */
+  afterExecute(ctx: CommandContext, executeResult: any): any { }
 }
 
 export class CommandsManager {
   client: CommandClient
   list: Collection<string, Command> = new Collection()
+  disabled: Set<string> = new Set()
+  disabledCategories: Set<string> = new Set()
 
-  constructor (client: CommandClient) {
+  constructor(client: CommandClient) {
     this.client = client
   }
 
+  /** Number of loaded Commands */
+  get count(): number { return this.list.size }
+
   /** Find a Command by name/alias */
-  find (search: string): Command | undefined {
+  find(search: string): Command | undefined {
     if (this.client.caseSensitive === false) search = search.toLowerCase()
     return this.list.find((cmd: Command): boolean => {
       const name =
@@ -79,8 +91,17 @@ export class CommandsManager {
     })
   }
 
+  /** Fetch a Command including disable checks */
+  fetch(name: string, bypassDisable?: boolean): Command | undefined {
+    const cmd = this.find(name)
+    if (cmd === undefined) return
+    if (this.isDisabled(cmd) && bypassDisable !== true) return
+    if (cmd.category !== undefined && this.isCategoryDisabled(cmd.category) && bypassDisable !== true) return
+    return cmd
+  }
+
   /** Check whether a Command exists or not */
-  exists (search: Command | string): boolean {
+  exists(search: Command | string): boolean {
     let exists = false
     if (typeof search === 'string') return this.find(search) !== undefined
     else {
@@ -97,7 +118,7 @@ export class CommandsManager {
   }
 
   /** Add a Command */
-  add (cmd: Command | typeof Command): boolean {
+  add(cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
     if (!(cmd instanceof Command)) cmd = new cmd()
     if (this.exists(cmd)) return false
@@ -106,10 +127,45 @@ export class CommandsManager {
   }
 
   /** Delete a Command */
-  delete (cmd: string | Command): boolean {
+  delete(cmd: string | Command): boolean {
     const find = typeof cmd === 'string' ? this.find(cmd) : cmd
     if (find === undefined) return false
     else return this.list.delete(find.name)
+  }
+
+  /** Get all Commands of given Category */
+  category(name: string): Collection<string, Command> {
+    return this.list.filter(c => c.category === name)
+  }
+
+  /** Check whether a Command is disabled or not */
+  isDisabled(name: string | Command): boolean {
+    const cmd = typeof name === "string" ? this.find(name) : name
+    if (cmd === undefined) return false
+    const exists = this.exists(name)
+    if (!exists) return false
+    return this.disabled.has(cmd.name)
+  }
+
+  /** Disable a Command */
+  disable(name: string | Command): boolean {
+    const cmd = typeof name === "string" ? this.find(name) : name
+    if (cmd === undefined) return false
+    if (this.isDisabled(cmd)) return false
+    this.disabled.add(cmd.name)
+    return true
+  }
+
+  /** Check whether a Category is disabled */
+  isCategoryDisabled(name: string): boolean {
+    return this.disabledCategories.has(name)
+  }
+
+  /** Disable a Category of Commands */
+  disableCategory(name: string): boolean {
+    if (this.isCategoryDisabled(name)) return false
+    this.disabledCategories.add(name)
+    return true
   }
 }
 

@@ -16,6 +16,8 @@ export class Role extends Base {
     return `<@&${this.id}>`
   }
 
+  toString(): string { return this.mention }
+
   constructor (client: Client, data: RolePayload) {
     super(client, data)
     this.id = data.id

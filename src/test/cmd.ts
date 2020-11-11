@@ -1,12 +1,10 @@
 import { CommandClient, Intents } from '../../mod.ts'
-import PingCommand from './cmds/ping.ts'
-import AddEmojiCommand from './cmds/addemoji.ts'
-import UserinfoCommand from './cmds/userinfo.ts'
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
   prefix: ["pls", "!"],
-  spacesAfterPrefix: true
+  spacesAfterPrefix: true,
+  mentionPrefix: true
 })
 
 client.on('debug', console.log)
@@ -15,10 +13,23 @@ client.on('ready', () => {
   console.log(`[Login] Logged in as ${client.user?.tag}!`)
 })
 
+// client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
+
 client.on("commandError", console.error)
 
-client.commands.add(PingCommand)
-client.commands.add(UserinfoCommand)
-client.commands.add(AddEmojiCommand)
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+;(async() => {
+  const files = Deno.readDirSync('./src/test/cmds')
 
-client.connect(TOKEN, Intents.All)
+  for (const file of files) {
+    const module = await import(`./cmds/${file.name}`)
+    // eslint-disable-next-line new-cap
+    const cmd = new module.default()
+    client.commands.add(cmd)
+    console.log(`Loaded command ${cmd.name}!`)
+  }
+
+  console.log(`Loaded ${client.commands.count} commands!`)
+
+  client.connect(TOKEN, Intents.All)
+})()
