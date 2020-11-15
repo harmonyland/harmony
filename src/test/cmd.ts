@@ -26,6 +26,16 @@ client.on('messageDeleteUncached', (d: MessageDeletePayload) => {
   console.log(`Uncached Message Deleted: ${d.id} in ${d.channel_id}`)
 })
 
+client.on('messageUpdate', (before: Message, after: Message) => {
+  console.log('Message Update')
+  console.log(`Before: ${before.author.tag}: ${before.content}`)
+  console.log(`After: ${after.author.tag}: ${after.content}`)
+})
+
+client.on('messageUpdateUncached', (msg: Message) => {
+  console.log(`Message: ${msg.author.tag}: ${msg.content}`)
+})
+
 // client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
 
 client.on("commandError", console.error)
