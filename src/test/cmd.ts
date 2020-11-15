@@ -4,6 +4,7 @@ import { CommandContext } from "../models/command.ts"
 import { Extension } from "../models/extensions.ts"
 import { Member } from "../structures/member.ts"
 import { Message } from "../structures/message.ts"
+import { Role } from "../structures/role.ts"
 import { MessageDeletePayload } from "../types/gateway.ts"
 import { TOKEN } from './config.ts'
 
@@ -43,6 +44,18 @@ client.on('guildMemberAdd', (member: Member) => {
 
 client.on('guildMemberRemove', (member: Member) => {
   console.log(`Member Leave: ${member.user.tag}`)
+})
+
+client.on('guildRoleCreate', (role: Role) => {
+  console.log(`Role Create: ${role.name}`)
+})
+
+client.on('guildRoleDelete', (role: Role) => {
+  console.log(`Role Delete: ${role.name}`)
+})
+
+client.on('guildRoleUpdate', (role: Role, after: Role) => {
+  console.log(`Role Update: ${role.name}, ${after.name}`)
 })
 
 // client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))

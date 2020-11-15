@@ -19,6 +19,9 @@ import { guildEmojiUpdate } from "./guildEmojiUpdate.ts"
 import { guildMemberAdd } from "./guildMemberAdd.ts"
 import { guildMemberRemove } from "./guildMemberRemove.ts"
 import { guildMemberUpdate } from "./guildMemberUpdate.ts"
+import { guildRoleCreate } from "./guildRoleCreate.ts"
+import { guildRoleDelete } from "./guildRoleDelete.ts"
+import { guildRoleUpdate } from "./guildRoleUpdate.ts"
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -41,9 +44,9 @@ export const gatewayHandlers: {
   GUILD_MEMBER_REMOVE: guildMemberRemove,
   GUILD_MEMBER_UPDATE: guildMemberUpdate,
   GUILD_MEMBERS_CHUNK: undefined,
-  GUILD_ROLE_CREATE: undefined,
-  GUILD_ROLE_UPDATE: undefined,
-  GUILD_ROLE_DELETE: undefined,
+  GUILD_ROLE_CREATE: guildRoleCreate,
+  GUILD_ROLE_UPDATE: guildRoleUpdate,
+  GUILD_ROLE_DELETE: guildRoleDelete,
   INVITE_CREATE: undefined,
   INVITE_DELETE: undefined,
   MESSAGE_CREATE: messageCreate,
