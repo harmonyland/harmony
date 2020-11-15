@@ -16,7 +16,8 @@
   * Write Custom Cache Adapters.
 * Complete TypeScript support.
 
-Note: Library is yet under development and not completely usable. You're still always welcome to use, but there may be breaking changes.
+Note: Library is yet under development and not completely usable.  
+You're still always welcome to use, but there may be breaking changes.
 
 ## Table of Contents
 
@@ -27,7 +28,8 @@ Note: Library is yet under development and not completely usable. You're still a
 - [License](#license)
 
 ## Usage
-Right now, the package is not published anywhere, as its not completely usable.
+
+Right now, the package is not published anywhere, as its not completely usable.  
 You can import it from this Raw GitHub URL: https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts
 
 For a quick example, run this:
