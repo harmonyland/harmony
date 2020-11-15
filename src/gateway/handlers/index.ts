@@ -13,6 +13,7 @@ import { guildBanRemove } from './guildBanRemove.ts'
 import { messageCreate } from './messageCreate.ts'
 import { resume } from './resume.ts'
 import { reconnect } from './reconnect.ts'
+import { messageDelete } from "./messageDelete.ts"
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -42,7 +43,7 @@ export const gatewayHandlers: {
   INVITE_DELETE: undefined,
   MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: undefined,
-  MESSAGE_DELETE: undefined,
+  MESSAGE_DELETE: messageDelete,
   MESSAGE_DELETE_BULK: undefined,
   MESSAGE_REACTION_ADD: undefined,
   MESSAGE_REACTION_REMOVE: undefined,

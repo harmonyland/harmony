@@ -2,6 +2,8 @@ import { Command, CommandClient, Intents } from '../../mod.ts'
 import { GuildChannel } from "../managers/guildChannels.ts"
 import { CommandContext } from "../models/command.ts"
 import { Extension } from "../models/extensions.ts"
+import { Message } from "../structures/message.ts"
+import { MessageDeletePayload } from "../types/gateway.ts"
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
@@ -14,6 +16,14 @@ client.on('debug', console.log)
 
 client.on('ready', () => {
   console.log(`[Login] Logged in as ${client.user?.tag}!`)
+})
+
+client.on('messageDelete', (msg: Message) => {
+  console.log(`Message Deleted: ${msg.id}, ${msg.author.tag}, ${msg.content}`)
+})
+
+client.on('messageDeleteUncached', (d: MessageDeletePayload) => {
+  console.log(`Uncached Message Deleted: ${d.id} in ${d.channel_id}`)
 })
 
 // client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
