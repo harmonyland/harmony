@@ -14,7 +14,7 @@ export const messageUpdate: GatewayEventHandler = async (
     channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
 
   const message = await channel.messages.get(d.id)
-  const author = new User(gateway.client, d.author)
+  const author = message?.author !== undefined ? message.author : new User(gateway.client, d)
   const newMsg = new Message(gateway.client, d, channel, author)
   if (message === undefined) {
     await channel.messages.set(d.id, d)

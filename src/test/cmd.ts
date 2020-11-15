@@ -2,6 +2,7 @@ import { Command, CommandClient, Intents } from '../../mod.ts'
 import { GuildChannel } from "../managers/guildChannels.ts"
 import { CommandContext } from "../models/command.ts"
 import { Extension } from "../models/extensions.ts"
+import { Member } from "../structures/member.ts"
 import { Message } from "../structures/message.ts"
 import { MessageDeletePayload } from "../types/gateway.ts"
 import { TOKEN } from './config.ts'
@@ -34,6 +35,14 @@ client.on('messageUpdate', (before: Message, after: Message) => {
 
 client.on('messageUpdateUncached', (msg: Message) => {
   console.log(`Message: ${msg.author.tag}: ${msg.content}`)
+})
+
+client.on('guildMemberAdd', (member: Member) => {
+  console.log(`Member Join: ${member.user.tag}`)
+})
+
+client.on('guildMemberRemove', (member: Member) => {
+  console.log(`Member Leave: ${member.user.tag}`)
 })
 
 // client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
