@@ -150,10 +150,21 @@ export class CommandClient extends Client implements CommandClientOptions {
       guild: msg.guild
     }
 
-    if (command.guildOnly === true && msg.guild === undefined) return this.emit('commandGuildOnly', { ctx, command })
-    if (command.dmOnly === true && msg.guild !== undefined) return this.emit('commandDmOnly', { ctx, command })
-    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', { ctx, command })
+    if (command.guildOnly === true && msg.guild === undefined) return this.emit('commandGuildOnly', ctx, command)
+    if (command.dmOnly === true && msg.guild !== undefined) return this.emit('commandDmOnly', ctx, command)
+    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', ctx, command)
     
+    if (command.botPermissions !== undefined && msg.guild !== undefined) {
+      const me = await msg.guild.me()
+      const missing: string[] = []
+      
+      for (const perm of command.botPermissions) {
+        if (me.permissions.has(perm) === false) missing.push(perm)
+      }
+
+      if (missing.length !== 0) return this.emit('commandBotMissingPermissions', ctx, command, missing)
+    }
+
     if (command.permissions !== undefined && msg.guild !== undefined) {
       const missing: string[] = []
       let perms: string[] = []
@@ -163,11 +174,11 @@ export class CommandClient extends Client implements CommandClientOptions {
         const has = msg.member?.permissions.has(perm)
         if (has !== true) missing.push(perm)
       } 
-      if (missing.length !== 0) return this.emit('commandMissingPermissions', { command, missing, ctx })
+      if (missing.length !== 0) return this.emit('commandMissingPermissions', command, missing, ctx)
     }
 
     try {
-      this.emit('commandUsed', { context: ctx })
+      this.emit('commandUsed', ctx, command)
 
       const beforeExecute = await awaitSync(command.beforeExecute(ctx))
       if (beforeExecute === false) return
@@ -175,7 +186,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       const result = await awaitSync(command.execute(ctx))
       command.afterExecute(ctx, result)
     } catch (e) {
-      this.emit('commandError', { command, parsed, error: e, ctx })
+      this.emit('commandError', command, ctx, e)
     }
   }
 }
