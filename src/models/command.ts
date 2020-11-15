@@ -46,6 +46,16 @@ export class Command {
   args?: number | boolean
   /** Permission(s) required for using Command */
   permissions?: string | string[]
+  /** Permission(s) bot will need in order to execute Command */
+  botPermissions?: string | string[]
+  /** Role(s) user will require in order to use Command. List or one of ID or name */
+  roles?: string | string[]
+  /** Whitelisted Guilds. Only these Guild(s) can execute Command. (List or one of IDs) */
+  whitelistedGuilds?: string | string[]
+  /** Whitelisted Channels. Command can be executed only in these channels. (List or one of IDs) */
+  whitelistedChannels?: string | string[]
+  /** Whitelisted Users. Command can be executed only by these Users (List or one of IDs) */
+  whitelistedUsers?: string | string[]
   /** Whether the Command can only be used in Guild (if allowed in DMs) */
   guildOnly?: boolean
   /** Whether the Command can only be used in Bot's DMs (if allowed) */

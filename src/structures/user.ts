@@ -1,5 +1,6 @@
 import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/user.ts'
+import { UserFlagsManager } from "../utils/userFlags.ts"
 import { Base } from './base.ts'
 
 export class User extends Base {
@@ -13,9 +14,9 @@ export class User extends Base {
   locale?: string
   verified?: boolean
   email?: string
-  flags?: number
+  flags?: UserFlagsManager
   premiumType?: 0 | 1 | 2
-  publicFlags?: number
+  publicFlags?: UserFlagsManager
 
   get tag (): string {
     return `${this.username}#${this.discriminator}`
@@ -41,11 +42,9 @@ export class User extends Base {
     this.locale = data.locale
     this.verified = data.verified
     this.email = data.email
-    this.flags = data.flags
+    this.flags = new UserFlagsManager(data.flags)
     this.premiumType = data.premium_type
-    this.publicFlags = data.public_flags
-    // TODO: Cache in Gateway Event Code
-    // cache.set('user', this.id, this)
+    this.publicFlags = new UserFlagsManager(data.public_flags)
   }
 
   protected readFromData (data: UserPayload): void {
@@ -59,9 +58,9 @@ export class User extends Base {
     this.locale = data.locale ?? this.locale
     this.verified = data.verified ?? this.verified
     this.email = data.email ?? this.email
-    this.flags = data.flags ?? this.flags
+    this.flags = new UserFlagsManager(data.flags) ?? this.flags
     this.premiumType = data.premium_type ?? this.premiumType
-    this.publicFlags = data.public_flags ?? this.publicFlags
+    this.publicFlags = new UserFlagsManager(data.public_flags) ?? this.publicFlags
   }
 
   toString (): string {

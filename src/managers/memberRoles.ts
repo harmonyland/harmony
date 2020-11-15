@@ -20,7 +20,7 @@ export class MemberRolesManager extends BaseChildManager<
   async get (id: string): Promise<Role | undefined> {
     const res = await this.parent.get(id)
     const mem = await (this.parent as any).guild.members._get(this.member.id) as MemberPayload
-    if (res !== undefined && mem.roles.includes(res.id) === true) return res
+    if (res !== undefined && (mem.roles.includes(res.id) === true || res.id === this.member.guild.id)) return res
     else return undefined
   }
 
@@ -28,7 +28,7 @@ export class MemberRolesManager extends BaseChildManager<
     const arr = (await this.parent.array()) as Role[]
     const mem = await (this.parent as any).guild.members._get(this.member.id) as MemberPayload
     return arr.filter(
-      (c: any) => mem.roles.includes(c.id)
+      (c: any) => mem.roles.includes(c.id) as boolean || c.id === this.member.guild.id
     ) as any
   }
 

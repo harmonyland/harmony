@@ -13,6 +13,7 @@ export default class UserinfoCommand extends Command {
         .setAuthor({ name: member.user.tag })
         .addField("ID", member.id)
         .addField("Roles", roles.map(r => r.name).join(", "))
+        .addField('Permissions', JSON.stringify(member.permissions.has('ADMINISTRATOR')))
         .setColor(0xff00ff)
         ctx.channel.send(embed)
     }

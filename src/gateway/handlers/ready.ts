@@ -3,6 +3,7 @@ import { GuildPayload } from '../../types/guild.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
 export const ready: GatewayEventHandler = async (gateway: Gateway, d: any) => {
+  await gateway.client.guilds.flush()
   gateway.client.user = new User(gateway.client, d.user)
   gateway.sessionID = d.session_id
   gateway.debug(`Received READY. Session: ${gateway.sessionID}`)
