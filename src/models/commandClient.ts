@@ -150,9 +150,9 @@ export class CommandClient extends Client implements CommandClientOptions {
       guild: msg.guild
     }
 
+    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', ctx, command)
     if (command.guildOnly === true && msg.guild === undefined) return this.emit('commandGuildOnly', ctx, command)
     if (command.dmOnly === true && msg.guild !== undefined) return this.emit('commandDmOnly', ctx, command)
-    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', ctx, command)
     
     if (command.botPermissions !== undefined && msg.guild !== undefined) {
       // TODO: Check Overwrites too
