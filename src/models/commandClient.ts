@@ -155,6 +155,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', ctx, command)
     
     if (command.botPermissions !== undefined && msg.guild !== undefined) {
+      // TODO: Check Overwrites too
       const me = await msg.guild.me()
       const missing: string[] = []
       
@@ -175,6 +176,11 @@ export class CommandClient extends Client implements CommandClientOptions {
         if (has !== true) missing.push(perm)
       } 
       if (missing.length !== 0) return this.emit('commandMissingPermissions', command, missing, ctx)
+    }
+
+    if (command.args !== undefined) {
+      if (typeof command.args === 'boolean' && parsed.args.length === 0) return this.emit('commandMissingArgs', ctx, command)
+      else if (typeof command.args === 'number' && parsed.args.length < command.args) this.emit('commandMissingArgs', ctx, command) 
     }
 
     try {
