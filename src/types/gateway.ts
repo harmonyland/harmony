@@ -186,7 +186,7 @@ export interface GuildBanRemovePayload {
 
 export interface GuildEmojiUpdatePayload {
   guild_id: string
-  emojis: []
+  emojis: EmojiPayload[]
 }
 
 export interface GuildIntegrationsUpdatePayload {
