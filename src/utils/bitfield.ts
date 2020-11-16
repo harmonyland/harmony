@@ -3,7 +3,7 @@ export type BitFieldResolvable = number | BitField | string | BitField[]
 
 export class BitField {
   flags: { [name: string]: number } = {}
-  bitfield: any
+  bitfield: number
 
   constructor(flags: { [name: string]: number }, bits: any) {
     this.flags = flags
@@ -62,15 +62,15 @@ export class BitField {
     return Object.keys(this.flags).filter(bit => this.has(BitField.resolve(this.flags, bit), ...hasParams))
   }
 
-  toJSON(): any {
+  toJSON(): number {
     return this.bitfield
   }
 
-  valueOf(): any {
+  valueOf(): number {
     return this.bitfield
   }
 
-  *[Symbol.iterator](): any {
+  *[Symbol.iterator](): Iterator<string> {
     yield* this.toArray()
   }
 
