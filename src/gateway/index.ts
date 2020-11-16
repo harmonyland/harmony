@@ -115,6 +115,8 @@ class Gateway {
           await this.cache.set('seq', s)
         }
         if (t !== null && t !== undefined) {
+          this.client.emit('raw', t, d)
+          
           const handler = gatewayHandlers[t]
 
           if (handler !== undefined) {

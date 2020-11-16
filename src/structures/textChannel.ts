@@ -1,3 +1,4 @@
+import { MessagesManager } from "../../mod.ts"
 import { Client } from '../models/client.ts'
 import { GuildTextChannelPayload, MessageOption, Overwrite, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
@@ -11,9 +12,11 @@ type AllMessageOptions = MessageOption | Embed
 export class TextChannel extends Channel {
   lastMessageID?: string
   lastPinTimestamp?: string
+  messages: MessagesManager
 
   constructor (client: Client, data: TextChannelPayload) {
     super(client, data)
+    this.messages = new MessagesManager(this.client, this)
     this.lastMessageID = data.last_message_id
     this.lastPinTimestamp = data.last_pin_timestamp
   }

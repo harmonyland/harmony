@@ -1,7 +1,8 @@
-import { Embed, Message } from '../../mod.ts'
+import { Message } from "../../mod.ts"
 import { awaitSync } from "../utils/mixedPromise.ts"
 import { Client, ClientOptions } from './client.ts'
 import { CommandContext, CommandsManager, parseCommand } from './command.ts'
+import { ExtensionsManager } from "./extensions.ts"
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 
@@ -21,33 +22,6 @@ export interface CommandClientOptions extends ClientOptions {
   caseSensitive?: boolean
 }
 
-type CommandText = string | Embed
-
-export interface CommandTexts {
-  GUILD_ONLY?: CommandText
-  OWNER_ONLY?: CommandText
-  DMS_ONLY?: CommandText
-  ERROR?: CommandText
-}
-
-export const DefaultCommandTexts: CommandTexts = {
-  GUILD_ONLY: 'This command can only be used in a Server!',
-  OWNER_ONLY: 'This command can only be used by Bot Owners!',
-  DMS_ONLY: "This command can only be used in Bot's DMs!",
-  ERROR: 'An error occured while executing command!'
-}
-
-interface Replaces {
-  [name: string]: string
-}
-
-export const massReplace = (text: string, replaces: Replaces): string => {
-  Object.entries(replaces).forEach(replace => {
-    text = text.replace(new RegExp(`{{${replace[0]}}}`, 'g'), replace[1])
-  })
-  return text
-}
-
 export class CommandClient extends Client implements CommandClientOptions {
   prefix: string | string[]
   mentionPrefix: boolean
@@ -62,8 +36,8 @@ export class CommandClient extends Client implements CommandClientOptions {
   allowBots: boolean
   allowDMs: boolean
   caseSensitive: boolean
+  extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
-  texts: CommandTexts = DefaultCommandTexts
 
   constructor(options: CommandClientOptions) {
     super(options)
@@ -159,31 +133,9 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     if (command === undefined) return
 
-    const baseReplaces: Replaces = {
-      command: command.name,
-      nameUsed: parsed.name,
-      prefix,
-      username: msg.author.username,
-      tag: msg.author.tag,
-      mention: msg.author.mention,
-      id: msg.author.id
-    }
-
-    if (command.guildOnly === true && msg.guild === undefined) {
-      if (this.texts.GUILD_ONLY !== undefined)
-        return this.sendProcessedText(msg, this.texts.GUILD_ONLY, baseReplaces)
-      return
-    }
-    if (command.dmOnly === true && msg.guild !== undefined) {
-      if (this.texts.DMS_ONLY !== undefined)
-        return this.sendProcessedText(msg, this.texts.DMS_ONLY, baseReplaces)
-      return
-    }
-    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) {
-      if (this.texts.OWNER_ONLY !== undefined)
-        return this.sendProcessedText(msg, this.texts.OWNER_ONLY, baseReplaces)
-      return
-    }
+    if (command.whitelistedGuilds !== undefined && msg.guild !== undefined && command.whitelistedGuilds.includes(msg.guild.id) === false) return;
+    if (command.whitelistedChannels !== undefined && command.whitelistedChannels.includes(msg.channel.id) === false) return;
+    if (command.whitelistedUsers !== undefined && command.whitelistedUsers.includes(msg.author.id) === false) return;
 
     const ctx: CommandContext = {
       client: this,
@@ -198,8 +150,41 @@ export class CommandClient extends Client implements CommandClientOptions {
       guild: msg.guild
     }
 
+    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', ctx, command)
+    if (command.guildOnly === true && msg.guild === undefined) return this.emit('commandGuildOnly', ctx, command)
+    if (command.dmOnly === true && msg.guild !== undefined) return this.emit('commandDmOnly', ctx, command)
+    
+    if (command.botPermissions !== undefined && msg.guild !== undefined) {
+      // TODO: Check Overwrites too
+      const me = await msg.guild.me()
+      const missing: string[] = []
+      
+      for (const perm of command.botPermissions) {
+        if (me.permissions.has(perm) === false) missing.push(perm)
+      }
+
+      if (missing.length !== 0) return this.emit('commandBotMissingPermissions', ctx, command, missing)
+    }
+
+    if (command.permissions !== undefined && msg.guild !== undefined) {
+      const missing: string[] = []
+      let perms: string[] = []
+      if (typeof command.permissions === 'string') perms = [command.permissions]
+      else perms = command.permissions
+      for (const perm of perms) {
+        const has = msg.member?.permissions.has(perm)
+        if (has !== true) missing.push(perm)
+      } 
+      if (missing.length !== 0) return this.emit('commandMissingPermissions', command, missing, ctx)
+    }
+
+    if (command.args !== undefined) {
+      if (typeof command.args === 'boolean' && parsed.args.length === 0) return this.emit('commandMissingArgs', ctx, command)
+      else if (typeof command.args === 'number' && parsed.args.length < command.args) this.emit('commandMissingArgs', ctx, command) 
+    }
+
     try {
-      this.emit('commandUsed', { context: ctx })
+      this.emit('commandUsed', ctx, command)
 
       const beforeExecute = await awaitSync(command.beforeExecute(ctx))
       if (beforeExecute === false) return
@@ -207,30 +192,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       const result = await awaitSync(command.execute(ctx))
       command.afterExecute(ctx, result)
     } catch (e) {
-      if (this.texts.ERROR !== undefined)
-        this.sendProcessedText(
-          msg,
-          this.texts.ERROR,
-          Object.assign(baseReplaces, { error: e.message })
-        )
-      this.emit('commandError', { command, parsed, error: e })
-    }
-  }
-
-  sendProcessedText(msg: Message, text: CommandText, replaces: Replaces): any {
-    if (typeof text === 'string') {
-      text = massReplace(text, replaces)
-      return msg.channel.send(text)
-    } else {
-      if (text.description !== undefined)
-        text.description = massReplace(text.description, replaces)
-      if (text.title !== undefined)
-        text.description = massReplace(text.title, replaces)
-      if (text.author?.name !== undefined)
-        text.description = massReplace(text.author.name, replaces)
-      if (text.footer?.text !== undefined)
-        text.description = massReplace(text.footer.text, replaces)
-      return msg.channel.send(text)
+      this.emit('commandError', command, ctx, e)
     }
   }
 }

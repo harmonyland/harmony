@@ -1,6 +1,7 @@
 import { Client } from '../models/client.ts'
 import { Base } from './base.ts'
 import { RolePayload } from '../types/role.ts'
+import { Permissions } from "../utils/permissions.ts"
 
 export class Role extends Base {
   id: string
@@ -8,7 +9,7 @@ export class Role extends Base {
   color: number
   hoist: boolean
   position: number
-  permissions: string
+  permissions: Permissions
   managed: boolean
   mentionable: boolean
 
@@ -25,11 +26,9 @@ export class Role extends Base {
     this.color = data.color
     this.hoist = data.hoist
     this.position = data.position
-    this.permissions = data.permissions
+    this.permissions = new Permissions(data.permissions)
     this.managed = data.managed
     this.mentionable = data.mentionable
-    // TODO: Cache in Gateway Event Code
-    // cache.set('role', this.id, this)
   }
 
   protected readFromData (data: RolePayload): void {
@@ -38,7 +37,7 @@ export class Role extends Base {
     this.color = data.color ?? this.color
     this.hoist = data.hoist ?? this.hoist
     this.position = data.position ?? this.position
-    this.permissions = data.permissions ?? this.permissions
+    this.permissions = new Permissions(data.permissions) ?? this.permissions
     this.managed = data.managed ?? this.managed
     this.mentionable = data.mentionable ?? this.mentionable
   }

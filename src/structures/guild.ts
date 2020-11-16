@@ -8,6 +8,7 @@ import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
 import { GuildEmojisManager } from '../managers/guildEmojis.ts'
+import { Member } from "./member.ts"
 
 export class Guild extends Base {
   id: string
@@ -213,5 +214,11 @@ export class Guild extends Base {
 
   async getEveryoneRole (): Promise<Role> {
     return (await this.roles.array().then(arr => arr?.sort((b, a) => a.position - b.position)[0]) as any) as Role
+  }
+
+  async me(): Promise<Member> {
+    const get = await this.members.get(this.client.user?.id as string)
+    if (get === undefined) throw new Error('Guild#me is not cached')
+    return get
   }
 }

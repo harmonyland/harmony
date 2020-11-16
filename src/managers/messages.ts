@@ -7,8 +7,11 @@ import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { BaseManager } from './base.ts'
 
 export class MessagesManager extends BaseManager<MessagePayload, Message> {
-  constructor (client: Client) {
+  channel: TextChannel
+
+  constructor (client: Client, channel: TextChannel) {
     super(client, 'messages', Message)
+    this.channel = channel
   }
 
   async get (key: string): Promise<Message | undefined> {
@@ -26,18 +29,22 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     return res
   }
 
-  async fetch (channelID: string, id: string): Promise<Message> {
+  async set (key: string, value: MessagePayload): Promise<any> {
+    return this.client.cache.set(this.cacheName, key, value, this.client.messageCacheLifetime)
+  }
+
+  async fetch (id: string): Promise<Message> {
     return await new Promise((resolve, reject) => {
       this.client.rest
-        .get(CHANNEL_MESSAGE(channelID, id))
+        .get(CHANNEL_MESSAGE(this.channel.id, id))
         .then(async data => {
-          this.set(id, data as MessagePayload)
+          await this.set(id, data as MessagePayload)
 
           let channel: any = await this.client.channels.get<TextChannel>(
-            channelID
+            this.channel.id
           )
           if (channel === undefined)
-            channel = await this.client.channels.fetch(channelID)
+            channel = await this.client.channels.fetch(this.channel.id)
 
           const author = new User(this.client, (data as MessagePayload).author)
           await this.client.users.set(

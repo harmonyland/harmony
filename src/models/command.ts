@@ -4,6 +4,7 @@ import { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
+import { Extension } from "./extensions.ts"
 
 export interface CommandContext {
   /** The Client object */
@@ -35,8 +36,8 @@ export class Command {
   description?: string
   /** Array of Aliases of Command, or only string */
   aliases?: string | string[]
-  /** Category of the Command */
-  category?: string
+  /** Extension (Parent) of the Command */
+  extension?: Extension
   /** Usage of Command, only Argument Names */
   usage?: string | string[]
   /** Usage Example of Command, only Arguments (without Prefix and Name) */
@@ -45,6 +46,16 @@ export class Command {
   args?: number | boolean
   /** Permission(s) required for using Command */
   permissions?: string | string[]
+  /** Permission(s) bot will need in order to execute Command */
+  botPermissions?: string | string[]
+  /** Role(s) user will require in order to use Command. List or one of ID or name */
+  roles?: string | string[]
+  /** Whitelisted Guilds. Only these Guild(s) can execute Command. (List or one of IDs) */
+  whitelistedGuilds?: string | string[]
+  /** Whitelisted Channels. Command can be executed only in these channels. (List or one of IDs) */
+  whitelistedChannels?: string | string[]
+  /** Whitelisted Users. Command can be executed only by these Users (List or one of IDs) */
+  whitelistedUsers?: string | string[]
   /** Whether the Command can only be used in Guild (if allowed in DMs) */
   guildOnly?: boolean
   /** Whether the Command can only be used in Bot's DMs (if allowed) */
@@ -58,13 +69,16 @@ export class Command {
   execute(ctx: CommandContext): any { }
   /** Method executed after executing command, passes on CommandContext and the value returned by execute too. (optional) */
   afterExecute(ctx: CommandContext, executeResult: any): any { }
+
+  toString(): string {
+    return `Command: ${this.name}${this.extension !== undefined ? ` [${this.extension.name}]` : ''}`
+  }
 }
 
 export class CommandsManager {
   client: CommandClient
   list: Collection<string, Command> = new Collection()
   disabled: Set<string> = new Set()
-  disabledCategories: Set<string> = new Set()
 
   constructor(client: CommandClient) {
     this.client = client
@@ -96,7 +110,6 @@ export class CommandsManager {
     const cmd = this.find(name)
     if (cmd === undefined) return
     if (this.isDisabled(cmd) && bypassDisable !== true) return
-    if (cmd.category !== undefined && this.isCategoryDisabled(cmd.category) && bypassDisable !== true) return
     return cmd
   }
 
@@ -121,7 +134,7 @@ export class CommandsManager {
   add(cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
     if (!(cmd instanceof Command)) cmd = new cmd()
-    if (this.exists(cmd)) return false
+    if (this.exists(cmd)) throw new Error(`Failed to add Command '${cmd.toString()}' with name/alias already exists.`)
     this.list.set(cmd.name, cmd)
     return true
   }
@@ -131,11 +144,6 @@ export class CommandsManager {
     const find = typeof cmd === 'string' ? this.find(cmd) : cmd
     if (find === undefined) return false
     else return this.list.delete(find.name)
-  }
-
-  /** Get all Commands of given Category */
-  category(name: string): Collection<string, Command> {
-    return this.list.filter(c => c.category === name)
   }
 
   /** Check whether a Command is disabled or not */
@@ -153,18 +161,6 @@ export class CommandsManager {
     if (cmd === undefined) return false
     if (this.isDisabled(cmd)) return false
     this.disabled.add(cmd.name)
-    return true
-  }
-
-  /** Check whether a Category is disabled */
-  isCategoryDisabled(name: string): boolean {
-    return this.disabledCategories.has(name)
-  }
-
-  /** Disable a Category of Commands */
-  disableCategory(name: string): boolean {
-    if (this.isCategoryDisabled(name)) return false
-    this.disabledCategories.add(name)
     return true
   }
 }
