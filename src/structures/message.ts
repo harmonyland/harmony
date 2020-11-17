@@ -111,7 +111,7 @@ export class Message extends Base {
 
   /** These will **not** work in all servers, as this feature is coming slowly. */
   async reply(text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
-    return this.channel.send(text, Object.assign(option, { reply: this }))
+    return this.channel.send(text, option, this)
   }
 
   async delete (): Promise<void> {

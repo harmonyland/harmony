@@ -27,7 +27,7 @@ export class TextChannel extends Channel {
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp
   }
 
-  async send(text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
+  async send(text?: string | AllMessageOptions, option?: AllMessageOptions, reply?: Message): Promise<Message> {
     if (typeof text === "object") {
       option = text
       text = undefined
@@ -47,11 +47,11 @@ export class TextChannel extends Channel {
       allowed_mentions: option?.allowedMention
     }
 
-    if (option?.reply !== undefined) {
+    if (reply !== undefined) {
       const reference: MessageReference = {
-        message_id: option.reply.id,
-        channel_id: option.reply.channel.id,
-        guild_id: option.reply.guild?.id,
+        message_id: reply.id,
+        channel_id: reply.channel.id,
+        guild_id: reply.guild?.id,
       }
       payload.message_reference = reference
     }

@@ -106,8 +106,7 @@ export interface MessageOption {
     parse: ['everyone', 'users', 'roles']
     roles: string[]
     users: string[]
-  },
-  reply?: Message
+  }
 }
 
 export interface ChannelMention {

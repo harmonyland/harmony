@@ -24,6 +24,10 @@ export interface RequestHeaders {
   [name: string]: string
 }
 
+export class DiscordAPIError extends Error {
+  name = 'DiscordAPIError'
+}
+
 export interface QueuedItem {
   bucket?: string | null
   url: string
@@ -263,7 +267,7 @@ export class RESTManager {
     if (text === 'undefined') text = undefined
 
     if (status === HttpResponseCode.Unauthorized)
-      throw new Error(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
+      throw new DiscordAPIError(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
 
     // At this point we know it is error
     let error = { url: response.url, status, method: data.method, body: data.body }
@@ -275,10 +279,10 @@ export class RESTManager {
       HttpResponseCode.Forbidden,
       HttpResponseCode.MethodNotAllowed
     ].includes(status)) {
-      throw new Error(Deno.inspect(error))
+      throw new DiscordAPIError(Deno.inspect(error))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
-      throw new Error(Deno.inspect(error))
-    } else throw new Error('Request - Unknown Error')
+      throw new DiscordAPIError(Deno.inspect(error))
+    } else throw new DiscordAPIError('Request - Unknown Error')
   }
 
   async make(
@@ -327,8 +331,7 @@ export class RESTManager {
           if (response.status === 204) return resolve(undefined)
 
           const json: any = await response.json()
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          this.handleStatusCode(response, json, requestData)
+          await this.handleStatusCode(response, json, requestData)
 
           if (
             json.retry_after !== undefined ||
