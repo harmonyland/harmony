@@ -16,7 +16,6 @@ import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
 import { TextChannel } from './textChannel.ts'
-import { DMChannel } from './dmChannel.ts'
 import { Guild } from './guild.ts'
 
 type AllMessageOptions = MessageOption | Embed
@@ -110,10 +109,9 @@ export class Message extends Base {
     return this.channel.editMessage(this.id, text, option)  
   }
 
+  /** These will **not** work in all servers, as this feature is coming slowly. */
   async reply(text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
-    // TODO: Use inline replies once they're out
-    if (this.channel instanceof DMChannel) return this.channel.send(text, option)
-    return this.channel.send(`${this.author.mention}, ${text}`, option)
+    return this.channel.send(text, Object.assign(option, { reply: this }))
   }
 
   async delete (): Promise<void> {
