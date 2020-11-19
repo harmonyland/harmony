@@ -1,6 +1,6 @@
 import { MessagesManager } from "../../mod.ts"
 import { Client } from '../models/client.ts'
-import { GuildTextChannelPayload, MessageOption, Overwrite, TextChannelPayload } from '../types/channel.ts'
+import { GuildTextChannelPayload, MessageOption, MessageReference, Overwrite, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
@@ -14,20 +14,20 @@ export class TextChannel extends Channel {
   lastPinTimestamp?: string
   messages: MessagesManager
 
-  constructor (client: Client, data: TextChannelPayload) {
+  constructor(client: Client, data: TextChannelPayload) {
     super(client, data)
     this.messages = new MessagesManager(this.client, this)
     this.lastMessageID = data.last_message_id
     this.lastPinTimestamp = data.last_pin_timestamp
   }
 
-  protected readFromData (data: TextChannelPayload): void {
+  protected readFromData(data: TextChannelPayload): void {
     super.readFromData(data)
     this.lastMessageID = data.last_message_id ?? this.lastMessageID
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp
   }
 
-  async send (text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
+  async send(text?: string | AllMessageOptions, option?: AllMessageOptions, reply?: Message): Promise<Message> {
     if (typeof text === "object") {
       option = text
       text = undefined
@@ -38,21 +38,32 @@ export class TextChannel extends Channel {
     if (option instanceof Embed) option = {
       embed: option
     }
-    
-    const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), {
-        content: text,
-        embed: option?.embed,
-        file: option?.file,
-        tts: option?.tts,
-        allowed_mentions: option?.allowedMention
-    })
+
+    const payload: any = {
+      content: text,
+      embed: option?.embed,
+      file: option?.file,
+      tts: option?.tts,
+      allowed_mentions: option?.allowedMention
+    }
+
+    if (reply !== undefined) {
+      const reference: MessageReference = {
+        message_id: reply.id,
+        channel_id: reply.channel.id,
+        guild_id: reply.guild?.id,
+      }
+      payload.message_reference = reference
+    }
+
+    const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), payload)
 
     const res = new Message(this.client, resp, this, this.client.user as any)
     await res.mentions.fromPayload(resp)
     return res
   }
 
-  async editMessage (
+  async editMessage(
     message: Message | string,
     text?: string,
     option?: MessageOption
@@ -96,7 +107,7 @@ export class GuildTextChannel extends TextChannel {
   topic?: string
   guild: Guild
 
-  get mention (): string {
+  get mention(): string {
     return `<#${this.id}>`
   }
 
@@ -104,7 +115,7 @@ export class GuildTextChannel extends TextChannel {
     return this.mention
   }
 
-  constructor (client: Client, data: GuildTextChannelPayload, guild: Guild) {
+  constructor(client: Client, data: GuildTextChannelPayload, guild: Guild) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name
@@ -117,7 +128,7 @@ export class GuildTextChannel extends TextChannel {
     this.rateLimit = data.rate_limit_per_user
   }
 
-  protected readFromData (data: GuildTextChannelPayload): void {
+  protected readFromData(data: GuildTextChannelPayload): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name
