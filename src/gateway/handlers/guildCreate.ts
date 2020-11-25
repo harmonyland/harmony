@@ -1,9 +1,8 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
-import { GuildPayload, MemberPayload } from '../../types/guild.ts'
+import { GuildPayload } from '../../types/guild.ts'
 import { MembersManager } from '../../managers/members.ts'
 import { GuildChannelPayload } from '../../types/channel.ts'
-import { RolePayload } from '../../types/role.ts'
 import { RolesManager } from '../../managers/roles.ts'
 
 export const guildCreate: GatewayEventHandler = async (
@@ -17,7 +16,7 @@ export const guildCreate: GatewayEventHandler = async (
 
     if (d.members !== undefined) {
       const members = new MembersManager(gateway.client, guild)
-      await members.fromPayload(d.members as MemberPayload[])
+      await members.fromPayload(d.members)
       guild.members = members
     }
 
@@ -30,7 +29,7 @@ export const guildCreate: GatewayEventHandler = async (
 
     if (d.roles !== undefined) {
       const roles = new RolesManager(gateway.client, guild)
-      await roles.fromPayload(d.roles as RolePayload[])
+      await roles.fromPayload(d.roles)
       guild.roles = roles
     }
 
@@ -39,15 +38,15 @@ export const guildCreate: GatewayEventHandler = async (
     await gateway.client.guilds.set(d.id, d)
     guild = new Guild(gateway.client, d)
 
-    if ((d as any).members !== undefined) {
+    if (d.members !== undefined) {
       const members = new MembersManager(gateway.client, guild)
-      await members.fromPayload(d.members as MemberPayload[])
+      await members.fromPayload(d.members)
       guild.members = members
     }
 
     if (d.channels !== undefined) {
       for (const ch of d.channels as GuildChannelPayload[]) {
-        ;(ch as any).guild_id = d.id
+        ch.guild_id = d.id
         await gateway.client.channels.set(ch.id, ch)
       }
     }

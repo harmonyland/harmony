@@ -1,20 +1,32 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
+import { GuildMemberUpdatePayload } from '../../types/gateway.ts'
+import { MemberPayload } from '../../types/guild.ts'
 
 export const guildMemberUpdate: GatewayEventHandler = async (
   gateway: Gateway,
-  d: any
+  d: GuildMemberUpdatePayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
   // Weird case, shouldn't happen
   if (guild === undefined) return
 
-  const member = await guild.members.get(d.id)
-  await guild.members.set(d.id, d)
-  const newMember = await guild.members.get(d.id)
+  const member = await guild.members.get(d.user.id)
+  const newMemberPayload: MemberPayload = {
+    user: d.user,
+    roles: d.roles,
+    joined_at: d.joined_at,
+    nick: d.nick,
+    premium_since: d.premium_since,
+    deaf: member?.deaf ?? false,
+    mute: member?.mute ?? false
+  }
+  await guild.members.set(d.user.id, newMemberPayload)
+  const newMember = await guild.members.get(d.user.id)
 
-  if (member !== undefined) gateway.client.emit('guildMemberRemove', member, newMember)
+  if (member !== undefined)
+    gateway.client.emit('guildMemberRemove', member, newMember)
   else {
-      gateway.client.emit('guildMemberUpdateUncached', newMember)
+    gateway.client.emit('guildMemberUpdateUncached', newMember)
   }
 }

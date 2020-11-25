@@ -1,7 +1,7 @@
 export interface ClientStatus {
-  desktop?: string
-  mobile?: string
-  web?: string
+  desktop?: StatusType
+  mobile?: StatusType
+  web?: StatusType
 }
 
 export interface ActivityPayload {
@@ -57,4 +57,26 @@ export enum ActivityFlags {
   JOIN_REQUEST = 1 << 3,
   SYNC = 1 << 4,
   PLAY = 1 << 5
+}
+
+export type ActivityType =
+  | 'PLAYING'
+  | 'STREAMING'
+  | 'LISTENING'
+  | 'WATCHING'
+  | 'CUSTOM_STATUS'
+  | 'COMPETING'
+export type StatusType = 'online' | 'invisible' | 'offline' | 'idle' | 'dnd'
+
+export interface ActivityGame {
+  name: string
+  type: 0 | 1 | 2 | 3 | 4 | 5 | ActivityType
+  url?: string
+}
+
+export interface ClientActivity {
+  status?: StatusType
+  activity?: ActivityGame | ActivityGame[]
+  since?: number | null
+  afk?: boolean
 }

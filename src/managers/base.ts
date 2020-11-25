@@ -33,7 +33,8 @@ export class BaseManager<T, T2> {
   }
 
   async array (): Promise<undefined | T2[]> {
-    const arr = await (this.client.cache.array(this.cacheName) as T[])
+    let arr = await (this.client.cache.array(this.cacheName) as T[])
+    if (arr === undefined) arr = []
     return arr.map(e => new this.DataType(this.client, e)) as any
   }
 
@@ -48,7 +49,7 @@ export class BaseManager<T, T2> {
     return collection
   }
 
-  flush(): any {
+  flush (): any {
     return this.client.cache.deleteCache(this.cacheName)
   }
 }

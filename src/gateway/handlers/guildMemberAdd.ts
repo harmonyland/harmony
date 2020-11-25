@@ -3,7 +3,7 @@ import { Guild } from '../../structures/guild.ts'
 
 export const guildMemberAdd: GatewayEventHandler = async (
   gateway: Gateway,
-  d: any
+  d: 
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
   // Weird case, shouldn't happen

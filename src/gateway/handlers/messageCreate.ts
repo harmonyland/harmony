@@ -26,7 +26,7 @@ export const messageCreate: GatewayEventHandler = async (
     await guild.members.set(d.author.id, d.member)
     member = await guild.members.get(d.author.id)
   }
-  const message = new Message(gateway.client, d, channel as any, user)
+  const message = new Message(gateway.client, d, channel, user)
   if (guild !== undefined) message.guild = guild
   await message.mentions.fromPayload(d)
   message.member = member
