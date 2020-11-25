@@ -12,6 +12,7 @@ import {
 } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from "../types/presence.ts"
+// import { Application } from "../../mod.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -102,6 +103,9 @@ export class Client extends EventEmitter {
   debug (tag: string, msg: string): void {
     this.emit('debug', `[${tag}] ${msg}`)
   }
+
+  // TODO(DjDeveloperr): Implement this
+  // fetchApplication(): Promise<Application>
 
   /**
    * This function is used for connect to discord.

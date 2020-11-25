@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { GuildFeatures, GuildPayload } from '../types/guild.ts'
+import { GuildFeatures, GuildIntegrationPayload, GuildPayload, IntegrationAccountPayload, IntegrationExpireBehavior } from '../types/guild.ts'
 import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { VoiceState } from './voiceState.ts'
@@ -9,6 +9,9 @@ import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
 import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 import { Member } from "./member.ts"
+import { User } from "./user.ts"
+import { Application } from "./application.ts"
+import { GUILD_INTEGRATIONS } from "../types/endpoint.ts"
 
 export class Guild extends Base {
   id: string
@@ -213,12 +216,55 @@ export class Guild extends Base {
   }
 
   async getEveryoneRole (): Promise<Role> {
-    return (await this.roles.array().then(arr => arr?.sort((b, a) => a.position - b.position)[0]) as any) as Role
+    return (await this.roles.get(this.id) as unknown) as Role
   }
 
   async me(): Promise<Member> {
     const get = await this.members.get(this.client.user?.id as string)
     if (get === undefined) throw new Error('Guild#me is not cached')
     return get
+  }
+
+  async fetchIntegrations(): Promise<GuildIntegration[]> {
+    const raw = await this.client.rest.get(GUILD_INTEGRATIONS(this.id)) as GuildIntegrationPayload[]
+    return raw.map(e => new GuildIntegration(this.client, e))
+  }
+}
+
+export class GuildIntegration extends Base {
+  id: string
+  name: string
+  type: string
+  enabled: boolean
+  syncing?: boolean
+  roleID?: string
+  enableEmoticons?: boolean
+  expireBehaviour?: IntegrationExpireBehavior
+  expireGracePeriod?: number
+  user?: User
+  account: IntegrationAccountPayload
+  syncedAt?: string // Actually a ISO Timestamp, but we parse in constructor'
+  subscriberCount?: number
+  revoked?: boolean
+  application?: Application
+
+  constructor(client: Client, data: GuildIntegrationPayload) {
+    super(client, data)
+
+    this.id = data.id
+    this.name= data.name
+    this.type = data.type
+    this.enabled = data.enabled
+    this.syncing = data.syncing
+    this.roleID = data.role_id
+    this.enableEmoticons = data.enable_emoticons
+    this.expireBehaviour = data.expire_behaviour
+    this.expireGracePeriod = data.expire_grace_period
+    this.user = data.user !== undefined ? new User(client, data.user) : undefined
+    this.account = data.account
+    this.syncedAt = data.synced_at
+    this.subscriberCount = data.subscriber_count
+    this.revoked = data.revoked
+    this.application = data.application !== undefined ? new Application(client, data.application) : undefined
   }
 }
