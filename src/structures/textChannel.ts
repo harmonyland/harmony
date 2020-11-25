@@ -83,7 +83,7 @@ export class TextChannel extends Channel {
       ),
       {
         content: text,
-        embed: option?.embed.toJSON(),
+        embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
         file: option?.file,
         tts: option?.tts,
         allowed_mentions: option?.allowedMention

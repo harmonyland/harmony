@@ -8,11 +8,10 @@ import { UserManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
 import { ChannelsManager } from '../managers/channels.ts'
 import {
-  ActivityGame,
-  ClientActivity,
   ClientPresence
 } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
+import { ActivityGame, ClientActivity } from "../types/presence.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {

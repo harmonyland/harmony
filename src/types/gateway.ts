@@ -191,7 +191,7 @@ export interface GuildIntegrationsUpdatePayload {
   guild_id: string
 }
 
-export interface GuildMemberAddPayload {
+export interface GuildMemberAddPayload extends MemberPayload {
   guild_id: string
 }
 
