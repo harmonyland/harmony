@@ -43,7 +43,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     return result
   }
 
-  async fetch (id: string): Promise<Channel> {
+  async fetch<T = Channel> (id: string): Promise<T> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(CHANNEL(id))
@@ -53,7 +53,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
           if (data.guild_id !== undefined) {
             guild = await this.client.guilds.get(data.guild_id)
           }
-          resolve(getChannelByType(this.client, data as ChannelPayload, guild))
+          resolve((getChannelByType(this.client, data as ChannelPayload, guild) as unknown) as T)
         })
         .catch(e => reject(e))
     })
