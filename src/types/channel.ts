@@ -102,7 +102,7 @@ export interface MessageOption {
   tts?: boolean
   embed?: Embed
   file?: Attachment
-  allowedMention?: {
+  allowedMentions?: {
     parse: 'everyone' | 'users' | 'roles'
     roles: string[]
     users: string[]

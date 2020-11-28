@@ -7,7 +7,7 @@ import { Embed } from './embed.ts'
 import { Guild } from "./guild.ts"
 import { Message } from './message.ts'
 
-type AllMessageOptions = MessageOption | Embed
+export type AllMessageOptions = MessageOption | Embed
 
 export class TextChannel extends Channel {
   lastMessageID?: string
@@ -27,6 +27,12 @@ export class TextChannel extends Channel {
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp
   }
 
+  /**
+   * 
+   * @param text Text content of the Message to send.
+   * @param option Various other Message options.
+   * @param reply Reference to a Message object to reply-to.
+   */
   async send(text?: string | AllMessageOptions, option?: AllMessageOptions, reply?: Message): Promise<Message> {
     if (typeof text === "object") {
       option = text
@@ -44,7 +50,7 @@ export class TextChannel extends Channel {
       embed: option?.embed,
       file: option?.file,
       tts: option?.tts,
-      allowed_mentions: option?.allowedMention
+      allowed_mentions: option?.allowedMentions
     }
 
     if (reply !== undefined) {
@@ -63,6 +69,12 @@ export class TextChannel extends Channel {
     return res
   }
 
+  /**
+   * 
+   * @param message Message to edit. ID or the Message object itself.
+   * @param text New text contents of the Message.
+   * @param option Other options to edit the message.
+   */
   async editMessage(
     message: Message | string,
     text?: string,
@@ -84,9 +96,10 @@ export class TextChannel extends Channel {
       {
         content: text,
         embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
-        file: option?.file,
+        // Cannot upload new files with Message
+        // file: option?.file,
         tts: option?.tts,
-        allowed_mentions: option?.allowedMention
+        allowed_mentions: option?.allowedMentions
       }
     )
 

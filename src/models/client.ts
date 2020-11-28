@@ -12,6 +12,7 @@ import {
 } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from "../types/presence.ts"
+import { ClientEvents } from "../gateway/handlers/index.ts"
 // import { Application } from "../../mod.ts"
 
 /** Some Client Options to modify behaviour */
@@ -33,6 +34,17 @@ export interface ClientOptions {
   /** Time till which Messages are to be cached, in MS. Default is 3600000 */
   messageCacheLifetime?: number
 }
+
+export declare interface Client {
+  on: <U extends string>(
+    event: U, listener: ClientEvents[U]
+  ) => this
+
+  emit: <U extends string>(
+    event: U, ...args: Parameters<ClientEvents[U]>
+  ) => boolean
+}
+
 
 /**
  * Discord Client.

@@ -1,4 +1,3 @@
-import { delay } from '../utils/index.ts'
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Client } from './client.ts'
 import { getBuildInfo } from '../utils/buildInfo.ts'
@@ -45,13 +44,13 @@ export interface RateLimit {
 }
 
 export class RESTManager {
-  client: Client
+  client?: Client
   queues: { [key: string]: QueuedItem[] } = {}
   rateLimits = new Collection<string, RateLimit>()
   globalRateLimit: boolean = false
   processing: boolean = false
 
-  constructor(client: Client) {
+  constructor(client?: Client) {
     this.client = client
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
@@ -125,7 +124,7 @@ export class RESTManager {
     }
 
     if (Object.keys(this.queues).length !== 0) {
-      await delay(1000)
+      // await delay(100)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.processQueue()
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -139,11 +138,12 @@ export class RESTManager {
   ): { [key: string]: any } {
 
     const headers: RequestHeaders = {
-      'Authorization': `Bot ${this.client.token}`,
       'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
     }
 
-    if (this.client.token === undefined) delete headers.Authorization
+    if (this.client !== undefined) headers.Authorization = `Bot ${this.client.token}`
+
+    if (this.client?.token === undefined) delete headers.Authorization
 
     if (method === 'get' || method === 'head' || method === 'delete') body = undefined
 
@@ -166,7 +166,7 @@ export class RESTManager {
       method: method.toUpperCase()
     }
 
-    if (this.client.bot === false) {
+    if (this.client?.bot === false) {
       // This is a selfbot. Use requests similar to Discord Client
       data.headers.authorization = this.client.token as string
       data.headers['accept-language'] = 'en-US'
@@ -259,7 +259,7 @@ export class RESTManager {
 
     if (
       (status >= 200 && status < 400)
-      || status === HttpResponseCode.NoContent 
+      || status === HttpResponseCode.NoContent
       || status === HttpResponseCode.TooManyRequests
     ) return
 
@@ -290,7 +290,8 @@ export class RESTManager {
     url: string,
     body?: unknown,
     maxRetries = 0,
-    bucket?: string | null
+    bucket?: string | null,
+    rawResponse?: boolean,
   ): Promise<any> {
     return await new Promise((resolve, reject) => {
       const onComplete = async (): Promise<undefined | any> => {
@@ -318,7 +319,7 @@ export class RESTManager {
           let urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
 
-          if (this.client.canary === true) {
+          if (this.client?.canary === true) {
             const split = urlToUse.split('//')
             urlToUse = split[0] + '//canary.' + split[1]
           }
@@ -328,7 +329,7 @@ export class RESTManager {
           const response = await fetch(urlToUse, requestData)
           const bucketFromHeaders = this.processHeaders(url, response.headers)
 
-          if (response.status === 204) return resolve(undefined)
+          if (response.status === 204) return resolve(rawResponse === true ? { response, body: null } : undefined)
 
           const json: any = await response.json()
           await this.handleStatusCode(response, json, requestData)
@@ -347,7 +348,7 @@ export class RESTManager {
               bucket: bucketFromHeaders
             }
           }
-          return resolve(json)
+          return resolve(rawResponse === true ? { response, body: json } : json)
         } catch (error) {
           return reject(error)
         }
@@ -375,23 +376,23 @@ export class RESTManager {
     })
   }
 
-  async get(url: string, body?: unknown): Promise<any> {
-    return await this.make('get', url, body)
+  async get(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+    return await this.make('get', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async post(url: string, body?: unknown): Promise<any> {
-    return await this.make('post', url, body)
+  async post(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+    return await this.make('post', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async delete(url: string, body?: unknown): Promise<any> {
-    return await this.make('delete', url, body)
+  async delete(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+    return await this.make('delete', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async patch(url: string, body?: unknown): Promise<any> {
-    return await this.make('patch', url, body)
+  async patch(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+    return await this.make('patch', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async put(url: string, body?: unknown): Promise<any> {
-    return await this.make('put', url, body)
+  async put(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+    return await this.make('put', url, body, maxRetries, bucket, rawResponse)
   }
 }
