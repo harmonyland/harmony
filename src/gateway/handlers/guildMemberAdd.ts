@@ -12,6 +12,6 @@ export const guildMemberAdd: GatewayEventHandler = async (
   if (guild === undefined) return
 
   await guild.members.set(d.user.id, d)
-  const member = await guild.members.get(d.user.id) as unknown
-  gateway.client.emit('guildMemberAdd', member as Member)
+  const member = await guild.members.get(d.user.id) as Member
+  gateway.client.emit('guildMemberAdd', member)
 }
