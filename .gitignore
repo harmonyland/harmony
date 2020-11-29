@@ -113,3 +113,6 @@ src/test/config.ts
 
 # macOS is shit xD
 **/.DS_Store
+
+# denon
+scripts.json

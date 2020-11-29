@@ -1,30 +1,31 @@
-import { GatewayEventHandler } from '../index.ts'
-import { GatewayEvents } from '../../types/gateway.ts'
-import { channelCreate } from './channelCreate.ts'
-import { channelDelete } from './channelDelete.ts'
-import { channelUpdate } from './channelUpdate.ts'
-import { channelPinsUpdate } from './channelPinsUpdate.ts'
-import { guildCreate } from './guildCreate.ts'
-import { guildDelte as guildDelete } from './guildDelete.ts'
-import { guildUpdate } from './guildUpdate.ts'
-import { guildBanAdd } from './guildBanAdd.ts'
-import { ready } from './ready.ts'
-import { guildBanRemove } from './guildBanRemove.ts'
-import { messageCreate } from './messageCreate.ts'
-import { resume } from './resume.ts'
-import { reconnect } from './reconnect.ts'
-import { messageDelete } from "./messageDelete.ts"
-import { messageUpdate } from "./messageUpdate.ts"
-import { guildEmojiUpdate } from "./guildEmojiUpdate.ts"
-import { guildMemberAdd } from "./guildMemberAdd.ts"
-import { guildMemberRemove } from "./guildMemberRemove.ts"
-import { guildMemberUpdate } from "./guildMemberUpdate.ts"
-import { guildRoleCreate } from "./guildRoleCreate.ts"
-import { guildRoleDelete } from "./guildRoleDelete.ts"
-import { guildRoleUpdate } from "./guildRoleUpdate.ts"
+import { GatewayEventHandler } from "../index.ts";
+import { GatewayEvents } from "../../types/gateway.ts";
+import { channelCreate } from "./channelCreate.ts";
+import { channelDelete } from "./channelDelete.ts";
+import { channelUpdate } from "./channelUpdate.ts";
+import { channelPinsUpdate } from "./channelPinsUpdate.ts";
+import { guildCreate } from "./guildCreate.ts";
+import { guildDelte as guildDelete } from "./guildDelete.ts";
+import { guildUpdate } from "./guildUpdate.ts";
+import { guildBanAdd } from "./guildBanAdd.ts";
+import { ready } from "./ready.ts";
+import { guildBanRemove } from "./guildBanRemove.ts";
+import { messageCreate } from "./messageCreate.ts";
+import { resume } from "./resume.ts";
+import { reconnect } from "./reconnect.ts";
+import { messageDelete } from "./messageDelete.ts";
+import { messageUpdate } from "./messageUpdate.ts";
+import { guildEmojiUpdate } from "./guildEmojiUpdate.ts";
+import { guildMemberAdd } from "./guildMemberAdd.ts";
+import { guildMemberRemove } from "./guildMemberRemove.ts";
+import { guildMemberUpdate } from "./guildMemberUpdate.ts";
+import { guildRoleCreate } from "./guildRoleCreate.ts";
+import { guildRoleDelete } from "./guildRoleDelete.ts";
+import { guildRoleUpdate } from "./guildRoleUpdate.ts";
+import { inviteCreate } from "./inviteCreate.ts";
 
 export const gatewayHandlers: {
-  [eventCode in GatewayEvents]: GatewayEventHandler | undefined
+  [eventCode in GatewayEvents]: GatewayEventHandler | undefined;
 } = {
   READY: ready,
   RECONNECT: reconnect,
@@ -47,7 +48,7 @@ export const gatewayHandlers: {
   GUILD_ROLE_CREATE: guildRoleCreate,
   GUILD_ROLE_UPDATE: guildRoleUpdate,
   GUILD_ROLE_DELETE: guildRoleDelete,
-  INVITE_CREATE: undefined,
+  INVITE_CREATE: inviteCreate,
   INVITE_DELETE: undefined,
   MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: messageUpdate,
@@ -61,5 +62,5 @@ export const gatewayHandlers: {
   TYPING_START: undefined,
   USER_UPDATE: undefined,
   VOICE_SERVER_UPDATE: undefined,
-  WEBHOOKS_UPDATE: undefined
-}
+  WEBHOOKS_UPDATE: undefined,
+};

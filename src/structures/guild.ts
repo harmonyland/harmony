@@ -9,6 +9,7 @@ import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
 import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 import { Member } from "./member.ts"
+import { InviteManager } from "../managers/invites.ts"
 
 export class Guild extends Base {
   id: string
@@ -30,6 +31,7 @@ export class Guild extends Base {
   explicitContentFilter?: string
   roles: RolesManager
   emojis: GuildEmojisManager
+  invites: InviteManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -69,6 +71,7 @@ export class Guild extends Base {
     )
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
+    this.invites = new InviteManager(this.client, this)
 
     if (!this.unavailable) {
       this.name = data.name

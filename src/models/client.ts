@@ -7,6 +7,7 @@ import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
 import { UserManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
 import { ChannelsManager } from '../managers/channels.ts'
+import {  InviteManager} from "../managers/invites.ts"
 import {
   ClientPresence
 } from '../structures/presence.ts'

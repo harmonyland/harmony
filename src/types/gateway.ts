@@ -2,6 +2,7 @@
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
+import { InvitePayload } from "./invite.ts"
 import {
   ActivityGame,
   ActivityPayload,
@@ -245,7 +246,13 @@ export interface InviteCreatePayload {
   target_user_type?: number
   temporary: boolean
   uses: number
+  payload: InvitePayload
 }
+
+// export interface InviteCreatePayload {
+//   guild_id?: string
+//   invite: InvitePayload
+// }
 
 export interface InviteDeletePayload {
   channel_id: string
