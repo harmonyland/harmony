@@ -4,6 +4,7 @@ import { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
+import { Extension } from "./extensions.ts"
 
 export interface CommandContext {
   /** The Client object */
@@ -35,6 +36,8 @@ export class Command {
   description?: string
   /** Array of Aliases of Command, or only string */
   aliases?: string | string[]
+  /** Extension (Parent) of the Command */
+  extension?: Extension
   /** Usage of Command, only Argument Names */
   usage?: string | string[]
   /** Usage Example of Command, only Arguments (without Prefix and Name) */
@@ -43,6 +46,16 @@ export class Command {
   args?: number | boolean
   /** Permission(s) required for using Command */
   permissions?: string | string[]
+  /** Permission(s) bot will need in order to execute Command */
+  botPermissions?: string | string[]
+  /** Role(s) user will require in order to use Command. List or one of ID or name */
+  roles?: string | string[]
+  /** Whitelisted Guilds. Only these Guild(s) can execute Command. (List or one of IDs) */
+  whitelistedGuilds?: string | string[]
+  /** Whitelisted Channels. Command can be executed only in these channels. (List or one of IDs) */
+  whitelistedChannels?: string | string[]
+  /** Whitelisted Users. Command can be executed only by these Users (List or one of IDs) */
+  whitelistedUsers?: string | string[]
   /** Whether the Command can only be used in Guild (if allowed in DMs) */
   guildOnly?: boolean
   /** Whether the Command can only be used in Bot's DMs (if allowed) */
@@ -50,19 +63,32 @@ export class Command {
   /** Whether the Command can only be used by Bot Owners */
   ownerOnly?: boolean
 
-  execute (ctx?: CommandContext): any {}
+  /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
+  beforeExecute(ctx: CommandContext): boolean | Promise<boolean> { return true }
+  /** Actual command code, which is executed when all checks have passed. */
+  execute(ctx: CommandContext): any { }
+  /** Method executed after executing command, passes on CommandContext and the value returned by execute too. (optional) */
+  afterExecute(ctx: CommandContext, executeResult: any): any { }
+
+  toString(): string {
+    return `Command: ${this.name}${this.extension !== undefined ? ` [${this.extension.name}]` : ''}`
+  }
 }
 
 export class CommandsManager {
   client: CommandClient
   list: Collection<string, Command> = new Collection()
+  disabled: Set<string> = new Set()
 
-  constructor (client: CommandClient) {
+  constructor(client: CommandClient) {
     this.client = client
   }
 
+  /** Number of loaded Commands */
+  get count(): number { return this.list.size }
+
   /** Find a Command by name/alias */
-  find (search: string): Command | undefined {
+  find(search: string): Command | undefined {
     if (this.client.caseSensitive === false) search = search.toLowerCase()
     return this.list.find((cmd: Command): boolean => {
       const name =
@@ -79,8 +105,16 @@ export class CommandsManager {
     })
   }
 
+  /** Fetch a Command including disable checks */
+  fetch(name: string, bypassDisable?: boolean): Command | undefined {
+    const cmd = this.find(name)
+    if (cmd === undefined) return
+    if (this.isDisabled(cmd) && bypassDisable !== true) return
+    return cmd
+  }
+
   /** Check whether a Command exists or not */
-  exists (search: Command | string): boolean {
+  exists(search: Command | string): boolean {
     let exists = false
     if (typeof search === 'string') return this.find(search) !== undefined
     else {
@@ -97,19 +131,37 @@ export class CommandsManager {
   }
 
   /** Add a Command */
-  add (cmd: Command | typeof Command): boolean {
+  add(cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
     if (!(cmd instanceof Command)) cmd = new cmd()
-    if (this.exists(cmd)) return false
+    if (this.exists(cmd)) throw new Error(`Failed to add Command '${cmd.toString()}' with name/alias already exists.`)
     this.list.set(cmd.name, cmd)
     return true
   }
 
   /** Delete a Command */
-  delete (cmd: string | Command): boolean {
+  delete(cmd: string | Command): boolean {
     const find = typeof cmd === 'string' ? this.find(cmd) : cmd
     if (find === undefined) return false
     else return this.list.delete(find.name)
+  }
+
+  /** Check whether a Command is disabled or not */
+  isDisabled(name: string | Command): boolean {
+    const cmd = typeof name === "string" ? this.find(name) : name
+    if (cmd === undefined) return false
+    const exists = this.exists(name)
+    if (!exists) return false
+    return this.disabled.has(cmd.name)
+  }
+
+  /** Disable a Command */
+  disable(name: string | Command): boolean {
+    const cmd = typeof name === "string" ? this.find(name) : name
+    if (cmd === undefined) return false
+    if (this.isDisabled(cmd)) return false
+    this.disabled.add(cmd.name)
+    return true
   }
 }
 

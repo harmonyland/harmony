@@ -7,13 +7,11 @@ import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
 import { UserManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
 import { ChannelsManager } from '../managers/channels.ts'
-import { MessagesManager } from '../managers/messages.ts'
 import {
-  ActivityGame,
-  ClientActivity,
   ClientPresence
 } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
+import { ActivityGame, ClientActivity } from "../types/presence.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -31,6 +29,8 @@ export interface ClientOptions {
   bot?: boolean
   /** Force all requests to Canary API */
   canary?: boolean
+  /** Time till which Messages are to be cached, in MS. Default is 3600000 */
+  messageCacheLifetime?: number
 }
 
 /**
@@ -53,11 +53,12 @@ export class Client extends EventEmitter {
   intents?: GatewayIntents[]
   /** Whether to force new session or not */
   forceNewSession?: boolean
+  /** Time till messages to stay cached, in MS. */
+  messageCacheLifetime: number = 3600000
 
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
-  messages: MessagesManager = new MessagesManager(this)
   emojis: EmojisManager = new EmojisManager(this)
   
   /** Whether this client will login as bot user or not */
@@ -80,6 +81,7 @@ export class Client extends EventEmitter {
           : new ClientPresence(options.presence)
     if (options.bot === false) this.bot = false
     if (options.canary === true) this.canary = true
+    if (options.messageCacheLifetime !== undefined) this.messageCacheLifetime = options.messageCacheLifetime
   }
 
   /** Set Cache Adapter */

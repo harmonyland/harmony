@@ -1,9 +1,13 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { StatusType } from '../../mod.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
-import { ActivityPayload } from './presence.ts'
+import {
+  ActivityGame,
+  ActivityPayload,
+  StatusType,
+  ClientStatus
+} from './presence.ts'
 import { RolePayload } from './role.ts'
 import { UserPayload } from './user.ts'
 
@@ -107,23 +111,17 @@ export interface IdentityPayload {
   compress?: boolean
   large_threshold?: number
   shard?: number[]
-  presence?: UpdateStatus
+  presence?: StatusUpdatePayload
   guildSubscriptions?: boolean
-  intents: number
-}
-
-export enum UpdateStatus {
-  online = 'online',
-  dnd = 'dnd',
-  afk = 'idle',
-  invisible = 'invisible',
-  offline = 'offline'
+  intents?: number
 }
 
 export interface IdentityConnection {
   $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'harmony'
-  $device: 'harmony'
+  $browser: 'harmony' | 'Firefox'
+  $device: 'harmony' | ''
+  $referrer?: ''
+  $referring_domain?: ''
 }
 
 export interface Resume {
@@ -159,7 +157,7 @@ export interface Hello {
   heartbeat_interval: number
 }
 
-export interface ReadyEvent {
+export interface Ready {
   v: number
   user: UserPayload
   privateChannels: []
@@ -186,14 +184,14 @@ export interface GuildBanRemovePayload {
 
 export interface GuildEmojiUpdatePayload {
   guild_id: string
-  emojis: []
+  emojis: EmojiPayload[]
 }
 
 export interface GuildIntegrationsUpdatePayload {
   guild_id: string
 }
 
-export interface GuildMemberAddPayload {
+export interface GuildMemberAddPayload extends MemberPayload {
   guild_id: string
 }
 
@@ -294,7 +292,14 @@ export interface PresenceUpdatePayload {
   guild_id: string
   status: StatusType
   activities: ActivityPayload[]
-  client_status: UpdateStatus[]
+  client_status: ClientStatus
+}
+
+export interface StatusUpdatePayload {
+  status: StatusType
+  activities: ActivityGame[] | null
+  since: number | null
+  afk: boolean
 }
 
 export interface TypeStart {

@@ -33,7 +33,7 @@ export const getBuildInfo = (
   if (Deno.build.os === 'darwin') {
     os = 'MacOS'
     os_version = '10.15.6'
-    browser = 'Safari'
+    browser = 'Firefox'
     browser_version = '14.0.1'
     browser_user_agent =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.1 Safari/605.1.15'

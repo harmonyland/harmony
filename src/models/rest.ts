@@ -24,14 +24,18 @@ export interface RequestHeaders {
   [name: string]: string
 }
 
+export class DiscordAPIError extends Error {
+  name = 'DiscordAPIError'
+}
+
 export interface QueuedItem {
+  bucket?: string | null
+  url: string
   onComplete: () => Promise<{
     rateLimited: any
     bucket?: string | null
     before: boolean
   } | undefined>
-  bucket?: string | null
-  url: string
 }
 
 export interface RateLimit {
@@ -93,10 +97,8 @@ export class RESTManager {
               request.bucket
             )
             if (rateLimitResetIn !== false) {
-              // This request is still rate limited read to queue
               this.queue(request)
             } else {
-              // This request is not rate limited so it should be run
               const result = await request.onComplete()
               if (result?.rateLimited !== undefined) {
                 this.queue({
@@ -107,10 +109,8 @@ export class RESTManager {
             }
           } else {
             if (rateLimitedURLResetIn !== false) {
-              // This URL is rate limited readd to queue
               this.queue(request)
             } else {
-              // This request has no bucket id so it should be processed
               const result = await request.onComplete()
               if (result?.rateLimited !== undefined) {
                 this.queue({
@@ -253,17 +253,25 @@ export class RESTManager {
   }
 
   async handleStatusCode(
-    response: Response
+    response: Response, body: any, data: { [key: string]: any }
   ): Promise<undefined> {
     const status = response.status
 
-    if ((status >= 200 && status < 400) || status === HttpResponseCode.TooManyRequests) return
+    if (
+      (status >= 200 && status < 400)
+      || status === HttpResponseCode.NoContent 
+      || status === HttpResponseCode.TooManyRequests
+    ) return
 
-    const body = await response.json()
-    const text = Deno.inspect(body.errors)
+    let text: undefined | string = Deno.inspect(body.errors === undefined ? body : body.errors)
+    if (text === 'undefined') text = undefined
 
     if (status === HttpResponseCode.Unauthorized)
-      throw new Error(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
+      throw new DiscordAPIError(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
+
+    // At this point we know it is error
+    let error = { url: response.url, status, method: data.method, body: data.body }
+    if (body !== undefined) error = Object.assign(error, body)
 
     if ([
       HttpResponseCode.BadRequest,
@@ -271,10 +279,10 @@ export class RESTManager {
       HttpResponseCode.Forbidden,
       HttpResponseCode.MethodNotAllowed
     ].includes(status)) {
-      throw new Error(`Request - Client Error. Code: ${status}\n${text}`)
+      throw new DiscordAPIError(Deno.inspect(error))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
-      throw new Error(`Request - Server Error. Code: ${status}\n${text}`)
-    } else throw new Error('Request - Unknown Error')
+      throw new DiscordAPIError(Deno.inspect(error))
+    } else throw new DiscordAPIError('Request - Unknown Error')
   }
 
   async make(
@@ -319,12 +327,12 @@ export class RESTManager {
 
           const response = await fetch(urlToUse, requestData)
           const bucketFromHeaders = this.processHeaders(url, response.headers)
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          this.handleStatusCode(response)
 
           if (response.status === 204) return resolve(undefined)
 
-          const json = await response.json()
+          const json: any = await response.json()
+          await this.handleStatusCode(response, json, requestData)
+
           if (
             json.retry_after !== undefined ||
             json.message === 'You are being rate limited.'

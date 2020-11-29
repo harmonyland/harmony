@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { Channel } from '../structures/channel.ts'
 import { Guild } from '../structures/guild.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
-import { GuildTextChannel } from '../structures/guildTextChannel.ts'
+import { GuildTextChannel } from '../structures/textChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import {
   GuildChannelCategoryPayload,

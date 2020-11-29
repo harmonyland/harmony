@@ -1,6 +1,8 @@
-import { Embed, Message } from '../../mod.ts'
+import { Message } from "../../mod.ts"
+import { awaitSync } from "../utils/mixedPromise.ts"
 import { Client, ClientOptions } from './client.ts'
 import { CommandContext, CommandsManager, parseCommand } from './command.ts'
+import { ExtensionsManager } from "./extensions.ts"
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 
@@ -9,6 +11,9 @@ export interface CommandClientOptions extends ClientOptions {
   mentionPrefix?: boolean
   getGuildPrefix?: (guildID: string) => PrefixReturnType
   getUserPrefix?: (userID: string) => PrefixReturnType
+  isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  isUserBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   spacesAfterPrefix?: boolean
   betterArgs?: boolean
   owners?: string[]
@@ -17,48 +22,24 @@ export interface CommandClientOptions extends ClientOptions {
   caseSensitive?: boolean
 }
 
-type CommandText = string | Embed
-
-export interface CommandTexts {
-  GUILD_ONLY?: CommandText
-  OWNER_ONLY?: CommandText
-  DMS_ONLY?: CommandText
-  ERROR?: CommandText
-}
-
-export const DefaultCommandTexts: CommandTexts = {
-  GUILD_ONLY: 'This command can only be used in a Server!',
-  OWNER_ONLY: 'This command can only be used by Bot Owners!',
-  DMS_ONLY: "This command can only be used in Bot's DMs!",
-  ERROR: 'An error occured while executing command!'
-}
-
-interface Replaces {
-  [name: string]: string
-}
-
-export const massReplace = (text: string, replaces: Replaces): string => {
-  Object.entries(replaces).forEach(replace => {
-    text = text.replace(new RegExp(`{{${replace[0]}}}`, 'g'), replace[1])
-  })
-  return text
-}
-
 export class CommandClient extends Client implements CommandClientOptions {
   prefix: string | string[]
   mentionPrefix: boolean
   getGuildPrefix: (guildID: string) => PrefixReturnType
   getUserPrefix: (userID: string) => PrefixReturnType
+  isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>
+  isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>
+  isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>
   spacesAfterPrefix: boolean
   betterArgs: boolean
   owners: string[]
   allowBots: boolean
   allowDMs: boolean
   caseSensitive: boolean
+  extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
-  texts: CommandTexts = DefaultCommandTexts
 
-  constructor (options: CommandClientOptions) {
+  constructor(options: CommandClientOptions) {
     super(options)
     this.prefix = options.prefix
     this.mentionPrefix =
@@ -71,6 +52,18 @@ export class CommandClient extends Client implements CommandClientOptions {
       options.getUserPrefix === undefined
         ? (id: string) => this.prefix
         : options.getUserPrefix
+    this.isUserBlacklisted =
+      options.isUserBlacklisted === undefined
+        ? (id: string) => false
+        : options.isUserBlacklisted
+    this.isGuildBlacklisted =
+      options.isGuildBlacklisted === undefined
+        ? (id: string) => false
+        : options.isGuildBlacklisted
+    this.isChannelBlacklisted =
+      options.isChannelBlacklisted === undefined
+        ? (id: string) => false
+        : options.isChannelBlacklisted
     this.spacesAfterPrefix =
       options.spacesAfterPrefix === undefined
         ? false
@@ -89,59 +82,60 @@ export class CommandClient extends Client implements CommandClientOptions {
     )
   }
 
-  async processMessage (msg: Message): Promise<any> {
+  async processMessage(msg: Message): Promise<any> {
     if (!this.allowBots && msg.author.bot === true) return
+
+    const isUserBlacklisted = await awaitSync(this.isUserBlacklisted(msg.author.id))
+    if (isUserBlacklisted === true) return
+
+    const isChannelBlacklisted = await awaitSync(this.isChannelBlacklisted(msg.channel.id))
+    if (isChannelBlacklisted === true) return
+
+    if (msg.guild !== undefined) {
+      const isGuildBlacklisted = await awaitSync(this.isGuildBlacklisted(msg.guild.id))
+      if (isGuildBlacklisted === true) return
+    }
 
     let prefix: string | string[] = this.prefix
 
     if (msg.guild !== undefined) {
-      let guildPrefix = this.getGuildPrefix(msg.guild.id)
-      if (guildPrefix instanceof Promise) guildPrefix = await guildPrefix
-      prefix = guildPrefix
+      prefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
     } else {
-      let userPrefix = this.getUserPrefix(msg.author.id)
-      if (userPrefix instanceof Promise) userPrefix = await userPrefix
-      prefix = userPrefix
+      prefix = await awaitSync(this.getUserPrefix(msg.author.id))
     }
 
+    let mentionPrefix = false
+
     if (typeof prefix === 'string') {
-      if (msg.content.startsWith(prefix) === false) return
+      if (msg.content.startsWith(prefix) === false) {
+        if (this.mentionPrefix) mentionPrefix = true
+        else return
+      }
     } else {
       const usedPrefix = prefix.find(v => msg.content.startsWith(v))
-      if (usedPrefix === undefined) return
+      if (usedPrefix === undefined) {
+        if (this.mentionPrefix) mentionPrefix = true
+        else return
+      }
       else prefix = usedPrefix
     }
+
+    if (mentionPrefix) {
+      if (msg.content.startsWith(this.user?.mention as string) === true) prefix = this.user?.mention as string
+      else if (msg.content.startsWith(this.user?.nickMention as string) === true) prefix = this.user?.nickMention as string
+      else return
+    }
+
+    if (typeof prefix !== 'string') return
 
     const parsed = parseCommand(this, msg, prefix)
     const command = this.commands.find(parsed.name)
 
     if (command === undefined) return
 
-    const baseReplaces: Replaces = {
-      command: command.name,
-      nameUsed: parsed.name,
-      prefix,
-      username: msg.author.username,
-      tag: msg.author.tag,
-      mention: msg.author.mention,
-      id: msg.author.id
-    }
-
-    if (command.guildOnly === true && msg.guild === undefined) {
-      if (this.texts.GUILD_ONLY !== undefined)
-        return this.sendProcessedText(msg, this.texts.GUILD_ONLY, baseReplaces)
-      return
-    }
-    if (command.dmOnly === true && msg.guild !== undefined) {
-      if (this.texts.DMS_ONLY !== undefined)
-        return this.sendProcessedText(msg, this.texts.DMS_ONLY, baseReplaces)
-      return
-    }
-    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) {
-      if (this.texts.OWNER_ONLY !== undefined)
-        return this.sendProcessedText(msg, this.texts.OWNER_ONLY, baseReplaces)
-      return
-    }
+    if (command.whitelistedGuilds !== undefined && msg.guild !== undefined && command.whitelistedGuilds.includes(msg.guild.id) === false) return;
+    if (command.whitelistedChannels !== undefined && command.whitelistedChannels.includes(msg.channel.id) === false) return;
+    if (command.whitelistedUsers !== undefined && command.whitelistedUsers.includes(msg.author.id) === false) return;
 
     const ctx: CommandContext = {
       client: this,
@@ -156,34 +150,49 @@ export class CommandClient extends Client implements CommandClientOptions {
       guild: msg.guild
     }
 
-    try {
-      this.emit('commandUsed', { context: ctx })
-      command.execute(ctx)
-    } catch (e) {
-      if (this.texts.ERROR !== undefined)
-        return this.sendProcessedText(
-          msg,
-          this.texts.ERROR,
-          Object.assign(baseReplaces, { error: e.message })
-        )
-      this.emit('commandError', { command, parsed, error: e })
-    }
-  }
+    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) return this.emit('commandOwnerOnly', ctx, command)
+    if (command.guildOnly === true && msg.guild === undefined) return this.emit('commandGuildOnly', ctx, command)
+    if (command.dmOnly === true && msg.guild !== undefined) return this.emit('commandDmOnly', ctx, command)
+    
+    if (command.botPermissions !== undefined && msg.guild !== undefined) {
+      // TODO: Check Overwrites too
+      const me = await msg.guild.me()
+      const missing: string[] = []
+      
+      for (const perm of command.botPermissions) {
+        if (me.permissions.has(perm) === false) missing.push(perm)
+      }
 
-  sendProcessedText (msg: Message, text: CommandText, replaces: Replaces): any {
-    if (typeof text === 'string') {
-      text = massReplace(text, replaces)
-      return msg.channel.send(text)
-    } else {
-      if (text.description !== undefined)
-        text.description = massReplace(text.description, replaces)
-      if (text.title !== undefined)
-        text.description = massReplace(text.title, replaces)
-      if (text.author?.name !== undefined)
-        text.description = massReplace(text.author.name, replaces)
-      if (text.footer?.text !== undefined)
-        text.description = massReplace(text.footer.text, replaces)
-      return msg.channel.send(text)
+      if (missing.length !== 0) return this.emit('commandBotMissingPermissions', ctx, command, missing)
+    }
+
+    if (command.permissions !== undefined && msg.guild !== undefined) {
+      const missing: string[] = []
+      let perms: string[] = []
+      if (typeof command.permissions === 'string') perms = [command.permissions]
+      else perms = command.permissions
+      for (const perm of perms) {
+        const has = msg.member?.permissions.has(perm)
+        if (has !== true) missing.push(perm)
+      } 
+      if (missing.length !== 0) return this.emit('commandMissingPermissions', command, missing, ctx)
+    }
+
+    if (command.args !== undefined) {
+      if (typeof command.args === 'boolean' && parsed.args.length === 0) return this.emit('commandMissingArgs', ctx, command)
+      else if (typeof command.args === 'number' && parsed.args.length < command.args) this.emit('commandMissingArgs', ctx, command) 
+    }
+
+    try {
+      this.emit('commandUsed', ctx, command)
+
+      const beforeExecute = await awaitSync(command.beforeExecute(ctx))
+      if (beforeExecute === false) return
+
+      const result = await awaitSync(command.execute(ctx))
+      command.afterExecute(ctx, result)
+    } catch (e) {
+      this.emit('commandError', command, ctx, e)
     }
   }
 }

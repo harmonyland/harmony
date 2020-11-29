@@ -1,32 +1,33 @@
+import { MessagesManager } from "../../mod.ts"
 import { Client } from '../models/client.ts'
-import { MessageOption, TextChannelPayload } from '../types/channel.ts'
+import { GuildTextChannelPayload, MessageOption, MessageReference, Overwrite, TextChannelPayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
+import { Guild } from "./guild.ts"
 import { Message } from './message.ts'
-import { MessageMentions } from './messageMentions.ts'
 
 type AllMessageOptions = MessageOption | Embed
 
 export class TextChannel extends Channel {
   lastMessageID?: string
   lastPinTimestamp?: string
+  messages: MessagesManager
 
-  constructor (client: Client, data: TextChannelPayload) {
+  constructor(client: Client, data: TextChannelPayload) {
     super(client, data)
+    this.messages = new MessagesManager(this.client, this)
     this.lastMessageID = data.last_message_id
     this.lastPinTimestamp = data.last_pin_timestamp
-    // TODO: Cache in Gateway Event Code
-    // cache.set('textchannel', this.id, this)
   }
 
-  protected readFromData (data: TextChannelPayload): void {
+  protected readFromData(data: TextChannelPayload): void {
     super.readFromData(data)
     this.lastMessageID = data.last_message_id ?? this.lastMessageID
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp
   }
 
-  async send (text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
+  async send(text?: string | AllMessageOptions, option?: AllMessageOptions, reply?: Message): Promise<Message> {
     if (typeof text === "object") {
       option = text
       text = undefined
@@ -37,19 +38,32 @@ export class TextChannel extends Channel {
     if (option instanceof Embed) option = {
       embed: option
     }
-    
-    const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), {
-        content: text,
-        embed: option?.embed,
-        file: option?.file,
-        tts: option?.tts,
-        allowed_mentions: option?.allowedMention
-    })
 
-    return new Message(this.client, resp as any, this, this.client.user as any, new MessageMentions())
+    const payload: any = {
+      content: text,
+      embed: option?.embed,
+      file: option?.file,
+      tts: option?.tts,
+      allowed_mentions: option?.allowedMention
+    }
+
+    if (reply !== undefined) {
+      const reference: MessageReference = {
+        message_id: reply.id,
+        channel_id: reply.channel.id,
+        guild_id: reply.guild?.id,
+      }
+      payload.message_reference = reference
+    }
+
+    const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), payload)
+
+    const res = new Message(this.client, resp, this, this.client.user as any)
+    await res.mentions.fromPayload(resp)
+    return res
   }
 
-  async edit (
+  async editMessage(
     message: Message | string,
     text?: string,
     option?: MessageOption
@@ -69,16 +83,61 @@ export class TextChannel extends Channel {
       ),
       {
         content: text,
-        embed: option?.embed.toJSON(),
+        embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
         file: option?.file,
         tts: option?.tts,
         allowed_mentions: option?.allowedMention
       }
     )
 
-    // TODO: Actually construct this object
-    const mentions = new MessageMentions()
+    const res = new Message(this.client, newMsg, this, this.client.user)
+    await res.mentions.fromPayload(newMsg)
+    return res
+  }
+}
 
-    return new Message(this.client, newMsg, this, this.client.user, mentions)
+export class GuildTextChannel extends TextChannel {
+  guildID: string
+  name: string
+  position: number
+  permissionOverwrites: Overwrite[]
+  nsfw: boolean
+  parentID?: string
+  rateLimit: number
+  topic?: string
+  guild: Guild
+
+  get mention(): string {
+    return `<#${this.id}>`
+  }
+
+  toString(): string {
+    return this.mention
+  }
+
+  constructor(client: Client, data: GuildTextChannelPayload, guild: Guild) {
+    super(client, data)
+    this.guildID = data.guild_id
+    this.name = data.name
+    this.guild = guild
+    this.position = data.position
+    this.permissionOverwrites = data.permission_overwrites
+    this.nsfw = data.nsfw
+    this.parentID = data.parent_id
+    this.topic = data.topic
+    this.rateLimit = data.rate_limit_per_user
+  }
+
+  protected readFromData(data: GuildTextChannelPayload): void {
+    super.readFromData(data)
+    this.guildID = data.guild_id ?? this.guildID
+    this.name = data.name ?? this.name
+    this.position = data.position ?? this.position
+    this.permissionOverwrites =
+      data.permission_overwrites ?? this.permissionOverwrites
+    this.nsfw = data.nsfw ?? this.nsfw
+    this.parentID = data.parent_id ?? this.parentID
+    this.topic = data.topic ?? this.topic
+    this.rateLimit = data.rate_limit_per_user ?? this.rateLimit
   }
 }

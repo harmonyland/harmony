@@ -55,7 +55,7 @@ client.on('messageCreate', (msg: Message): void => {
 })
 
 // Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.Presence, Intents.GuildMembers)
+// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
 client.connect('super secret token comes here', Intents.All)
 ```
 
@@ -84,7 +84,7 @@ class PingCommand extends Command {
 client.commands.add(PingCommand)
 
 // Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.Presence, Intents.GuildMembers)
+// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
 client.connect('super secret token comes here', Intents.All)
 ```
 
