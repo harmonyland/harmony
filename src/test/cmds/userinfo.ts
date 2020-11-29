@@ -1,20 +1,23 @@
-import { Command, Member, CommandContext, Embed } from '../../../mod.ts'
+import { Command, CommandContext, Embed, Member } from "../../../mod.ts";
 
 export default class UserinfoCommand extends Command {
-    name = "userinfo"
-    guildOnly = true
-    aliases = [ 'u', 'user' ]
+  name = "userinfo";
+  guildOnly = true;
+  aliases = ["u", "user"];
 
-    async execute(ctx: CommandContext): Promise<void> {
-        const member: Member = ctx.message.member as any
-        const roles = await member.roles.array()
-        const embed = new Embed()
-        .setTitle(`User Info`)
-        .setAuthor({ name: member.user.tag })
-        .addField("ID", member.id)
-        .addField("Roles", roles.map(r => r.name).join(", "))
-        .addField('Permissions', JSON.stringify(member.permissions.has('ADMINISTRATOR')))
-        .setColor(0xff00ff)
-        ctx.channel.send(embed)
-    }
+  async execute(ctx: CommandContext): Promise<void> {
+    const member: Member = ctx.message.member as any;
+    const roles = await member.roles.array();
+    const embed = new Embed()
+      .setTitle(`User Info`)
+      .setAuthor({ name: member.user.tag })
+      .addField("ID", member.id)
+      .addField("Roles", roles.map((r) => r.name).join(", "))
+      .addField(
+        "Permissions",
+        JSON.stringify(member.permissions.has("ADMINISTRATOR")),
+      )
+      .setColor(0xff00ff);
+    ctx.channel.send(embed);
+  }
 }

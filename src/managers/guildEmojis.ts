@@ -1,91 +1,98 @@
-import { Client } from '../models/client.ts'
-import { Emoji } from '../structures/emoji.ts'
-import { Guild } from '../structures/guild.ts'
-import { Role } from '../structures/role.ts'
-import { EmojiPayload } from '../types/emoji.ts'
-import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from '../types/endpoint.ts'
-import { BaseChildManager } from './baseChild.ts'
-import { EmojisManager } from './emojis.ts'
-import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
+import { Client } from "../models/client.ts";
+import { Emoji } from "../structures/emoji.ts";
+import { Guild } from "../structures/guild.ts";
+import { Role } from "../structures/role.ts";
+import { EmojiPayload } from "../types/emoji.ts";
+import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from "../types/endpoint.ts";
+import { BaseChildManager } from "./baseChild.ts";
+import { EmojisManager } from "./emojis.ts";
+import { fetchAuto } from "https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts";
 
 export class GuildEmojisManager extends BaseChildManager<
   EmojiPayload,
   Emoji
-  > {
-  guild: Guild
+> {
+  guild: Guild;
 
   constructor(client: Client, parent: EmojisManager, guild: Guild) {
-    super(client, parent as any)
-    this.guild = guild
+    super(client, parent as any);
+    this.guild = guild;
   }
 
   async get(id: string): Promise<Emoji | undefined> {
-    const res = await this.parent.get(id)
-    if (res !== undefined && res.guild?.id === this.guild.id) return res
-    else return undefined
+    const res = await this.parent.get(id);
+    if (res !== undefined && res.guild?.id === this.guild.id) return res;
+    else return undefined;
   }
 
   async delete(id: string): Promise<boolean> {
-    return this.client.rest.delete(CHANNEL(id))
+    return this.client.rest.delete(CHANNEL(id));
   }
 
   async fetch(id: string): Promise<Emoji | undefined> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD_EMOJI(this.guild.id, id))
-        .then(async data => {
-          const emoji = new Emoji(this.client, data as EmojiPayload)
-          data.guild_id = this.guild.id
-          await this.set(id, data as EmojiPayload)
-          emoji.guild = this.guild
-          resolve(emoji)
+        .then(async (data) => {
+          const emoji = new Emoji(this.client, data as EmojiPayload);
+          data.guild_id = this.guild.id;
+          await this.set(id, data as EmojiPayload);
+          emoji.guild = this.guild;
+          resolve(emoji);
         })
-        .catch(e => reject(e))
-    })
+        .catch((e) => reject(e));
+    });
   }
 
-  async create(name: string, url: string, roles?: Role[] | string[] | string): Promise<Emoji | undefined> {
-    let data = url
+  async create(
+    name: string,
+    url: string,
+    roles?: Role[] | string[] | string,
+  ): Promise<Emoji | undefined> {
+    let data = url;
     if (!data.startsWith("data:")) {
-      data = await fetchAuto(url)
+      data = await fetchAuto(url);
     }
     return await new Promise((resolve, reject) => {
-      let roleIDs: string[] = []
-      if (roles !== undefined && typeof roles === "string") roleIDs = [roles]
+      let roleIDs: string[] = [];
+      if (roles !== undefined && typeof roles === "string") roleIDs = [roles];
       else if (roles !== undefined) {
-        if (roles?.length === 0) reject(new Error("Empty Roles array was provided"))
-        if (roles[0] instanceof Role) roleIDs = (roles as any).map((r: Role) => r.id)
-        else roleIDs = roles as string[]
-      } else roles = [this.guild.id]
+        if (roles?.length === 0) {
+          reject(new Error("Empty Roles array was provided"));
+        }
+        if (roles[0] instanceof Role) {
+          roleIDs = (roles as any).map((r: Role) => r.id);
+        } else roleIDs = roles as string[];
+      } else roles = [this.guild.id];
       this.client.rest
         .post(GUILD_EMOJIS(this.guild.id), {
           name,
           image: data,
-          roles: roleIDs
+          roles: roleIDs,
         })
-        .then(async data => {
-          const emoji = new Emoji(this.client, data as EmojiPayload)
-          data.guild_id = this.guild.id
-          await this.set(data.id, data as EmojiPayload)
-          emoji.guild = this.guild
-          resolve(emoji)
+        .then(async (data) => {
+          const emoji = new Emoji(this.client, data as EmojiPayload);
+          data.guild_id = this.guild.id;
+          await this.set(data.id, data as EmojiPayload);
+          emoji.guild = this.guild;
+          resolve(emoji);
         })
-        .catch(e => reject(e))
-    })
+        .catch((e) => reject(e));
+    });
   }
 
   async array(): Promise<Emoji[]> {
-    const arr = (await this.parent.array()) as Emoji[]
+    const arr = (await this.parent.array()) as Emoji[];
     return arr.filter(
-      (c: any) => c.guild !== undefined && c.guild.id === this.guild.id
-    ) as any
+      (c: any) => c.guild !== undefined && c.guild.id === this.guild.id,
+    ) as any;
   }
 
   async flush(): Promise<boolean> {
-    const arr = await this.array()
+    const arr = await this.array();
     for (const elem of arr) {
-      this.parent.delete(elem.id)
+      this.parent.delete(elem.id);
     }
-    return true
+    return true;
   }
 }

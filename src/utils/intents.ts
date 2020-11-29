@@ -1,4 +1,4 @@
-import { GatewayIntents } from '../types/gateway.ts'
+import { GatewayIntents } from "../types/gateway.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class Intents {
@@ -17,20 +17,20 @@ export class Intents {
     GatewayIntents.GUILD_MESSAGE_REACTIONS,
     GatewayIntents.GUILD_MESSAGE_TYPING,
     GatewayIntents.GUILD_VOICE_STATES,
-    GatewayIntents.GUILD_WEBHOOKS
-  ]
+    GatewayIntents.GUILD_WEBHOOKS,
+  ];
 
   static Presence: number[] = [
     GatewayIntents.GUILD_PRESENCES,
-    GatewayIntents.GUILDS
-  ]
+    GatewayIntents.GUILDS,
+  ];
 
   static GuildMembers: number[] = [
     GatewayIntents.GUILD_MEMBERS,
     GatewayIntents.GUILDS,
     GatewayIntents.GUILD_BANS,
-    GatewayIntents.GUILD_VOICE_STATES
-  ]
+    GatewayIntents.GUILD_VOICE_STATES,
+  ];
 
-  static None: number[] = []
+  static None: number[] = [];
 }

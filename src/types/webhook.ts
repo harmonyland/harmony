@@ -1,13 +1,13 @@
-import { UserPayload } from './user.ts'
+import { UserPayload } from "./user.ts";
 
 export interface WebhookPayload {
-  id: string
-  type: 1 | 2
-  guild_id?: string
-  channel_id: string
-  user?: UserPayload
-  name?: string
-  avatar?: string
-  token?: string
-  application_id?: string
+  id: string;
+  type: 1 | 2;
+  guild_id?: string;
+  channel_id: string;
+  user?: UserPayload;
+  name?: string;
+  avatar?: string;
+  token?: string;
+  application_id?: string;
 }

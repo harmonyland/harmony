@@ -1,16 +1,16 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { EmojiPayload } from './emoji.ts'
-import { MemberPayload } from './guild.ts'
-import { InvitePayload } from "./invite.ts"
+import { EmojiPayload } from "./emoji.ts";
+import { MemberPayload } from "./guild.ts";
+import { InvitePayload } from "./invite.ts";
 import {
   ActivityGame,
   ActivityPayload,
+  ClientStatus,
   StatusType,
-  ClientStatus
-} from './presence.ts'
-import { RolePayload } from './role.ts'
-import { UserPayload } from './user.ts'
+} from "./presence.ts";
+import { RolePayload } from "./role.ts";
+import { UserPayload } from "./user.ts";
 
 /**
  * Gateway OPcodes from Discord docs.
@@ -26,7 +26,7 @@ export enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비
   REQUEST_GUILD_MEMBERS = 8,
   INVALID_SESSION = 9,
   HELLO = 10,
-  HEARTBEAT_ACK = 11
+  HEARTBEAT_ACK = 11,
 }
 
 /**
@@ -46,7 +46,7 @@ export enum GatewayCloseCodes {
   SHARDING_REQUIRED = 4011,
   INVALID_API_VERSION = 4012,
   INVALID_INTENTS = 4013,
-  DISALLOWED_INTENTS = 4014
+  DISALLOWED_INTENTS = 4014,
 }
 
 export enum GatewayIntents {
@@ -64,189 +64,189 @@ export enum GatewayIntents {
   GUILD_MESSAGE_TYPING = 1 << 11,
   DIRECT_MESSAGES = 1 << 12,
   DIRECT_MESSAGE_REACTIONS = 1 << 13,
-  DIRECT_MESSAGE_TYPING = 1 << 13
+  DIRECT_MESSAGE_TYPING = 1 << 13,
 }
 
 export enum GatewayEvents {
-  Ready = 'READY',
-  Resumed = 'RESUMED',
-  Reconnect = 'RECONNECT',
-  Channel_Create = 'CHANNEL_CREATE',
-  Channel_Update = 'CHANNEL_UPDATE',
-  Channel_Delete = 'CHANNEL_DELETE',
-  Channel_Pins_Update = 'CHANNEL_PINS_UPDATE',
-  Guild_Create = 'GUILD_CREATE',
-  Guild_Update = 'GUILD_UPDATE',
-  Guild_Delete = 'GUILD_DELETE',
-  Guild_Ban_Add = 'GUILD_BAN_ADD',
-  Guild_Ban_Remove = 'GUILD_BAN_REMOVE',
-  Guild_Emojis_Update = 'GUILD_EMOJIS_UPDATE',
-  Guild_Integrations_Update = 'GUILD_INTEGRATIONS_UPDATE',
-  Guild_Member_Add = 'GUILD_MEMBER_ADD',
-  Guild_Member_Remove = 'GUILD_MEMBER_REMOVE',
-  Guild_Member_Update = 'GUILD_MEMBER_UPDATE',
-  Guild_Members_Chunk = 'GUILD_MEMBERS_CHUNK',
-  Guild_Role_Create = 'GUILD_ROLE_CREATE',
-  Guild_Role_Update = 'GUILD_ROLE_UPDATE',
-  Guild_Role_Delete = 'GUILD_ROLE_DELETE',
-  Invite_Create = 'INVITE_CREATE',
-  Invite_Delete = 'INVITE_DELETE',
-  Message_Create = 'MESSAGE_CREATE',
-  Message_Update = 'MESSAGE_UPDATE',
-  Message_Delete = 'MESSAGE_DELETE',
-  Message_Delete_Bulk = 'MESSAGE_DELETE_BULK',
-  Message_Reaction_Add = 'MESSAGE_REACTION_ADD',
-  Message_Reaction_Remove = 'MESSAGE_REACTION_REMOVE',
-  Message_Reaction_Remove_All = 'MESSAGE_REACTION_REMOVE_ALL',
-  Message_Reaction_Remove_Emoji = 'MESSAGE_REACTION_REMOVE_EMOJI',
-  Presence_Update = 'PRESENCE_UPDATE',
-  Typing_Start = 'TYPING_START',
-  User_Update = 'USER_UPDATE',
-  Voice_Server_Update = 'VOICE_SERVER_UPDATE',
-  Webhooks_Update = 'WEBHOOKS_UPDATE'
+  Ready = "READY",
+  Resumed = "RESUMED",
+  Reconnect = "RECONNECT",
+  Channel_Create = "CHANNEL_CREATE",
+  Channel_Update = "CHANNEL_UPDATE",
+  Channel_Delete = "CHANNEL_DELETE",
+  Channel_Pins_Update = "CHANNEL_PINS_UPDATE",
+  Guild_Create = "GUILD_CREATE",
+  Guild_Update = "GUILD_UPDATE",
+  Guild_Delete = "GUILD_DELETE",
+  Guild_Ban_Add = "GUILD_BAN_ADD",
+  Guild_Ban_Remove = "GUILD_BAN_REMOVE",
+  Guild_Emojis_Update = "GUILD_EMOJIS_UPDATE",
+  Guild_Integrations_Update = "GUILD_INTEGRATIONS_UPDATE",
+  Guild_Member_Add = "GUILD_MEMBER_ADD",
+  Guild_Member_Remove = "GUILD_MEMBER_REMOVE",
+  Guild_Member_Update = "GUILD_MEMBER_UPDATE",
+  Guild_Members_Chunk = "GUILD_MEMBERS_CHUNK",
+  Guild_Role_Create = "GUILD_ROLE_CREATE",
+  Guild_Role_Update = "GUILD_ROLE_UPDATE",
+  Guild_Role_Delete = "GUILD_ROLE_DELETE",
+  Invite_Create = "INVITE_CREATE",
+  Invite_Delete = "INVITE_DELETE",
+  Message_Create = "MESSAGE_CREATE",
+  Message_Update = "MESSAGE_UPDATE",
+  Message_Delete = "MESSAGE_DELETE",
+  Message_Delete_Bulk = "MESSAGE_DELETE_BULK",
+  Message_Reaction_Add = "MESSAGE_REACTION_ADD",
+  Message_Reaction_Remove = "MESSAGE_REACTION_REMOVE",
+  Message_Reaction_Remove_All = "MESSAGE_REACTION_REMOVE_ALL",
+  Message_Reaction_Remove_Emoji = "MESSAGE_REACTION_REMOVE_EMOJI",
+  Presence_Update = "PRESENCE_UPDATE",
+  Typing_Start = "TYPING_START",
+  User_Update = "USER_UPDATE",
+  Voice_Server_Update = "VOICE_SERVER_UPDATE",
+  Webhooks_Update = "WEBHOOKS_UPDATE",
 }
 
 export interface IdentityPayload {
-  token: string
-  properties: IdentityConnection
-  compress?: boolean
-  large_threshold?: number
-  shard?: number[]
-  presence?: StatusUpdatePayload
-  guildSubscriptions?: boolean
-  intents?: number
+  token: string;
+  properties: IdentityConnection;
+  compress?: boolean;
+  large_threshold?: number;
+  shard?: number[];
+  presence?: StatusUpdatePayload;
+  guildSubscriptions?: boolean;
+  intents?: number;
 }
 
 export interface IdentityConnection {
-  $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'harmony' | 'Firefox'
-  $device: 'harmony' | ''
-  $referrer?: ''
-  $referring_domain?: ''
+  $os: "darwin" | "windows" | "linux" | "custom os";
+  $browser: "harmony" | "Firefox";
+  $device: "harmony" | "";
+  $referrer?: "";
+  $referring_domain?: "";
 }
 
 export interface Resume {
-  token: string
-  session_id: string
-  seq: number
+  token: string;
+  session_id: string;
+  seq: number;
 }
 
 export interface GuildRequestMembers {
-  guild_id: string | string[]
-  query?: string
-  limit: number
-  presences?: boolean
-  user_ids?: string | string[]
-  nonce?: string
+  guild_id: string | string[];
+  query?: string;
+  limit: number;
+  presences?: boolean;
+  user_ids?: string | string[];
+  nonce?: string;
 }
 
 export interface GatewayVoiceStateUpdate {
-  guild_id: string
-  channel_id: string
-  self_mute: boolean
-  self_deaf: boolean
+  guild_id: string;
+  channel_id: string;
+  self_mute: boolean;
+  self_deaf: boolean;
 }
 
 export interface GatewayStatusUpdate {
-  since: number | undefined
-  activities: ActivityPayload[]
-  status: string
-  afk: boolean
+  since: number | undefined;
+  activities: ActivityPayload[];
+  status: string;
+  afk: boolean;
 }
 
 export interface Hello {
-  heartbeat_interval: number
+  heartbeat_interval: number;
 }
 
 export interface Ready {
-  v: number
-  user: UserPayload
-  privateChannels: []
-  guilds: []
-  session_id: string
-  shard?: number[]
+  v: number;
+  user: UserPayload;
+  privateChannels: [];
+  guilds: [];
+  session_id: string;
+  shard?: number[];
 }
 
 export interface ChannelPinsUpdatePayload {
-  guild_id?: string
-  channel_id: string
-  last_pin_timestamp?: string
+  guild_id?: string;
+  channel_id: string;
+  last_pin_timestamp?: string;
 }
 
 export interface GuildBanAddPayload {
-  guild_id: string
-  user: UserPayload
+  guild_id: string;
+  user: UserPayload;
 }
 
 export interface GuildBanRemovePayload {
-  guild_id: string
-  user: UserPayload
+  guild_id: string;
+  user: UserPayload;
 }
 
 export interface GuildEmojiUpdatePayload {
-  guild_id: string
-  emojis: EmojiPayload[]
+  guild_id: string;
+  emojis: EmojiPayload[];
 }
 
 export interface GuildIntegrationsUpdatePayload {
-  guild_id: string
+  guild_id: string;
 }
 
 export interface GuildMemberAddPayload extends MemberPayload {
-  guild_id: string
+  guild_id: string;
 }
 
 export interface GuildMemberRemovePayload {
-  guild_id: string
-  user: UserPayload
+  guild_id: string;
+  user: UserPayload;
 }
 export interface GuildMemberUpdatePayload {
-  guild_id: string
-  roles: string[]
-  user: UserPayload
-  nick?: string | undefined
-  joined_at: string
-  premium_since?: string | undefined
+  guild_id: string;
+  roles: string[];
+  user: UserPayload;
+  nick?: string | undefined;
+  joined_at: string;
+  premium_since?: string | undefined;
 }
 
 export interface GuildMemberChunkPayload {
-  guild_id: string
-  members: MemberPayload[]
-  chunk_index: number
-  chunk_count: number
-  not_found?: []
-  presences?: PresenceUpdatePayload[]
-  nonce?: string
+  guild_id: string;
+  members: MemberPayload[];
+  chunk_index: number;
+  chunk_count: number;
+  not_found?: [];
+  presences?: PresenceUpdatePayload[];
+  nonce?: string;
 }
 
 export interface GuildRoleCreatePayload {
-  guild_id: string
-  role: RolePayload
+  guild_id: string;
+  role: RolePayload;
 }
 
 export interface GuildRoleUpdatePayload {
-  guild_id: string
-  role: RolePayload
+  guild_id: string;
+  role: RolePayload;
 }
 
 export interface GuildRoleDeletePayload {
-  guild_id: string
-  role_id: string
+  guild_id: string;
+  role_id: string;
 }
 
 export interface InviteCreatePayload {
-  channel_id: string
-  code: string
-  created_at: string
-  guild_id?: string
-  inviter?: UserPayload
-  max_age: number
-  max_uses: number
-  target_user?: UserPayload
-  target_user_type?: number
-  temporary: boolean
-  uses: number
-  payload: InvitePayload
+  channel_id: string;
+  code: string;
+  created_at: string;
+  guild_id?: string;
+  inviter?: UserPayload;
+  max_age: number;
+  max_uses: number;
+  target_user?: UserPayload;
+  target_user_type?: number;
+  temporary: boolean;
+  uses: number;
+  payload: InvitePayload;
 }
 
 // export interface InviteCreatePayload {
@@ -255,75 +255,75 @@ export interface InviteCreatePayload {
 // }
 
 export interface InviteDeletePayload {
-  channel_id: string
-  guild_id?: string
-  code: string
+  channel_id: string;
+  guild_id?: string;
+  code: string;
 }
 
 export interface MessageDeletePayload {
-  id: string
-  channel_id: string
-  guild_id?: string
+  id: string;
+  channel_id: string;
+  guild_id?: string;
 }
 
 export interface MessageDeleteBulkPayload {
-  ids: string[]
-  channel_id: string
-  guild_id: string
+  ids: string[];
+  channel_id: string;
+  guild_id: string;
 }
 
 export interface MessageReactionAddPayload {
-  user_id: string
-  channel_id: string
-  message_id: string
-  guild_id?: string
-  emoji: EmojiPayload
+  user_id: string;
+  channel_id: string;
+  message_id: string;
+  guild_id?: string;
+  emoji: EmojiPayload;
 }
 
 export interface MessageReactionRemovePayload {
-  user_id: string
-  channel_id: string
-  message_id: string
-  guild_id?: string
-  emoji: EmojiPayload
+  user_id: string;
+  channel_id: string;
+  message_id: string;
+  guild_id?: string;
+  emoji: EmojiPayload;
 }
 
 export interface MessageReactionRemoveAllPayload {
-  channel_id: string
-  guild_id?: string
-  message_id: string
+  channel_id: string;
+  guild_id?: string;
+  message_id: string;
 }
 
 export interface PresenceUpdatePayload {
-  user: UserPayload
-  guild_id: string
-  status: StatusType
-  activities: ActivityPayload[]
-  client_status: ClientStatus
+  user: UserPayload;
+  guild_id: string;
+  status: StatusType;
+  activities: ActivityPayload[];
+  client_status: ClientStatus;
 }
 
 export interface StatusUpdatePayload {
-  status: StatusType
-  activities: ActivityGame[] | null
-  since: number | null
-  afk: boolean
+  status: StatusType;
+  activities: ActivityGame[] | null;
+  since: number | null;
+  afk: boolean;
 }
 
 export interface TypeStart {
-  channel_id: string
-  guild_id?: string
-  user_id: string
-  timestamp: number
-  member?: MemberPayload
+  channel_id: string;
+  guild_id?: string;
+  user_id: string;
+  timestamp: number;
+  member?: MemberPayload;
 }
 
 export interface VoiceServerUpdatePayload {
-  token: string
-  guild_id: string
-  endpoint: string
+  token: string;
+  guild_id: string;
+  endpoint: string;
 }
 
 export interface WebhooksUpdatePayload {
-  guild_id: string
-  channel_id: string
+  guild_id: string;
+  channel_id: string;
 }

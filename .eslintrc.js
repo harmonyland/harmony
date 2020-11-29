@@ -1,22 +1,22 @@
 module.exports = {
   env: {
     es2021: true,
-    node: true
+    node: true,
   },
   extends: [
-    'standard-with-typescript',
-    'prettier',
-    'prettier/@typescript-eslint',
-    'prettier/standard'
+    "standard-with-typescript",
+    "prettier",
+    "prettier/@typescript-eslint",
+    "prettier/standard",
   ],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 12,
-    sourceType: 'module',
-    project: 'tsconfig.json'
+    sourceType: "module",
+    project: "tsconfig.json",
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ["@typescript-eslint"],
   rules: {
-    '@typescript-eslint/restrict-template-expressions': 'off'
-  }
-}
+    "@typescript-eslint/restrict-template-expressions": "off",
+  },
+};
