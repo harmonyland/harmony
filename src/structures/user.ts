@@ -15,6 +15,13 @@ export class User extends Base {
   verified?: boolean
   email?: string
   flags?: UserFlagsManager
+  /** 
+   * Nitro type of the User. 
+   * 
+   * 0 = No Nitro
+   * 1 = Classic Nitro
+   * 2 = Regular Nitro
+   */
   premiumType?: 0 | 1 | 2
   publicFlags?: UserFlagsManager
 

@@ -20,7 +20,6 @@ export class GatewayCache {
   }
 
   async delete (key: string): Promise<boolean> {
-    console.log(`[GatewayCache] DEL ${key}`)
     const result = await this.client.cache.delete(this.cacheName, key)
     return result
   }
