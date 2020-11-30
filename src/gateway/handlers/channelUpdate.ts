@@ -1,14 +1,15 @@
 import { Channel } from '../../structures/channel.ts'
-import { ChannelPayload } from "../../types/channel.ts"
+import { ChannelPayload } from '../../types/channel.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
 export const channelUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: ChannelPayload
 ) => {
-  const oldChannel: Channel | undefined = await gateway.client.channels.get(d.id)
+  const oldChannel = await gateway.client.channels.get(d.id)
   await gateway.client.channels.set(d.id, d)
-  const newChannel: Channel = (await gateway.client.channels.get(d.id) as unknown) as Channel
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const newChannel = (await gateway.client.channels.get(d.id)) as Channel
 
   if (oldChannel !== undefined) {
     // (DjDeveloperr): Already done by ChannelsManager. I'll recheck later
