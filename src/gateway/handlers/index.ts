@@ -23,6 +23,7 @@ import { guildRoleCreate } from "./guildRoleCreate.ts";
 import { guildRoleDelete } from "./guildRoleDelete.ts";
 import { guildRoleUpdate } from "./guildRoleUpdate.ts";
 import { inviteCreate } from "./inviteCreate.ts";
+import { inviteDelete } from "./inviteDelete.ts";
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined;
@@ -49,7 +50,7 @@ export const gatewayHandlers: {
   GUILD_ROLE_UPDATE: guildRoleUpdate,
   GUILD_ROLE_DELETE: guildRoleDelete,
   INVITE_CREATE: inviteCreate,
-  INVITE_DELETE: undefined,
+  INVITE_DELETE: inviteDelete,
   MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: messageUpdate,
   MESSAGE_DELETE: messageDelete,

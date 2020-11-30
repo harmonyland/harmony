@@ -60,8 +60,12 @@ client.on("guildRoleUpdate", (role: Role, after: Role) => {
 });
 
 client.on("inviteCreate", (invite: Invite) => {
-  console.log(invite);
   console.log(`Invite Create ${invite.code}`);
+});
+
+client.on("inviteDelete", (invite: Invite) => {
+  console.log(invite);
+  console.log(`Invite Delete ${invite.code}`);
 });
 
 // client.on('messageCreate', msg => console.log(`${msg.author.tag}: ${msg.content}`))
