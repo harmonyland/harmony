@@ -4,12 +4,13 @@ import {
   GuildIntegrationPayload,
   GuildPayload,
   IntegrationAccountPayload,
-  IntegrationExpireBehavior
+  IntegrationExpireBehavior,
 } from '../types/guild.ts'
 import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
+import { InviteManager } from '../managers/inviteManager.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
@@ -66,7 +67,7 @@ export class Guild extends Base {
   approximateNumberCount?: number
   approximatePresenceCount?: number
 
-  constructor (client: Client, data: GuildPayload) {
+  constructor(client: Client, data: GuildPayload) {
     super(client, data)
     this.id = data.id
     this.unavailable = data.unavailable
@@ -144,7 +145,7 @@ export class Guild extends Base {
     }
   }
 
-  protected readFromData (data: GuildPayload): void {
+  protected readFromData(data: GuildPayload): void {
     super.readFromData(data)
     this.id = data.id ?? this.id
     this.unavailable = data.unavailable ?? this.unavailable
@@ -222,22 +223,22 @@ export class Guild extends Base {
     }
   }
 
-  async getEveryoneRole (): Promise<Role> {
+  async getEveryoneRole(): Promise<Role> {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     return (await this.roles.get(this.id)) as Role
   }
 
-  async me (): Promise<Member> {
+  async me(): Promise<Member> {
     const get = await this.members.get(this.client.user?.id as string)
     if (get === undefined) throw new Error('Guild#me is not cached')
     return get
   }
 
-  async fetchIntegrations (): Promise<GuildIntegration[]> {
+  async fetchIntegrations(): Promise<GuildIntegration[]> {
     const raw = (await this.client.rest.get(
       GUILD_INTEGRATIONS(this.id)
     )) as GuildIntegrationPayload[]
-    return raw.map(e => new GuildIntegration(this.client, e))
+    return raw.map((e) => new GuildIntegration(this.client, e))
   }
 }
 
@@ -258,7 +259,7 @@ export class GuildIntegration extends Base {
   revoked?: boolean
   application?: Application
 
-  constructor (client: Client, data: GuildIntegrationPayload) {
+  constructor(client: Client, data: GuildIntegrationPayload) {
     super(client, data)
 
     this.id = data.id
