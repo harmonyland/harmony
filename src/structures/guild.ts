@@ -2,7 +2,6 @@ import { Client } from '../models/client.ts'
 import { GuildFeatures, GuildIntegrationPayload, GuildPayload, IntegrationAccountPayload, IntegrationExpireBehavior } from '../types/guild.ts'
 import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
-import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
@@ -12,6 +11,7 @@ import { Member } from "./member.ts"
 import { User } from "./user.ts"
 import { Application } from "./application.ts"
 import { GUILD_INTEGRATIONS } from "../types/endpoint.ts"
+import { GuildVoiceStatesManager } from "../managers/guildVoiceStates.ts"
 
 export class Guild extends Base {
   id: string
@@ -43,7 +43,7 @@ export class Guild extends Base {
   large?: boolean
   unavailable: boolean
   memberCount?: number
-  voiceStates?: VoiceState[]
+  voiceStates: GuildVoiceStatesManager
   members: MembersManager
   channels: GuildChannelsManager
   presences?: PresenceUpdatePayload[]
@@ -65,6 +65,7 @@ export class Guild extends Base {
     this.id = data.id
     this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
+    this.voiceStates = new GuildVoiceStatesManager(client, this)
     this.channels = new GuildChannelsManager(
       this.client, 
       this.client.channels, 

@@ -1,49 +1,53 @@
 import { Client } from '../models/client.ts'
-import { MemberPayload } from '../types/guild.ts'
 import { VoiceStatePayload } from '../types/voice.ts'
 import { Base } from './base.ts'
+import { Guild } from "./guild.ts"
+import { VoiceChannel } from "./guildVoiceChannel.ts"
+import { Member } from "./member.ts"
+import { User } from "./user.ts"
 
 export class VoiceState extends Base {
-  guildID?: string
-  channelID?: string
-  userID: string
-  member?: MemberPayload
+  guild?: Guild
+  channel: VoiceChannel | null
+  user: User
+  member?: Member
   sessionID: string
   deaf: boolean
   mute: boolean
-  selfDeaf: boolean
-  selfMute: boolean
-  selfStream?: boolean
-  selfVideo: boolean
+  stream?: boolean
+  video: boolean
   suppress: boolean
 
-  constructor (client: Client, data: VoiceStatePayload) {
+  constructor (client: Client, data: VoiceStatePayload, _data: {
+    user: User,
+    channel: VoiceChannel | null,
+    member?: Member,
+    guild?: Guild
+  }) {
     super(client, data)
-    this.channelID = data.channel_id
+    this.channel = _data.channel
     this.sessionID = data.session_id
-    this.userID = data.user_id
+    this.user = _data.user
+    this.member = _data.member
+    this.guild = _data.guild
     this.deaf = data.deaf
     this.mute = data.mute
-    this.selfDeaf = data.self_deaf
-    this.selfMute = data.self_mute
-    this.selfStream = data.self_stream
-    this.selfVideo = data.self_video
+    this.deaf = data.self_deaf
+    this.mute = data.self_mute
+    this.stream = data.self_stream
+    this.video = data.self_video
     this.suppress = data.suppress
-    // TODO: Cache in Gateway Event Code
-    // cache.set('voiceState', `${this.guildID}:${this.userID}`, this)
   }
 
   protected readFromData (data: VoiceStatePayload): void {
     super.readFromData(data)
-    this.channelID = data.channel_id ?? this.channelID
     this.sessionID = data.session_id ?? this.sessionID
-    this.userID = data.user_id ?? this.userID
     this.deaf = data.deaf ?? this.deaf
     this.mute = data.mute ?? this.mute
-    this.selfDeaf = data.self_deaf ?? this.selfDeaf
-    this.selfMute = data.self_mute ?? this.selfMute
-    this.selfStream = data.self_stream ?? this.selfStream
-    this.selfVideo = data.self_video ?? this.selfVideo
+    this.deaf = data.self_deaf ?? this.deaf
+    this.mute = data.self_mute ?? this.mute
+    this.stream = data.self_stream ?? this.stream
+    this.video = data.self_video ?? this.video
     this.suppress = data.suppress ?? this.suppress
   }
 }

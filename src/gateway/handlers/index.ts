@@ -36,6 +36,9 @@ import { Member } from "../../structures/member.ts"
 import { Role } from "../../structures/role.ts"
 import { Message } from "../../structures/message.ts"
 import { Collection } from "../../utils/collection.ts"
+import { voiceServerUpdate } from "./voiceServerUpdate.ts"
+import { voiceStateUpdate } from "./voiceStateUpdate.ts"
+import { VoiceState } from "../../structures/voiceState.ts"
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -74,12 +77,19 @@ export const gatewayHandlers: {
   PRESENCE_UPDATE: undefined,
   TYPING_START: typingStart,
   USER_UPDATE: userUpdate,
-  VOICE_SERVER_UPDATE: undefined,
+  VOICE_STATE_UPDATE: voiceStateUpdate,
+  VOICE_SERVER_UPDATE: voiceServerUpdate,
   WEBHOOKS_UPDATE: webhooksUpdate
 }
 
 export interface EventTypes {
   [name: string]: (...args: any[]) => void
+}
+
+export interface VoiceServerUpdateData {
+  token: string
+  endpoint: string
+  guild: Guild
 }
 
 export interface ClientEvents extends EventTypes {
@@ -111,5 +121,9 @@ export interface ClientEvents extends EventTypes {
   'messageUpdate': (before: Message, after: Message) => void
   'typingStart': (user: User, channel: TextChannel, at: Date, guildData?: TypingStartGuildData) => void
   'userUpdate': (before: User, after: User) => void
+  'voiceServerUpdate': (data: VoiceServerUpdateData) => void
+  'voiceStateAdd': (state: VoiceState) => void
+  'voiceStateRemove': (state: VoiceState) => void
+  'voiceStateUpdate': (state: VoiceState, after: VoiceState) => void
   'webhooksUpdate': (guild: Guild, channel: GuildTextChannel) => void
 }
