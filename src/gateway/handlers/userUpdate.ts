@@ -1,5 +1,5 @@
-import { User } from "../../structures/user.ts"
-import { UserPayload } from "../../types/user.ts"
+import { User } from '../../structures/user.ts'
+import { UserPayload } from '../../types/user.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
 export const userUpdate: GatewayEventHandler = async (
@@ -8,7 +8,8 @@ export const userUpdate: GatewayEventHandler = async (
 ) => {
   const oldUser: User | undefined = await gateway.client.users.get(d.id)
   await gateway.client.users.set(d.id, d)
-  const newUser: User = (await gateway.client.users.get(d.id) as unknown) as User
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  const newUser = (await gateway.client.users.get(d.id)) as User
 
   if (oldUser !== undefined) {
     gateway.client.emit('userUpdate', oldUser, newUser)

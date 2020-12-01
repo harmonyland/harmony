@@ -1,7 +1,7 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
-import { GuildRoleUpdatePayload } from "../../types/gateway.ts"
-import { Role } from "../../structures/role.ts"
+import { GuildRoleUpdatePayload } from '../../types/gateway.ts'
+import { Role } from '../../structures/role.ts'
 
 export const guildRoleUpdate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -13,10 +13,11 @@ export const guildRoleUpdate: GatewayEventHandler = async (
 
   const role = await guild.roles.get(d.role.id)
   await guild.roles.set(d.role.id, d.role)
-  const newRole = await guild.roles.get(d.role.id)
+  const newRole = (await guild.roles.get(d.role.id)) as Role
 
   // Shouldn't happen either
-  if(role === undefined) return gateway.client.emit('guildRoleUpdateUncached', newRole)
+  if (role === undefined)
+    return gateway.client.emit('guildRoleUpdateUncached', newRole)
 
-  gateway.client.emit('guildRoleUpdate', role, (newRole as unknown) as Role)
+  gateway.client.emit('guildRoleUpdate', role, newRole)
 }
