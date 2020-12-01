@@ -20,7 +20,7 @@ export class VoiceClient {
   }
 
   async connect(): Promise<VoiceClient> {
-    
+    // TODO(DjDeveloperr): Actually understand what the hell docs say
     return this
   }
 }
