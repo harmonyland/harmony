@@ -13,31 +13,31 @@ import { guildBanRemove } from './guildBanRemove.ts'
 import { messageCreate } from './messageCreate.ts'
 import { resume } from './resume.ts'
 import { reconnect } from './reconnect.ts'
-import { messageDelete } from "./messageDelete.ts"
-import { messageUpdate } from "./messageUpdate.ts"
-import { guildEmojiUpdate } from "./guildEmojiUpdate.ts"
-import { guildMemberAdd } from "./guildMemberAdd.ts"
-import { guildMemberRemove } from "./guildMemberRemove.ts"
-import { guildMemberUpdate } from "./guildMemberUpdate.ts"
-import { guildRoleCreate } from "./guildRoleCreate.ts"
-import { guildRoleDelete } from "./guildRoleDelete.ts"
-import { guildRoleUpdate } from "./guildRoleUpdate.ts"
-import { guildIntegrationsUpdate } from "./guildIntegrationsUpdate.ts"
-import { webhooksUpdate } from "./webhooksUpdate.ts"
-import { messageDeleteBulk } from "./messageDeleteBulk.ts"
-import { userUpdate } from "./userUpdate.ts"
-import { typingStart } from "./typingStart.ts"
-import { Channel } from "../../structures/channel.ts"
-import { GuildTextChannel, TextChannel } from "../../structures/textChannel.ts"
-import { Guild } from "../../structures/guild.ts"
-import { User } from "../../structures/user.ts"
-import { Emoji } from "../../structures/emoji.ts"
-import { Member } from "../../structures/member.ts"
-import { Role } from "../../structures/role.ts"
-import { Message } from "../../structures/message.ts"
-import { Collection } from "../../utils/collection.ts"
-import { inviteCreate } from './inviteCreate'
-import { inviteDelete } from './inviteDelete'
+import { messageDelete } from './messageDelete.ts'
+import { messageUpdate } from './messageUpdate.ts'
+import { guildEmojiUpdate } from './guildEmojiUpdate.ts'
+import { guildMemberAdd } from './guildMemberAdd.ts'
+import { guildMemberRemove } from './guildMemberRemove.ts'
+import { guildMemberUpdate } from './guildMemberUpdate.ts'
+import { guildRoleCreate } from './guildRoleCreate.ts'
+import { guildRoleDelete } from './guildRoleDelete.ts'
+import { guildRoleUpdate } from './guildRoleUpdate.ts'
+import { guildIntegrationsUpdate } from './guildIntegrationsUpdate.ts'
+import { webhooksUpdate } from './webhooksUpdate.ts'
+import { messageDeleteBulk } from './messageDeleteBulk.ts'
+import { userUpdate } from './userUpdate.ts'
+import { typingStart } from './typingStart.ts'
+import { Channel } from '../../structures/channel.ts'
+import { GuildTextChannel, TextChannel } from '../../structures/textChannel.ts'
+import { Guild } from '../../structures/guild.ts'
+import { User } from '../../structures/user.ts'
+import { Emoji } from '../../structures/emoji.ts'
+import { Member } from '../../structures/member.ts'
+import { Role } from '../../structures/role.ts'
+import { Message } from '../../structures/message.ts'
+import { Collection } from '../../utils/collection.ts'
+import { inviteCreate } from './inviteCreate.ts'
+import { inviteDelete } from './inviteDelete.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -77,7 +77,7 @@ export const gatewayHandlers: {
   TYPING_START: typingStart,
   USER_UPDATE: userUpdate,
   VOICE_SERVER_UPDATE: undefined,
-  WEBHOOKS_UPDATE: webhooksUpdate
+  WEBHOOKS_UPDATE: webhooksUpdate,
 }
 
 export interface EventTypes {
@@ -85,33 +85,42 @@ export interface EventTypes {
 }
 
 export interface ClientEvents extends EventTypes {
-  'ready': () => void
-  'reconnect': () => void
-  'resumed': () => void
-  'channelCreate': (channel: Channel) => void
-  'channelDelete': (channel: Channel) => void
-  'channelPinsUpdate': (before: TextChannel, after: TextChannel) => void
-  'channelUpdate': (before: Channel, after: Channel) => void
-  'guildBanAdd': (guild: Guild, user: User) => void
-  'guildBanRemove': (guild: Guild, user: User) => void
-  'guildCreate': (guild: Guild) => void
-  'guildDelete': (guild: Guild) => void
-  'guildEmojiAdd': (guild: Guild, emoji: Emoji) => void
-  'guildEmojiDelete': (guild: Guild, emoji: Emoji) => void
-  'guildEmojiUpdate': (guild: Guild, before: Emoji, after: Emoji) => void
-  'guildIntegrationsUpdate': (guild: Guild) => void
-  'guildMemberAdd': (member: Member) => void
-  'guildMemberRemove': (member: Member) => void
-  'guildMemberUpdate': (before: Member, after: Member) => void
-  'guildRoleCreate': (role: Role) => void
-  'guildRoleDelete': (role: Role) => void
-  'guildRoleUpdate': (before: Role, after: Role) => void
-  'guildUpdate': (before: Guild, after: Guild) => void
-  'messageCreate': (message: Message) => void
-  'messageDelete': (message: Message) => void
-  'messageDeleteBulk': (channel: GuildTextChannel, messages: Collection<string, Message>, uncached: Set<string>) => void
-  'messageUpdate': (before: Message, after: Message) => void
-  'typingStart': (user: User, channel: TextChannel, at: Date, guildData?: TypingStartGuildData) => void
-  'userUpdate': (before: User, after: User) => void
-  'webhooksUpdate': (guild: Guild, channel: GuildTextChannel) => void
+  ready: () => void
+  reconnect: () => void
+  resumed: () => void
+  channelCreate: (channel: Channel) => void
+  channelDelete: (channel: Channel) => void
+  channelPinsUpdate: (before: TextChannel, after: TextChannel) => void
+  channelUpdate: (before: Channel, after: Channel) => void
+  guildBanAdd: (guild: Guild, user: User) => void
+  guildBanRemove: (guild: Guild, user: User) => void
+  guildCreate: (guild: Guild) => void
+  guildDelete: (guild: Guild) => void
+  guildEmojiAdd: (guild: Guild, emoji: Emoji) => void
+  guildEmojiDelete: (guild: Guild, emoji: Emoji) => void
+  guildEmojiUpdate: (guild: Guild, before: Emoji, after: Emoji) => void
+  guildIntegrationsUpdate: (guild: Guild) => void
+  guildMemberAdd: (member: Member) => void
+  guildMemberRemove: (member: Member) => void
+  guildMemberUpdate: (before: Member, after: Member) => void
+  guildRoleCreate: (role: Role) => void
+  guildRoleDelete: (role: Role) => void
+  guildRoleUpdate: (before: Role, after: Role) => void
+  guildUpdate: (before: Guild, after: Guild) => void
+  messageCreate: (message: Message) => void
+  messageDelete: (message: Message) => void
+  messageDeleteBulk: (
+    channel: GuildTextChannel,
+    messages: Collection<string, Message>,
+    uncached: Set<string>
+  ) => void
+  messageUpdate: (before: Message, after: Message) => void
+  typingStart: (
+    user: User,
+    channel: TextChannel,
+    at: Date,
+    guildData?: TypingStartGuildData
+  ) => void
+  userUpdate: (before: User, after: User) => void
+  webhooksUpdate: (guild: Guild, channel: GuildTextChannel) => void
 }
