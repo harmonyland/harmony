@@ -2,6 +2,7 @@ import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
 import { InviteCreatePayload } from '../../types/gateway.ts'
 import { ChannelPayload, GuildPayload, InvitePayload } from '../../../mod.ts'
+import getChannelByType from '../../utils/getChannelByType.ts'
 
 export const inviteCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -13,20 +14,27 @@ export const inviteCreate: GatewayEventHandler = async (
   // Weird case, shouldn't happen
   if (guild === undefined) return
 
-  const cachedChannel = await guild.channels.get(d.channel_id)
+  /**
+   * TODO(DjDeveloperr): Add _get method in BaseChildManager
+   */
+  const cachedChannel = await gateway.client.channels._get(d.channel_id)
+
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const cachedGuild: GuildPayload | undefined =
     d.guild_id === undefined
       ? undefined
       : await guild.client.guilds._get(d.guild_id)
+
   const dataConverted: InvitePayload = {
     code: d.code,
     guild: cachedGuild,
+    // had to use `as ChannelPayload` because the _get method returned `ChannelPayload | undefined` which errored
     channel: cachedChannel as ChannelPayload,
     inviter: d.inviter,
     target_user: d.target_user,
     target_user_type: d.target_user_type,
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   await guild.invites.set(d.code, dataConverted)
   const invite = await guild.invites.get(d.code)

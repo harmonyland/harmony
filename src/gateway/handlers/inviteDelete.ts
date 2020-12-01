@@ -15,7 +15,10 @@ export const inviteDelete: GatewayEventHandler = async (
   const cachedInvite = await guild.invites.get(d.code)
 
   // Should not happen but here we go
-  if (cachedInvite === undefined) return
-
-  gateway.client.emit('inviteDelete', cachedInvite)
+  if (cachedInvite === undefined) {
+    return gateway.client.emit('inviteDeleteUncached', cachedInvite)
+  } else {
+    await guild.invites.delete(d.code)
+    gateway.client.emit('inviteDelete', cachedInvite)
+  }
 }
