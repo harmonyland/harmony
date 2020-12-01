@@ -10,7 +10,7 @@ import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { VoiceState } from './voiceState.ts'
 import { RolesManager } from '../managers/roles.ts'
-import { InviteManager } from '../managers/inviteManager.ts'
+import { InviteManager } from '../managers/invites.ts'
 import { GuildChannelsManager } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
@@ -40,6 +40,7 @@ export class Guild extends Base {
   explicitContentFilter?: string
   roles: RolesManager
   emojis: GuildEmojisManager
+  invites: InviteManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
