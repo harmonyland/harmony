@@ -1,13 +1,16 @@
-import { DISCORD_API_URL, DISCORD_API_VERSION } from "../consts/urlsAndVersions.ts"
+import {
+  DISCORD_API_URL,
+  DISCORD_API_VERSION
+} from '../consts/urlsAndVersions.ts'
 import { Client } from '../models/client.ts'
-import { RESTManager } from "../models/rest.ts"
-import { MessageOption } from "../types/channel.ts"
+import { RESTManager } from '../models/rest.ts'
+import { MessageOption } from '../types/channel.ts'
 import { UserPayload } from '../types/user.ts'
 import { WebhookPayload } from '../types/webhook.ts'
-import { Embed } from "./embed.ts"
-import { Message } from "./message.ts"
-import { TextChannel } from "./textChannel.ts"
-import { User } from "./user.ts"
+import { Embed } from './embed.ts'
+import { Message } from './message.ts'
+import { TextChannel } from './textChannel.ts'
+import { User } from './user.ts'
 import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
 
 export interface WebhookMessageOptions extends MessageOption {
@@ -42,17 +45,21 @@ export class Webhook {
   applicationID?: string
   rest: RESTManager
 
-  get url(): string {
+  get url (): string {
     return `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${this.id}/${this.token}`
   }
 
-  constructor(data: WebhookPayload, client?: Client, rest?: RESTManager) {
+  constructor (data: WebhookPayload, client?: Client, rest?: RESTManager) {
     this.id = data.id
     this.type = data.type
     this.channelID = data.channel_id
     this.guildID = data.guild_id
-    this.user = data.user === undefined || client === undefined ? undefined : new User(client, data.user)
-    if (data.user !== undefined && client === undefined) this.userRaw = data.user
+    this.user =
+      data.user === undefined || client === undefined
+        ? undefined
+        : new User(client, data.user)
+    if (data.user !== undefined && client === undefined)
+      this.userRaw = data.user
     this.name = data.name
     this.avatar = data.avatar
     this.token = data.token
@@ -63,13 +70,17 @@ export class Webhook {
     else this.rest = new RESTManager()
   }
 
-  private fromPayload(data: WebhookPayload): Webhook {
+  private fromPayload (data: WebhookPayload): Webhook {
     this.id = data.id
     this.type = data.type
     this.channelID = data.channel_id
     this.guildID = data.guild_id
-    this.user = data.user === undefined || this.client === undefined ? undefined : new User(this.client, data.user)
-    if (data.user !== undefined && this.client === undefined) this.userRaw = data.user
+    this.user =
+      data.user === undefined || this.client === undefined
+        ? undefined
+        : new User(this.client, data.user)
+    if (data.user !== undefined && this.client === undefined)
+      this.userRaw = data.user
     this.name = data.name
     this.avatar = data.avatar
     this.token = data.token
@@ -79,8 +90,11 @@ export class Webhook {
   }
 
   /** Send a Message through Webhook. */
-  async send(text?: string | AllWebhookMessageOptions, option?: AllWebhookMessageOptions): Promise<Message> {
-    if (typeof text === "object") {
+  async send (
+    text?: string | AllWebhookMessageOptions,
+    option?: AllWebhookMessageOptions
+  ): Promise<Message> {
+    if (typeof text === 'object') {
       option = text
       text = undefined
     }
@@ -89,31 +103,47 @@ export class Webhook {
       throw new Error('Either text or option is necessary.')
     }
 
-    if (option instanceof Embed) option = {
-      embeds: [ option ],
-    }
+    if (option instanceof Embed)
+      option = {
+        embeds: [option]
+      }
 
     const payload: any = {
       content: text,
-      embeds: (option as WebhookMessageOptions)?.embed !== undefined ? [ (option as WebhookMessageOptions).embed ] : ((option as WebhookMessageOptions)?.embeds !== undefined ? (option as WebhookMessageOptions).embeds : undefined),
+      embeds:
+        (option as WebhookMessageOptions)?.embed !== undefined
+          ? [(option as WebhookMessageOptions).embed]
+          : (option as WebhookMessageOptions)?.embeds !== undefined
+          ? (option as WebhookMessageOptions).embeds
+          : undefined,
       file: (option as WebhookMessageOptions)?.file,
       tts: (option as WebhookMessageOptions)?.tts,
       allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions
     }
 
-    if ((option as WebhookMessageOptions).name !== undefined) {
+    if ((option as WebhookMessageOptions)?.name !== undefined) {
       payload.username = (option as WebhookMessageOptions)?.name
     }
 
-    if ((option as WebhookMessageOptions).avatar !== undefined) {
+    if ((option as WebhookMessageOptions)?.avatar !== undefined) {
       payload.avatar = (option as WebhookMessageOptions)?.avatar
     }
 
-    if (payload.embeds !== undefined && payload.embeds instanceof Array && payload.embeds.length > 10) throw new Error(`Cannot send more than 10 embeds through Webhook`)
+    if (
+      payload.embeds !== undefined &&
+      payload.embeds instanceof Array &&
+      payload.embeds.length > 10
+    )
+      throw new Error(`Cannot send more than 10 embeds through Webhook`)
 
     const resp = await this.rest.post(this.url + '?wait=true', payload)
 
-    const res = new Message(this.client as Client, resp, (this as unknown) as TextChannel, (this as unknown) as User)
+    const res = new Message(
+      this.client as Client,
+      resp,
+      (this as unknown) as TextChannel,
+      (this as unknown) as User
+    )
     await res.mentions.fromPayload(resp)
     return res
   }
@@ -122,12 +152,13 @@ export class Webhook {
    * Create a Webhook object from URL
    * @param url URL of the Webhook
    * @param client Client (bot) object, if any.
-  */
-  static async fromURL(url: string | URL, client?: Client): Promise<Webhook> {
+   */
+  static async fromURL (url: string | URL, client?: Client): Promise<Webhook> {
     const rest = client !== undefined ? client.rest : new RESTManager()
 
     const raw = await rest.get(typeof url === 'string' ? url : url.toString())
-    if (typeof raw !== 'object') throw new Error(`Failed to load Webhook from URL: ${url}`)
+    if (typeof raw !== 'object')
+      throw new Error(`Failed to load Webhook from URL: ${url}`)
 
     const webhook = new Webhook(raw, client, rest)
     return webhook
@@ -137,9 +168,14 @@ export class Webhook {
    * Edit the Webhook name, avatar, or channel (requires authentication).
    * @param options Options to edit the Webhook.
    */
-  async edit(options: WebhookEditOptions): Promise<Webhook> {
-    if (options.channelID !== undefined && this.rest.client === undefined) throw new Error('Authentication is required for editing Webhook Channel')
-    if (options.avatar !== undefined && (options.avatar.startsWith('http:') || options.avatar.startsWith('https:'))) {
+  async edit (options: WebhookEditOptions): Promise<Webhook> {
+    if (options.channelID !== undefined && this.rest.client === undefined)
+      throw new Error('Authentication is required for editing Webhook Channel')
+    if (
+      options.avatar !== undefined &&
+      (options.avatar.startsWith('http:') ||
+        options.avatar.startsWith('https:'))
+    ) {
       options.avatar = await fetchAuto(options.avatar)
     }
 
@@ -150,7 +186,7 @@ export class Webhook {
   }
 
   /** Delete the Webhook. */
-  async delete(): Promise<boolean> {
+  async delete (): Promise<boolean> {
     const resp = await this.rest.delete(this.url, undefined, 0, undefined, true)
     if (resp.response.status !== 204) return false
     else return true
