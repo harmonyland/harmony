@@ -106,4 +106,4 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT © 2020 Helloyunho](LICENSE)
+[MIT © 2020 Harmony Org](LICENSE)
