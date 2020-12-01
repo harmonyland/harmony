@@ -1,17 +1,17 @@
 // import { Role } from "../../mod.ts"
-import { Client } from "../models/client.ts";
-import { Guild } from "../structures/guild.ts";
-import { Invite } from "../structures/invite.ts";
-import { GUILD_INVITES } from "../types/endpoint.ts";
-import { InvitePayload } from "../types/invite.ts";
-import { BaseManager } from "./base.ts";
+import { Client } from '../models/client.ts'
+import { Guild } from '../structures/guild.ts'
+import { Invite } from '../structures/invite.ts'
+import { GUILD_INVITES } from '../types/endpoint.ts'
+import { InvitePayload } from '../types/invite.ts'
+import { BaseManager } from './base.ts'
 
 export class InviteManager extends BaseManager<InvitePayload, Invite> {
-  guild: Guild;
+  guild: Guild
 
   constructor(client: Client, guild: Guild) {
-    super(client, `invites:${guild.id}`, Invite);
-    this.guild = guild;
+    super(client, `invites:${guild.id}`, Invite)
+    this.guild = guild
   }
 
   async fetch(id: string): Promise<Invite> {
@@ -19,17 +19,17 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
       this.client.rest
         .get(GUILD_INVITES(this.guild.id))
         .then((data) => {
-          this.set(id, data as InvitePayload);
-          resolve(new Invite(this.client, data as InvitePayload));
+          this.set(id, data as InvitePayload)
+          resolve(new Invite(this.client, data as InvitePayload))
         })
-        .catch((e) => reject(e));
-    });
+        .catch((e) => reject(e))
+    })
   }
 
   async fromPayload(invites: InvitePayload[]): Promise<boolean> {
     for (const invite of invites) {
-      await this.set(invite.code, invite);
+      await this.set(invite.code, invite)
     }
-    return true;
+    return true
   }
 }

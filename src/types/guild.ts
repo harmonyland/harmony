@@ -1,66 +1,66 @@
-import { ChannelPayload } from "./channel.ts";
-import { EmojiPayload } from "./emoji.ts";
-import { PresenceUpdatePayload } from "./gateway.ts";
-import { RolePayload } from "./role.ts";
-import { UserPayload } from "./user.ts";
-import { VoiceStatePayload } from "./voice.ts";
+import { ChannelPayload } from './channel.ts'
+import { EmojiPayload } from './emoji.ts'
+import { PresenceUpdatePayload } from './gateway.ts'
+import { RolePayload } from './role.ts'
+import { UserPayload } from './user.ts'
+import { VoiceStatePayload } from './voice.ts'
 
 export interface GuildPayload {
-  id: string;
-  name: string;
-  icon?: string;
-  icon_hash?: string;
-  splash?: string;
-  discovery_splash?: string;
-  owner?: boolean;
-  owner_id: string;
-  permissions?: string;
-  region: string;
-  afk_channel_id?: string;
-  afk_timeout: number;
-  widget_enabled?: boolean;
-  widget_channel_id?: string;
-  verification_level: string;
-  default_message_notifications: string;
-  explicit_content_filter: string;
-  roles: RolePayload[];
-  emojis: EmojiPayload[];
-  features: GuildFeatures[];
-  mfa_level: string;
-  application_id?: string;
-  system_channel_id?: string;
-  system_channel_flags: string;
-  rules_channel_id?: string;
-  joined_at?: string;
-  large?: boolean;
-  unavailable: boolean;
-  member_count?: number;
-  voice_states?: VoiceStatePayload[];
-  members?: MemberPayload[];
-  channels?: ChannelPayload[];
-  presences?: PresenceUpdatePayload[];
-  max_presences?: number;
-  max_members?: number;
-  vanity_url_code?: string;
-  description?: string;
-  banner?: string;
-  premium_tier: number;
-  premium_subscription_count?: number;
-  preferred_locale: string;
-  public_updates_channel_id?: string;
-  max_video_channel_users?: number;
-  approximate_number_count?: number;
-  approximate_presence_count?: number;
+  id: string
+  name: string
+  icon?: string
+  icon_hash?: string
+  splash?: string
+  discovery_splash?: string
+  owner?: boolean
+  owner_id: string
+  permissions?: string
+  region: string
+  afk_channel_id?: string
+  afk_timeout: number
+  widget_enabled?: boolean
+  widget_channel_id?: string
+  verification_level: string
+  default_message_notifications: string
+  explicit_content_filter: string
+  roles: RolePayload[]
+  emojis: EmojiPayload[]
+  features: GuildFeatures[]
+  mfa_level: string
+  application_id?: string
+  system_channel_id?: string
+  system_channel_flags: string
+  rules_channel_id?: string
+  joined_at?: string
+  large?: boolean
+  unavailable: boolean
+  member_count?: number
+  voice_states?: VoiceStatePayload[]
+  members?: MemberPayload[]
+  channels?: ChannelPayload[]
+  presences?: PresenceUpdatePayload[]
+  max_presences?: number
+  max_members?: number
+  vanity_url_code?: string
+  description?: string
+  banner?: string
+  premium_tier: number
+  premium_subscription_count?: number
+  preferred_locale: string
+  public_updates_channel_id?: string
+  max_video_channel_users?: number
+  approximate_number_count?: number
+  approximate_presence_count?: number
 }
 
 export interface MemberPayload {
-  user: UserPayload;
-  nick?: string;
-  roles: string[];
-  joined_at: string;
-  premium_since?: string;
-  deaf: boolean;
-  mute: boolean;
+  user: UserPayload
+  nick?: string
+  roles: string[]
+  joined_at: string
+  premium_since?: string
+  deaf: boolean
+  mute: boolean
 }
 
 export enum MessageNotification {
@@ -100,15 +100,15 @@ export enum SystemChannelFlags {
 }
 
 export type GuildFeatures =
-  | "INVITE_SPLASH"
-  | "VIP_REGIONS"
-  | "VANITY_URL"
-  | "VERIFIED"
-  | "PARTNERED"
-  | "PUBLIC"
-  | "COMMERCE"
-  | "NEWS"
-  | "DISCOVERABLE"
-  | "FEATURABLE"
-  | "ANIMATED_ICON"
-  | "BANNER";
+  | 'INVITE_SPLASH'
+  | 'VIP_REGIONS'
+  | 'VANITY_URL'
+  | 'VERIFIED'
+  | 'PARTNERED'
+  | 'PUBLIC'
+  | 'COMMERCE'
+  | 'NEWS'
+  | 'DISCOVERABLE'
+  | 'FEATURABLE'
+  | 'ANIMATED_ICON'
+  | 'BANNER'

@@ -1,5 +1,5 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#voice
-import { MemberPayload } from "./guild.ts";
+import { MemberPayload } from './guild.ts'
 
 export enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
   IDENTIFY = 0,
@@ -30,16 +30,16 @@ export enum VoiceCloseCodes {
 }
 
 export interface VoiceStatePayload {
-  guild_id?: string;
-  channel_id?: string;
-  user_id: string;
-  member?: MemberPayload;
-  session_id: string;
-  deaf: boolean;
-  mute: boolean;
-  self_deaf: boolean;
-  self_mute: boolean;
-  self_stream?: boolean;
-  self_video: boolean;
-  suppress: boolean;
+  guild_id?: string
+  channel_id?: string
+  user_id: string
+  member?: MemberPayload
+  session_id: string
+  deaf: boolean
+  mute: boolean
+  self_deaf: boolean
+  self_mute: boolean
+  self_stream?: boolean
+  self_video: boolean
+  suppress: boolean
 }

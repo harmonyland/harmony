@@ -1,60 +1,60 @@
-import { Client } from "../models/client.ts";
+import { Client } from '../models/client.ts'
 
 interface IInit {
-  useCache?: boolean;
-  endpoint: (...restURLfuncArgs: string[]) => string;
-  restURLfuncArgs: string[];
+  useCache?: boolean
+  endpoint: (...restURLfuncArgs: string[]) => string
+  restURLfuncArgs: string[]
 }
 
 export class Base {
-  client: Client;
-  static cacheName?: string;
-  propertyConverterOverride: { [k: string]: string } = {};
-  static useCache?: boolean = true;
-  static restFunc?: (...restURLfuncArgs: string[]) => string;
+  client: Client
+  static cacheName?: string
+  propertyConverterOverride: { [k: string]: string } = {}
+  static useCache?: boolean = true
+  static restFunc?: (...restURLfuncArgs: string[]) => string
 
   constructor(client: Client, _data?: any) {
-    this.client = client;
+    this.client = client
   }
 
   static async autoInit(
     client: Client,
-    { useCache, endpoint, restURLfuncArgs }: IInit,
+    { useCache, endpoint, restURLfuncArgs }: IInit
   ): Promise<any> {
-    this.useCache = useCache;
-    const cacheID = restURLfuncArgs.join(":");
+    this.useCache = useCache
+    const cacheID = restURLfuncArgs.join(':')
     if (this.useCache !== undefined) {
       const cached = await client.cache.get(
         this.cacheName ?? this.name,
-        cacheID,
-      );
+        cacheID
+      )
       if (cached !== undefined) {
-        return cached;
+        return cached
       }
     }
 
-    const jsonParsed = await client.rest.get(endpoint(...restURLfuncArgs));
+    const jsonParsed = await client.rest.get(endpoint(...restURLfuncArgs))
 
-    return new this(client, jsonParsed);
+    return new this(client, jsonParsed)
   }
 
   async refreshFromAPI(
     client: Client,
-    { endpoint, restURLfuncArgs }: IInit,
+    { endpoint, restURLfuncArgs }: IInit
   ): Promise<this> {
-    const oldOne = Object.assign(Object.create(this), this);
+    const oldOne = Object.assign(Object.create(this), this)
 
-    const jsonParsed = await client.rest.get(endpoint(...restURLfuncArgs));
+    const jsonParsed = await client.rest.get(endpoint(...restURLfuncArgs))
 
-    this.readFromData(jsonParsed);
+    this.readFromData(jsonParsed)
 
-    return oldOne;
+    return oldOne
   }
 
   refreshFromData(data: { [k: string]: any }): this {
-    const oldOne = Object.assign(Object.create(this), this);
-    this.readFromData(data);
-    return oldOne;
+    const oldOne = Object.assign(Object.create(this), this)
+    this.readFromData(data)
+    return oldOne
   }
 
   protected readFromData(data: { [k: string]: any }): void {}

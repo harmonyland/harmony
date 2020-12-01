@@ -1,163 +1,165 @@
-import { Message } from "../../mod.ts";
-import { awaitSync } from "../utils/mixedPromise.ts";
-import { Client, ClientOptions } from "./client.ts";
-import { CommandContext, CommandsManager, parseCommand } from "./command.ts";
-import { ExtensionsManager } from "./extensions.ts";
+import { Message } from '../../mod.ts'
+import { awaitSync } from '../utils/mixedPromise.ts'
+import { Client, ClientOptions } from './client.ts'
+import { CommandContext, CommandsManager, parseCommand } from './command.ts'
+import { ExtensionsManager } from './extensions.ts'
 
-type PrefixReturnType = string | string[] | Promise<string | string[]>;
+type PrefixReturnType = string | string[] | Promise<string | string[]>
 
 export interface CommandClientOptions extends ClientOptions {
-  prefix: string | string[];
-  mentionPrefix?: boolean;
-  getGuildPrefix?: (guildID: string) => PrefixReturnType;
-  getUserPrefix?: (userID: string) => PrefixReturnType;
-  isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>;
-  isUserBlacklisted?: (guildID: string) => boolean | Promise<boolean>;
-  isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>;
-  spacesAfterPrefix?: boolean;
-  betterArgs?: boolean;
-  owners?: string[];
-  allowBots?: boolean;
-  allowDMs?: boolean;
-  caseSensitive?: boolean;
+  prefix: string | string[]
+  mentionPrefix?: boolean
+  getGuildPrefix?: (guildID: string) => PrefixReturnType
+  getUserPrefix?: (userID: string) => PrefixReturnType
+  isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  isUserBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  spacesAfterPrefix?: boolean
+  betterArgs?: boolean
+  owners?: string[]
+  allowBots?: boolean
+  allowDMs?: boolean
+  caseSensitive?: boolean
 }
 
 export class CommandClient extends Client implements CommandClientOptions {
-  prefix: string | string[];
-  mentionPrefix: boolean;
-  getGuildPrefix: (guildID: string) => PrefixReturnType;
-  getUserPrefix: (userID: string) => PrefixReturnType;
-  isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>;
-  isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>;
-  isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>;
-  spacesAfterPrefix: boolean;
-  betterArgs: boolean;
-  owners: string[];
-  allowBots: boolean;
-  allowDMs: boolean;
-  caseSensitive: boolean;
-  extensions: ExtensionsManager = new ExtensionsManager(this);
-  commands: CommandsManager = new CommandsManager(this);
+  prefix: string | string[]
+  mentionPrefix: boolean
+  getGuildPrefix: (guildID: string) => PrefixReturnType
+  getUserPrefix: (userID: string) => PrefixReturnType
+  isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>
+  isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>
+  isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>
+  spacesAfterPrefix: boolean
+  betterArgs: boolean
+  owners: string[]
+  allowBots: boolean
+  allowDMs: boolean
+  caseSensitive: boolean
+  extensions: ExtensionsManager = new ExtensionsManager(this)
+  commands: CommandsManager = new CommandsManager(this)
 
   constructor(options: CommandClientOptions) {
-    super(options);
-    this.prefix = options.prefix;
-    this.mentionPrefix = options.mentionPrefix === undefined
-      ? false
-      : options.mentionPrefix;
-    this.getGuildPrefix = options.getGuildPrefix === undefined
-      ? (id: string) => this.prefix
-      : options.getGuildPrefix;
-    this.getUserPrefix = options.getUserPrefix === undefined
-      ? (id: string) => this.prefix
-      : options.getUserPrefix;
-    this.isUserBlacklisted = options.isUserBlacklisted === undefined
-      ? (id: string) => false
-      : options.isUserBlacklisted;
-    this.isGuildBlacklisted = options.isGuildBlacklisted === undefined
-      ? (id: string) => false
-      : options.isGuildBlacklisted;
-    this.isChannelBlacklisted = options.isChannelBlacklisted === undefined
-      ? (id: string) => false
-      : options.isChannelBlacklisted;
-    this.spacesAfterPrefix = options.spacesAfterPrefix === undefined
-      ? false
-      : options.spacesAfterPrefix;
-    this.betterArgs = options.betterArgs === undefined
-      ? false
-      : options.betterArgs;
-    this.owners = options.owners === undefined ? [] : options.owners;
-    this.allowBots = options.allowBots === undefined
-      ? false
-      : options.allowBots;
-    this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs;
-    this.caseSensitive = options.caseSensitive === undefined
-      ? false
-      : options.caseSensitive;
+    super(options)
+    this.prefix = options.prefix
+    this.mentionPrefix =
+      options.mentionPrefix === undefined ? false : options.mentionPrefix
+    this.getGuildPrefix =
+      options.getGuildPrefix === undefined
+        ? (id: string) => this.prefix
+        : options.getGuildPrefix
+    this.getUserPrefix =
+      options.getUserPrefix === undefined
+        ? (id: string) => this.prefix
+        : options.getUserPrefix
+    this.isUserBlacklisted =
+      options.isUserBlacklisted === undefined
+        ? (id: string) => false
+        : options.isUserBlacklisted
+    this.isGuildBlacklisted =
+      options.isGuildBlacklisted === undefined
+        ? (id: string) => false
+        : options.isGuildBlacklisted
+    this.isChannelBlacklisted =
+      options.isChannelBlacklisted === undefined
+        ? (id: string) => false
+        : options.isChannelBlacklisted
+    this.spacesAfterPrefix =
+      options.spacesAfterPrefix === undefined
+        ? false
+        : options.spacesAfterPrefix
+    this.betterArgs =
+      options.betterArgs === undefined ? false : options.betterArgs
+    this.owners = options.owners === undefined ? [] : options.owners
+    this.allowBots = options.allowBots === undefined ? false : options.allowBots
+    this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
+    this.caseSensitive =
+      options.caseSensitive === undefined ? false : options.caseSensitive
 
     this.on(
-      "messageCreate",
-      async (msg: Message) => await this.processMessage(msg),
-    );
+      'messageCreate',
+      async (msg: Message) => await this.processMessage(msg)
+    )
   }
 
   async processMessage(msg: Message): Promise<any> {
-    if (!this.allowBots && msg.author.bot === true) return;
+    if (!this.allowBots && msg.author.bot === true) return
 
     const isUserBlacklisted = await awaitSync(
-      this.isUserBlacklisted(msg.author.id),
-    );
-    if (isUserBlacklisted === true) return;
+      this.isUserBlacklisted(msg.author.id)
+    )
+    if (isUserBlacklisted === true) return
 
     const isChannelBlacklisted = await awaitSync(
-      this.isChannelBlacklisted(msg.channel.id),
-    );
-    if (isChannelBlacklisted === true) return;
+      this.isChannelBlacklisted(msg.channel.id)
+    )
+    if (isChannelBlacklisted === true) return
 
     if (msg.guild !== undefined) {
       const isGuildBlacklisted = await awaitSync(
-        this.isGuildBlacklisted(msg.guild.id),
-      );
-      if (isGuildBlacklisted === true) return;
+        this.isGuildBlacklisted(msg.guild.id)
+      )
+      if (isGuildBlacklisted === true) return
     }
 
-    let prefix: string | string[] = this.prefix;
+    let prefix: string | string[] = this.prefix
 
     if (msg.guild !== undefined) {
-      prefix = await awaitSync(this.getGuildPrefix(msg.guild.id));
+      prefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
     } else {
-      prefix = await awaitSync(this.getUserPrefix(msg.author.id));
+      prefix = await awaitSync(this.getUserPrefix(msg.author.id))
     }
 
-    let mentionPrefix = false;
+    let mentionPrefix = false
 
-    if (typeof prefix === "string") {
+    if (typeof prefix === 'string') {
       if (msg.content.startsWith(prefix) === false) {
-        if (this.mentionPrefix) mentionPrefix = true;
-        else return;
+        if (this.mentionPrefix) mentionPrefix = true
+        else return
       }
     } else {
-      const usedPrefix = prefix.find((v) => msg.content.startsWith(v));
+      const usedPrefix = prefix.find((v) => msg.content.startsWith(v))
       if (usedPrefix === undefined) {
-        if (this.mentionPrefix) mentionPrefix = true;
-        else return;
-      } else prefix = usedPrefix;
+        if (this.mentionPrefix) mentionPrefix = true
+        else return
+      } else prefix = usedPrefix
     }
 
     if (mentionPrefix) {
       if (msg.content.startsWith(this.user?.mention as string) === true) {
-        prefix = this.user?.mention as string;
+        prefix = this.user?.mention as string
       } else if (
         msg.content.startsWith(this.user?.nickMention as string) === true
       ) {
-        prefix = this.user?.nickMention as string;
-      } else return;
+        prefix = this.user?.nickMention as string
+      } else return
     }
 
-    if (typeof prefix !== "string") return;
+    if (typeof prefix !== 'string') return
 
-    const parsed = parseCommand(this, msg, prefix);
-    const command = this.commands.find(parsed.name);
+    const parsed = parseCommand(this, msg, prefix)
+    const command = this.commands.find(parsed.name)
 
-    if (command === undefined) return;
+    if (command === undefined) return
 
     if (
-      command.whitelistedGuilds !== undefined && msg.guild !== undefined &&
+      command.whitelistedGuilds !== undefined &&
+      msg.guild !== undefined &&
       command.whitelistedGuilds.includes(msg.guild.id) === false
     ) {
-      return;
+      return
     }
     if (
       command.whitelistedChannels !== undefined &&
       command.whitelistedChannels.includes(msg.channel.id) === false
     ) {
-      return;
+      return
     }
     if (
       command.whitelistedUsers !== undefined &&
       command.whitelistedUsers.includes(msg.author.id) === false
     ) {
-      return;
+      return
     }
 
     const ctx: CommandContext = {
@@ -171,71 +173,68 @@ export class CommandClient extends Client implements CommandClientOptions {
       command,
       channel: msg.channel,
       guild: msg.guild,
-    };
+    }
 
-    if (
-      command.ownerOnly === true && !this.owners.includes(msg.author.id)
-    ) {
-      return this.emit("commandOwnerOnly", ctx, command);
+    if (command.ownerOnly === true && !this.owners.includes(msg.author.id)) {
+      return this.emit('commandOwnerOnly', ctx, command)
     }
     if (command.guildOnly === true && msg.guild === undefined) {
-      return this.emit("commandGuildOnly", ctx, command);
+      return this.emit('commandGuildOnly', ctx, command)
     }
     if (command.dmOnly === true && msg.guild !== undefined) {
-      return this.emit("commandDmOnly", ctx, command);
+      return this.emit('commandDmOnly', ctx, command)
     }
 
     if (command.botPermissions !== undefined && msg.guild !== undefined) {
       // TODO: Check Overwrites too
-      const me = await msg.guild.me();
-      const missing: string[] = [];
+      const me = await msg.guild.me()
+      const missing: string[] = []
 
       for (const perm of command.botPermissions) {
-        if (me.permissions.has(perm) === false) missing.push(perm);
+        if (me.permissions.has(perm) === false) missing.push(perm)
       }
 
       if (missing.length !== 0) {
-        return this.emit("commandBotMissingPermissions", ctx, command, missing);
+        return this.emit('commandBotMissingPermissions', ctx, command, missing)
       }
     }
 
     if (command.permissions !== undefined && msg.guild !== undefined) {
-      const missing: string[] = [];
-      let perms: string[] = [];
-      if (typeof command.permissions === "string") {
-        perms = [command.permissions];
-      } else perms = command.permissions;
+      const missing: string[] = []
+      let perms: string[] = []
+      if (typeof command.permissions === 'string') {
+        perms = [command.permissions]
+      } else perms = command.permissions
       for (const perm of perms) {
-        const has = msg.member?.permissions.has(perm);
-        if (has !== true) missing.push(perm);
+        const has = msg.member?.permissions.has(perm)
+        if (has !== true) missing.push(perm)
       }
       if (missing.length !== 0) {
-        return this.emit("commandMissingPermissions", command, missing, ctx);
+        return this.emit('commandMissingPermissions', command, missing, ctx)
       }
     }
 
     if (command.args !== undefined) {
-      if (
-        typeof command.args === "boolean" && parsed.args.length === 0
-      ) {
-        return this.emit("commandMissingArgs", ctx, command);
+      if (typeof command.args === 'boolean' && parsed.args.length === 0) {
+        return this.emit('commandMissingArgs', ctx, command)
       } else if (
-        typeof command.args === "number" && parsed.args.length < command.args
+        typeof command.args === 'number' &&
+        parsed.args.length < command.args
       ) {
-        this.emit("commandMissingArgs", ctx, command);
+        this.emit('commandMissingArgs', ctx, command)
       }
     }
 
     try {
-      this.emit("commandUsed", ctx, command);
+      this.emit('commandUsed', ctx, command)
 
-      const beforeExecute = await awaitSync(command.beforeExecute(ctx));
-      if (beforeExecute === false) return;
+      const beforeExecute = await awaitSync(command.beforeExecute(ctx))
+      if (beforeExecute === false) return
 
-      const result = await awaitSync(command.execute(ctx));
-      command.afterExecute(ctx, result);
+      const result = await awaitSync(command.execute(ctx))
+      command.afterExecute(ctx, result)
     } catch (e) {
-      this.emit("commandError", command, ctx, e);
+      this.emit('commandError', command, ctx, e)
     }
   }
 }

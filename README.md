@@ -5,16 +5,17 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 **An easy to use Discord API Library for Deno.**
-* Lightweight and easy to use.
-* Built-in Command Framework,
-  * Easily build Commands on the fly.
-  * Completely Customizable.
-  * Complete Object-Oriented approach.
-* 100% Discord API Coverage.
-* Customizable caching.
-  * Built in support for Redis.
-  * Write Custom Cache Adapters.
-* Complete TypeScript support.
+
+- Lightweight and easy to use.
+- Built-in Command Framework,
+  - Easily build Commands on the fly.
+  - Completely Customizable.
+  - Complete Object-Oriented approach.
+- 100% Discord API Coverage.
+- Customizable caching.
+  - Built in support for Redis.
+  - Write Custom Cache Adapters.
+- Complete TypeScript support.
 
 Note: Library is yet under development and not completely usable. You're still always welcome to use, but there may be breaking changes.
 
@@ -27,18 +28,26 @@ Note: Library is yet under development and not completely usable. You're still a
 - [License](#license)
 
 ## Usage
+
 Right now, the package is not published anywhere, as its not completely usable.
 You can import it from this Raw GitHub URL: https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts
 
 For a quick example, run this:
+
 ```bash
 deno run --allow-net https://raw.githubusercontent.com/harmony-org/harmony/main/examples/ping.ts
 ```
+
 And input your bot's token and Intents.
 
 Here is a small example of how to use harmony,
+
 ```ts
-import { Client, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+import {
+  Client,
+  Message,
+  Intents,
+} from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new Client()
 
@@ -60,11 +69,18 @@ client.connect('super secret token comes here', Intents.All)
 ```
 
 Or with CommandClient!
+
 ```ts
-import { CommandClient, Command, CommandContext, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+import {
+  CommandClient,
+  Command,
+  CommandContext,
+  Message,
+  Intents,
+} from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new CommandClient({
-  prefix: '!'
+  prefix: '!',
 })
 
 // Listen for event when client is ready (Identified through gateway / Resumed)
@@ -74,7 +90,7 @@ client.on('ready', () => {
 
 // Create a new Command
 class PingCommand extends Command {
-  name = "ping"
+  name = 'ping'
 
   execute(ctx: CommandContext) {
     ctx.message.reply(`pong! Ping: ${ctx.client.ping}ms`)
