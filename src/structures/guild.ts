@@ -78,6 +78,7 @@ export class Guild extends Base {
     )
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
+    this.invites = new InviteManager(this.client, this)
 
     if (!this.unavailable) {
       this.name = data.name

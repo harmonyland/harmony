@@ -36,6 +36,8 @@ import { Member } from "../../structures/member.ts"
 import { Role } from "../../structures/role.ts"
 import { Message } from "../../structures/message.ts"
 import { Collection } from "../../utils/collection.ts"
+import { inviteCreate } from './inviteCreate'
+import { inviteDelete } from './inviteDelete'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -61,8 +63,8 @@ export const gatewayHandlers: {
   GUILD_ROLE_CREATE: guildRoleCreate,
   GUILD_ROLE_UPDATE: guildRoleUpdate,
   GUILD_ROLE_DELETE: guildRoleDelete,
-  INVITE_CREATE: undefined,
-  INVITE_DELETE: undefined,
+  INVITE_CREATE: inviteCreate,
+  INVITE_DELETE: inviteDelete,
   MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: messageUpdate,
   MESSAGE_DELETE: messageDelete,
