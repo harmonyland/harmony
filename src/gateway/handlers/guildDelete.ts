@@ -14,6 +14,7 @@ export const guildDelte: GatewayEventHandler = async (
     await guild.members.flush()
     await guild.channels.flush()
     await guild.roles.flush()
+    await guild.presences.flush()
     await gateway.client.guilds.delete(d.id)
 
     gateway.client.emit('guildDelete', guild)

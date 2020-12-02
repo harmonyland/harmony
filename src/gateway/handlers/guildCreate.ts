@@ -22,6 +22,8 @@ export const guildCreate: GatewayEventHandler = async (
 
   await guild.roles.fromPayload(d.roles)
 
+  if (d.presences !== undefined) await guild.presences.fromPayload(d.presences)
+
   if (d.voice_states !== undefined)
     await guild.voiceStates.fromPayload(d.voice_states)
 

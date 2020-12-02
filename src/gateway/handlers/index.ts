@@ -49,6 +49,7 @@ import { inviteCreate } from './inviteCreate.ts'
 import { inviteDelete } from './inviteDelete.ts'
 import { MessageReaction } from '../../structures/messageReaction.ts'
 import { Invite } from '../../structures/invite.ts'
+import { Presence } from '../../structures/presence.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -150,5 +151,6 @@ export interface ClientEvents extends EventTypes {
   voiceStateAdd: (state: VoiceState) => void
   voiceStateRemove: (state: VoiceState) => void
   voiceStateUpdate: (state: VoiceState, after: VoiceState) => void
+  presenceUpdate: (presence: Presence) => void
   webhooksUpdate: (guild: Guild, channel: GuildTextChannel) => void
 }
