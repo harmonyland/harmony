@@ -78,7 +78,7 @@ export const gatewayHandlers: {
   MESSAGE_REACTION_REMOVE_EMOJI: undefined,
   PRESENCE_UPDATE: undefined,
   TYPING_START: typingStart,
-  USER_UPDATE: userUpdate
+  USER_UPDATE: userUpdate,
   VOICE_STATE_UPDATE: voiceStateUpdate,
   VOICE_SERVER_UPDATE: voiceServerUpdate,
   WEBHOOKS_UPDATE: webhooksUpdate
