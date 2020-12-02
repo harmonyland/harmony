@@ -72,7 +72,7 @@ client.on('inviteDelete', (invite: Invite) => {
 })
 
 client.on('inviteDeleteUncached', (invite: Invite) => {
-  console.log(`Invite deleted uncached: ${invite}`)
+  console.log(invite)
 })
 
 client.on('commandError', console.error)

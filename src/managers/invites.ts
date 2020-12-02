@@ -23,9 +23,10 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD_INVITES(this.guild.id))
-        .then((data) => {
+        .then(async (data) => {
           this.set(id, data as InvitePayload)
-          resolve(new Invite(this.client, data as InvitePayload))
+          const newInvite = await this.get(data.code)
+          resolve(newInvite)
         })
         .catch((e) => reject(e))
     })
