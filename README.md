@@ -2,7 +2,7 @@
 
 ![banner](banner.png)
 
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme) [![Discord](https://img.shields.io/discord/591914197219016707.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/WVN2JF2FRv)
 
 **An easy to use Discord API Library for Deno.**
 * Lightweight and easy to use.
@@ -22,6 +22,7 @@ Note: Library is yet under development and not completely usable. You're still a
 
 - [Usage](#usage)
 - [Docs](#docs)
+- [Discord](#discord)
 - [Maintainer](#maintainer)
 - [Contributing](#contributing)
 - [License](#license)
@@ -91,6 +92,10 @@ client.connect('super secret token comes here', Intents.All)
 ## Docs
 
 Not made yet.
+
+## Discord
+
+[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/WVN2JF2FRv)
 
 ## Maintainer
 
