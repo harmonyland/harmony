@@ -92,6 +92,14 @@ client.on('typingStart', (user, channel, at, guildData) => {
   console.log(`${user.tag} started typing in ${channel.id} at ${at}${guildData !== undefined ? `\nGuild: ${guildData.guild.name}` : ''}`)
 })
 
+client.on('voiceStateAdd', (state) => {
+  console.log('VC Join', state)
+})
+
+client.on('voiceStateRemove', (state) => {
+  console.log('VC Leave', state)
+})
+
 // client.on('raw', (evt: string) => console.log(`EVENT: ${evt}`))
 
 const files = Deno.readDirSync('./src/test/cmds')

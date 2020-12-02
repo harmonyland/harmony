@@ -31,7 +31,7 @@ export enum VoiceCloseCodes {
 
 export interface VoiceStatePayload {
   guild_id?: string
-  channel_id?: string
+  channel_id: string | null
   user_id: string
   member?: MemberPayload
   session_id: string

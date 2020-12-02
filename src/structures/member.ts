@@ -1,10 +1,19 @@
-import { MemberRolesManager } from "../managers/memberRoles.ts"
+import { MemberRolesManager } from '../managers/memberRoles.ts'
 import { Client } from '../models/client.ts'
+import { GUILD_MEMBER } from '../types/endpoint.ts'
 import { MemberPayload } from '../types/guild.ts'
-import { Permissions } from "../utils/permissions.ts"
+import { Permissions } from '../utils/permissions.ts'
 import { Base } from './base.ts'
-import { Guild } from "./guild.ts"
+import { Guild } from './guild.ts'
+import { Role } from './role.ts'
 import { User } from './user.ts'
+
+export interface MemberData {
+  nick?: string | null
+  roles?: Array<Role | string>
+  deaf?: boolean
+  mute?: boolean
+}
 
 export class Member extends Base {
   id: string
@@ -18,7 +27,13 @@ export class Member extends Base {
   guild: Guild
   permissions: Permissions
 
-  constructor (client: Client, data: MemberPayload, user: User, guild: Guild, perms?: Permissions) {
+  constructor(
+    client: Client,
+    data: MemberPayload,
+    user: User,
+    guild: Guild,
+    perms?: Permissions
+  ) {
     super(client)
     this.id = data.user.id
     this.user = user
@@ -33,12 +48,126 @@ export class Member extends Base {
     else this.permissions = new Permissions(Permissions.DEFAULT)
   }
 
-  protected readFromData (data: MemberPayload): void {
+  get displayName(): string {
+    return this.nick !== undefined ? this.nick : this.user.username
+  }
+
+  toString(): string {
+    return this.user.nickMention
+  }
+
+  protected readFromData(data: MemberPayload): void {
     super.readFromData(data.user)
     this.nick = data.nick ?? this.nick
     this.joinedAt = data.joined_at ?? this.joinedAt
     this.premiumSince = data.premium_since ?? this.premiumSince
     this.deaf = data.deaf ?? this.deaf
     this.mute = data.mute ?? this.mute
+  }
+
+  /**
+   * Update the Member data in cache (and this object).
+   */
+  async fetch(): Promise<Member> {
+    const raw = await this.client.rest.get(this.id)
+    if (typeof raw !== 'object') throw new Error('Member not found')
+    await this.guild.members.set(this.id, raw)
+    this.readFromData(raw)
+    return this
+  }
+
+  /**
+   * Edit the Member
+   * @param data Data to apply
+   */
+  async edit(data: MemberData): Promise<Member> {
+    const payload = {
+      nick: data.nick,
+      roles: data.roles?.map((e) => (typeof e === 'string' ? e : e.id)),
+      deaf: data.deaf,
+      mute: data.mute,
+    }
+    const res = await this.client.rest.patch(
+      GUILD_MEMBER(this.guild.id, this.id),
+      payload,
+      undefined,
+      null,
+      true
+    )
+    if (res.ok === true) {
+      if (data.nick !== undefined)
+        this.nick = data.nick === null ? undefined : data.nick
+      if (data.deaf !== undefined) this.deaf = data.deaf
+      if (data.mute !== undefined) this.mute = data.mute
+    }
+    return this
+  }
+
+  /**
+   * New nickname to set. If empty, nick is reset
+   * @param nick New nickname
+   */
+  async setNickname(nick?: string): Promise<Member> {
+    return await this.edit({
+      nick: nick === undefined ? null : nick,
+    })
+  }
+
+  /**
+   * Reset nickname of the Member
+   */
+  async resetNickname(): Promise<Member> {
+    return await this.setNickname()
+  }
+
+  /**
+   * Set mute of a Member in VC
+   * @param mute Value to set
+   */
+  async setMute(mute?: boolean): Promise<Member> {
+    return await this.edit({
+      mute: mute === undefined ? false : mute,
+    })
+  }
+
+  /**
+   * Set deaf of a Member in VC
+   * @param deaf Value to set
+   */
+  async setDeaf(deaf?: boolean): Promise<Member> {
+    return await this.edit({
+      deaf: deaf === undefined ? false : deaf,
+    })
+  }
+
+  /**
+   * Unmute the Member from VC.
+   */
+  async unmute(): Promise<Member> {
+    return await this.setMute(false)
+  }
+
+  /**
+   * Kick the member.
+   */
+  async kick(): Promise<boolean> {
+    const resp = await this.client.rest.delete(
+      GUILD_MEMBER(this.guild.id, this.id),
+      undefined,
+      undefined,
+      null,
+      true
+    )
+    if (resp.ok !== true) return false
+    else return true
+  }
+
+  /**
+   * Ban the Member.
+   * @param reason Reason for the Ban.
+   * @param deleteMessagesDays Delete Old Messages? If yes, how much days.
+   */
+  async ban(reason?: string, deleteOldMessages?: number): Promise<void> {
+    return this.guild.bans.add(this.id, reason, deleteOldMessages)
   }
 }

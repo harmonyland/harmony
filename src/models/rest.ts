@@ -3,7 +3,13 @@ import { Client } from './client.ts'
 import { getBuildInfo } from '../utils/buildInfo.ts'
 import { Collection } from '../utils/collection.ts'
 
-export type RequestMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
+export type RequestMethods =
+  | 'get'
+  | 'post'
+  | 'put'
+  | 'patch'
+  | 'head'
+  | 'delete'
 
 export enum HttpResponseCode {
   Ok = 200,
@@ -16,7 +22,7 @@ export enum HttpResponseCode {
   NotFound = 404,
   MethodNotAllowed = 405,
   TooManyRequests = 429,
-  GatewayUnavailable = 502
+  GatewayUnavailable = 502,
 }
 
 export interface RequestHeaders {
@@ -30,11 +36,14 @@ export class DiscordAPIError extends Error {
 export interface QueuedItem {
   bucket?: string | null
   url: string
-  onComplete: () => Promise<{
-    rateLimited: any
-    bucket?: string | null
-    before: boolean
-  } | undefined>
+  onComplete: () => Promise<
+    | {
+        rateLimited: any
+        bucket?: string | null
+        before: boolean
+      }
+    | undefined
+  >
 }
 
 export interface RateLimit {
@@ -85,16 +94,14 @@ export class RESTManager {
   async processQueue(): Promise<void> {
     if (Object.keys(this.queues).length !== 0 && !this.globalRateLimit) {
       await Promise.allSettled(
-        Object.values(this.queues).map(async pathQueue => {
+        Object.values(this.queues).map(async (pathQueue) => {
           const request = pathQueue.shift()
           if (request === undefined) return
 
           const rateLimitedURLResetIn = await this.isRateLimited(request.url)
 
           if (typeof request.bucket === 'string') {
-            const rateLimitResetIn = await this.isRateLimited(
-              request.bucket
-            )
+            const rateLimitResetIn = await this.isRateLimited(request.bucket)
             if (rateLimitResetIn !== false) {
               this.queue(request)
             } else {
@@ -102,7 +109,7 @@ export class RESTManager {
               if (result?.rateLimited !== undefined) {
                 this.queue({
                   ...request,
-                  bucket: result.bucket ?? request.bucket
+                  bucket: result.bucket ?? request.bucket,
                 })
               }
             }
@@ -114,7 +121,7 @@ export class RESTManager {
               if (result?.rateLimited !== undefined) {
                 this.queue({
                   ...request,
-                  bucket: result.bucket ?? request.bucket
+                  bucket: result.bucket ?? request.bucket,
                 })
               }
             }
@@ -132,20 +139,18 @@ export class RESTManager {
     } else this.processing = false
   }
 
-  prepare(
-    body: any,
-    method: RequestMethods
-  ): { [key: string]: any } {
-
+  prepare(body: any, method: RequestMethods): { [key: string]: any } {
     const headers: RequestHeaders = {
-      'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
+      'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`,
     }
 
-    if (this.client !== undefined) headers.Authorization = `Bot ${this.client.token}`
+    if (this.client !== undefined)
+      headers.Authorization = `Bot ${this.client.token}`
 
     if (this.client?.token === undefined) delete headers.Authorization
 
-    if (method === 'get' || method === 'head' || method === 'delete') body = undefined
+    if (method === 'get' || method === 'head' || method === 'delete')
+      body = undefined
 
     if (body?.reason !== undefined) {
       headers['X-Audit-Log-Reason'] = encodeURIComponent(body.reason)
@@ -163,7 +168,7 @@ export class RESTManager {
     const data: { [name: string]: any } = {
       headers,
       body: body?.file ?? JSON.stringify(body),
-      method: method.toUpperCase()
+      method: method.toUpperCase(),
     }
 
     if (this.client?.bot === false) {
@@ -217,14 +222,14 @@ export class RESTManager {
       this.rateLimits.set(url, {
         url,
         resetAt: Number(resetAt) * 1000,
-        bucket
+        bucket,
       })
 
       if (bucket !== null) {
         this.rateLimits.set(bucket, {
           url,
           resetAt: Number(resetAt) * 1000,
-          bucket
+          bucket,
         })
       }
     }
@@ -237,14 +242,14 @@ export class RESTManager {
       this.rateLimits.set('global', {
         url: 'global',
         resetAt: reset,
-        bucket
+        bucket,
       })
 
       if (bucket !== null) {
         this.rateLimits.set(bucket, {
           url: 'global',
           resetAt: reset,
-          bucket
+          bucket,
         })
       }
     }
@@ -253,32 +258,46 @@ export class RESTManager {
   }
 
   async handleStatusCode(
-    response: Response, body: any, data: { [key: string]: any }
+    response: Response,
+    body: any,
+    data: { [key: string]: any }
   ): Promise<undefined> {
     const status = response.status
 
     if (
-      (status >= 200 && status < 400)
-      || status === HttpResponseCode.NoContent
-      || status === HttpResponseCode.TooManyRequests
-    ) return
+      (status >= 200 && status < 400) ||
+      status === HttpResponseCode.NoContent ||
+      status === HttpResponseCode.TooManyRequests
+    )
+      return
 
-    let text: undefined | string = Deno.inspect(body.errors === undefined ? body : body.errors)
+    let text: undefined | string = Deno.inspect(
+      body.errors === undefined ? body : body.errors
+    )
     if (text === 'undefined') text = undefined
 
     if (status === HttpResponseCode.Unauthorized)
-      throw new DiscordAPIError(`Request was not successful (Unauthorized). Invalid Token.\n${text}`)
+      throw new DiscordAPIError(
+        `Request was not successful (Unauthorized). Invalid Token.\n${text}`
+      )
 
     // At this point we know it is error
-    let error = { url: response.url, status, method: data.method, body: data.body }
+    let error = {
+      url: response.url,
+      status,
+      method: data.method,
+      body: data.body,
+    }
     if (body !== undefined) error = Object.assign(error, body)
 
-    if ([
-      HttpResponseCode.BadRequest,
-      HttpResponseCode.NotFound,
-      HttpResponseCode.Forbidden,
-      HttpResponseCode.MethodNotAllowed
-    ].includes(status)) {
+    if (
+      [
+        HttpResponseCode.BadRequest,
+        HttpResponseCode.NotFound,
+        HttpResponseCode.Forbidden,
+        HttpResponseCode.MethodNotAllowed,
+      ].includes(status)
+    ) {
       throw new DiscordAPIError(Deno.inspect(error))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
       throw new DiscordAPIError(Deno.inspect(error))
@@ -291,7 +310,7 @@ export class RESTManager {
     body?: unknown,
     maxRetries = 0,
     bucket?: string | null,
-    rawResponse?: boolean,
+    rawResponse?: boolean
   ): Promise<any> {
     return await new Promise((resolve, reject) => {
       const onComplete = async (): Promise<undefined | any> => {
@@ -301,20 +320,20 @@ export class RESTManager {
             return {
               rateLimited: rateLimitResetIn,
               before: true,
-              bucket
+              bucket,
             }
           }
 
           const query =
             method === 'get' && body !== undefined
               ? Object.entries(body as any)
-                .map(
-                  ([key, value]) =>
-                    `${encodeURIComponent(key)}=${encodeURIComponent(
-                      value as any
-                    )}`
-                )
-                .join('&')
+                  .map(
+                    ([key, value]) =>
+                      `${encodeURIComponent(key)}=${encodeURIComponent(
+                        value as any
+                      )}`
+                  )
+                  .join('&')
               : ''
           let urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
@@ -329,7 +348,10 @@ export class RESTManager {
           const response = await fetch(urlToUse, requestData)
           const bucketFromHeaders = this.processHeaders(url, response.headers)
 
-          if (response.status === 204) return resolve(rawResponse === true ? { response, body: null } : undefined)
+          if (response.status === 204)
+            return resolve(
+              rawResponse === true ? { response, body: null } : undefined
+            )
 
           const json: any = await response.json()
           await this.handleStatusCode(response, json, requestData)
@@ -345,7 +367,7 @@ export class RESTManager {
             return {
               rateLimited: json.retry_after,
               before: false,
-              bucket: bucketFromHeaders
+              bucket: bucketFromHeaders,
             }
           }
           return resolve(rawResponse === true ? { response, body: json } : json)
@@ -357,7 +379,7 @@ export class RESTManager {
       this.queue({
         onComplete,
         bucket,
-        url
+        url,
       })
       if (!this.processing) {
         this.processing = true
@@ -376,23 +398,53 @@ export class RESTManager {
     })
   }
 
-  async get(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+  async get(
+    url: string,
+    body?: unknown,
+    maxRetries = 0,
+    bucket?: string | null,
+    rawResponse?: boolean
+  ): Promise<any> {
     return await this.make('get', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async post(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+  async post(
+    url: string,
+    body?: unknown,
+    maxRetries = 0,
+    bucket?: string | null,
+    rawResponse?: boolean
+  ): Promise<any> {
     return await this.make('post', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async delete(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+  async delete(
+    url: string,
+    body?: unknown,
+    maxRetries = 0,
+    bucket?: string | null,
+    rawResponse?: boolean
+  ): Promise<any> {
     return await this.make('delete', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async patch(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+  async patch(
+    url: string,
+    body?: unknown,
+    maxRetries = 0,
+    bucket?: string | null,
+    rawResponse?: boolean
+  ): Promise<any> {
     return await this.make('patch', url, body, maxRetries, bucket, rawResponse)
   }
 
-  async put(url: string, body?: unknown, maxRetries = 0, bucket?: string | null, rawResponse?: boolean): Promise<any> {
+  async put(
+    url: string,
+    body?: unknown,
+    maxRetries = 0,
+    bucket?: string | null,
+    rawResponse?: boolean
+  ): Promise<any> {
     return await this.make('put', url, body, maxRetries, bucket, rawResponse)
   }
 }

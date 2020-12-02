@@ -104,6 +104,7 @@ export enum GatewayEvents {
   Typing_Start = 'TYPING_START',
   User_Update = 'USER_UPDATE',
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
+  Voice_State_Update = 'VOICE_STATE_UPDATE',
   Webhooks_Update = 'WEBHOOKS_UPDATE'
 }
 
