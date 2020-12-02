@@ -1,5 +1,5 @@
 import { TextChannel } from '../../structures/textChannel.ts'
-import { MessageDeletePayload } from "../../types/gateway.ts"
+import { MessageDeletePayload } from '../../types/gateway.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
 export const messageDelete: GatewayEventHandler = async (
@@ -13,7 +13,8 @@ export const messageDelete: GatewayEventHandler = async (
     channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
 
   const message = await channel.messages.get(d.id)
-  if (message === undefined) return gateway.client.emit('messageDeleteUncached', d)
+  if (message === undefined)
+    return gateway.client.emit('messageDeleteUncached', d)
   await channel.messages.delete(d.id)
   gateway.client.emit('messageDelete', message)
 }

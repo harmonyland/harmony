@@ -1,10 +1,10 @@
-import { Client } from "../models/client.ts";
-import { MessagePayload } from "../types/channel.ts";
-import { Collection } from "../utils/collection.ts";
-import { GuildTextChannel } from "./textChannel.ts";
-import { Message } from "./message.ts";
-import { Role } from "./role.ts";
-import { User } from "./user.ts";
+import { Client } from '../models/client.ts'
+import { MessagePayload } from '../types/channel.ts'
+import { Collection } from '../utils/collection.ts'
+import { GuildTextChannel } from './textChannel.ts'
+import { Message } from './message.ts'
+import { Role } from './role.ts'
+import { User } from './user.ts'
 
 export class MessageMentions {
   client: Client
@@ -25,27 +25,35 @@ export class MessageMentions {
   }
 
   async fromPayload(payload: MessagePayload): Promise<MessageMentions> {
-    payload.mentions.forEach(rawUser => {
-      this.users.set(rawUser.id, new User(this.client, rawUser))
-    })
-    
+    if (this.message === undefined) return this
+    if (payload.mentions !== undefined)
+      payload.mentions.forEach((rawUser) => {
+        this.users.set(rawUser.id, new User(this.client, rawUser))
+      })
+
     if (this.message.guild !== undefined) {
       for (const id of payload.mention_roles) {
         const role = await this.message.guild.roles.get(id)
-        if(role !== undefined) this.roles.set(role.id, role)
+        if (role !== undefined) this.roles.set(role.id, role)
       }
     }
     if (payload.mention_channels !== undefined) {
       for (const mentionChannel of payload.mention_channels) {
-        const channel = await this.client.channels.get<GuildTextChannel>(mentionChannel.id)
+        const channel = await this.client.channels.get<GuildTextChannel>(
+          mentionChannel.id
+        )
         if (channel !== undefined) this.channels.set(channel.id, channel)
       }
     }
-    const matchChannels = this.message.content.match(MessageMentions.CHANNEL_MENTION)
+    const matchChannels = this.message.content.match(
+      MessageMentions.CHANNEL_MENTION
+    )
     if (matchChannels !== null) {
       for (const id of matchChannels) {
         const parsedID = id.substr(2, id.length - 3)
-        const channel = await this.client.channels.get<GuildTextChannel>(parsedID)
+        const channel = await this.client.channels.get<GuildTextChannel>(
+          parsedID
+        )
         if (channel !== undefined) this.channels.set(channel.id, channel)
       }
     }
