@@ -19,7 +19,7 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
     return new Invite(this.client, raw)
   }
 
-  async fetch(id: string): Promise<Invite> {
+  async fetch(id: string): Promise<Invite | undefined> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD_INVITES(this.guild.id))

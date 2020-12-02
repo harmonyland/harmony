@@ -8,7 +8,6 @@ export const inviteDelete: GatewayEventHandler = async (
   gateway: Gateway,
   d: InviteDeletePayload
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id!)
 
   // Weird case, shouldn't happen
