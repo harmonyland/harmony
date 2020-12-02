@@ -20,8 +20,6 @@
   - Write Custom Cache Adapters.
 - Complete TypeScript support.
 
-Note: Library is yet under development and not completely usable. You're still always welcome to use, but there may be breaking changes.
-
 ## Table of Contents
 
 - [Usage](#usage)
