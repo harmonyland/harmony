@@ -1,10 +1,18 @@
-import { Command, CommandClient, Intents, GuildChannel, CommandContext, Extension } from '../../mod.ts'
+import {
+  Command,
+  CommandClient,
+  Intents,
+  GuildChannel,
+  CommandContext,
+  Extension,
+} from '../../mod.ts'
+import { Invite } from '../structures/invite.ts'
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
-  prefix: ["pls", "!"],
+  prefix: ['pls', '!'],
   spacesAfterPrefix: true,
-  mentionPrefix: true
+  mentionPrefix: true,
 })
 
 client.on('debug', console.log)
@@ -55,10 +63,21 @@ client.on('webhooksUpdate', (guild, channel) => {
   console.log(`Webhooks Updated in #${channel.name} from ${guild.name}`)
 })
 
-client.on("commandError", console.error)
+client.on('inviteCreate', (invite: Invite) => {
+  console.log(`Invite Create: ${invite.code}`)
+})
+
+client.on('inviteDelete', (invite: Invite) => {
+  console.log(`Invite Delete: ${invite.code}`)
+})
+
+client.on('inviteDeleteUncached', (invite: Invite) => {
+  console.log(invite)
+})
+
+client.on('commandError', console.error)
 
 class ChannelLog extends Extension {
-
   onChannelCreate(ext: Extension, channel: GuildChannel): void {
     console.log(`Channel Created: ${channel.name}`)
   }
@@ -81,15 +100,27 @@ class ChannelLog extends Extension {
 client.extensions.load(ChannelLog)
 
 client.on('messageDeleteBulk', (channel, messages, uncached) => {
-  console.log(`=== Message Delete Bulk ===\nMessages: ${messages.map(m => m.id).join(', ')}\nUncached: ${[...uncached.values()].join(', ')}`)
+  console.log(
+    `=== Message Delete Bulk ===\nMessages: ${messages
+      .map((m) => m.id)
+      .join(', ')}\nUncached: ${[...uncached.values()].join(', ')}`
+  )
 })
 
 client.on('channelUpdate', (before, after) => {
-  console.log(`Channel Update: ${(before as GuildChannel).name}, ${(after as GuildChannel).name}`)
+  console.log(
+    `Channel Update: ${(before as GuildChannel).name}, ${
+      (after as GuildChannel).name
+    }`
+  )
 })
 
 client.on('typingStart', (user, channel, at, guildData) => {
-  console.log(`${user.tag} started typing in ${channel.id} at ${at}${guildData !== undefined ? `\nGuild: ${guildData.guild.name}` : ''}`)
+  console.log(
+    `${user.tag} started typing in ${channel.id} at ${at}${
+      guildData !== undefined ? `\nGuild: ${guildData.guild.name}` : ''
+    }`
+  )
 })
 
 client.on('voiceStateAdd', (state) => {

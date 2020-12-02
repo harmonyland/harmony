@@ -13,32 +13,34 @@ import { guildBanRemove } from './guildBanRemove.ts'
 import { messageCreate } from './messageCreate.ts'
 import { resume } from './resume.ts'
 import { reconnect } from './reconnect.ts'
-import { messageDelete } from "./messageDelete.ts"
-import { messageUpdate } from "./messageUpdate.ts"
-import { guildEmojiUpdate } from "./guildEmojiUpdate.ts"
-import { guildMemberAdd } from "./guildMemberAdd.ts"
-import { guildMemberRemove } from "./guildMemberRemove.ts"
-import { guildMemberUpdate } from "./guildMemberUpdate.ts"
-import { guildRoleCreate } from "./guildRoleCreate.ts"
-import { guildRoleDelete } from "./guildRoleDelete.ts"
-import { guildRoleUpdate } from "./guildRoleUpdate.ts"
-import { guildIntegrationsUpdate } from "./guildIntegrationsUpdate.ts"
-import { webhooksUpdate } from "./webhooksUpdate.ts"
-import { messageDeleteBulk } from "./messageDeleteBulk.ts"
-import { userUpdate } from "./userUpdate.ts"
-import { typingStart } from "./typingStart.ts"
-import { Channel } from "../../structures/channel.ts"
-import { GuildTextChannel, TextChannel } from "../../structures/textChannel.ts"
-import { Guild } from "../../structures/guild.ts"
-import { User } from "../../structures/user.ts"
-import { Emoji } from "../../structures/emoji.ts"
-import { Member } from "../../structures/member.ts"
-import { Role } from "../../structures/role.ts"
-import { Message } from "../../structures/message.ts"
-import { Collection } from "../../utils/collection.ts"
-import { voiceServerUpdate } from "./voiceServerUpdate.ts"
-import { voiceStateUpdate } from "./voiceStateUpdate.ts"
-import { VoiceState } from "../../structures/voiceState.ts"
+import { messageDelete } from './messageDelete.ts'
+import { messageUpdate } from './messageUpdate.ts'
+import { guildEmojiUpdate } from './guildEmojiUpdate.ts'
+import { guildMemberAdd } from './guildMemberAdd.ts'
+import { guildMemberRemove } from './guildMemberRemove.ts'
+import { guildMemberUpdate } from './guildMemberUpdate.ts'
+import { guildRoleCreate } from './guildRoleCreate.ts'
+import { guildRoleDelete } from './guildRoleDelete.ts'
+import { guildRoleUpdate } from './guildRoleUpdate.ts'
+import { guildIntegrationsUpdate } from './guildIntegrationsUpdate.ts'
+import { webhooksUpdate } from './webhooksUpdate.ts'
+import { messageDeleteBulk } from './messageDeleteBulk.ts'
+import { userUpdate } from './userUpdate.ts'
+import { typingStart } from './typingStart.ts'
+import { Channel } from '../../structures/channel.ts'
+import { GuildTextChannel, TextChannel } from '../../structures/textChannel.ts'
+import { Guild } from '../../structures/guild.ts'
+import { User } from '../../structures/user.ts'
+import { Emoji } from '../../structures/emoji.ts'
+import { Member } from '../../structures/member.ts'
+import { Role } from '../../structures/role.ts'
+import { Message } from '../../structures/message.ts'
+import { Collection } from '../../utils/collection.ts'
+import { voiceServerUpdate } from './voiceServerUpdate.ts'
+import { voiceStateUpdate } from './voiceStateUpdate.ts'
+import { VoiceState } from '../../structures/voiceState.ts'
+import { inviteCreate } from './inviteCreate.ts'
+import { inviteDelete } from './inviteDelete.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -64,8 +66,8 @@ export const gatewayHandlers: {
   GUILD_ROLE_CREATE: guildRoleCreate,
   GUILD_ROLE_UPDATE: guildRoleUpdate,
   GUILD_ROLE_DELETE: guildRoleDelete,
-  INVITE_CREATE: undefined,
-  INVITE_DELETE: undefined,
+  INVITE_CREATE: inviteCreate,
+  INVITE_DELETE: inviteDelete,
   MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: messageUpdate,
   MESSAGE_DELETE: messageDelete,
