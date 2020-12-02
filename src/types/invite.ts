@@ -1,4 +1,5 @@
-import { Channel, Guild } from '../../mod.ts'
+import { Channel } from '../structures/channel.ts'
+import { Guild } from '../structures/guild.ts'
 import { ChannelPayload } from './channel.ts'
 import { GuildPayload } from './guild.ts'
 import { UserPayload } from './user.ts'
