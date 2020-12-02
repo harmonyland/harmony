@@ -2,7 +2,7 @@ import { unzlib } from 'https://deno.land/x/denoflate@1.1/mod.ts'
 import { Client } from '../models/client.ts'
 import {
   DISCORD_GATEWAY_URL,
-  DISCORD_API_VERSION,
+  DISCORD_API_VERSION
 } from '../consts/urlsAndVersions.ts'
 import { GatewayResponse } from '../types/gatewayResponse.ts'
 import {
@@ -10,7 +10,7 @@ import {
   GatewayIntents,
   GatewayCloseCodes,
   IdentityPayload,
-  StatusUpdatePayload,
+  StatusUpdatePayload
 } from '../types/gateway.ts'
 import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
@@ -230,7 +230,7 @@ class Gateway {
       properties: {
         $os: Deno.build.os,
         $browser: 'harmony',
-        $device: 'harmony',
+        $device: 'harmony'
       },
       compress: true,
       shard: [0, 1], // TODO: Make sharding possible
@@ -238,7 +238,7 @@ class Gateway {
         (previous, current) => previous | current,
         0
       ),
-      presence: this.client.presence.create(),
+      presence: this.client.presence.create()
     }
 
     if (this.client.bot === false) {
@@ -250,13 +250,13 @@ class Gateway {
         $browser: 'Firefox',
         $device: '',
         $referrer: '',
-        $referring_domain: '',
+        $referring_domain: ''
       }
     }
 
     this.send({
       op: GatewayOpcodes.IDENTIFY,
-      d: payload,
+      d: payload
     })
   }
 
@@ -272,8 +272,8 @@ class Gateway {
       d: {
         token: this.token,
         session_id: this.sessionID,
-        seq: this.sequenceID ?? null,
-      },
+        seq: this.sequenceID ?? null
+      }
     }
     this.send(resumePayload)
   }
@@ -292,8 +292,8 @@ class Gateway {
         limit: options.limit,
         presences: options.presences,
         user_ids: options.users,
-        nonce,
-      },
+        nonce
+      }
     })
     return nonce
   }
@@ -334,7 +334,7 @@ class Gateway {
         op: data.op,
         d: data.d,
         s: typeof data.s === 'number' ? data.s : null,
-        t: data.t === undefined ? null : data.t,
+        t: data.t === undefined ? null : data.t
       })
     )
     return true
@@ -343,14 +343,14 @@ class Gateway {
   sendPresence(data: StatusUpdatePayload): void {
     this.send({
       op: GatewayOpcodes.PRESENCE_UPDATE,
-      d: data,
+      d: data
     })
   }
 
   sendHeartbeat(): void {
     const payload = {
       op: GatewayOpcodes.HEARTBEAT,
-      d: this.sequenceID ?? null,
+      d: this.sequenceID ?? null
     }
 
     this.send(payload)

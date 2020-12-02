@@ -1,4 +1,4 @@
-import { UserPayload } from "./user.ts";
+import { UserPayload } from './user.ts'
 
 export interface ApplicationPayload {
   id: string

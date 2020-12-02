@@ -56,7 +56,7 @@ export enum ActivityFlags {
   SPECTATE = 1 << 2,
   JOIN_REQUEST = 1 << 3,
   SYNC = 1 << 4,
-  PLAY = 1 << 5,
+  PLAY = 1 << 5
 }
 
 export type ActivityType =

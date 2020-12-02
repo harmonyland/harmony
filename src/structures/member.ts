@@ -85,7 +85,7 @@ export class Member extends Base {
       nick: data.nick,
       roles: data.roles?.map((e) => (typeof e === 'string' ? e : e.id)),
       deaf: data.deaf,
-      mute: data.mute,
+      mute: data.mute
     }
     const res = await this.client.rest.patch(
       GUILD_MEMBER(this.guild.id, this.id),
@@ -109,7 +109,7 @@ export class Member extends Base {
    */
   async setNickname(nick?: string): Promise<Member> {
     return await this.edit({
-      nick: nick === undefined ? null : nick,
+      nick: nick === undefined ? null : nick
     })
   }
 
@@ -126,7 +126,7 @@ export class Member extends Base {
    */
   async setMute(mute?: boolean): Promise<Member> {
     return await this.edit({
-      mute: mute === undefined ? false : mute,
+      mute: mute === undefined ? false : mute
     })
   }
 
@@ -136,7 +136,7 @@ export class Member extends Base {
    */
   async setDeaf(deaf?: boolean): Promise<Member> {
     return await this.edit({
-      deaf: deaf === undefined ? false : deaf,
+      deaf: deaf === undefined ? false : deaf
     })
   }
 

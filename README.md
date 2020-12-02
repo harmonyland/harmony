@@ -48,7 +48,7 @@ Here is a small example of how to use harmony,
 import {
   Client,
   Message,
-  Intents,
+  Intents
 } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new Client()
@@ -78,11 +78,11 @@ import {
   Command,
   CommandContext,
   Message,
-  Intents,
+  Intents
 } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
 
 const client = new CommandClient({
-  prefix: '!',
+  prefix: '!'
 })
 
 // Listen for event when client is ready (Identified through gateway / Resumed)

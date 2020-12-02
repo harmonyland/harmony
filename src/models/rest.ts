@@ -22,7 +22,7 @@ export enum HttpResponseCode {
   NotFound = 404,
   MethodNotAllowed = 405,
   TooManyRequests = 429,
-  GatewayUnavailable = 502,
+  GatewayUnavailable = 502
 }
 
 export interface RequestHeaders {
@@ -109,7 +109,7 @@ export class RESTManager {
               if (result?.rateLimited !== undefined) {
                 this.queue({
                   ...request,
-                  bucket: result.bucket ?? request.bucket,
+                  bucket: result.bucket ?? request.bucket
                 })
               }
             }
@@ -121,7 +121,7 @@ export class RESTManager {
               if (result?.rateLimited !== undefined) {
                 this.queue({
                   ...request,
-                  bucket: result.bucket ?? request.bucket,
+                  bucket: result.bucket ?? request.bucket
                 })
               }
             }
@@ -141,7 +141,7 @@ export class RESTManager {
 
   prepare(body: any, method: RequestMethods): { [key: string]: any } {
     const headers: RequestHeaders = {
-      'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`,
+      'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
     }
 
     if (this.client !== undefined)
@@ -168,7 +168,7 @@ export class RESTManager {
     const data: { [name: string]: any } = {
       headers,
       body: body?.file ?? JSON.stringify(body),
-      method: method.toUpperCase(),
+      method: method.toUpperCase()
     }
 
     if (this.client?.bot === false) {
@@ -222,14 +222,14 @@ export class RESTManager {
       this.rateLimits.set(url, {
         url,
         resetAt: Number(resetAt) * 1000,
-        bucket,
+        bucket
       })
 
       if (bucket !== null) {
         this.rateLimits.set(bucket, {
           url,
           resetAt: Number(resetAt) * 1000,
-          bucket,
+          bucket
         })
       }
     }
@@ -242,14 +242,14 @@ export class RESTManager {
       this.rateLimits.set('global', {
         url: 'global',
         resetAt: reset,
-        bucket,
+        bucket
       })
 
       if (bucket !== null) {
         this.rateLimits.set(bucket, {
           url: 'global',
           resetAt: reset,
-          bucket,
+          bucket
         })
       }
     }
@@ -286,7 +286,7 @@ export class RESTManager {
       url: response.url,
       status,
       method: data.method,
-      body: data.body,
+      body: data.body
     }
     if (body !== undefined) error = Object.assign(error, body)
 
@@ -295,7 +295,7 @@ export class RESTManager {
         HttpResponseCode.BadRequest,
         HttpResponseCode.NotFound,
         HttpResponseCode.Forbidden,
-        HttpResponseCode.MethodNotAllowed,
+        HttpResponseCode.MethodNotAllowed
       ].includes(status)
     ) {
       throw new DiscordAPIError(Deno.inspect(error))
@@ -320,7 +320,7 @@ export class RESTManager {
             return {
               rateLimited: rateLimitResetIn,
               before: true,
-              bucket,
+              bucket
             }
           }
 
@@ -367,7 +367,7 @@ export class RESTManager {
             return {
               rateLimited: json.retry_after,
               before: false,
-              bucket: bucketFromHeaders,
+              bucket: bucketFromHeaders
             }
           }
           return resolve(rawResponse === true ? { response, body: json } : json)
@@ -379,7 +379,7 @@ export class RESTManager {
       this.queue({
         onComplete,
         bucket,
-        url,
+        url
       })
       if (!this.processing) {
         this.processing = true

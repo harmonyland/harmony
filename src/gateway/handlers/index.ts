@@ -27,8 +27,7 @@ import { webhooksUpdate } from './webhooksUpdate.ts'
 import { messageDeleteBulk } from './messageDeleteBulk.ts'
 import { userUpdate } from './userUpdate.ts'
 import { typingStart } from './typingStart.ts'
-import { Channel } from '../../structures/channel.ts'
-import { GuildTextChannel, TextChannel } from '../../structures/textChannel.ts'
+import { GuildTextChannel } from '../../structures/textChannel.ts'
 import { Guild } from '../../structures/guild.ts'
 import { User } from '../../structures/user.ts'
 import { Emoji } from '../../structures/emoji.ts'
@@ -50,6 +49,10 @@ import { inviteDelete } from './inviteDelete.ts'
 import { MessageReaction } from '../../structures/messageReaction.ts'
 import { Invite } from '../../structures/invite.ts'
 import { Presence } from '../../structures/presence.ts'
+import {
+  EveryChannelTypes,
+  EveryTextChannelTypes
+} from '../../utils/getChannelByType.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -90,7 +93,7 @@ export const gatewayHandlers: {
   USER_UPDATE: userUpdate,
   VOICE_STATE_UPDATE: voiceStateUpdate,
   VOICE_SERVER_UPDATE: voiceServerUpdate,
-  WEBHOOKS_UPDATE: webhooksUpdate,
+  WEBHOOKS_UPDATE: webhooksUpdate
 }
 
 export interface EventTypes {
@@ -107,10 +110,13 @@ export interface ClientEvents extends EventTypes {
   ready: () => void
   reconnect: () => void
   resumed: () => void
-  channelCreate: (channel: Channel) => void
-  channelDelete: (channel: Channel) => void
-  channelPinsUpdate: (before: TextChannel, after: TextChannel) => void
-  channelUpdate: (before: Channel, after: Channel) => void
+  channelCreate: (channel: EveryChannelTypes) => void
+  channelDelete: (channel: EveryChannelTypes) => void
+  channelPinsUpdate: (
+    before: EveryTextChannelTypes,
+    after: EveryTextChannelTypes
+  ) => void
+  channelUpdate: (before: EveryChannelTypes, after: EveryChannelTypes) => void
   guildBanAdd: (guild: Guild, user: User) => void
   guildBanRemove: (guild: Guild, user: User) => void
   guildCreate: (guild: Guild) => void
@@ -140,7 +146,7 @@ export interface ClientEvents extends EventTypes {
   messageReactionRemoveEmoji: (message: Message, emoji: Emoji) => void
   typingStart: (
     user: User,
-    channel: TextChannel,
+    channel: EveryChannelTypes,
     at: Date,
     guildData?: TypingStartGuildData
   ) => void

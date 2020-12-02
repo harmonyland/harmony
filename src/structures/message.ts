@@ -6,7 +6,7 @@ import {
   MessageApplication,
   MessageOption,
   MessagePayload,
-  MessageReference,
+  MessageReference
 } from '../types/channel.ts'
 import { Client } from '../models/client.ts'
 import { User } from './user.ts'

@@ -16,7 +16,7 @@ export class Emoji extends Base {
   animated?: boolean
   available?: boolean
 
-  get getEmojiString (): string {
+  get getEmojiString(): string {
     if (this.animated === false) {
       return `<:${this.name}:${this.id}>`
     } else return `<a:${this.name}:${this.id}>`
@@ -26,7 +26,7 @@ export class Emoji extends Base {
     return this.getEmojiString
   }
 
-  constructor (client: Client, data: EmojiPayload) {
+  constructor(client: Client, data: EmojiPayload) {
     super(client, data)
     this.id = data.id
     this.name = data.name
@@ -38,7 +38,7 @@ export class Emoji extends Base {
     this.available = data.available
   }
 
-  protected readFromData (data: EmojiPayload): void {
+  protected readFromData(data: EmojiPayload): void {
     super.readFromData(data)
     this.id = data.id ?? this.id
     this.name = data.name ?? this.name
@@ -51,7 +51,7 @@ export class Emoji extends Base {
       User.autoInit(this.client, {
         endpoint: USER,
         restURLfuncArgs: [data.user.id]
-      }).then(user => (this.user = user))
+      }).then((user) => (this.user = user))
     }
   }
 }

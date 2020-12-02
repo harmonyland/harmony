@@ -1,9 +1,9 @@
-import { Guild } from "../structures/guild.ts"
-import { VoiceChannel } from "../structures/guildVoiceChannel.ts"
+import { Guild } from '../structures/guild.ts'
+import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Client } from './client.ts'
 
 export interface VoiceOptions {
-  guild: Guild,
+  guild: Guild
   channel: VoiceChannel
 }
 

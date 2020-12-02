@@ -2,7 +2,7 @@ import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
 import { InviteDeletePayload } from '../../types/gateway.ts'
 import { PartialInvitePayload } from '../../types/invite.ts'
-import { Channel } from '../../../mod.ts'
+import { Channel } from '../../structures/channel.ts'
 
 export const inviteDelete: GatewayEventHandler = async (
   gateway: Gateway,
@@ -24,7 +24,7 @@ export const inviteDelete: GatewayEventHandler = async (
     const uncachedInvite: PartialInvitePayload = {
       guild: (cachedGuild as unknown) as Guild,
       channel: (cachedChannel as unknown) as Channel,
-      code: d.code,
+      code: d.code
     }
     return gateway.client.emit('inviteDeleteUncached', uncachedInvite)
   } else {

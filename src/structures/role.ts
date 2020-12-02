@@ -1,7 +1,7 @@
 import { Client } from '../models/client.ts'
 import { Base } from './base.ts'
 import { RolePayload } from '../types/role.ts'
-import { Permissions } from "../utils/permissions.ts"
+import { Permissions } from '../utils/permissions.ts'
 
 export class Role extends Base {
   id: string
@@ -13,13 +13,15 @@ export class Role extends Base {
   managed: boolean
   mentionable: boolean
 
-  get mention (): string {
+  get mention(): string {
     return `<@&${this.id}>`
   }
 
-  toString(): string { return this.mention }
+  toString(): string {
+    return this.mention
+  }
 
-  constructor (client: Client, data: RolePayload) {
+  constructor(client: Client, data: RolePayload) {
     super(client, data)
     this.id = data.id
     this.name = data.name
@@ -31,13 +33,16 @@ export class Role extends Base {
     this.mentionable = data.mentionable
   }
 
-  protected readFromData (data: RolePayload): void {
+  protected readFromData(data: RolePayload): void {
     super.readFromData(data)
     this.name = data.name ?? this.name
     this.color = data.color ?? this.color
     this.hoist = data.hoist ?? this.hoist
     this.position = data.position ?? this.position
-    this.permissions = new Permissions(data.permissions) ?? this.permissions
+    this.permissions =
+      data.permissions !== undefined
+        ? new Permissions(data.permissions)
+        : this.permissions
     this.managed = data.managed ?? this.managed
     this.mentionable = data.mentionable ?? this.mentionable
   }

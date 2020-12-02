@@ -1,6 +1,6 @@
-import { Collection } from "../utils/collection.ts";
-import { Command } from "./command.ts";
-import { CommandClient } from "./commandClient.ts";
+import { Collection } from '../utils/collection.ts'
+import { Command } from './command.ts'
+import { CommandClient } from './commandClient.ts'
 
 export type ExtensionEventCallback = (ext: Extension, ...args: any[]) => any
 
@@ -12,7 +12,9 @@ export class ExtensionCommands {
   }
 
   get list(): Collection<string, Command> {
-    return this.extension.client.commands.list.filter(c => c.extension?.name === this.extension.name)
+    return this.extension.client.commands.list.filter(
+      (c) => c.extension?.name === this.extension.name
+    )
   }
 
   get(cmd: string): Command | undefined {
@@ -31,9 +33,15 @@ export class ExtensionCommands {
   }
 
   delete(cmd: Command | string): boolean {
-    const find = this.extension.client.commands.find(typeof cmd === 'string' ? cmd : cmd.name)
+    const find = this.extension.client.commands.find(
+      typeof cmd === 'string' ? cmd : cmd.name
+    )
     if (find === undefined) return false
-    if (find.extension !== undefined && find.extension.name !== this.extension.name) return false
+    if (
+      find.extension !== undefined &&
+      find.extension.name !== this.extension.name
+    )
+      return false
     else return this.extension.client.commands.delete(find)
   }
 
@@ -61,7 +69,7 @@ export class Extension {
       const fn = (...args: any[]): any => {
         // eslint-disable-next-line standard/no-callback-literal
         cb(this, ...args)
-      };
+      }
       this.client.on(event, fn)
       this.events[event] = fn
       return true
@@ -91,7 +99,8 @@ export class ExtensionsManager {
   load(ext: Extension | typeof Extension): void {
     // eslint-disable-next-line new-cap
     if (!(ext instanceof Extension)) ext = new ext(this.client)
-    if (this.exists(ext.name)) throw new Error(`Extension with name '${ext.name}' already exists`)
+    if (this.exists(ext.name))
+      throw new Error(`Extension with name '${ext.name}' already exists`)
     this.list.set(ext.name, ext)
     ext.load()
   }

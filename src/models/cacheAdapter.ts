@@ -7,7 +7,12 @@ import {
 
 export interface ICacheAdapter {
   get: (cacheName: string, key: string) => Promise<any> | any
-  set: (cacheName: string, key: string, value: any, expire?: number) => Promise<any> | any
+  set: (
+    cacheName: string,
+    key: string,
+    value: any,
+    expire?: number
+  ) => Promise<any> | any
   delete: (cacheName: string, key: string) => Promise<boolean> | boolean
   array: (cacheName: string) => undefined | any[] | Promise<any[] | undefined>
   deleteCache: (cacheName: string) => any
@@ -24,16 +29,22 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     return cache.get(key)
   }
 
-  async set(cacheName: string, key: string, value: any, expire?: number): Promise<any> {
+  async set(
+    cacheName: string,
+    key: string,
+    value: any,
+    expire?: number
+  ): Promise<any> {
     let cache = this.data[cacheName]
     if (cache === undefined) {
       this.data[cacheName] = new Collection()
       cache = this.data[cacheName]
     }
     cache.set(key, value)
-    if (expire !== undefined) setTimeout(() => {
-      cache.delete(key)
-    }, expire)
+    if (expire !== undefined)
+      setTimeout(() => {
+        cache.delete(key)
+      }, expire)
   }
 
   async delete(cacheName: string, key: string): Promise<boolean> {
@@ -64,7 +75,7 @@ export class RedisCacheAdapter implements ICacheAdapter {
   constructor(options: RedisConnectOptions) {
     this._redis = connect(options)
     this._redis.then(
-      redis => {
+      (redis) => {
         this.redis = redis
         this.ready = true
         this._startExpireInterval()
@@ -79,11 +90,11 @@ export class RedisCacheAdapter implements ICacheAdapter {
     this._expireInterval = setInterval(() => {
       this.redis?.scan(0, { pattern: '*:expires' }).then(([_, names]) => {
         for (const name of names) {
-          this.redis?.hvals(name).then(vals => {
+          this.redis?.hvals(name).then((vals) => {
             for (const val of vals) {
               const expireVal: {
-                name: string,
-                key: string,
+                name: string
+                key: string
                 at: number
               } = JSON.parse(val)
               const expired = new Date().getTime() > expireVal.at
@@ -126,7 +137,11 @@ export class RedisCacheAdapter implements ICacheAdapter {
       await this.redis?.hset(
         `${cacheName}:expires`,
         key,
-        JSON.stringify({ name: cacheName, key, at: new Date().getTime() + expire })
+        JSON.stringify({
+          name: cacheName,
+          key,
+          at: new Date().getTime() + expire
+        })
       )
     }
     return result
@@ -148,6 +163,6 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   async deleteCache(cacheName: string): Promise<boolean> {
     await this._checkReady()
-    return await this.redis?.del(cacheName) !== 0
+    return (await this.redis?.del(cacheName)) !== 0
   }
 }

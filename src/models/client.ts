@@ -11,7 +11,6 @@ import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
-// import { Application } from "../../mod.ts"
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {

@@ -1,10 +1,10 @@
 import { Client } from '../models/client.ts'
 import { VoiceStatePayload } from '../types/voice.ts'
 import { Base } from './base.ts'
-import { Guild } from "./guild.ts"
-import { VoiceChannel } from "./guildVoiceChannel.ts"
-import { Member } from "./member.ts"
-import { User } from "./user.ts"
+import { Guild } from './guild.ts'
+import { VoiceChannel } from './guildVoiceChannel.ts'
+import { Member } from './member.ts'
+import { User } from './user.ts'
 
 export class VoiceState extends Base {
   guild?: Guild
@@ -18,12 +18,16 @@ export class VoiceState extends Base {
   video: boolean
   suppress: boolean
 
-  constructor (client: Client, data: VoiceStatePayload, _data: {
-    user: User,
-    channel: VoiceChannel | null,
-    member?: Member,
-    guild?: Guild
-  }) {
+  constructor(
+    client: Client,
+    data: VoiceStatePayload,
+    _data: {
+      user: User
+      channel: VoiceChannel | null
+      member?: Member
+      guild?: Guild
+    }
+  ) {
     super(client, data)
     this.channel = _data.channel
     this.sessionID = data.session_id
@@ -39,7 +43,7 @@ export class VoiceState extends Base {
     this.suppress = data.suppress
   }
 
-  protected readFromData (data: VoiceStatePayload): void {
+  protected readFromData(data: VoiceStatePayload): void {
     super.readFromData(data)
     this.sessionID = data.session_id ?? this.sessionID
     this.deaf = data.deaf ?? this.deaf

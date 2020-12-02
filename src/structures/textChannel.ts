@@ -1,10 +1,16 @@
-import { MessagesManager } from "../../mod.ts"
+import { MessagesManager } from '../managers/messages.ts'
 import { Client } from '../models/client.ts'
-import { GuildTextChannelPayload, MessageOption, MessageReference, Overwrite, TextChannelPayload } from '../types/channel.ts'
+import {
+  GuildTextChannelPayload,
+  MessageOption,
+  MessageReference,
+  Overwrite,
+  TextChannelPayload
+} from '../types/channel.ts'
 import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
-import { Guild } from "./guild.ts"
+import { Guild } from './guild.ts'
 import { Message } from './message.ts'
 
 export type AllMessageOptions = MessageOption | Embed
@@ -28,22 +34,27 @@ export class TextChannel extends Channel {
   }
 
   /**
-   * 
+   *
    * @param text Text content of the Message to send.
    * @param option Various other Message options.
    * @param reply Reference to a Message object to reply-to.
    */
-  async send(text?: string | AllMessageOptions, option?: AllMessageOptions, reply?: Message): Promise<Message> {
-    if (typeof text === "object") {
+  async send(
+    text?: string | AllMessageOptions,
+    option?: AllMessageOptions,
+    reply?: Message
+  ): Promise<Message> {
+    if (typeof text === 'object') {
       option = text
       text = undefined
     }
     if (text === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
     }
-    if (option instanceof Embed) option = {
-      embed: option
-    }
+    if (option instanceof Embed)
+      option = {
+        embed: option
+      }
 
     const payload: any = {
       content: text,
@@ -57,7 +68,7 @@ export class TextChannel extends Channel {
       const reference: MessageReference = {
         message_id: reply.id,
         channel_id: reply.channel.id,
-        guild_id: reply.guild?.id,
+        guild_id: reply.guild?.id
       }
       payload.message_reference = reference
     }
@@ -70,7 +81,7 @@ export class TextChannel extends Channel {
   }
 
   /**
-   * 
+   *
    * @param message Message to edit. ID or the Message object itself.
    * @param text New text contents of the Message.
    * @param option Other options to edit the message.

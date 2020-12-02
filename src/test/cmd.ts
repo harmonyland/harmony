@@ -4,7 +4,7 @@ import {
   Intents,
   GuildChannel,
   CommandContext,
-  Extension,
+  Extension
 } from '../../mod.ts'
 import { Invite } from '../structures/invite.ts'
 import { TOKEN } from './config.ts'
@@ -12,7 +12,7 @@ import { TOKEN } from './config.ts'
 const client = new CommandClient({
   prefix: ['pls', '!'],
   spacesAfterPrefix: true,
-  mentionPrefix: true,
+  mentionPrefix: true
 })
 
 client.on('debug', console.log)

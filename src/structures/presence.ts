@@ -3,7 +3,7 @@ import {
   ActivityPayload,
   ClientActivity,
   ClientStatus,
-  StatusType,
+  StatusType
 } from '../types/presence.ts'
 import { PresenceUpdatePayload, StatusUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
@@ -17,7 +17,7 @@ enum ActivityTypes {
   LISTENING = 2,
   WATCHING = 3,
   CUSTOM_STATUS = 4,
-  COMPETING = 5,
+  COMPETING = 5
 }
 
 export class Presence extends Base {
@@ -88,7 +88,7 @@ export class ClientPresence {
       afk: this.afk === undefined ? false : this.afk,
       activities: this.createActivity(),
       since: this.since === undefined ? null : this.since,
-      status: this.status === undefined ? 'online' : this.status,
+      status: this.status === undefined ? 'online' : this.status
     }
   }
 

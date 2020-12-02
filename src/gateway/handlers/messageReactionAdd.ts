@@ -34,7 +34,7 @@ export const messageReactionAdd: GatewayEventHandler = async (
     await message.reactions.set(d.emoji.id, {
       count: 1,
       emoji: d.emoji,
-      me: d.user_id === gateway.client.user?.id,
+      me: d.user_id === gateway.client.user?.id
     })
     reaction = ((await message.reactions.get(
       d.emoji.id

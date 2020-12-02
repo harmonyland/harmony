@@ -45,11 +45,11 @@ export class Webhook {
   applicationID?: string
   rest: RESTManager
 
-  get url (): string {
+  get url(): string {
     return `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${this.id}/${this.token}`
   }
 
-  constructor (data: WebhookPayload, client?: Client, rest?: RESTManager) {
+  constructor(data: WebhookPayload, client?: Client, rest?: RESTManager) {
     this.id = data.id
     this.type = data.type
     this.channelID = data.channel_id
@@ -70,7 +70,7 @@ export class Webhook {
     else this.rest = new RESTManager()
   }
 
-  private fromPayload (data: WebhookPayload): Webhook {
+  private fromPayload(data: WebhookPayload): Webhook {
     this.id = data.id
     this.type = data.type
     this.channelID = data.channel_id
@@ -90,7 +90,7 @@ export class Webhook {
   }
 
   /** Send a Message through Webhook. */
-  async send (
+  async send(
     text?: string | AllWebhookMessageOptions,
     option?: AllWebhookMessageOptions
   ): Promise<Message> {
@@ -153,7 +153,7 @@ export class Webhook {
    * @param url URL of the Webhook
    * @param client Client (bot) object, if any.
    */
-  static async fromURL (url: string | URL, client?: Client): Promise<Webhook> {
+  static async fromURL(url: string | URL, client?: Client): Promise<Webhook> {
     const rest = client !== undefined ? client.rest : new RESTManager()
 
     const raw = await rest.get(typeof url === 'string' ? url : url.toString())
@@ -168,7 +168,7 @@ export class Webhook {
    * Edit the Webhook name, avatar, or channel (requires authentication).
    * @param options Options to edit the Webhook.
    */
-  async edit (options: WebhookEditOptions): Promise<Webhook> {
+  async edit(options: WebhookEditOptions): Promise<Webhook> {
     if (options.channelID !== undefined && this.rest.client === undefined)
       throw new Error('Authentication is required for editing Webhook Channel')
     if (
@@ -186,7 +186,7 @@ export class Webhook {
   }
 
   /** Delete the Webhook. */
-  async delete (): Promise<boolean> {
+  async delete(): Promise<boolean> {
     const resp = await this.rest.delete(this.url, undefined, 0, undefined, true)
     if (resp.response.status !== 204) return false
     else return true

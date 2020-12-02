@@ -1,11 +1,11 @@
-import { Message } from '../../mod.ts'
+import { Message } from '../structures/message.ts'
 import { awaitSync } from '../utils/mixedPromise.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
   CategoriesManager,
   CommandContext,
   CommandsManager,
-  parseCommand,
+  parseCommand
 } from './command.ts'
 import { ExtensionsManager } from './extensions.ts'
 
@@ -108,12 +108,12 @@ export class CommandClient extends Client implements CommandClientOptions {
       if (isGuildBlacklisted === true) return
     }
 
-    let prefix: string | string[] = this.prefix
+    let prefix: string | string[] = await awaitSync(
+      this.getUserPrefix(msg.author.id)
+    )
 
     if (msg.guild !== undefined) {
       prefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
-    } else {
-      prefix = await awaitSync(this.getUserPrefix(msg.author.id))
     }
 
     let mentionPrefix = false
@@ -204,7 +204,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       author: msg.author,
       command,
       channel: msg.channel,
-      guild: msg.guild,
+      guild: msg.guild
     }
 
     // In these checks too, Command overrides Category if present

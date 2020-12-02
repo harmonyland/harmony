@@ -8,7 +8,7 @@ import {
   ActivityGame,
   ActivityPayload,
   StatusType,
-  ClientStatus,
+  ClientStatus
 } from './presence.ts'
 import { RolePayload } from './role.ts'
 import { UserPayload } from './user.ts'
@@ -27,7 +27,7 @@ export enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비
   REQUEST_GUILD_MEMBERS = 8,
   INVALID_SESSION = 9,
   HELLO = 10,
-  HEARTBEAT_ACK = 11,
+  HEARTBEAT_ACK = 11
 }
 
 /**
@@ -47,7 +47,7 @@ export enum GatewayCloseCodes {
   SHARDING_REQUIRED = 4011,
   INVALID_API_VERSION = 4012,
   INVALID_INTENTS = 4013,
-  DISALLOWED_INTENTS = 4014,
+  DISALLOWED_INTENTS = 4014
 }
 
 export enum GatewayIntents {
@@ -65,7 +65,7 @@ export enum GatewayIntents {
   GUILD_MESSAGE_TYPING = 1 << 11,
   DIRECT_MESSAGES = 1 << 12,
   DIRECT_MESSAGE_REACTIONS = 1 << 13,
-  DIRECT_MESSAGE_TYPING = 1 << 13,
+  DIRECT_MESSAGE_TYPING = 1 << 13
 }
 
 export enum GatewayEvents {
@@ -105,7 +105,7 @@ export enum GatewayEvents {
   User_Update = 'USER_UPDATE',
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
   Voice_State_Update = 'VOICE_STATE_UPDATE',
-  Webhooks_Update = 'WEBHOOKS_UPDATE',
+  Webhooks_Update = 'WEBHOOKS_UPDATE'
 }
 
 export interface IdentityPayload {

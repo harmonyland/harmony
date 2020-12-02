@@ -36,7 +36,7 @@ export class GuildVoiceStatesManager extends BaseManager<
             )) as unknown) as VoiceChannel),
       guild,
       member:
-        guild === undefined ? undefined : await guild.members.get(raw.user_id),
+        guild === undefined ? undefined : await guild.members.get(raw.user_id)
     })
   }
 

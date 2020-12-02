@@ -1,7 +1,9 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
 import { InviteCreatePayload } from '../../types/gateway.ts'
-import { ChannelPayload, GuildPayload, InvitePayload } from '../../../mod.ts'
+import { ChannelPayload } from '../../types/channel.ts'
+import { GuildPayload } from '../../types/guild.ts'
+import { InvitePayload } from '../../types/invite.ts'
 import { Invite } from '../../structures/invite.ts'
 
 export const inviteCreate: GatewayEventHandler = async (
@@ -32,7 +34,7 @@ export const inviteCreate: GatewayEventHandler = async (
     channel: (cachedChannel as unknown) as ChannelPayload,
     inviter: d.inviter,
     target_user: d.target_user,
-    target_user_type: d.target_user_type,
+    target_user_type: d.target_user_type
   }
 
   await guild.invites.set(d.code, dataConverted)

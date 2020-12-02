@@ -13,18 +13,21 @@ export class Base {
   static useCache?: boolean = true
   static restFunc?: (...restURLfuncArgs: string[]) => string
 
-  constructor (client: Client, _data?: any) {
+  constructor(client: Client, _data?: any) {
     this.client = client
   }
 
-  static async autoInit (
+  static async autoInit(
     client: Client,
     { useCache, endpoint, restURLfuncArgs }: IInit
   ): Promise<any> {
     this.useCache = useCache
     const cacheID = restURLfuncArgs.join(':')
     if (this.useCache !== undefined) {
-      const cached = await client.cache.get(this.cacheName ?? this.name, cacheID)
+      const cached = await client.cache.get(
+        this.cacheName ?? this.name,
+        cacheID
+      )
       if (cached !== undefined) {
         return cached
       }
@@ -35,7 +38,7 @@ export class Base {
     return new this(client, jsonParsed)
   }
 
-  async refreshFromAPI (
+  async refreshFromAPI(
     client: Client,
     { endpoint, restURLfuncArgs }: IInit
   ): Promise<this> {
@@ -48,13 +51,13 @@ export class Base {
     return oldOne
   }
 
-  refreshFromData (data: { [k: string]: any }): this {
+  refreshFromData(data: { [k: string]: any }): this {
     const oldOne = Object.assign(Object.create(this), this)
     this.readFromData(data)
     return oldOne
   }
 
-  protected readFromData (data: { [k: string]: any }): void {}
+  protected readFromData(data: { [k: string]: any }): void {}
 
   // toJSON() {}
 }

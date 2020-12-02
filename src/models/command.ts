@@ -142,7 +142,7 @@ export class CommandBuilder extends Command {
       ...new Set(
         ...this.aliases,
         ...(typeof alias === 'string' ? [alias] : alias)
-      ),
+      )
     ]
 
     return this
@@ -166,7 +166,7 @@ export class CommandBuilder extends Command {
       ...new Set(
         ...this.usage,
         ...(typeof usage === 'string' ? [usage] : usage)
-      ),
+      )
     ]
 
     return this
@@ -185,7 +185,7 @@ export class CommandBuilder extends Command {
       ...new Set(
         ...this.examples,
         ...(typeof examples === 'string' ? [examples] : examples)
-      ),
+      )
     ]
 
     return this
@@ -423,6 +423,6 @@ export const parseCommand = (
   return {
     name,
     args,
-    argString,
+    argString
   }
 }

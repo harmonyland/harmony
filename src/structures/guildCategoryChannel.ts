@@ -1,9 +1,6 @@
 import { Client } from '../models/client.ts'
 import { Channel } from './channel.ts'
-import {
-  GuildChannelCategoryPayload,
-  Overwrite
-} from '../types/channel.ts'
+import { GuildChannelCategoryPayload, Overwrite } from '../types/channel.ts'
 import { Guild } from './guild.ts'
 
 export class CategoryChannel extends Channel {
@@ -15,7 +12,7 @@ export class CategoryChannel extends Channel {
   guild: Guild
   parentID?: string
 
-  constructor (client: Client, data: GuildChannelCategoryPayload, guild: Guild) {
+  constructor(client: Client, data: GuildChannelCategoryPayload, guild: Guild) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name
@@ -28,7 +25,7 @@ export class CategoryChannel extends Channel {
     // cache.set('guildcategorychannel', this.id, this)
   }
 
-  protected readFromData (data: GuildChannelCategoryPayload): void {
+  protected readFromData(data: GuildChannelCategoryPayload): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name

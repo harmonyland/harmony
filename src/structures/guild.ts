@@ -5,7 +5,7 @@ import {
   GuildIntegrationPayload,
   GuildPayload,
   IntegrationAccountPayload,
-  IntegrationExpireBehavior,
+  IntegrationExpireBehavior
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { RolesManager } from '../managers/roles.ts'
@@ -85,7 +85,7 @@ export class GuildBans {
       GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id),
       {
         reason,
-        delete_message_days: deleteMessagesDays,
+        delete_message_days: deleteMessagesDays
       },
       undefined,
       null,

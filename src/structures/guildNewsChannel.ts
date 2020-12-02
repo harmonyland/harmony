@@ -13,7 +13,7 @@ export class NewsChannel extends TextChannel {
   parentID?: string
   topic?: string
 
-  constructor (client: Client, data: GuildNewsChannelPayload, guild: Guild) {
+  constructor(client: Client, data: GuildNewsChannelPayload, guild: Guild) {
     super(client, data)
     this.guildID = data.guild_id
     this.name = data.name
@@ -25,7 +25,7 @@ export class NewsChannel extends TextChannel {
     this.topic = data.topic
   }
 
-  protected readFromData (data: GuildNewsChannelPayload): void {
+  protected readFromData(data: GuildNewsChannelPayload): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name

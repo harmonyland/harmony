@@ -14,7 +14,7 @@ export class VoiceChannel extends Channel {
   nsfw: boolean
   parentID?: string
 
-  constructor (client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
+  constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
     super(client, data)
     this.bitrate = data.bitrate
     this.userLimit = data.user_limit
@@ -29,7 +29,7 @@ export class VoiceChannel extends Channel {
     // cache.set('guildvoicechannel', this.id, this)
   }
 
-  protected readFromData (data: GuildVoiceChannelPayload): void {
+  protected readFromData(data: GuildVoiceChannelPayload): void {
     super.readFromData(data)
     this.bitrate = data.bitrate ?? this.bitrate
     this.userLimit = data.user_limit ?? this.userLimit

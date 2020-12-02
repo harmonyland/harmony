@@ -1,6 +1,6 @@
 import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/user.ts'
-import { UserFlagsManager } from "../utils/userFlags.ts"
+import { UserFlagsManager } from '../utils/userFlags.ts'
 import { Base } from './base.ts'
 
 export class User extends Base {
@@ -14,30 +14,30 @@ export class User extends Base {
   locale?: string
   verified?: boolean
   email?: string
-  flags?: UserFlagsManager
-  /** 
-   * Nitro type of the User. 
-   * 
+  flags: UserFlagsManager
+  /**
+   * Nitro type of the User.
+   *
    * 0 = No Nitro
    * 1 = Classic Nitro
    * 2 = Regular Nitro
    */
   premiumType?: 0 | 1 | 2
-  publicFlags?: UserFlagsManager
+  publicFlags: UserFlagsManager
 
-  get tag (): string {
+  get tag(): string {
     return `${this.username}#${this.discriminator}`
   }
 
-  get nickMention (): string {
+  get nickMention(): string {
     return `<@!${this.id}>`
   }
 
-  get mention (): string {
+  get mention(): string {
     return `<@${this.id}>`
   }
 
-  constructor (client: Client, data: UserPayload) {
+  constructor(client: Client, data: UserPayload) {
     super(client, data)
     this.id = data.id
     this.username = data.username
@@ -54,7 +54,7 @@ export class User extends Base {
     this.publicFlags = new UserFlagsManager(data.public_flags)
   }
 
-  protected readFromData (data: UserPayload): void {
+  protected readFromData(data: UserPayload): void {
     super.readFromData(data)
     this.username = data.username ?? this.username
     this.discriminator = data.discriminator ?? this.discriminator
@@ -65,12 +65,16 @@ export class User extends Base {
     this.locale = data.locale ?? this.locale
     this.verified = data.verified ?? this.verified
     this.email = data.email ?? this.email
-    this.flags = new UserFlagsManager(data.flags) ?? this.flags
+    this.flags =
+      data.flags !== undefined ? new UserFlagsManager(data.flags) : this.flags
     this.premiumType = data.premium_type ?? this.premiumType
-    this.publicFlags = new UserFlagsManager(data.public_flags) ?? this.publicFlags
+    this.publicFlags =
+      data.public_flags !== undefined
+        ? new UserFlagsManager(data.public_flags)
+        : this.publicFlags
   }
 
-  toString (): string {
+  toString(): string {
     return this.mention
   }
 }

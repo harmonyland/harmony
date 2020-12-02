@@ -6,11 +6,11 @@ export class Channel extends Base {
   type: ChannelTypes
   id: string
   static cacheName = 'channel'
-  get mention (): string {
+  get mention(): string {
     return `<#${this.id}>`
   }
 
-  constructor (client: Client, data: ChannelPayload) {
+  constructor(client: Client, data: ChannelPayload) {
     super(client, data)
     this.type = data.type
     this.id = data.id
@@ -18,7 +18,7 @@ export class Channel extends Base {
     // this.client.channels.set(this.id, data)
   }
 
-  protected readFromData (data: ChannelPayload): void {
+  protected readFromData(data: ChannelPayload): void {
     super.readFromData(data)
     this.type = data.type ?? this.type
     this.id = data.id ?? this.id

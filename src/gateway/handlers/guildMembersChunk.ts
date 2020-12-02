@@ -27,7 +27,7 @@ export const guildMembersChunk: GatewayEventHandler = async (
     presences:
       d.presences === undefined ? undefined : d.presences.map((p) => p.user.id),
     chunkIndex: d.chunk_index,
-    chunkCount: d.chunk_count,
+    chunkCount: d.chunk_count
   })
 
   // Guild is now completely chunked. Emit an event for that.

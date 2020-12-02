@@ -66,18 +66,18 @@ export interface MemberPayload {
 
 export enum MessageNotification {
   ALL_MESSAGES = 0,
-  ONLY_MENTIONS = 1,
+  ONLY_MENTIONS = 1
 }
 
 export enum ContentFilter {
   DISABLED = 0,
   MEMBERS_WITHOUT_ROLES = 1,
-  ALL_MEMBERS = 3,
+  ALL_MEMBERS = 3
 }
 
 export enum MFA {
   NONE = 0,
-  ELEVATED = 1,
+  ELEVATED = 1
 }
 
 export enum Verification {
@@ -85,19 +85,19 @@ export enum Verification {
   LOW = 1,
   MEDIUM = 2,
   HIGH = 3,
-  VERY_HIGH = 4,
+  VERY_HIGH = 4
 }
 
 export enum PremiumTier {
   NONE = 0,
   TIER_1 = 1,
   TIER_2 = 2,
-  TIER_3 = 3,
+  TIER_3 = 3
 }
 
 export enum SystemChannelFlags {
   SUPPRESS_JOIN_NOTIFICATIONS = 1 << 0,
-  SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1,
+  SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1
 }
 
 export type GuildFeatures =
@@ -116,7 +116,7 @@ export type GuildFeatures =
 
 export enum IntegrationExpireBehavior {
   REMOVE_ROLE = 0,
-  KICK = 1,
+  KICK = 1
 }
 
 export interface IntegrationAccountPayload {

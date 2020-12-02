@@ -31,5 +31,5 @@ export const PermissionFlags: { [key: string]: number } = {
   MANAGE_NICKNAMES: 1 << 27,
   MANAGE_ROLES: 1 << 28,
   MANAGE_WEBHOOKS: 1 << 29,
-  MANAGE_EMOJIS: 1 << 30,
+  MANAGE_EMOJIS: 1 << 30
 }

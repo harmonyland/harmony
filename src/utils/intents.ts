@@ -36,22 +36,23 @@ export class Intents {
     ...Intents.NonPriviliged
   ]
 
-  static None: number[] = [
-    ...Intents.NonPriviliged
-  ]
+  static None: number[] = [...Intents.NonPriviliged]
 
-  static create(priviliged?: PriviligedIntents[], disable?: number[]): number[] {
-    let intents: number[] = [
-      ...Intents.NonPriviliged
-    ]
-    
+  static create(
+    priviliged?: PriviligedIntents[],
+    disable?: number[]
+  ): number[] {
+    let intents: number[] = [...Intents.NonPriviliged]
+
     if (priviliged !== undefined && priviliged.length !== 0) {
-      if (priviliged.includes('GUILD_MEMBERS')) intents.push(GatewayIntents.GUILD_MEMBERS)
-      if (priviliged.includes('GUILD_PRESENCES')) intents.push(GatewayIntents.GUILD_PRESENCES)
+      if (priviliged.includes('GUILD_MEMBERS'))
+        intents.push(GatewayIntents.GUILD_MEMBERS)
+      if (priviliged.includes('GUILD_PRESENCES'))
+        intents.push(GatewayIntents.GUILD_PRESENCES)
     }
 
     if (disable !== undefined) {
-      intents = intents.filter(intent => !disable.includes(intent))
+      intents = intents.filter((intent) => !disable.includes(intent))
     }
 
     return intents

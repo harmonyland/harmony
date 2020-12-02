@@ -1,7 +1,7 @@
-import { Client } from "../models/client.ts";
-import { ApplicationPayload } from "../types/application.ts";
-import { Base } from "./base.ts";
-import { User } from "./user.ts";
+import { Client } from '../models/client.ts'
+import { ApplicationPayload } from '../types/application.ts'
+import { Base } from './base.ts'
+import { User } from './user.ts'
 
 export class Application extends Base {
   id: string
