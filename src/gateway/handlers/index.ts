@@ -45,6 +45,7 @@ import { messageReactionRemoveAll } from './messageReactionRemoveAll.ts'
 import { messageReactionRemoveEmoji } from './messageReactionRemoveEmoji.ts'
 import { guildMembersChunk } from './guildMembersChunk.ts'
 import { presenceUpdate } from './presenceUpdate.ts'
+import { MessageReaction } from '../../structures/messageReaction.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -129,6 +130,10 @@ export interface ClientEvents extends EventTypes {
     uncached: Set<string>
   ) => void
   messageUpdate: (before: Message, after: Message) => void
+  messageReactionAdd: (reaction: MessageReaction, user: User) => void
+  messageReactionRemove: (reaction: MessageReaction, user: User) => void
+  messageReactionRemoveAll: (message: Message) => void
+  messageReactionRemoveEmoji: (message: Message, emoji: Emoji) => void
   typingStart: (
     user: User,
     channel: TextChannel,
