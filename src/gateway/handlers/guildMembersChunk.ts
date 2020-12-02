@@ -14,7 +14,13 @@ export const guildMembersChunk: GatewayEventHandler = async (
     await guild.members.set(member.user.id, member)
   }
 
-  // TODO: Cache Presences
+  if (d.chunk_index === 0) await guild.presences.flush()
+
+  if (d.presences !== undefined) {
+    for (const pres of d.presences) {
+      await guild.presences.set(pres.user.id, pres)
+    }
+  }
 
   gateway.client.emit('guildMembersChunk', guild, {
     members: d.members.map((m) => m.user.id),

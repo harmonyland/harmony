@@ -47,6 +47,9 @@ import { guildMembersChunk } from './guildMembersChunk.ts'
 import { presenceUpdate } from './presenceUpdate.ts'
 import { inviteCreate } from './inviteCreate.ts'
 import { inviteDelete } from './inviteDelete.ts'
+import { MessageReaction } from '../../structures/messageReaction.ts'
+import { Invite } from '../../structures/invite.ts'
+import { Presence } from '../../structures/presence.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -131,16 +134,23 @@ export interface ClientEvents extends EventTypes {
     uncached: Set<string>
   ) => void
   messageUpdate: (before: Message, after: Message) => void
+  messageReactionAdd: (reaction: MessageReaction, user: User) => void
+  messageReactionRemove: (reaction: MessageReaction, user: User) => void
+  messageReactionRemoveAll: (message: Message) => void
+  messageReactionRemoveEmoji: (message: Message, emoji: Emoji) => void
   typingStart: (
     user: User,
     channel: TextChannel,
     at: Date,
     guildData?: TypingStartGuildData
   ) => void
+  inviteCreate: (invite: Invite) => void
+  inviteDelete: (invite: Invite) => void
   userUpdate: (before: User, after: User) => void
   voiceServerUpdate: (data: VoiceServerUpdateData) => void
   voiceStateAdd: (state: VoiceState) => void
   voiceStateRemove: (state: VoiceState) => void
   voiceStateUpdate: (state: VoiceState, after: VoiceState) => void
+  presenceUpdate: (presence: Presence) => void
   webhooksUpdate: (guild: Guild, channel: GuildTextChannel) => void
 }

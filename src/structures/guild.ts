@@ -7,7 +7,6 @@ import {
   IntegrationAccountPayload,
   IntegrationExpireBehavior,
 } from '../types/guild.ts'
-import { PresenceUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { RolesManager } from '../managers/roles.ts'
 import { InviteManager } from '../managers/invites.ts'
@@ -21,6 +20,7 @@ import { Application } from './application.ts'
 import { GUILD_BAN, GUILD_BANS, GUILD_INTEGRATIONS } from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
 import { RequestMembersOptions } from '../gateway/index.ts'
+import { GuildPresencesManager } from '../managers/presences.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -147,7 +147,7 @@ export class Guild extends Base {
   voiceStates: GuildVoiceStatesManager
   members: MembersManager
   channels: GuildChannelsManager
-  presences?: PresenceUpdatePayload[]
+  presences: GuildPresencesManager
   maxPresences?: number
   maxMembers?: number
   vanityURLCode?: string
@@ -169,6 +169,7 @@ export class Guild extends Base {
     this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
     this.voiceStates = new GuildVoiceStatesManager(client, this)
+    this.presences = new GuildPresencesManager(client, this)
     this.channels = new GuildChannelsManager(
       this.client,
       this.client.channels,
@@ -203,7 +204,6 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at
       this.large = data.large
       this.memberCount = data.member_count
-      this.presences = data.presences
       this.maxPresences = data.max_presences
       this.maxMembers = data.max_members
       this.vanityURLCode = data.vanity_url_code
@@ -252,7 +252,6 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at ?? this.joinedAt
       this.large = data.large ?? this.large
       this.memberCount = data.member_count ?? this.memberCount
-      this.presences = data.presences ?? this.presences
       this.maxPresences = data.max_presences ?? this.maxPresences
       this.maxMembers = data.max_members ?? this.maxMembers
       this.vanityURLCode = data.vanity_url_code ?? this.vanityURLCode
