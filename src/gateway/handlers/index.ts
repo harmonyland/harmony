@@ -39,6 +39,12 @@ import { Collection } from '../../utils/collection.ts'
 import { voiceServerUpdate } from './voiceServerUpdate.ts'
 import { voiceStateUpdate } from './voiceStateUpdate.ts'
 import { VoiceState } from '../../structures/voiceState.ts'
+import { messageReactionAdd } from './messageReactionAdd.ts'
+import { messageReactionRemove } from './messageReactionRemove.ts'
+import { messageReactionRemoveAll } from './messageReactionRemoveAll.ts'
+import { messageReactionRemoveEmoji } from './messageReactionRemoveEmoji.ts'
+import { guildMembersChunk } from './guildMembersChunk.ts'
+import { presenceUpdate } from './presenceUpdate.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -60,7 +66,7 @@ export const gatewayHandlers: {
   GUILD_MEMBER_ADD: guildMemberAdd,
   GUILD_MEMBER_REMOVE: guildMemberRemove,
   GUILD_MEMBER_UPDATE: guildMemberUpdate,
-  GUILD_MEMBERS_CHUNK: undefined,
+  GUILD_MEMBERS_CHUNK: guildMembersChunk,
   GUILD_ROLE_CREATE: guildRoleCreate,
   GUILD_ROLE_UPDATE: guildRoleUpdate,
   GUILD_ROLE_DELETE: guildRoleDelete,
@@ -70,11 +76,11 @@ export const gatewayHandlers: {
   MESSAGE_UPDATE: messageUpdate,
   MESSAGE_DELETE: messageDelete,
   MESSAGE_DELETE_BULK: messageDeleteBulk,
-  MESSAGE_REACTION_ADD: undefined,
-  MESSAGE_REACTION_REMOVE: undefined,
-  MESSAGE_REACTION_REMOVE_ALL: undefined,
-  MESSAGE_REACTION_REMOVE_EMOJI: undefined,
-  PRESENCE_UPDATE: undefined,
+  MESSAGE_REACTION_ADD: messageReactionAdd,
+  MESSAGE_REACTION_REMOVE: messageReactionRemove,
+  MESSAGE_REACTION_REMOVE_ALL: messageReactionRemoveAll,
+  MESSAGE_REACTION_REMOVE_EMOJI: messageReactionRemoveEmoji,
+  PRESENCE_UPDATE: presenceUpdate,
   TYPING_START: typingStart,
   USER_UPDATE: userUpdate,
   VOICE_STATE_UPDATE: voiceStateUpdate,

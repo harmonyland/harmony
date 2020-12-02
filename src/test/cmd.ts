@@ -118,6 +118,22 @@ client.on('voiceStateRemove', (state) => {
   console.log('VC Leave', state)
 })
 
+client.on('messageReactionAdd', (reaction, user) => {
+  console.log(`${user.tag} reacted with ${reaction.emoji.name}`)
+})
+
+client.on('messageReactionRemove', (reaction, user) => {
+  console.log(`${user.tag} removed reaction ${reaction.emoji.name}`)
+})
+
+client.on('messageReactionRemoveEmoji', (message, emoji) => {
+  console.log(`All ${emoji.name} emoji reactions removed from ${message.id}`)
+})
+
+client.on('messageReactionRemoveAll', (message) => {
+  console.log(`All reactions remove from Message: ${message.id}`)
+})
+
 // client.on('raw', (evt: string) => console.log(`EVENT: ${evt}`))
 
 const files = Deno.readDirSync('./src/test/cmds')
