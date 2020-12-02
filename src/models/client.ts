@@ -7,12 +7,10 @@ import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
 import { UserManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
 import { ChannelsManager } from '../managers/channels.ts'
-import {
-  ClientPresence
-} from '../structures/presence.ts'
+import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
-import { ActivityGame, ClientActivity } from "../types/presence.ts"
-import { ClientEvents } from "../gateway/handlers/index.ts"
+import { ActivityGame, ClientActivity } from '../types/presence.ts'
+import { ClientEvents } from '../gateway/handlers/index.ts'
 // import { Application } from "../../mod.ts"
 
 /** Some Client Options to modify behaviour */
@@ -22,9 +20,9 @@ export interface ClientOptions {
   /** Gateway Intents */
   intents?: GatewayIntents[]
   /** Cache Adapter to use, defaults to Collections one */
-  cache?: ICacheAdapter,
+  cache?: ICacheAdapter
   /** Force New Session and don't use cached Session (by persistent caching) */
-  forceNewSession?: boolean,
+  forceNewSession?: boolean
   /** Startup presence of client */
   presence?: ClientPresence | ClientActivity | ActivityGame
   /** Whether it's a bot user or not? Use this if selfbot! */
@@ -33,18 +31,20 @@ export interface ClientOptions {
   canary?: boolean
   /** Time till which Messages are to be cached, in MS. Default is 3600000 */
   messageCacheLifetime?: number
+  /** Time till which Message Reactions are to be cached, in MS. Default is 3600000 */
+  reactionCacheLifetime?: number
+  /** Whether to fetch Uncached Message of Reaction or not? */
+  fetchUncachedReactions?: boolean
 }
 
 export declare interface Client {
-  on: <U extends string>(
-    event: U, listener: ClientEvents[U]
-  ) => this
+  on: <U extends string>(event: U, listener: ClientEvents[U]) => this
 
   emit: <U extends string>(
-    event: U, ...args: Parameters<ClientEvents[U]>
+    event: U,
+    ...args: Parameters<ClientEvents[U]>
   ) => boolean
 }
-
 
 /**
  * Discord Client.
@@ -68,12 +68,16 @@ export class Client extends EventEmitter {
   forceNewSession?: boolean
   /** Time till messages to stay cached, in MS. */
   messageCacheLifetime: number = 3600000
+  /** Time till messages to stay cached, in MS. */
+  reactionCacheLifetime: number = 3600000
+  /** Whether to fetch Uncached Message of Reaction or not? */
+  fetchUncachedReactions: boolean = false
 
   users: UserManager = new UserManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
   emojis: EmojisManager = new EmojisManager(this)
-  
+
   /** Whether this client will login as bot user or not */
   bot: boolean = true
   /** Whether the REST Manager will use Canary API or not */
@@ -81,7 +85,7 @@ export class Client extends EventEmitter {
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
 
-  constructor (options: ClientOptions = {}) {
+  constructor(options: ClientOptions = {}) {
     super()
     this.token = options.token
     this.intents = options.intents
@@ -94,17 +98,22 @@ export class Client extends EventEmitter {
           : new ClientPresence(options.presence)
     if (options.bot === false) this.bot = false
     if (options.canary === true) this.canary = true
-    if (options.messageCacheLifetime !== undefined) this.messageCacheLifetime = options.messageCacheLifetime
+    if (options.messageCacheLifetime !== undefined)
+      this.messageCacheLifetime = options.messageCacheLifetime
+    if (options.reactionCacheLifetime !== undefined)
+      this.reactionCacheLifetime = options.reactionCacheLifetime
+    if (options.fetchUncachedReactions === true)
+      this.fetchUncachedReactions = true
   }
 
   /** Set Cache Adapter */
-  setAdapter (adapter: ICacheAdapter): Client {
+  setAdapter(adapter: ICacheAdapter): Client {
     this.cache = adapter
     return this
   }
 
   /** Change Presence of Client */
-  setPresence (presence: ClientPresence | ClientActivity | ActivityGame): void {
+  setPresence(presence: ClientPresence | ClientActivity | ActivityGame): void {
     if (presence instanceof ClientPresence) {
       this.presence = presence
     } else this.presence = new ClientPresence(presence)
@@ -112,7 +121,7 @@ export class Client extends EventEmitter {
   }
 
   /** Emit debug event */
-  debug (tag: string, msg: string): void {
+  debug(tag: string, msg: string): void {
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
@@ -124,7 +133,7 @@ export class Client extends EventEmitter {
    * @param token Your token. This is required.
    * @param intents Gateway intents in array. This is required.
    */
-  connect (token?: string, intents?: GatewayIntents[]): void {
+  connect(token?: string, intents?: GatewayIntents[]): void {
     if (token === undefined && this.token !== undefined) token = this.token
     else if (this.token === undefined && token !== undefined) {
       this.token = token
