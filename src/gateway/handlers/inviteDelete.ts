@@ -8,7 +8,7 @@ export const inviteDelete: GatewayEventHandler = async (
   gateway: Gateway,
   d: InviteDeletePayload
 ) => {
-  // @eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id!)
 
   // Weird case, shouldn't happen
@@ -16,7 +16,7 @@ export const inviteDelete: GatewayEventHandler = async (
 
   const cachedInvite = await guild.invites.get(d.code)
   const cachedChannel = await gateway.client.channels.get(d.channel_id)
-  // @eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const cachedGuild = await gateway.client.guilds.get(d.guild_id!)
 
   // TODO(DjDeveloperr): Make it support self-bots and make Guild not always defined
