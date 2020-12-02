@@ -45,7 +45,10 @@ import { messageReactionRemoveAll } from './messageReactionRemoveAll.ts'
 import { messageReactionRemoveEmoji } from './messageReactionRemoveEmoji.ts'
 import { guildMembersChunk } from './guildMembersChunk.ts'
 import { presenceUpdate } from './presenceUpdate.ts'
+import { inviteCreate } from './inviteCreate.ts'
+import { inviteDelete } from './inviteDelete.ts'
 import { MessageReaction } from '../../structures/messageReaction.ts'
+import { Invite } from '../../structures/invite.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -71,8 +74,8 @@ export const gatewayHandlers: {
   GUILD_ROLE_CREATE: guildRoleCreate,
   GUILD_ROLE_UPDATE: guildRoleUpdate,
   GUILD_ROLE_DELETE: guildRoleDelete,
-  INVITE_CREATE: undefined,
-  INVITE_DELETE: undefined,
+  INVITE_CREATE: inviteCreate,
+  INVITE_DELETE: inviteDelete,
   MESSAGE_CREATE: messageCreate,
   MESSAGE_UPDATE: messageUpdate,
   MESSAGE_DELETE: messageDelete,
@@ -140,6 +143,8 @@ export interface ClientEvents extends EventTypes {
     at: Date,
     guildData?: TypingStartGuildData
   ) => void
+  inviteCreate: (invite: Invite) => void
+  inviteDelete: (invite: Invite) => void
   userUpdate: (before: User, after: User) => void
   voiceServerUpdate: (data: VoiceServerUpdateData) => void
   voiceStateAdd: (state: VoiceState) => void

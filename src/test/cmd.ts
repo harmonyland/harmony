@@ -6,6 +6,7 @@ import {
   CommandContext,
   Extension,
 } from '../../mod.ts'
+import { Invite } from '../structures/invite.ts'
 import { TOKEN } from './config.ts'
 
 const client = new CommandClient({
@@ -60,6 +61,19 @@ client.on('guildIntegrationsUpdate', (guild) => {
 
 client.on('webhooksUpdate', (guild, channel) => {
   console.log(`Webhooks Updated in #${channel.name} from ${guild.name}`)
+})
+
+client.on('commandError', console.error)
+client.on('inviteCreate', (invite: Invite) => {
+  console.log(`Invite Create: ${invite.code}`)
+})
+
+client.on('inviteDelete', (invite: Invite) => {
+  console.log(`Invite Delete: ${invite.code}`)
+})
+
+client.on('inviteDeleteUncached', (invite: Invite) => {
+  console.log(invite)
 })
 
 client.on('commandError', console.error)

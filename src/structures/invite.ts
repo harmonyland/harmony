@@ -15,11 +15,11 @@ export class Invite extends Base {
   approximatePresenceCount?: number
   approximateMemberCount?: number
 
-  get link (): string {
+  get link(): string {
     return `https://discord.gg/${this.code}`
   }
 
-  constructor (client: Client, data: InvitePayload) {
+  constructor(client: Client, data: InvitePayload) {
     super(client)
     this.code = data.code
     this.guild = data.guild
@@ -31,7 +31,7 @@ export class Invite extends Base {
     this.approximatePresenceCount = data.approximate_presence_count
   }
 
-  protected readFromData (data: InvitePayload): void {
+  protected readFromData(data: InvitePayload): void {
     super.readFromData(data)
     this.code = data.code ?? this.code
     this.guild = data.guild ?? this.guild
