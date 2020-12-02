@@ -1,4 +1,4 @@
-![banner](banner.png)
+![banner](https://cdn.discordapp.com/attachments/783319033730564098/783399012547035176/HarmonyBanner.png)
 
 <p align=center><i><b>An easy to use Discord API Library for Deno</b></i></p>
 <p align=center>
