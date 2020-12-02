@@ -123,6 +123,14 @@ client.on('typingStart', (user, channel, at, guildData) => {
   )
 })
 
+client.on('voiceStateAdd', (state) => {
+  console.log('VC Join', state)
+})
+
+client.on('voiceStateRemove', (state) => {
+  console.log('VC Leave', state)
+})
+
 // client.on('raw', (evt: string) => console.log(`EVENT: ${evt}`))
 
 const files = Deno.readDirSync('./src/test/cmds')
