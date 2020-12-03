@@ -40,10 +40,9 @@ export class User extends Base {
     return `<@${this.id}>`
   }
 
-  avatarURL(format?: ImageFormats, size?: ImageSize, dynamic?: boolean) {
+  avatarURL(format?: ImageFormats, size?: ImageSize, dynamic: boolean = true) {
     if (!format) format = 'webp'
     if (!size) size = 512
-    if (dynamic === undefined) dynamic = true
 
     return this.avatar
       ? `${ImageURL(USER_AVATAR(this.id, dynamic ? this.avatar : this.avatar.replace('a_', '')), format, size)}`
