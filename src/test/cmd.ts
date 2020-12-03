@@ -2,9 +2,9 @@ import {
   Command,
   CommandClient,
   Intents,
-  GuildChannel,
   CommandContext,
-  Extension
+  Extension,
+  GuildChannel
 } from '../../mod.ts'
 import { Invite } from '../structures/invite.ts'
 import { TOKEN } from './config.ts'

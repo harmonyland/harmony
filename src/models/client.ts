@@ -36,7 +36,7 @@ export interface ClientOptions {
   fetchUncachedReactions?: boolean
 }
 
-export declare interface Client {
+export interface ClientEventsEmitter {
   on: <U extends string>(event: U, listener: ClientEvents[U]) => this
 
   emit: <U extends string>(
@@ -83,6 +83,15 @@ export class Client extends EventEmitter {
   canary: boolean = false
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
+
+  private _untypedOn = this.on
+  private _untypedEmit = this.emit
+  public on = <K extends string>(event: K, listener: ClientEvents[K]): this =>
+    this._untypedOn(event, listener)
+  public emit = <K extends string>(
+    event: K,
+    ...args: Parameters<ClientEvents[K]>
+  ): boolean => this._untypedEmit(event, ...args)
 
   constructor(options: ClientOptions = {}) {
     super()
