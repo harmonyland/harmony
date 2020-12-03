@@ -36,15 +36,6 @@ export interface ClientOptions {
   fetchUncachedReactions?: boolean
 }
 
-export interface ClientEventsEmitter {
-  on: <U extends string>(event: U, listener: ClientEvents[U]) => this
-
-  emit: <U extends string>(
-    event: U,
-    ...args: Parameters<ClientEvents[U]>
-  ) => boolean
-}
-
 /**
  * Discord Client.
  */
