@@ -1,11 +1,13 @@
 import { ImageFormats, ImageSize } from '../types/cdn.ts'
 
+/** Function to get Image URL from a resource on Discord CDN */
 export const ImageURL = (
   url: string,
-  format: ImageFormats,
-  size?: ImageSize | 128
+  format: ImageFormats | undefined = 'png',
+  size: ImageSize | undefined = 128
 ): string => {
+  size = size === undefined ? 128 : size
   if (url.includes('a_')) {
-    return `${url}.gif?size=${size}`
-  } else return `${url}.${format}?size=${size}`
+    return `${url}.${format === undefined ? 'gif' : format}?size=${size}`
+  } else return `${url}.${format === 'gif' ? 'png' : format}?size=${size}`
 }

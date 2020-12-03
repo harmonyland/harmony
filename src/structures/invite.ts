@@ -32,7 +32,6 @@ export class Invite extends Base {
   }
 
   protected readFromData(data: InvitePayload): void {
-    super.readFromData(data)
     this.code = data.code ?? this.code
     this.guild = data.guild ?? this.guild
     this.channel = data.channel ?? this.channel

@@ -34,7 +34,6 @@ export class Role extends Base {
   }
 
   protected readFromData(data: RolePayload): void {
-    super.readFromData(data)
     this.name = data.name ?? this.name
     this.color = data.color ?? this.color
     this.hoist = data.hoist ?? this.hoist

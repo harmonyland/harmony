@@ -4,7 +4,7 @@ import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
 import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
-import { UserManager } from '../managers/users.ts'
+import { UsersManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
 import { ChannelsManager } from '../managers/channels.ts'
 import { ClientPresence } from '../structures/presence.ts'
@@ -72,7 +72,7 @@ export class Client extends EventEmitter {
   /** Whether to fetch Uncached Message of Reaction or not? */
   fetchUncachedReactions: boolean = false
 
-  users: UserManager = new UserManager(this)
+  users: UsersManager = new UsersManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
   emojis: EmojisManager = new EmojisManager(this)

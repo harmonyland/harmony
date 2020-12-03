@@ -2,7 +2,7 @@ import { GatewayIntents } from '../types/gateway.ts'
 
 export type PriviligedIntents = 'GUILD_MEMBERS' | 'GUILD_PRESENCES'
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+/** Utility class for handling Gateway Intents */
 export class Intents {
   static NonPriviliged: number[] = [
     GatewayIntents.GUILD_MESSAGES,
@@ -38,6 +38,7 @@ export class Intents {
 
   static None: number[] = [...Intents.NonPriviliged]
 
+  /** Create an Array of Intents easily passing Intents you're priviliged for and disable the ones you don't need */
   static create(
     priviliged?: PriviligedIntents[],
     disable?: number[]

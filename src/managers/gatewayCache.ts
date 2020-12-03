@@ -1,5 +1,10 @@
 import { Client } from '../models/client.ts'
 
+/**
+ * Cache Manager used for Caching values related to Gateway connection
+ *
+ * In case of Redis, this will persistently cache session ID and seq for fast resumes.
+ */
 export class GatewayCache {
   client: Client
   cacheName: string = 'discord_gateway_cache'

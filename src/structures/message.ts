@@ -82,7 +82,6 @@ export class Message extends Base {
   }
 
   protected readFromData(data: MessagePayload): void {
-    super.readFromData(data)
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
     this.content = data.content ?? this.content
