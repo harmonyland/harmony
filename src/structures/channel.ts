@@ -16,7 +16,7 @@ export class Channel extends Base {
     this.id = data.id
   }
 
-  protected readFromData(data: ChannelPayload): void {
+  readFromData(data: ChannelPayload): void {
     this.type = data.type ?? this.type
     this.id = data.id ?? this.id
   }

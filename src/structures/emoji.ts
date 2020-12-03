@@ -1,6 +1,5 @@
 import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
-import { USER } from '../types/endpoint.ts'
 import { Base } from './base.ts'
 import { Guild } from './guild.ts'
 import { User } from './user.ts'
@@ -38,7 +37,7 @@ export class Emoji extends Base {
     this.available = data.available
   }
 
-  protected readFromData(data: EmojiPayload): void {
+  readFromData(data: EmojiPayload): void {
     this.id = data.id ?? this.id
     this.name = data.name ?? this.name
     this.roles = data.roles ?? this.roles

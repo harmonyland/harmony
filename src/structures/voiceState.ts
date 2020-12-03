@@ -43,8 +43,7 @@ export class VoiceState extends Base {
     this.suppress = data.suppress
   }
 
-  protected readFromData(data: VoiceStatePayload): void {
-    super.readFromData(data)
+  readFromData(data: VoiceStatePayload): void {
     this.sessionID = data.session_id ?? this.sessionID
     this.deaf = data.deaf ?? this.deaf
     this.mute = data.mute ?? this.mute

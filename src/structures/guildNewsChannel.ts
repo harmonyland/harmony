@@ -25,7 +25,7 @@ export class NewsChannel extends TextChannel {
     this.topic = data.topic
   }
 
-  protected readFromData(data: GuildNewsChannelPayload): void {
+  readFromData(data: GuildNewsChannelPayload): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name

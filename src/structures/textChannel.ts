@@ -27,7 +27,7 @@ export class TextChannel extends Channel {
     this.lastPinTimestamp = data.last_pin_timestamp
   }
 
-  protected readFromData(data: TextChannelPayload): void {
+  readFromData(data: TextChannelPayload): void {
     super.readFromData(data)
     this.lastMessageID = data.last_message_id ?? this.lastMessageID
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp
@@ -152,7 +152,7 @@ export class GuildTextChannel extends TextChannel {
     this.rateLimit = data.rate_limit_per_user
   }
 
-  protected readFromData(data: GuildTextChannelPayload): void {
+  readFromData(data: GuildTextChannelPayload): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name

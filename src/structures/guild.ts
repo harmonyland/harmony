@@ -219,7 +219,7 @@ export class Guild extends Base {
     }
   }
 
-  protected readFromData(data: GuildPayload): void {
+  readFromData(data: GuildPayload): void {
     this.id = data.id ?? this.id
     this.unavailable = data.unavailable ?? this.unavailable
 
