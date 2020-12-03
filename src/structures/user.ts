@@ -2,6 +2,9 @@ import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/user.ts'
 import { UserFlagsManager } from '../utils/userFlags.ts'
 import { Base } from './base.ts'
+import { ImageURL } from './cdn.ts'
+import { ImageSize, ImageFormats } from '../types/cdn.ts'
+import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
 
 export class User extends Base {
   id: string
@@ -35,6 +38,20 @@ export class User extends Base {
 
   get mention(): string {
     return `<@${this.id}>`
+  }
+
+  avatarURL(format?: ImageFormats, size?: ImageSize, dynamic?: boolean) {
+    if (!format) format = 'webp'
+    if (!size) size = 512
+    if (dynamic === undefined) dynamic = true
+
+    return this.avatar
+      ? `${ImageURL(USER_AVATAR(this.id, dynamic ? this.avatar : this.avatar.replace('a_', '')), format, size)}`
+      : `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
+  }
+
+  get defaultAvatarURL() {
+      return `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
   }
 
   constructor(client: Client, data: UserPayload) {
