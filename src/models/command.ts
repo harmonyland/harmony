@@ -403,12 +403,14 @@ export class CategoriesManager {
   }
 }
 
+/** Parsed Command object */
 export interface ParsedCommand {
   name: string
   args: string[]
   argString: string
 }
 
+/** Parses a Command to later look for. */
 export const parseCommand = (
   client: CommandClient,
   msg: Message,

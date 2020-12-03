@@ -11,7 +11,7 @@ export class DMChannel extends TextChannel {
     this.recipients = data.recipients
   }
 
-  protected readFromData(data: DMChannelPayload): void {
+  readFromData(data: DMChannelPayload): void {
     super.readFromData(data)
     this.recipients = data.recipients ?? this.recipients
   }

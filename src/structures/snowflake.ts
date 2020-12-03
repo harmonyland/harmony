@@ -1,7 +1,12 @@
 export class Snowflake {
-  snowflake: bigint
+  id: string
+
   constructor(id: string) {
-    this.snowflake = BigInt.asUintN(64, BigInt(id))
+    this.id = id
+  }
+
+  get snowflake(): bigint {
+    return BigInt.asUintN(64, BigInt(this.id))
   }
 
   get timestamp(): string {
