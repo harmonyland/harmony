@@ -36,7 +36,7 @@ You can import the package from https://deno.land/x/harmony/mod.ts (with latest 
 For a quick example, run this:
 
 ```bash
-deno run --allow-net https://raw.githubusercontent.com/harmony-org/harmony/main/examples/ping.ts
+deno run --allow-net https://deno.land/x/harmony/examples/ping.ts
 ```
 
 And input your bot's token and Intents.
@@ -48,7 +48,7 @@ import {
   Client,
   Message,
   Intents
-} from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new Client()
 
@@ -78,7 +78,7 @@ import {
   CommandContext,
   Message,
   Intents
-} from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new CommandClient({
   prefix: '!'
