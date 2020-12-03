@@ -4,7 +4,7 @@ import { USER } from '../types/endpoint.ts'
 import { UserPayload } from '../types/user.ts'
 import { BaseManager } from './base.ts'
 
-export class UserManager extends BaseManager<UserPayload, User> {
+export class UsersManager extends BaseManager<UserPayload, User> {
   constructor(client: Client) {
     super(client, 'users', User)
   }

@@ -45,6 +45,7 @@ export type EveryChannelPayloadTypes =
   | GuildVoiceChannelPayload
   | EveryTextChannelPayloadTypes
 
+/** Get appropriate Channel structure by its type */
 const getChannelByType = (
   client: Client,
   data: EveryChannelPayloadTypes,

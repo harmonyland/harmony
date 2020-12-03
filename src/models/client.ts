@@ -4,7 +4,7 @@ import { Gateway } from '../gateway/index.ts'
 import { RESTManager } from './rest.ts'
 import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
 import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
-import { UserManager } from '../managers/users.ts'
+import { UsersManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
 import { ChannelsManager } from '../managers/channels.ts'
 import { ClientPresence } from '../structures/presence.ts'
@@ -36,15 +36,6 @@ export interface ClientOptions {
   fetchUncachedReactions?: boolean
 }
 
-export declare interface Client {
-  on: <U extends string>(event: U, listener: ClientEvents[U]) => this
-
-  emit: <U extends string>(
-    event: U,
-    ...args: Parameters<ClientEvents[U]>
-  ) => boolean
-}
-
 /**
  * Discord Client.
  */
@@ -72,7 +63,7 @@ export class Client extends EventEmitter {
   /** Whether to fetch Uncached Message of Reaction or not? */
   fetchUncachedReactions: boolean = false
 
-  users: UserManager = new UserManager(this)
+  users: UsersManager = new UsersManager(this)
   guilds: GuildManager = new GuildManager(this)
   channels: ChannelsManager = new ChannelsManager(this)
   emojis: EmojisManager = new EmojisManager(this)
@@ -83,6 +74,18 @@ export class Client extends EventEmitter {
   canary: boolean = false
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
+
+  private readonly _untypedOn = this.on
+
+  private readonly _untypedEmit = this.emit
+
+  public on = <K extends string>(event: K, listener: ClientEvents[K]): this =>
+    this._untypedOn(event, listener)
+
+  public emit = <K extends string>(
+    event: K,
+    ...args: Parameters<ClientEvents[K]>
+  ): boolean => this._untypedEmit(event, ...args)
 
   constructor(options: ClientOptions = {}) {
     super()
@@ -105,7 +108,12 @@ export class Client extends EventEmitter {
       this.fetchUncachedReactions = true
   }
 
-  /** Set Cache Adapter */
+  /**
+   * Set Cache Adapter
+   *
+   * Should NOT set after bot is already logged in or using current cache.
+   * Please look into using `cache` option.
+   */
   setAdapter(adapter: ICacheAdapter): Client {
     this.cache = adapter
     return this

@@ -26,6 +26,7 @@ export interface RequestMembersOptions {
 
 /**
  * Handles Discord gateway connection.
+ *
  * You should not use this and rather use Client class.
  */
 class Gateway {

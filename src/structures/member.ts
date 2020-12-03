@@ -56,8 +56,7 @@ export class Member extends Base {
     return this.user.nickMention
   }
 
-  protected readFromData(data: MemberPayload): void {
-    super.readFromData(data.user)
+  readFromData(data: MemberPayload): void {
     this.nick = data.nick ?? this.nick
     this.joinedAt = data.joined_at ?? this.joinedAt
     this.premiumSince = data.premium_since ?? this.premiumSince

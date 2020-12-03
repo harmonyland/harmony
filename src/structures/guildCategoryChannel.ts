@@ -25,7 +25,7 @@ export class CategoryChannel extends Channel {
     // cache.set('guildcategorychannel', this.id, this)
   }
 
-  protected readFromData(data: GuildChannelCategoryPayload): void {
+  readFromData(data: GuildChannelCategoryPayload): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name

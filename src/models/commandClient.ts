@@ -11,19 +11,33 @@ import { ExtensionsManager } from './extensions.ts'
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 
+/** Command Client options extending Client Options to provide a lot of Commands-related customizations */
 export interface CommandClientOptions extends ClientOptions {
+  /** Global prefix(s) of the bot. */
   prefix: string | string[]
+  /** Whether to enable mention prefix or not. */
   mentionPrefix?: boolean
+  /** Method to get a Guild's custom prefix(s). */
   getGuildPrefix?: (guildID: string) => PrefixReturnType
+  /** Method to get a User's custom prefix(s). */
   getUserPrefix?: (userID: string) => PrefixReturnType
+  /** Method to check if certain Guild is blacklisted from using Commands. */
   isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  /** Method to check if certain User is blacklisted from using Commands. */
   isUserBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  /** Method to check if certain Channel is blacklisted from using Commands. */
   isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  /** Allow spaces after prefix? Recommended with Mention Prefix ON. */
   spacesAfterPrefix?: boolean
+  /** Better Arguments regex to split at every whitespace. */
   betterArgs?: boolean
+  /** List of Bot's Owner IDs whom can access `ownerOnly` commands. */
   owners?: string[]
+  /** Whether to allow Bots to use Commands or not, not allowed by default. */
   allowBots?: boolean
+  /** Whether to allow Commands in DMs or not, allowed by default. */
   allowDMs?: boolean
+  /** Whether Commands should be case-sensitive or not, not by default. */
   caseSensitive?: boolean
 }
 
@@ -88,6 +102,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     )
   }
 
+  /** Process a Message to Execute Command. */
   async processMessage(msg: Message): Promise<any> {
     if (!this.allowBots && msg.author.bot === true) return
 

@@ -54,8 +54,7 @@ export class User extends Base {
     this.publicFlags = new UserFlagsManager(data.public_flags)
   }
 
-  protected readFromData(data: UserPayload): void {
-    super.readFromData(data)
+  readFromData(data: UserPayload): void {
     this.username = data.username ?? this.username
     this.discriminator = data.discriminator ?? this.discriminator
     this.avatar = data.avatar ?? this.avatar
