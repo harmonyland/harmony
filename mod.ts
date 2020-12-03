@@ -1,3 +1,4 @@
+export { GatewayIntents } from './src/types/gateway.ts'
 export { default as EventEmitter } from 'https://deno.land/std@0.74.0/node/events.ts'
 export { Base } from './src/structures/base.ts'
 export { Gateway } from './src/gateway/index.ts'
