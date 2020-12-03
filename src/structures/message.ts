@@ -33,7 +33,7 @@ export class Message extends Base {
   editedTimestamp?: string
   tts: boolean
   mentionEveryone: boolean
-  mentions: MessageMentions
+  mentions: User[]
   mentionRoles: string[]
   mentionChannels?: ChannelMention[]
   attachments: Attachment[]
@@ -64,7 +64,7 @@ export class Message extends Base {
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
     this.mentionEveryone = data.mention_everyone
-    this.mentions = new MessageMentions(this.client, this)
+    this.mentions = data.mentions.map((v) => new User(this.client, v))
     this.mentionRoles = data.mention_roles
     this.mentionChannels = data.mention_channels
     this.attachments = data.attachments
