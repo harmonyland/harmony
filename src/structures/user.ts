@@ -42,7 +42,7 @@ export class User extends Base {
 
   avatarURL(format: ImageFormats = 'webp', size: ImageSize = 512, dynamic: boolean = true): string {
     return this.avatar != null
-      ? `${ImageURL(USER_AVATAR(this.id, dynamic ? this.avatar : this.avatar.replace('a_', '')), format, size)}`
+      ? `${ImageURL(USER_AVATAR(this.id, this.avatar), format, size)}`
       : `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
   }
 
