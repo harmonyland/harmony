@@ -105,7 +105,12 @@ export class Client extends EventEmitter {
       this.fetchUncachedReactions = true
   }
 
-  /** Set Cache Adapter */
+  /**
+   * Set Cache Adapter
+   *
+   * Should NOT set after bot is already logged in or using current cache.
+   * Please look into using `cache` option.
+   */
   setAdapter(adapter: ICacheAdapter): Client {
     this.cache = adapter
     return this
