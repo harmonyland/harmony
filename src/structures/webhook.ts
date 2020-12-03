@@ -144,7 +144,6 @@ export class Webhook {
       (this as unknown) as TextChannel,
       (this as unknown) as User
     )
-    await res.mentions.fromPayload(resp)
     return res
   }
 

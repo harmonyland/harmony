@@ -31,7 +31,6 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     if (author === undefined) author = new User(this.client, raw.author)
 
     const res = new this.DataType(this.client, raw, channel, author) as any
-    await res.mentions.fromPayload(raw)
     return res
   }
 
@@ -69,8 +68,6 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
             channel as TextChannel,
             author
           )
-
-          await res.mentions.fromPayload(data)
 
           resolve(res)
         })

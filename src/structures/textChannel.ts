@@ -76,7 +76,6 @@ export class TextChannel extends Channel {
     const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), payload)
 
     const res = new Message(this.client, resp, this, this.client.user as any)
-    await res.mentions.fromPayload(resp)
     return res
   }
 
@@ -115,7 +114,6 @@ export class TextChannel extends Channel {
     )
 
     const res = new Message(this.client, newMsg, this, this.client.user)
-    await res.mentions.fromPayload(newMsg)
     return res
   }
 }
