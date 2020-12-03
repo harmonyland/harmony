@@ -108,7 +108,7 @@ client.connect('super secret token comes here', Intents.All)
 ## Docs
 
 Documentation is available for `main` (branch) and `stable` (release).
-- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/jsdoc/mod.ts)
+- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
 
 ## Found a bug or want support? Join our discord server!
