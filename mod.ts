@@ -1,8 +1,17 @@
+export { default as EventEmitter } from 'https://deno.land/std@0.74.0/node/events.ts'
+export { Base } from './src/structures/base.ts'
 export { Gateway } from './src/gateway/index.ts'
 export * from './src/models/client.ts'
 export { RESTManager } from './src/models/rest.ts'
 export * from './src/models/cacheAdapter.ts'
-export * from './src/models/command.ts'
+export {
+  Command,
+  CommandBuilder,
+  CommandCategory,
+  CommandsManager,
+  CategoriesManager
+} from './src/models/command.ts'
+export type { CommandContext } from './src/models/command.ts'
 export {
   Extension,
   ExtensionCommands,
