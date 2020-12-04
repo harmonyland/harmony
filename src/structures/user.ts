@@ -40,7 +40,7 @@ export class User extends Base {
     return `<@${this.id}>`
   }
 
-  avatarURL(format: ImageFormats = 'webp', size: ImageSize = 512): string {
+  avatarURL(format: ImageFormats = 'png', size: ImageSize = 512): string {
     return this.avatar != null
       ? `${ImageURL(USER_AVATAR(this.id, this.avatar), format, size)}`
       : `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
