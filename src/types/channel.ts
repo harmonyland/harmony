@@ -103,9 +103,9 @@ export interface MessageOption {
   embed?: Embed
   file?: Attachment
   allowedMentions?: {
-    parse: 'everyone' | 'users' | 'roles'
-    roles: string[]
-    users: string[]
+    parse?: 'everyone' | 'users' | 'roles'
+    roles?: string[]
+    users?: string[]
   }
 }
 

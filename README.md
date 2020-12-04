@@ -31,13 +31,12 @@
 
 ## Usage
 
-Right now, the package is not published anywhere, as its not completely usable.
-You can import it from this Raw GitHub URL: https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts
+You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts too.
 
 For a quick example, run this:
 
 ```bash
-deno run --allow-net https://raw.githubusercontent.com/harmony-org/harmony/main/examples/ping.ts
+deno run --allow-net https://deno.land/x/harmony/examples/ping.ts
 ```
 
 And input your bot's token and Intents.
@@ -49,7 +48,7 @@ import {
   Client,
   Message,
   Intents
-} from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new Client()
 
@@ -79,7 +78,7 @@ import {
   CommandContext,
   Message,
   Intents
-} from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new CommandClient({
   prefix: '!'
@@ -108,7 +107,9 @@ client.connect('super secret token comes here', Intents.All)
 
 ## Docs
 
-Not made yet.
+Documentation is available for `main` (branch) and `stable` (release).
+- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
+- [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
 
 ## Found a bug or want support? Join our discord server!
 

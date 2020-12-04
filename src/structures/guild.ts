@@ -91,8 +91,7 @@ export class GuildBans {
       null,
       true
     )
-
-    if (res.status !== 204) throw new Error('Failed to Add Guild Ban')
+    if (res.response.status !== 204) throw new Error('Failed to Add Guild Ban')
   }
 
   /**
@@ -108,7 +107,7 @@ export class GuildBans {
       true
     )
 
-    if (res.status !== 204) return false
+    if (res.response.status !== 204) return false
     else return true
   }
 }
@@ -219,8 +218,7 @@ export class Guild extends Base {
     }
   }
 
-  protected readFromData(data: GuildPayload): void {
-    super.readFromData(data)
+  readFromData(data: GuildPayload): void {
     this.id = data.id ?? this.id
     this.unavailable = data.unavailable ?? this.unavailable
 

@@ -1,6 +1,7 @@
 // Ported from https://github.com/discordjs/discord.js/blob/master/src/util/BitField.js
 export type BitFieldResolvable = number | BitField | string | BitField[]
 
+/** Bit Field utility to work with Bits and Flags */
 export class BitField {
   flags: { [name: string]: number } = {}
   bitfield: number

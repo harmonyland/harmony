@@ -4,6 +4,7 @@ import { CommandClient } from './commandClient.ts'
 
 export type ExtensionEventCallback = (ext: Extension, ...args: any[]) => any
 
+/** Extension Commands Manager */
 export class ExtensionCommands {
   extension: Extension
 
@@ -11,12 +12,14 @@ export class ExtensionCommands {
     this.extension = ext
   }
 
+  /** Get a list of Extension's Commands */
   get list(): Collection<string, Command> {
     return this.extension.client.commands.list.filter(
       (c) => c.extension?.name === this.extension.name
     )
   }
 
+  /** Get an Extension Command */
   get(cmd: string): Command | undefined {
     const find = this.extension.client.commands.find(cmd)
     // linter sucks
@@ -26,12 +29,14 @@ export class ExtensionCommands {
     else return find
   }
 
+  /** Add an Extension Command */
   add(Cmd: Command | typeof Command): boolean {
     const cmd = Cmd instanceof Command ? Cmd : new Cmd()
     cmd.extension = this.extension
     return this.extension.client.commands.add(cmd)
   }
 
+  /** Delete an Extension Command */
   delete(cmd: Command | string): boolean {
     const find = this.extension.client.commands.find(
       typeof cmd === 'string' ? cmd : cmd.name
@@ -45,6 +50,7 @@ export class ExtensionCommands {
     else return this.extension.client.commands.delete(find)
   }
 
+  /** Delete all Commands of an Extension */
   deleteAll(): void {
     for (const [cmd] of this.list) {
       this.delete(cmd)
@@ -52,17 +58,23 @@ export class ExtensionCommands {
   }
 }
 
+/** Customizable, isolated and pluggable Extensions are a great way of writing certain Modules independent of others */
 export class Extension {
   client: CommandClient
+  /** Name of the Extension */
   name: string = ''
+  /** Description of the Extension */
   description?: string
+  /** Extensions's Commands Manager */
   commands: ExtensionCommands = new ExtensionCommands(this)
+  /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}
 
   constructor(client: CommandClient) {
     this.client = client
   }
 
+  /** Listen for an Event through Extension. */
   listen(event: string, cb: ExtensionEventCallback): boolean {
     if (this.events[event] !== undefined) return false
     else {
@@ -76,10 +88,13 @@ export class Extension {
     }
   }
 
+  /** Method called upon loading of an Extension */
   load(): any {}
+  /** Method called upon unloading of an Extension */
   unload(): any {}
 }
 
+/** Extensions Manager for CommandClient */
 export class ExtensionsManager {
   client: CommandClient
   list: Collection<string, Extension> = new Collection()
@@ -88,14 +103,17 @@ export class ExtensionsManager {
     this.client = client
   }
 
+  /** Get an Extension by name */
   get(ext: string): Extension | undefined {
     return this.list.get(ext)
   }
 
+  /** Check whether an Extension exists or not */
   exists(ext: string): boolean {
     return this.get(ext) !== undefined
   }
 
+  /** Load an Extension onto Command Client */
   load(ext: Extension | typeof Extension): void {
     // eslint-disable-next-line new-cap
     if (!(ext instanceof Extension)) ext = new ext(this.client)
@@ -105,6 +123,7 @@ export class ExtensionsManager {
     ext.load()
   }
 
+  /** Unload an Extension from Command Client */
   unload(ext: Extension | string): boolean {
     const name = typeof ext === 'string' ? ext : ext.name
     const extension = this.get(name)

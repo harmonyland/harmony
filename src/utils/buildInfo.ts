@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Client } from '../models/client.ts'
 
+/** Gets Discord Build info for self-bot support */
 export const getBuildInfo = (
   client: Client
 ): {

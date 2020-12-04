@@ -8,6 +8,7 @@ export type PermissionResolvable =
   | Permissions
   | PermissionResolvable[]
 
+/** Manages Discord's Bit-based Permissions */
 export class Permissions extends BitField {
   static DEFAULT = 104324673
   static ALL = Object.values(PermissionFlags).reduce((all, p) => all | p, 0)

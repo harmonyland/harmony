@@ -5,19 +5,30 @@ import {
   RedisConnectOptions
 } from 'https://denopkg.com/keroxp/deno-redis/mod.ts'
 
+/**
+ * ICacheAdapter is the interface to be implemented by Cache Adapters for them to be usable with Harmony.
+ *
+ * Methods can return Promises too.
+ */
 export interface ICacheAdapter {
+  /** Get a key from a Cache */
   get: (cacheName: string, key: string) => Promise<any> | any
+  /** Set a key to value in a Cache Name with optional expire value in MS */
   set: (
     cacheName: string,
     key: string,
     value: any,
     expire?: number
   ) => Promise<any> | any
+  /** Delete a key from a Cache */
   delete: (cacheName: string, key: string) => Promise<boolean> | boolean
+  /** Get array of all values in a Cache */
   array: (cacheName: string) => undefined | any[] | Promise<any[] | undefined>
+  /** Entirely delete a Cache */
   deleteCache: (cacheName: string) => any
 }
 
+/** Default Cache Adapter for in-memory caching. */
 export class DefaultCacheAdapter implements ICacheAdapter {
   data: {
     [name: string]: Collection<string, any>
@@ -65,6 +76,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   }
 }
 
+/** Redis Cache Adatper for using Redis as a cache-provider. */
 export class RedisCacheAdapter implements ICacheAdapter {
   _redis: Promise<Redis>
   redis?: Redis

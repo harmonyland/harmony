@@ -65,7 +65,7 @@ export class RESTManager {
     this.handleRateLimits()
   }
 
-  async checkQueues(): Promise<void> {
+  private async checkQueues(): Promise<void> {
     Object.entries(this.queues).forEach(([key, value]) => {
       if (value.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -74,7 +74,7 @@ export class RESTManager {
     })
   }
 
-  queue(request: QueuedItem): void {
+  private queue(request: QueuedItem): void {
     const route = request.url.substring(
       // eslint seriously?
       // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
@@ -91,7 +91,7 @@ export class RESTManager {
     }
   }
 
-  async processQueue(): Promise<void> {
+  private async processQueue(): Promise<void> {
     if (Object.keys(this.queues).length !== 0 && !this.globalRateLimit) {
       await Promise.allSettled(
         Object.values(this.queues).map(async (pathQueue) => {
@@ -139,7 +139,7 @@ export class RESTManager {
     } else this.processing = false
   }
 
-  prepare(body: any, method: RequestMethods): { [key: string]: any } {
+  private prepare(body: any, method: RequestMethods): { [key: string]: any } {
     const headers: RequestHeaders = {
       'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
     }
@@ -192,7 +192,7 @@ export class RESTManager {
     return data
   }
 
-  async isRateLimited(url: string): Promise<number | false> {
+  private async isRateLimited(url: string): Promise<number | false> {
     const global = this.rateLimits.get('global')
     const rateLimited = this.rateLimits.get(url)
     const now = Date.now()
@@ -207,7 +207,10 @@ export class RESTManager {
     return false
   }
 
-  processHeaders(url: string, headers: Headers): string | null | undefined {
+  private processHeaders(
+    url: string,
+    headers: Headers
+  ): string | null | undefined {
     let rateLimited = false
 
     const global = headers.get('x-ratelimit-global')
@@ -257,7 +260,7 @@ export class RESTManager {
     return rateLimited ? bucket : undefined
   }
 
-  async handleStatusCode(
+  private async handleStatusCode(
     response: Response,
     body: any,
     data: { [key: string]: any }
@@ -304,6 +307,15 @@ export class RESTManager {
     } else throw new DiscordAPIError('Request - Unknown Error')
   }
 
+  /**
+   * Make a Request to Discord API
+   * @param method HTTP Method to use
+   * @param url URL of the Request
+   * @param body Body to send with Request
+   * @param maxRetries Number of Max Retries to perform
+   * @param bucket BucketID of the Request
+   * @param rawResponse Whether to get Raw Response or body itself
+   */
   async make(
     method: RequestMethods,
     url: string,
@@ -389,7 +401,7 @@ export class RESTManager {
     })
   }
 
-  async handleRateLimits(): Promise<void> {
+  private async handleRateLimits(): Promise<void> {
     const now = Date.now()
     this.rateLimits.forEach((value, key) => {
       if (value.resetAt > now) return
@@ -398,6 +410,7 @@ export class RESTManager {
     })
   }
 
+  /** Make a GET Request to API */
   async get(
     url: string,
     body?: unknown,
@@ -408,6 +421,7 @@ export class RESTManager {
     return await this.make('get', url, body, maxRetries, bucket, rawResponse)
   }
 
+  /** Make a POST Request to API */
   async post(
     url: string,
     body?: unknown,
@@ -418,6 +432,7 @@ export class RESTManager {
     return await this.make('post', url, body, maxRetries, bucket, rawResponse)
   }
 
+  /** Make a DELETE Request to API */
   async delete(
     url: string,
     body?: unknown,
@@ -428,6 +443,7 @@ export class RESTManager {
     return await this.make('delete', url, body, maxRetries, bucket, rawResponse)
   }
 
+  /** Make a PATCH Request to API */
   async patch(
     url: string,
     body?: unknown,
@@ -438,6 +454,7 @@ export class RESTManager {
     return await this.make('patch', url, body, maxRetries, bucket, rawResponse)
   }
 
+  /** Make a PUT Request to API */
   async put(
     url: string,
     body?: unknown,

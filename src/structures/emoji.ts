@@ -1,6 +1,5 @@
 import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
-import { USER } from '../types/endpoint.ts'
 import { Base } from './base.ts'
 import { Guild } from './guild.ts'
 import { User } from './user.ts'
@@ -38,8 +37,7 @@ export class Emoji extends Base {
     this.available = data.available
   }
 
-  protected readFromData(data: EmojiPayload): void {
-    super.readFromData(data)
+  readFromData(data: EmojiPayload): void {
     this.id = data.id ?? this.id
     this.name = data.name ?? this.name
     this.roles = data.roles ?? this.roles
@@ -47,11 +45,6 @@ export class Emoji extends Base {
     this.managed = data.managed ?? this.managed
     this.animated = data.animated ?? this.animated
     this.available = data.available ?? this.available
-    if (data.user !== undefined && data.user.id !== this.user?.id) {
-      User.autoInit(this.client, {
-        endpoint: USER,
-        restURLfuncArgs: [data.user.id]
-      }).then((user) => (this.user = user))
-    }
+    if (data.user !== undefined) this.user = new User(this.client, data.user)
   }
 }

@@ -29,7 +29,7 @@ export class VoiceChannel extends Channel {
     // cache.set('guildvoicechannel', this.id, this)
   }
 
-  protected readFromData(data: GuildVoiceChannelPayload): void {
+  readFromData(data: GuildVoiceChannelPayload): void {
     super.readFromData(data)
     this.bitrate = data.bitrate ?? this.bitrate
     this.userLimit = data.user_limit ?? this.userLimit
