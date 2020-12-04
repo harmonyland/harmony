@@ -55,7 +55,11 @@ export { Invite } from './src/structures/invite.ts'
 export * from './src/structures/member.ts'
 export { Message } from './src/structures/message.ts'
 export { MessageMentions } from './src/structures/messageMentions.ts'
-export { Presence, ClientPresence } from './src/structures/presence.ts'
+export {
+  Presence,
+  ClientPresence,
+  ActivityTypes
+} from './src/structures/presence.ts'
 export { Role } from './src/structures/role.ts'
 export { Snowflake } from './src/structures/snowflake.ts'
 export { TextChannel, GuildTextChannel } from './src/structures/textChannel.ts'
@@ -67,4 +71,12 @@ export { Intents } from './src/utils/intents.ts'
 // export { getBuildInfo } from './src/utils/buildInfo.ts'
 export * from './src/utils/permissions.ts'
 export { UserFlagsManager } from './src/utils/userFlags.ts'
+export type { EveryChannelTypes } from './src/utils/getChannelByType.ts'
 export * from './src/utils/bitfield.ts'
+export type {
+  ActivityGame,
+  ClientActivity,
+  ClientStatus,
+  StatusType
+} from './src/types/presence.ts'
+export { ChannelTypes } from './src/types/channel.ts'

@@ -92,4 +92,10 @@ client.on('messageCreate', async (msg: Message) => {
   }
 })
 
-client.connect(TOKEN, Intents.None)
+client.connect(TOKEN, Intents.All)
+
+// OLD: Was a way to reproduce reconnect infinite loop
+// setTimeout(() => {
+//   console.log('[DEBUG] Reconnect')
+//   client.gateway?.reconnect()
+// }, 1000 * 4)

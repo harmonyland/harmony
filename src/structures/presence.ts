@@ -11,7 +11,7 @@ import { Guild } from './guild.ts'
 import { User } from './user.ts'
 import { Client } from '../models/client.ts'
 
-enum ActivityTypes {
+export enum ActivityTypes {
   PLAYING = 0,
   STREAMING = 1,
   LISTENING = 2,
