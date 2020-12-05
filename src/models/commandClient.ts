@@ -102,7 +102,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     )
   }
 
-  /** Process a Message to Execute Command. */
+  /** Processes a Message to Execute Command. */
   async processMessage(msg: Message): Promise<any> {
     if (!this.allowBots && msg.author.bot === true) return
 
@@ -223,7 +223,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     }
 
     // In these checks too, Command overrides Category if present
-    // Check if Command is only for Owners
+    // Checks if Command is only for Owners
     if (
       (command.ownerOnly !== undefined || category === undefined
         ? command.ownerOnly
@@ -232,7 +232,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     )
       return this.emit('commandOwnerOnly', ctx, command)
 
-    // Check if Command is only for Guild
+    // Checks if Command is only for Guild
     if (
       (command.guildOnly !== undefined || category === undefined
         ? command.guildOnly
@@ -241,7 +241,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     )
       return this.emit('commandGuildOnly', ctx, command)
 
-    // Check if Command is only for DMs
+    // Checks if Command is only for DMs
     if (
       (command.dmOnly !== undefined || category === undefined
         ? command.dmOnly

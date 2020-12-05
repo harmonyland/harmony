@@ -94,7 +94,7 @@ export class Message extends Base {
     this.flags = data.flags ?? this.flags
   }
 
-  /** Edit this message. */
+  /** Edits this message. */
   async edit(text?: string, option?: MessageOption): Promise<Message> {
     if (
       this.client.user !== undefined &&
@@ -104,7 +104,7 @@ export class Message extends Base {
     return this.channel.editMessage(this.id, text, option)
   }
 
-  /** Create a Reply to this Message. */
+  /** Creates a Reply to this Message. */
   async reply(
     text?: string | AllMessageOptions,
     option?: AllMessageOptions
@@ -112,7 +112,7 @@ export class Message extends Base {
     return this.channel.send(text, option, this)
   }
 
-  /** Delete the Message. */
+  /** Deletes the Message. */
   async delete(): Promise<void> {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
   }

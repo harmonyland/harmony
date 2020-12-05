@@ -104,9 +104,9 @@ export class Client extends EventEmitter {
   }
 
   /**
-   * Set Cache Adapter
+   * Sets Cache Adapter
    *
-   * Should NOT set after bot is already logged in or using current cache.
+   * Should NOT be set after bot is already logged in or using current cache.
    * Please look into using `cache` option.
    */
   setAdapter(adapter: ICacheAdapter): Client {
@@ -114,7 +114,7 @@ export class Client extends EventEmitter {
     return this
   }
 
-  /** Change Presence of Client */
+  /** Changes Presence of Client */
   setPresence(presence: ClientPresence | ClientActivity | ActivityGame): void {
     if (presence instanceof ClientPresence) {
       this.presence = presence
@@ -122,7 +122,7 @@ export class Client extends EventEmitter {
     this.gateway?.sendPresence(this.presence.create())
   }
 
-  /** Emit debug event */
+  /** Emits debug event */
   debug(tag: string, msg: string): void {
     this.emit('debug', `[${tag}] ${msg}`)
   }
@@ -131,7 +131,7 @@ export class Client extends EventEmitter {
   // fetchApplication(): Promise<Application>
 
   /**
-   * This function is used for connect to discord.
+   * This function is used for connecting to discord.
    * @param token Your token. This is required.
    * @param intents Gateway intents in array. This is required.
    */

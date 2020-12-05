@@ -54,7 +54,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     return results
   }
 
-  /** Check if any of the values/keys in Collection satisfy callback */
+  /** Check if any of the values/keys in Collection satisfies callback */
   some(callback: (value: V, key: K) => boolean): boolean {
     for (const key of this.keys()) {
       const value = this.get(key) as V
@@ -63,7 +63,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     return false
   }
 
-  /** Check if every value/key in Collection satisfy callback */
+  /** Check if every value/key in Collection satisfies callback */
   every(callback: (value: V, key: K) => boolean): boolean {
     for (const key of this.keys()) {
       const value = this.get(key) as V

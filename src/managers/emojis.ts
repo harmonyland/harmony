@@ -20,7 +20,7 @@ export class EmojisManager extends BaseManager<EmojiPayload, Emoji> {
     return emoji
   }
 
-  /** Fetch an Emoji by Guild ID and Emoji ID, cache it and resolve it */
+  /** Fetches an Emoji by Guild ID and Emoji ID, cache it and resolve it */
   async fetch(guildID: string, id: string): Promise<Emoji> {
     return await new Promise((resolve, reject) => {
       this.client.rest
