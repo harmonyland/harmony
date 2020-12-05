@@ -24,8 +24,6 @@ export interface ClientOptions {
   forceNewSession?: boolean
   /** Startup presence of client */
   presence?: ClientPresence | ClientActivity | ActivityGame
-  /** Whether it's a bot user or not? Use this if selfbot! */
-  bot?: boolean
   /** Force all requests to Canary API */
   canary?: boolean
   /** Time till which Messages are to be cached, in MS. Default is 3600000 */
@@ -68,8 +66,6 @@ export class Client extends EventEmitter {
   channels: ChannelsManager = new ChannelsManager(this)
   emojis: EmojisManager = new EmojisManager(this)
 
-  /** Whether this client will login as bot user or not */
-  bot: boolean = true
   /** Whether the REST Manager will use Canary API or not */
   canary: boolean = false
   /** Client's presence. Startup one if set before connecting */
@@ -98,7 +94,6 @@ export class Client extends EventEmitter {
         options.presence instanceof ClientPresence
           ? options.presence
           : new ClientPresence(options.presence)
-    if (options.bot === false) this.bot = false
     if (options.canary === true) this.canary = true
     if (options.messageCacheLifetime !== undefined)
       this.messageCacheLifetime = options.messageCacheLifetime

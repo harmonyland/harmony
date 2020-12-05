@@ -220,20 +220,18 @@ class Gateway {
   }
 
   private async sendIdentify(forceNewSession?: boolean): Promise<void> {
-    if (this.client.bot === true) {
-      this.debug('Fetching /gateway/bot...')
-      const info = await this.client.rest.get(GATEWAY_BOT())
-      if (info.session_start_limit.remaining === 0)
-        throw new Error(
-          `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
-        )
-      this.debug(`Recommended Shards: ${info.shards}`)
-      this.debug('=== Session Limit Info ===')
-      this.debug(
-        `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
+    this.debug('Fetching /gateway/bot...')
+    const info = await this.client.rest.get(GATEWAY_BOT())
+    if (info.session_start_limit.remaining === 0)
+      throw new Error(
+        `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
       )
-      this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
-    } else this.debug('Skipping /gateway/bot because bot: false')
+    this.debug(`Recommended Shards: ${info.shards}`)
+    this.debug('=== Session Limit Info ===')
+    this.debug(
+      `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
+    )
+    this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
 
     if (forceNewSession === undefined || !forceNewSession) {
       const sessionIDCached = await this.cache.get('session_id')
@@ -258,19 +256,6 @@ class Gateway {
         0
       ),
       presence: this.client.presence.create()
-    }
-
-    if (this.client.bot === false) {
-      this.debug('Modify Identify Payload for Self-bot..')
-      delete payload.intents
-      payload.presence = undefined
-      payload.properties = {
-        $os: 'windows',
-        $browser: 'Firefox',
-        $device: '',
-        $referrer: '',
-        $referring_domain: ''
-      }
     }
 
     this.debug('Sending Identify payload...')

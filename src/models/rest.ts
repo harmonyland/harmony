@@ -1,6 +1,5 @@
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Client } from './client.ts'
-import { getBuildInfo } from '../utils/buildInfo.ts'
 import { Collection } from '../utils/collection.ts'
 
 export type RequestMethods =
@@ -169,24 +168,6 @@ export class RESTManager {
       headers,
       body: body?.file ?? JSON.stringify(body),
       method: method.toUpperCase()
-    }
-
-    if (this.client?.bot === false) {
-      // This is a selfbot. Use requests similar to Discord Client
-      data.headers.authorization = this.client.token as string
-      data.headers['accept-language'] = 'en-US'
-      data.headers.accept = '*/*'
-      data.headers['sec-fetch-dest'] = 'empty'
-      data.headers['sec-fetch-mode'] = 'cors'
-      data.headers['sec-fetch-site'] = 'same-origin'
-      data.headers['x-super-properties'] = btoa(
-        JSON.stringify(getBuildInfo(this.client))
-      )
-      delete data.headers['User-Agent']
-      delete data.headers.Authorization
-      headers.credentials = 'include'
-      headers.mode = 'cors'
-      headers.referrerPolicy = 'no-referrer-when-downgrade'
     }
 
     return data
