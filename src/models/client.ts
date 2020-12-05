@@ -140,9 +140,14 @@ export class Client extends EventEmitter {
     else if (this.token === undefined && token !== undefined) {
       this.token = token
     } else throw new Error('No Token Provided')
-    if (intents === undefined && this.intents !== undefined)
+    if (intents !== undefined && this.intents !== undefined) {
+      this.debug(
+        'client',
+        'Intents were set in both client and connect function. Using the one in the connect function...'
+      )
+    } else if (intents === undefined && this.intents !== undefined) {
       intents = this.intents
-    else if (intents !== undefined && this.intents === undefined) {
+    } else if (intents !== undefined && this.intents === undefined) {
       this.intents = intents
     } else throw new Error('No Gateway Intents were provided')
     this.gateway = new Gateway(this, token, intents)
