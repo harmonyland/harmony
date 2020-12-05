@@ -89,7 +89,7 @@ export class Webhook {
     return this
   }
 
-  /** Send a Message through Webhook. */
+  /** Sends a Message through Webhook. */
   async send(
     text?: string | AllWebhookMessageOptions,
     option?: AllWebhookMessageOptions
@@ -149,7 +149,7 @@ export class Webhook {
   }
 
   /**
-   * Create a Webhook object from URL
+   * Creates a Webhook object from URL
    * @param url URL of the Webhook
    * @param client Client (bot) object, if any.
    */
@@ -165,7 +165,7 @@ export class Webhook {
   }
 
   /**
-   * Edit the Webhook name, avatar, or channel (requires authentication).
+   * Edits the Webhook name, avatar, or channel (requires authentication).
    * @param options Options to edit the Webhook.
    */
   async edit(options: WebhookEditOptions): Promise<Webhook> {
@@ -185,7 +185,7 @@ export class Webhook {
     return this
   }
 
-  /** Delete the Webhook. */
+  /** Deletes the Webhook. */
   async delete(): Promise<boolean> {
     const resp = await this.rest.delete(this.url, undefined, 0, undefined, true)
     if (resp.response.status !== 204) return false

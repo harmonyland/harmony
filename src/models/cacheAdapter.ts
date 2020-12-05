@@ -11,20 +11,20 @@ import {
  * Methods can return Promises too.
  */
 export interface ICacheAdapter {
-  /** Get a key from a Cache */
+  /** Gets a key from a Cache */
   get: (cacheName: string, key: string) => Promise<any> | any
-  /** Set a key to value in a Cache Name with optional expire value in MS */
+  /** Sets a key to value in a Cache Name with optional expire value in MS */
   set: (
     cacheName: string,
     key: string,
     value: any,
     expire?: number
   ) => Promise<any> | any
-  /** Delete a key from a Cache */
+  /** Deletes a key from a Cache */
   delete: (cacheName: string, key: string) => Promise<boolean> | boolean
-  /** Get array of all values in a Cache */
+  /** Gets array of all values in a Cache */
   array: (cacheName: string) => undefined | any[] | Promise<any[] | undefined>
-  /** Entirely delete a Cache */
+  /** Entirely deletes a Cache */
   deleteCache: (cacheName: string) => any
 }
 

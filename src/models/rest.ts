@@ -308,7 +308,7 @@ export class RESTManager {
   }
 
   /**
-   * Make a Request to Discord API
+   * Makes a Request to Discord API
    * @param method HTTP Method to use
    * @param url URL of the Request
    * @param body Body to send with Request
@@ -410,7 +410,7 @@ export class RESTManager {
     })
   }
 
-  /** Make a GET Request to API */
+  /** Makes a GET Request to API */
   async get(
     url: string,
     body?: unknown,
@@ -421,7 +421,7 @@ export class RESTManager {
     return await this.make('get', url, body, maxRetries, bucket, rawResponse)
   }
 
-  /** Make a POST Request to API */
+  /** Makes a POST Request to API */
   async post(
     url: string,
     body?: unknown,
@@ -432,7 +432,7 @@ export class RESTManager {
     return await this.make('post', url, body, maxRetries, bucket, rawResponse)
   }
 
-  /** Make a DELETE Request to API */
+  /** Makes a DELETE Request to API */
   async delete(
     url: string,
     body?: unknown,
@@ -443,7 +443,7 @@ export class RESTManager {
     return await this.make('delete', url, body, maxRetries, bucket, rawResponse)
   }
 
-  /** Make a PATCH Request to API */
+  /** Makes a PATCH Request to API */
   async patch(
     url: string,
     body?: unknown,
@@ -454,7 +454,7 @@ export class RESTManager {
     return await this.make('patch', url, body, maxRetries, bucket, rawResponse)
   }
 
-  /** Make a PUT Request to API */
+  /** Makes a PUT Request to API */
   async put(
     url: string,
     body?: unknown,
