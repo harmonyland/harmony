@@ -44,11 +44,7 @@ And input your bot's token and Intents.
 Here is a small example of how to use harmony,
 
 ```ts
-import {
-  Client,
-  Message,
-  Intents
-} from 'https://deno.land/x/harmony/mod.ts'
+import { Client, Message, Intents } from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new Client()
 
@@ -108,6 +104,7 @@ client.connect('super secret token comes here', Intents.All)
 ## Docs
 
 Documentation is available for `main` (branch) and `stable` (release).
+
 - [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
 

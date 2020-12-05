@@ -47,7 +47,7 @@ export class User extends Base {
   }
 
   get defaultAvatarURL(): string {
-      return `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
+    return `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
   }
 
   constructor(client: Client, data: UserPayload) {
