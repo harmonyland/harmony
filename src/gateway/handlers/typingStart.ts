@@ -9,20 +9,19 @@ export const typingStart: GatewayEventHandler = async (
   d: TypingStartPayload
 ) => {
   const user = await gateway.client.users.get(d.user_id)
-  if (user === undefined) return console.log('user not cached')
+  if (user === undefined) return
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const channel = (await gateway.client.channels.get(
     d.channel_id
   )) as TextChannel
-  if (channel === undefined) return console.log(`channel not cached`)
+  if (channel === undefined) return
 
   const guild =
     d.guild_id !== undefined
       ? await gateway.client.guilds.get(d.guild_id)
       : undefined
-  if (guild === undefined && d.guild_id !== undefined)
-    return console.log('guild not cached')
+  if (guild === undefined && d.guild_id !== undefined) return
 
   const member =
     d.member !== undefined && guild !== undefined
