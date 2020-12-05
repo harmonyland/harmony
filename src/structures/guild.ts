@@ -288,7 +288,7 @@ export class Guild extends Base {
   }
 
   /**
-   * Fetchs Guild's Integrations (Webhooks, Bots, etc.)
+   * Fetches Guild's Integrations (Webhooks, Bots, etc.)
    */
   async fetchIntegrations(): Promise<GuildIntegration[]> {
     const raw = (await this.client.rest.get(
