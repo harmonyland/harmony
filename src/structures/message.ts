@@ -32,10 +32,7 @@ export class Message extends Base {
   timestamp: string
   editedTimestamp?: string
   tts: boolean
-  mentionEveryone: boolean
   mentions: MessageMentions
-  mentionRoles: string[]
-  mentionChannels?: ChannelMention[]
   attachments: Attachment[]
   embeds: Embed[]
   reactions: MessageReactionsManager
@@ -63,10 +60,7 @@ export class Message extends Base {
     this.timestamp = data.timestamp
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
-    this.mentionEveryone = data.mention_everyone
     this.mentions = new MessageMentions(this.client, this)
-    this.mentionRoles = data.mention_roles
-    this.mentionChannels = data.mention_channels
     this.attachments = data.attachments
     this.embeds = data.embeds.map((v) => new Embed(v))
     this.reactions = new MessageReactionsManager(this.client, this)
@@ -88,9 +82,6 @@ export class Message extends Base {
     this.timestamp = data.timestamp ?? this.timestamp
     this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp
     this.tts = data.tts ?? this.tts
-    this.mentionEveryone = data.mention_everyone ?? this.mentionEveryone
-    this.mentionRoles = data.mention_roles ?? this.mentionRoles
-    this.mentionChannels = data.mention_channels ?? this.mentionChannels
     this.attachments = data.attachments ?? this.attachments
     this.embeds = data.embeds.map((v) => new Embed(v)) ?? this.embeds
     this.nonce = data.nonce ?? this.nonce
