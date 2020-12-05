@@ -8,7 +8,6 @@ export const voiceStateUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: VoiceStatePayload
 ) => {
-  // TODO(DjDeveloperr): Support self-bot here; they can be in DMs (Call)
   if (d.guild_id === undefined) return
   const guild = ((await gateway.client.guilds.get(
     d.guild_id

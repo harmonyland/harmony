@@ -16,12 +16,19 @@ import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
 import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
+import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { Guild } from '../structures/guild.ts'
 
 export interface RequestMembersOptions {
   limit?: number
   presences?: boolean
   query?: string
   users?: string[]
+}
+
+export interface VoiceStateOptions {
+  mute?: boolean
+  deaf?: boolean
 }
 
 export const RECONNECT_REASON = 'harmony-reconnect'
@@ -306,6 +313,27 @@ class Gateway {
       }
     })
     return nonce
+  }
+
+  updateVoiceState(
+    guild: Guild | string,
+    channel?: VoiceChannel | string,
+    voiceOptions: VoiceStateOptions = {}
+  ): void {
+    this.send({
+      op: GatewayOpcodes.VOICE_STATE_UPDATE,
+      d: {
+        guild_id: typeof guild === 'string' ? guild : guild.id,
+        channel_id:
+          channel === undefined
+            ? null
+            : typeof channel === 'string'
+            ? channel
+            : channel?.id,
+        self_mute: voiceOptions.mute === undefined ? false : voiceOptions.mute,
+        self_deaf: voiceOptions.deaf === undefined ? false : voiceOptions.deaf
+      }
+    })
   }
 
   debug(msg: string): void {

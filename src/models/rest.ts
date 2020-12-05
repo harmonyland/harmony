@@ -244,7 +244,8 @@ export class RESTManager {
   private async handleStatusCode(
     response: Response,
     body: any,
-    data: { [key: string]: any }
+    data: { [key: string]: any },
+    reject: CallableFunction
   ): Promise<undefined> {
     const status = response.status
 
@@ -261,18 +262,48 @@ export class RESTManager {
     if (text === 'undefined') text = undefined
 
     if (status === HttpResponseCode.Unauthorized)
-      throw new DiscordAPIError(
-        `Request was not successful (Unauthorized). Invalid Token.\n${text}`
+      reject(
+        new DiscordAPIError(
+          `Request was not successful (Unauthorized). Invalid Token.\n${text}`
+        )
       )
 
     // At this point we know it is error
-    let error = {
+    const error: { [name: string]: any } = {
       url: response.url,
       status,
       method: data.method,
-      body: data.body
+      code: body?.code,
+      message: body?.message,
+      errors: Object.fromEntries(
+        Object.entries(
+          body?.errors as {
+            [name: string]: {
+              _errors: Array<{ code: string; message: string }>
+            }
+          }
+        ).map((entry) => {
+          return [entry[0], entry[1]._errors]
+        })
+      )
     }
-    if (body !== undefined) error = Object.assign(error, body)
+
+    // if (typeof error.errors === 'object') {
+    //   const errors = error.errors as {
+    //     [name: string]: { _errors: Array<{ code: string; message: string }> }
+    //   }
+    //   console.log(`%cREST Error:`, 'color: #F14C39;')
+    //   Object.entries(errors).forEach((entry) => {
+    //     console.log(`  %c${entry[0]}:`, 'color: #12BC79;')
+    //     entry[1]._errors.forEach((e) => {
+    //       console.log(
+    //         `    %c${e.code}: %c${e.message}`,
+    //         'color: skyblue;',
+    //         'color: #CECECE;'
+    //       )
+    //     })
+    //   })
+    // }
 
     if (
       [
@@ -282,10 +313,10 @@ export class RESTManager {
         HttpResponseCode.MethodNotAllowed
       ].includes(status)
     ) {
-      throw new DiscordAPIError(Deno.inspect(error))
+      reject(new DiscordAPIError(Deno.inspect(error)))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
-      throw new DiscordAPIError(Deno.inspect(error))
-    } else throw new DiscordAPIError('Request - Unknown Error')
+      reject(new DiscordAPIError(Deno.inspect(error)))
+    } else reject(new DiscordAPIError('Request - Unknown Error'))
   }
 
   /**
@@ -347,7 +378,7 @@ export class RESTManager {
             )
 
           const json: any = await response.json()
-          await this.handleStatusCode(response, json, requestData)
+          await this.handleStatusCode(response, json, requestData, reject)
 
           if (
             json.retry_after !== undefined ||

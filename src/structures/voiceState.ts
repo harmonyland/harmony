@@ -8,6 +8,7 @@ import { User } from './user.ts'
 
 export class VoiceState extends Base {
   guild?: Guild
+  channelID: string | null
   channel: VoiceChannel | null
   user: User
   member?: Member
@@ -29,6 +30,7 @@ export class VoiceState extends Base {
     }
   ) {
     super(client, data)
+    this.channelID = data.channel_id
     this.channel = _data.channel
     this.sessionID = data.session_id
     this.user = _data.user
@@ -46,6 +48,7 @@ export class VoiceState extends Base {
   readFromData(data: VoiceStatePayload): void {
     this.sessionID = data.session_id ?? this.sessionID
     this.deaf = data.deaf ?? this.deaf
+    this.channelID = data.channel_id ?? this.channelID
     this.mute = data.mute ?? this.mute
     this.deaf = data.self_deaf ?? this.deaf
     this.mute = data.self_mute ?? this.mute

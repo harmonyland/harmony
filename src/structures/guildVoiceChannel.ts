@@ -1,7 +1,10 @@
+import { VoiceServerUpdateData } from '../gateway/handlers/index.ts'
+import { VoiceStateOptions } from '../gateway/index.ts'
 import { Client } from '../models/client.ts'
 import { GuildVoiceChannelPayload, Overwrite } from '../types/channel.ts'
 import { Channel } from './channel.ts'
 import { Guild } from './guild.ts'
+import { VoiceState } from './voiceState.ts'
 
 export class VoiceChannel extends Channel {
   bitrate: string
@@ -27,6 +30,50 @@ export class VoiceChannel extends Channel {
     this.parentID = data.parent_id
     // TODO: Cache in Gateway Event Code
     // cache.set('guildvoicechannel', this.id, this)
+  }
+
+  async join(options?: VoiceStateOptions): Promise<VoiceServerUpdateData> {
+    return await new Promise((resolve, reject) => {
+      let vcdata: VoiceServerUpdateData | undefined
+      let done = 0
+
+      const onVoiceStateAdd = (state: VoiceState): void => {
+        if (state.user.id !== this.client.user?.id) return
+        if (state.channel?.id !== this.id) return
+        this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
+        done++
+        if (done >= 2) resolve(vcdata)
+      }
+
+      const onVoiceServerUpdate = (data: VoiceServerUpdateData): void => {
+        if (data.guild.id !== this.guild.id) return
+        vcdata = data
+        this.client.removeListener('voiceServerUpdate', onVoiceServerUpdate)
+        done++
+        if (done >= 2) resolve(vcdata)
+      }
+
+      this.client.gateway?.updateVoiceState(this.guild.id, this.id, options)
+
+      this.client.on('voiceStateAdd', onVoiceStateAdd)
+      this.client.on('voiceServerUpdate', onVoiceServerUpdate)
+
+      setTimeout(() => {
+        if (done < 2) {
+          this.client.removeListener('voiceServerUpdate', onVoiceServerUpdate)
+          this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
+          reject(
+            new Error(
+              "Connection timed out - couldn't connect to Voice Channel"
+            )
+          )
+        }
+      }, 1000 * 60)
+    })
+  }
+
+  leave(): void {
+    this.client.gateway?.updateVoiceState(this.guild.id, undefined)
   }
 
   readFromData(data: GuildVoiceChannelPayload): void {

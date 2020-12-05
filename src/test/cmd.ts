@@ -12,7 +12,8 @@ import { TOKEN } from './config.ts'
 const client = new CommandClient({
   prefix: ['pls', '!'],
   spacesAfterPrefix: true,
-  mentionPrefix: true
+  mentionPrefix: true,
+  owners: ['422957901716652033']
 })
 
 client.on('debug', console.log)
@@ -116,20 +117,12 @@ client.on('channelUpdate', (before, after) => {
   )
 })
 
-client.on('typingStart', (user, channel, at, guildData) => {
-  console.log(
-    `${user.tag} started typing in ${channel.id} at ${at}${
-      guildData !== undefined ? `\nGuild: ${guildData.guild.name}` : ''
-    }`
-  )
-})
-
 client.on('voiceStateAdd', (state) => {
-  console.log('VC Join', state)
+  console.log('VC Join', state.user.tag)
 })
 
 client.on('voiceStateRemove', (state) => {
-  console.log('VC Leave', state)
+  console.log('VC Leave', state.user.tag)
 })
 
 client.on('messageReactionAdd', (reaction, user) => {
