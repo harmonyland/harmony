@@ -98,6 +98,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       Object.values(this._decoratedCommands).forEach((entry) => {
         this.commands.add(entry)
       })
+      this._decoratedCommands = undefined
     }
 
     this.on(
@@ -361,13 +362,7 @@ export function command(options?: CommandOptions) {
 
     if (options !== undefined) Object.assign(command, options)
 
-    if (target instanceof CommandClient) {
-      if (target._decoratedCommands === undefined)
-        target._decoratedCommands = {}
-      target._decoratedCommands[command.name] = command
-    } else {
-      if (target._decorated === undefined) target._decorated = {}
-      target._decorated[command.name] = command
-    }
+    if (target._decoratedCommands === undefined) target._decoratedCommands = {}
+    target._decoratedCommands[command.name] = command
   }
 }

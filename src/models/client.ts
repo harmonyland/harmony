@@ -11,6 +11,7 @@ import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
+import { Extension } from './extensions.ts'
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -181,7 +182,7 @@ export class Client extends EventEmitter {
 }
 
 export function event(name?: string) {
-  return function (client: Client, prop: string) {
+  return function (client: Client | Extension, prop: string) {
     const listener = ((client as unknown) as {
       [name: string]: (...args: any[]) => any
     })[prop]

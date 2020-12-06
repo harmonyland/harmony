@@ -69,14 +69,27 @@ export class Extension {
   commands: ExtensionCommands = new ExtensionCommands(this)
   /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}
-  _decorated?: { [name: string]: Command }
+
+  _decoratedCommands?: { [name: string]: Command }
+  _decoratedEvents?: { [name: string]: (...args: any[]) => any }
 
   constructor(client: CommandClient) {
     this.client = client
-    if (this._decorated !== undefined) {
-      Object.entries(this._decorated).forEach((entry) => {
+    if (this._decoratedCommands !== undefined) {
+      Object.entries(this._decoratedCommands).forEach((entry) => {
         this.commands.add(entry[1])
       })
+      this._decoratedCommands = undefined
+    }
+
+    if (
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
+    ) {
+      Object.entries(this._decoratedEvents).forEach((entry) => {
+        this.listen(entry[0], entry[1])
+      })
+      this._decoratedEvents = undefined
     }
   }
 
