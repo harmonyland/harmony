@@ -69,9 +69,15 @@ export class Extension {
   commands: ExtensionCommands = new ExtensionCommands(this)
   /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}
+  _decorated?: { [name: string]: Command }
 
   constructor(client: CommandClient) {
     this.client = client
+    if (this._decorated !== undefined) {
+      Object.entries(this._decorated).forEach((entry) => {
+        this.commands.add(entry[1])
+      })
+    }
   }
 
   /** Listen for an Event through Extension. */

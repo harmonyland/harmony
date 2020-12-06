@@ -5,6 +5,7 @@ import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
 import { Extension } from './extensions.ts'
+import { parse } from 'https://deno.land/x/mutil@0.1.2/mod.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -29,9 +30,9 @@ export interface CommandContext {
   guild?: Guild
 }
 
-export class Command {
+export interface CommandOptions {
   /** Name of the Command */
-  name: string = ''
+  name?: string
   /** Description of the Command */
   description?: string
   /** Category of the Command */
@@ -65,6 +66,27 @@ export class Command {
   /** Whether the Command can only be used in Bot's DMs (if allowed) */
   dmOnly?: boolean
   /** Whether the Command can only be used by Bot Owners */
+  ownerOnly?: boolean
+}
+
+export class Command implements CommandOptions {
+  name: string = ''
+  description?: string
+  category?: string
+  aliases?: string | string[]
+  extension?: Extension
+  usage?: string | string[]
+  examples?: string | string[]
+  args?: number | boolean | string[]
+  permissions?: string | string[]
+  userPermissions?: string | string[]
+  botPermissions?: string | string[]
+  roles?: string | string[]
+  whitelistedGuilds?: string | string[]
+  whitelistedChannels?: string | string[]
+  whitelistedUsers?: string | string[]
+  guildOnly?: boolean
+  dmOnly?: boolean
   ownerOnly?: boolean
 
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
@@ -418,7 +440,8 @@ export const parseCommand = (
 ): ParsedCommand => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
-  const args = content.split(client.betterArgs === true ? /[\S\s]*/ : / +/)
+  const args = parse(content)._.map((e) => e.toString())
+
   const name = args.shift() as string
   const argString = content.slice(name.length).trim()
 

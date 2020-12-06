@@ -3,11 +3,13 @@ import { awaitSync } from '../utils/mixedPromise.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
   CategoriesManager,
+  Command,
   CommandContext,
+  CommandOptions,
   CommandsManager,
   parseCommand
 } from './command.ts'
-import { ExtensionsManager } from './extensions.ts'
+import { Extension, ExtensionsManager } from './extensions.ts'
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 
@@ -29,8 +31,6 @@ export interface CommandClientOptions extends ClientOptions {
   isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   /** Allow spaces after prefix? Recommended with Mention Prefix ON. */
   spacesAfterPrefix?: boolean
-  /** Better Arguments regex to split at every whitespace. */
-  betterArgs?: boolean
   /** List of Bot's Owner IDs whom can access `ownerOnly` commands. */
   owners?: string[]
   /** Whether to allow Bots to use Commands or not, not allowed by default. */
@@ -50,7 +50,6 @@ export class CommandClient extends Client implements CommandClientOptions {
   isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>
   isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>
   spacesAfterPrefix: boolean
-  betterArgs: boolean
   owners: string[]
   allowBots: boolean
   allowDMs: boolean
@@ -58,6 +57,7 @@ export class CommandClient extends Client implements CommandClientOptions {
   extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
+  _decoratedCommands?: { [name: string]: Command }
 
   constructor(options: CommandClientOptions) {
     super(options)
@@ -88,13 +88,17 @@ export class CommandClient extends Client implements CommandClientOptions {
       options.spacesAfterPrefix === undefined
         ? false
         : options.spacesAfterPrefix
-    this.betterArgs =
-      options.betterArgs === undefined ? false : options.betterArgs
     this.owners = options.owners === undefined ? [] : options.owners
     this.allowBots = options.allowBots === undefined ? false : options.allowBots
     this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
     this.caseSensitive =
       options.caseSensitive === undefined ? false : options.caseSensitive
+
+    if (this._decoratedCommands !== undefined) {
+      Object.values(this._decoratedCommands).forEach((entry) => {
+        this.commands.add(entry)
+      })
+    }
 
     this.on(
       'messageCreate',
@@ -342,6 +346,28 @@ export class CommandClient extends Client implements CommandClientOptions {
       command.afterExecute(ctx, result)
     } catch (e) {
       this.emit('commandError', command, ctx, e)
+    }
+  }
+}
+
+export function command(options?: CommandOptions) {
+  return function (target: CommandClient | Extension, name: string) {
+    const command = new Command()
+
+    command.name = name
+    command.execute = ((target as unknown) as {
+      [name: string]: (ctx: CommandContext) => any
+    })[name]
+
+    if (options !== undefined) Object.assign(command, options)
+
+    if (target instanceof CommandClient) {
+      if (target._decoratedCommands === undefined)
+        target._decoratedCommands = {}
+      target._decoratedCommands[command.name] = command
+    } else {
+      if (target._decorated === undefined) target._decorated = {}
+      target._decorated[command.name] = command
     }
   }
 }

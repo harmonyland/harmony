@@ -12,13 +12,13 @@ export {
   CommandsManager,
   CategoriesManager
 } from './src/models/command.ts'
-export type { CommandContext } from './src/models/command.ts'
+export type { CommandContext, CommandOptions } from './src/models/command.ts'
 export {
   Extension,
   ExtensionCommands,
   ExtensionsManager
 } from './src/models/extensions.ts'
-export { CommandClient } from './src/models/commandClient.ts'
+export { CommandClient, command } from './src/models/commandClient.ts'
 export type { CommandClientOptions } from './src/models/commandClient.ts'
 export { BaseManager } from './src/managers/base.ts'
 export { BaseChildManager } from './src/managers/baseChild.ts'
