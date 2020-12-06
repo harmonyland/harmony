@@ -1,7 +1,6 @@
 import { Base } from './base.ts'
 import {
   Attachment,
-  ChannelMention,
   MessageActivity,
   MessageApplication,
   MessageOption,
