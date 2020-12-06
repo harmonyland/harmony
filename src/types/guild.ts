@@ -136,7 +136,7 @@ export interface GuildIntegrationPayload {
   expire_grace_period?: number
   user?: UserPayload
   account: IntegrationAccountPayload
-  synced_at?: string // Actually a ISO Timestamp, but we parse in constructor'
+  synced_at?: string // Actually a ISO Timestamp, but we parse in constructor
   subscriber_count?: number
   revoked?: boolean
   application?: ApplicationPayload

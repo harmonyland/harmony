@@ -65,7 +65,7 @@ export class Member extends Base {
   }
 
   /**
-   * Update the Member data in cache (and this object).
+   * Updates the Member data in cache (and this object).
    */
   async fetch(): Promise<Member> {
     const raw = await this.client.rest.get(this.id)
@@ -76,7 +76,7 @@ export class Member extends Base {
   }
 
   /**
-   * Edit the Member
+   * Edits the Member
    * @param data Data to apply
    */
   async edit(data: MemberData): Promise<Member> {
@@ -113,14 +113,14 @@ export class Member extends Base {
   }
 
   /**
-   * Reset nickname of the Member
+   * Resets nickname of the Member
    */
   async resetNickname(): Promise<Member> {
     return await this.setNickname()
   }
 
   /**
-   * Set mute of a Member in VC
+   * Sets a Member mute in VC
    * @param mute Value to set
    */
   async setMute(mute?: boolean): Promise<Member> {
@@ -130,7 +130,7 @@ export class Member extends Base {
   }
 
   /**
-   * Set deaf of a Member in VC
+   * Sets a Member deaf in VC
    * @param deaf Value to set
    */
   async setDeaf(deaf?: boolean): Promise<Member> {
@@ -140,14 +140,14 @@ export class Member extends Base {
   }
 
   /**
-   * Unmute the Member from VC.
+   * Unmutes the Member from VC.
    */
   async unmute(): Promise<Member> {
     return await this.setMute(false)
   }
 
   /**
-   * Kick the member.
+   * Kicks the member.
    */
   async kick(): Promise<boolean> {
     const resp = await this.client.rest.delete(
@@ -162,7 +162,7 @@ export class Member extends Base {
   }
 
   /**
-   * Ban the Member.
+   * Bans the Member.
    * @param reason Reason for the Ban.
    * @param deleteMessagesDays Delete Old Messages? If yes, how much days.
    */

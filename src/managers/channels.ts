@@ -43,7 +43,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     return result
   }
 
-  /** Fetch a Channel by ID, cache it, resolve it */
+  /** Fetches a Channel by ID, cache it, resolve it */
   async fetch<T = Channel>(id: string): Promise<T> {
     return await new Promise((resolve, reject) => {
       this.client.rest

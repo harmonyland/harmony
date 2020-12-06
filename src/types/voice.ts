@@ -1,7 +1,7 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#voice
 import { MemberPayload } from './guild.ts'
 
-export enum VoiceOpcodes { // VoiceOpcodes 추가 - UnderC -
+export enum VoiceOpcodes { // add VoiceOpcodes - UnderC -
   IDENTIFY = 0,
   SELECT_PROTOCOL = 1,
   READY = 2,

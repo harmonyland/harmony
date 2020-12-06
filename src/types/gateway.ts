@@ -16,7 +16,7 @@ import { UserPayload } from './user.ts'
 /**
  * Gateway OPcodes from Discord docs.
  */
-export enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있다. - UnderC -
+export enum GatewayOpcodes { // Opcode 5 is empty according to discord api docs.
   DISPATCH = 0,
   HEARTBEAT = 1,
   IDENTIFY = 2,

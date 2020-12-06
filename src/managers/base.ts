@@ -8,7 +8,7 @@ import { Collection } from '../utils/collection.ts'
  */
 export class BaseManager<T, T2> {
   client: Client
-  /** Cache Name or Key used to differentiate caches */
+  /** Caches Name or Key used to differentiate caches */
   cacheName: string
   /** Which data type does this cache have */
   DataType: any
@@ -19,36 +19,36 @@ export class BaseManager<T, T2> {
     this.DataType = DataType
   }
 
-  /** Get raw value from a cache (payload) */
+  /** Gets raw value from a cache (payload) */
   async _get(key: string): Promise<T | undefined> {
     return this.client.cache.get(this.cacheName, key)
   }
 
-  /** Get a value from Cache */
+  /** Gets a value from Cache */
   async get(key: string): Promise<T2 | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
     return new this.DataType(this.client, raw)
   }
 
-  /** Set a value to Cache */
+  /** Sets a value to Cache */
   async set(key: string, value: T): Promise<any> {
     return this.client.cache.set(this.cacheName, key, value)
   }
 
-  /** Delete a key from Cache */
+  /** Deletes a key from Cache */
   async delete(key: string): Promise<boolean> {
     return this.client.cache.delete(this.cacheName, key)
   }
 
-  /** Get an Array of values from Cache */
+  /** Gets an Array of values from Cache */
   async array(): Promise<undefined | T2[]> {
     let arr = await (this.client.cache.array(this.cacheName) as T[])
     if (arr === undefined) arr = []
     return arr.map((e) => new this.DataType(this.client, e)) as any
   }
 
-  /** Get a Collection of values from Cache */
+  /** Gets a Collection of values from Cache */
   async collection(): Promise<Collection<string, T2>> {
     const arr = await this.array()
     if (arr === undefined) return new Collection()
@@ -60,7 +60,7 @@ export class BaseManager<T, T2> {
     return collection
   }
 
-  /** Delete everything from Cache */
+  /** Deletes everything from Cache */
   flush(): any {
     return this.client.cache.deleteCache(this.cacheName)
   }
