@@ -42,7 +42,7 @@ export class VoiceChannel extends Channel {
         if (state.channel?.id !== this.id) return
         this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
         done++
-        if (done >= 2) resolve(vcdata)
+        if (done >= 2) resolve((vcdata as unknown) as VoiceServerUpdateData)
       }
 
       const onVoiceServerUpdate = (data: VoiceServerUpdateData): void => {
