@@ -12,7 +12,7 @@ import { TOKEN } from './config.ts'
 class MyClient extends CommandClient {
   constructor() {
     super({
-      prefix: '!',
+      prefix: ['!', '!!'],
       caseSensitive: false
     })
   }

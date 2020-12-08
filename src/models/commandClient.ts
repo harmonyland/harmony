@@ -23,6 +23,8 @@ export interface CommandClientOptions extends ClientOptions {
   getGuildPrefix?: (guildID: string) => PrefixReturnType
   /** Method to get a User's custom prefix(s). */
   getUserPrefix?: (userID: string) => PrefixReturnType
+  /** Method to get a Channel's custom prefix(s). */
+  getChannelPrefix?: (channelID: string) => PrefixReturnType
   /** Method to check if certain Guild is blacklisted from using Commands. */
   isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   /** Method to check if certain User is blacklisted from using Commands. */
@@ -44,19 +46,25 @@ export interface CommandClientOptions extends ClientOptions {
 export class CommandClient extends Client implements CommandClientOptions {
   prefix: string | string[]
   mentionPrefix: boolean
+
   getGuildPrefix: (guildID: string) => PrefixReturnType
   getUserPrefix: (userID: string) => PrefixReturnType
+  getChannelPrefix: (channelID: string) => PrefixReturnType
+
   isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>
   isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>
   isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>
+
   spacesAfterPrefix: boolean
   owners: string[]
   allowBots: boolean
   allowDMs: boolean
   caseSensitive: boolean
+
   extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
+
   _decoratedCommands?: { [name: string]: Command }
 
   constructor(options: CommandClientOptions) {
@@ -64,6 +72,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     this.prefix = options.prefix
     this.mentionPrefix =
       options.mentionPrefix === undefined ? false : options.mentionPrefix
+
     this.getGuildPrefix =
       options.getGuildPrefix === undefined
         ? (id: string) => this.prefix
@@ -72,6 +81,12 @@ export class CommandClient extends Client implements CommandClientOptions {
       options.getUserPrefix === undefined
         ? (id: string) => this.prefix
         : options.getUserPrefix
+
+    this.getChannelPrefix =
+      options.getChannelPrefix === undefined
+        ? (id: string) => this.prefix
+        : options.getChannelPrefix
+
     this.isUserBlacklisted =
       options.isUserBlacklisted === undefined
         ? (id: string) => false
@@ -84,10 +99,12 @@ export class CommandClient extends Client implements CommandClientOptions {
       options.isChannelBlacklisted === undefined
         ? (id: string) => false
         : options.isChannelBlacklisted
+
     this.spacesAfterPrefix =
       options.spacesAfterPrefix === undefined
         ? false
         : options.spacesAfterPrefix
+
     this.owners = options.owners === undefined ? [] : options.owners
     this.allowBots = options.allowBots === undefined ? false : options.allowBots
     this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
@@ -128,40 +145,45 @@ export class CommandClient extends Client implements CommandClientOptions {
       if (isGuildBlacklisted === true) return
     }
 
-    let prefix: string | string[] = await awaitSync(
-      this.getUserPrefix(msg.author.id)
-    )
+    let prefix: string | string[] = []
+    if (typeof this.prefix === 'string') prefix = [...prefix, this.prefix]
+    else prefix = [...prefix, ...this.prefix]
+
+    const userPrefix = await awaitSync(this.getUserPrefix(msg.author.id))
+    if (userPrefix !== undefined) {
+      if (typeof userPrefix === 'string') prefix = [...prefix, userPrefix]
+      else prefix = [...prefix, ...userPrefix]
+    }
 
     if (msg.guild !== undefined) {
-      prefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
+      const guildPrefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
+      if (guildPrefix !== undefined) {
+        if (typeof guildPrefix === 'string') prefix = [...prefix, guildPrefix]
+        else prefix = [...prefix, ...guildPrefix]
+      }
     }
+
+    prefix = [...new Set(prefix)]
 
     let mentionPrefix = false
 
-    if (typeof prefix === 'string') {
-      if (msg.content.startsWith(prefix) === false) {
-        if (this.mentionPrefix) mentionPrefix = true
-        else return
-      }
-    } else {
-      const usedPrefix = prefix.find((v) => msg.content.startsWith(v))
-      if (usedPrefix === undefined) {
-        if (this.mentionPrefix) mentionPrefix = true
-        else return
-      } else prefix = usedPrefix
-    }
+    let usedPrefix = prefix
+      .filter((v) => msg.content.startsWith(v))
+      .sort((b, a) => a.length - b.length)[0]
+    if (usedPrefix === undefined && this.mentionPrefix) mentionPrefix = true
 
     if (mentionPrefix) {
       if (msg.content.startsWith(this.user?.mention as string) === true)
-        prefix = this.user?.mention as string
+        usedPrefix = this.user?.mention as string
       else if (
         msg.content.startsWith(this.user?.nickMention as string) === true
       )
-        prefix = this.user?.nickMention as string
+        usedPrefix = this.user?.nickMention as string
       else return
     }
 
-    if (typeof prefix !== 'string') return
+    if (typeof usedPrefix !== 'string') return
+    prefix = usedPrefix
 
     const parsed = parseCommand(this, msg, prefix)
     const command = this.commands.fetch(parsed)
