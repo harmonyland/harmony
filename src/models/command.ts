@@ -61,6 +61,8 @@ export interface CommandOptions {
   whitelistedChannels?: string | string[]
   /** Whitelisted Users. Command can be executed only by these Users (List or one of IDs) */
   whitelistedUsers?: string | string[]
+  /** Whether the Command can only be used in NSFW channel or not */
+  nsfw?: boolean
   /** Whether the Command can only be used in Guild (if allowed in DMs) */
   guildOnly?: boolean
   /** Whether the Command can only be used in Bot's DMs (if allowed) */
@@ -85,6 +87,7 @@ export class Command implements CommandOptions {
   whitelistedGuilds?: string | string[]
   whitelistedChannels?: string | string[]
   whitelistedUsers?: string | string[]
+  nsfw?: boolean
   guildOnly?: boolean
   dmOnly?: boolean
   ownerOnly?: boolean
@@ -250,6 +253,11 @@ export class CommandBuilder extends Command {
 
   setGuildOnly(value: boolean = true): CommandBuilder {
     this.guildOnly = value
+    return this
+  }
+
+  setNSFW(value: boolean = true): CommandBuilder {
+    this.nsfw = value
     return this
   }
 

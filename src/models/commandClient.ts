@@ -1,4 +1,5 @@
 import { Message } from '../structures/message.ts'
+import { GuildTextChannel } from '../structures/textChannel.ts'
 import { awaitSync } from '../utils/mixedPromise.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
@@ -276,6 +277,13 @@ export class CommandClient extends Client implements CommandClientOptions {
       msg.guild !== undefined
     )
       return this.emit('commandDmOnly', ctx, command)
+
+    if (
+      command.nsfw === true &&
+      (msg.guild === undefined ||
+        ((msg.channel as unknown) as GuildTextChannel).nsfw !== true)
+    )
+      return this.emit('commandNSFW', ctx, command)
 
     const allPermissions =
       command.permissions !== undefined
