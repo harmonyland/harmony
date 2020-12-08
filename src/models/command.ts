@@ -5,6 +5,7 @@ import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
 import { Extension } from './extensions.ts'
+import { parse } from 'https://deno.land/x/mutil@0.1.2/mod.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -29,9 +30,9 @@ export interface CommandContext {
   guild?: Guild
 }
 
-export class Command {
+export interface CommandOptions {
   /** Name of the Command */
-  name: string = ''
+  name?: string
   /** Description of the Command */
   description?: string
   /** Category of the Command */
@@ -60,11 +61,35 @@ export class Command {
   whitelistedChannels?: string | string[]
   /** Whitelisted Users. Command can be executed only by these Users (List or one of IDs) */
   whitelistedUsers?: string | string[]
+  /** Whether the Command can only be used in NSFW channel or not */
+  nsfw?: boolean
   /** Whether the Command can only be used in Guild (if allowed in DMs) */
   guildOnly?: boolean
   /** Whether the Command can only be used in Bot's DMs (if allowed) */
   dmOnly?: boolean
   /** Whether the Command can only be used by Bot Owners */
+  ownerOnly?: boolean
+}
+
+export class Command implements CommandOptions {
+  name: string = ''
+  description?: string
+  category?: string
+  aliases?: string | string[]
+  extension?: Extension
+  usage?: string | string[]
+  examples?: string | string[]
+  args?: number | boolean | string[]
+  permissions?: string | string[]
+  userPermissions?: string | string[]
+  botPermissions?: string | string[]
+  roles?: string | string[]
+  whitelistedGuilds?: string | string[]
+  whitelistedChannels?: string | string[]
+  whitelistedUsers?: string | string[]
+  nsfw?: boolean
+  guildOnly?: boolean
+  dmOnly?: boolean
   ownerOnly?: boolean
 
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
@@ -79,7 +104,7 @@ export class Command {
 
   toString(): string {
     return `Command: ${this.name}${
-      this.extension !== undefined
+      this.extension !== undefined && this.extension.name !== ''
         ? ` [${this.extension.name}]`
         : this.category !== undefined
         ? ` [${this.category}]`
@@ -231,6 +256,11 @@ export class CommandBuilder extends Command {
     return this
   }
 
+  setNSFW(value: boolean = true): CommandBuilder {
+    this.nsfw = value
+    return this
+  }
+
   setOwnerOnly(value: boolean = true): CommandBuilder {
     this.ownerOnly = value
     return this
@@ -268,38 +298,86 @@ export class CommandsManager {
     return this.list.size
   }
 
-  /** Find a Command by name/alias */
-  find(search: string): Command | undefined {
+  /** Filter out Commands by name/alias */
+  filter(search: string, subPrefix?: string): Collection<string, Command> {
     if (this.client.caseSensitive === false) search = search.toLowerCase()
-    return this.list.find((cmd: Command): boolean => {
+    return this.list.filter((cmd: Command): boolean => {
+      if (subPrefix !== undefined) {
+        if (
+          this.client.caseSensitive === true
+            ? subPrefix !== cmd.extension?.subPrefix
+            : subPrefix.toLowerCase() !==
+              cmd.extension?.subPrefix?.toLowerCase()
+        ) {
+          return false
+        }
+      } else if (
+        subPrefix === undefined &&
+        cmd.extension?.subPrefix !== undefined
+      ) {
+        return false
+      }
+
       const name =
         this.client.caseSensitive === true ? cmd.name : cmd.name.toLowerCase()
-      if (name === search) return true
-      else if (cmd.aliases !== undefined) {
+      if (name === search) {
+        return true
+      } else if (cmd.aliases !== undefined) {
         let aliases: string[]
         if (typeof cmd.aliases === 'string') aliases = [cmd.aliases]
         else aliases = cmd.aliases
         if (this.client.caseSensitive === false)
           aliases = aliases.map((e) => e.toLowerCase())
+
         return aliases.includes(search)
-      } else return false
+      } else {
+        return false
+      }
     })
   }
 
-  /** Fetch a Command including disable checks */
-  fetch(name: string, bypassDisable?: boolean): Command | undefined {
-    const cmd = this.find(name)
+  /** Find a Command by name/alias */
+  find(search: string, subPrefix?: string): Command | undefined {
+    const filtered = this.filter(search, subPrefix)
+    return filtered.first()
+  }
+
+  /** Fetch a Command including disable checks and subPrefix implementation */
+  fetch(parsed: ParsedCommand, bypassDisable?: boolean): Command | undefined {
+    let cmd = this.find(parsed.name)
+    if (cmd?.extension?.subPrefix !== undefined) cmd = undefined
+
+    if (cmd === undefined && parsed.args.length > 0) {
+      cmd = this.find(parsed.args[0], parsed.name)
+      if (cmd === undefined || cmd.extension?.subPrefix === undefined) return
+      if (
+        this.client.caseSensitive === true
+          ? cmd.extension.subPrefix !== parsed.name
+          : cmd.extension.subPrefix.toLowerCase() !== parsed.name.toLowerCase()
+      )
+        return
+
+      parsed.args.shift()
+    }
+
     if (cmd === undefined) return
     if (this.isDisabled(cmd) && bypassDisable !== true) return
     return cmd
   }
 
   /** Check whether a Command exists or not */
-  exists(search: Command | string): boolean {
+  exists(search: Command | string, subPrefix?: string): boolean {
     let exists = false
-    if (typeof search === 'string') return this.find(search) !== undefined
+
+    if (typeof search === 'string')
+      return this.find(search, subPrefix) !== undefined
     else {
-      exists = this.find(search.name) !== undefined
+      exists =
+        this.find(
+          search.name,
+          subPrefix === undefined ? search.extension?.subPrefix : subPrefix
+        ) !== undefined
+
       if (search.aliases !== undefined) {
         const aliases: string[] =
           typeof search.aliases === 'string' ? [search.aliases] : search.aliases
@@ -308,6 +386,7 @@ export class CommandsManager {
             .map((alias) => this.find(alias) !== undefined)
             .find((e) => e) ?? false
       }
+
       return exists
     }
   }
@@ -316,11 +395,20 @@ export class CommandsManager {
   add(cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
     if (!(cmd instanceof Command)) cmd = new cmd()
-    if (this.exists(cmd))
+    if (this.exists(cmd, cmd.extension?.subPrefix))
       throw new Error(
         `Failed to add Command '${cmd.toString()}' with name/alias already exists.`
       )
-    this.list.set(cmd.name, cmd)
+    this.list.set(
+      `${cmd.name}-${
+        this.list.filter((e) =>
+          this.client.caseSensitive === true
+            ? e.name === cmd.name
+            : e.name.toLowerCase() === cmd.name.toLowerCase()
+        ).size
+      }`,
+      cmd
+    )
     return true
   }
 
@@ -418,7 +506,8 @@ export const parseCommand = (
 ): ParsedCommand => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
-  const args = content.split(client.betterArgs === true ? /[\S\s]*/ : / +/)
+  const args = parse(content)._.map((e) => e.toString())
+
   const name = args.shift() as string
   const argString = content.slice(name.length).trim()
 

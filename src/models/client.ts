@@ -11,6 +11,7 @@ import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
+import { Extension } from './extensions.ts'
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
@@ -70,6 +71,7 @@ export class Client extends EventEmitter {
   canary: boolean = false
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
+  _decoratedEvents?: { [name: string]: (...args: any[]) => any }
 
   private readonly _untypedOn = this.on
 
@@ -101,6 +103,16 @@ export class Client extends EventEmitter {
       this.reactionCacheLifetime = options.reactionCacheLifetime
     if (options.fetchUncachedReactions === true)
       this.fetchUncachedReactions = true
+
+    if (
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
+    ) {
+      Object.entries(this._decoratedEvents).forEach((entry) => {
+        this.on(entry[0], entry[1])
+      })
+      this._decoratedEvents = undefined
+    }
   }
 
   /**
@@ -151,5 +163,15 @@ export class Client extends EventEmitter {
       this.intents = intents
     } else throw new Error('No Gateway Intents were provided')
     this.gateway = new Gateway(this, token, intents)
+  }
+}
+
+export function event(name?: string) {
+  return function (client: Client | Extension, prop: string) {
+    const listener = ((client as unknown) as {
+      [name: string]: (...args: any[]) => any
+    })[prop]
+    if (client._decoratedEvents === undefined) client._decoratedEvents = {}
+    client._decoratedEvents[name === undefined ? prop : name] = listener
   }
 }

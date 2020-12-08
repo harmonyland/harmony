@@ -9,6 +9,7 @@ export const ready: GatewayEventHandler = async (
 ) => {
   await gateway.client.guilds.flush()
 
+  await gateway.client.users.set(d.user.id, d.user)
   gateway.client.user = new User(gateway.client, d.user)
   gateway.sessionID = d.session_id
   gateway.debug(`Received READY. Session: ${gateway.sessionID}`)

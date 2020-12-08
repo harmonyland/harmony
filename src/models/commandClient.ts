@@ -1,13 +1,16 @@
 import { Message } from '../structures/message.ts'
+import { GuildTextChannel } from '../structures/textChannel.ts'
 import { awaitSync } from '../utils/mixedPromise.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
   CategoriesManager,
+  Command,
   CommandContext,
+  CommandOptions,
   CommandsManager,
   parseCommand
 } from './command.ts'
-import { ExtensionsManager } from './extensions.ts'
+import { Extension, ExtensionsManager } from './extensions.ts'
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 
@@ -21,6 +24,8 @@ export interface CommandClientOptions extends ClientOptions {
   getGuildPrefix?: (guildID: string) => PrefixReturnType
   /** Method to get a User's custom prefix(s). */
   getUserPrefix?: (userID: string) => PrefixReturnType
+  /** Method to get a Channel's custom prefix(s). */
+  getChannelPrefix?: (channelID: string) => PrefixReturnType
   /** Method to check if certain Guild is blacklisted from using Commands. */
   isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   /** Method to check if certain User is blacklisted from using Commands. */
@@ -29,8 +34,6 @@ export interface CommandClientOptions extends ClientOptions {
   isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   /** Allow spaces after prefix? Recommended with Mention Prefix ON. */
   spacesAfterPrefix?: boolean
-  /** Better Arguments regex to split at every whitespace. */
-  betterArgs?: boolean
   /** List of Bot's Owner IDs whom can access `ownerOnly` commands. */
   owners?: string[]
   /** Whether to allow Bots to use Commands or not, not allowed by default. */
@@ -44,26 +47,33 @@ export interface CommandClientOptions extends ClientOptions {
 export class CommandClient extends Client implements CommandClientOptions {
   prefix: string | string[]
   mentionPrefix: boolean
+
   getGuildPrefix: (guildID: string) => PrefixReturnType
   getUserPrefix: (userID: string) => PrefixReturnType
+  getChannelPrefix: (channelID: string) => PrefixReturnType
+
   isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>
   isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>
   isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>
+
   spacesAfterPrefix: boolean
-  betterArgs: boolean
   owners: string[]
   allowBots: boolean
   allowDMs: boolean
   caseSensitive: boolean
+
   extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
+
+  _decoratedCommands?: { [name: string]: Command }
 
   constructor(options: CommandClientOptions) {
     super(options)
     this.prefix = options.prefix
     this.mentionPrefix =
       options.mentionPrefix === undefined ? false : options.mentionPrefix
+
     this.getGuildPrefix =
       options.getGuildPrefix === undefined
         ? (id: string) => this.prefix
@@ -72,6 +82,12 @@ export class CommandClient extends Client implements CommandClientOptions {
       options.getUserPrefix === undefined
         ? (id: string) => this.prefix
         : options.getUserPrefix
+
+    this.getChannelPrefix =
+      options.getChannelPrefix === undefined
+        ? (id: string) => this.prefix
+        : options.getChannelPrefix
+
     this.isUserBlacklisted =
       options.isUserBlacklisted === undefined
         ? (id: string) => false
@@ -84,17 +100,24 @@ export class CommandClient extends Client implements CommandClientOptions {
       options.isChannelBlacklisted === undefined
         ? (id: string) => false
         : options.isChannelBlacklisted
+
     this.spacesAfterPrefix =
       options.spacesAfterPrefix === undefined
         ? false
         : options.spacesAfterPrefix
-    this.betterArgs =
-      options.betterArgs === undefined ? false : options.betterArgs
+
     this.owners = options.owners === undefined ? [] : options.owners
     this.allowBots = options.allowBots === undefined ? false : options.allowBots
     this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
     this.caseSensitive =
       options.caseSensitive === undefined ? false : options.caseSensitive
+
+    if (this._decoratedCommands !== undefined) {
+      Object.values(this._decoratedCommands).forEach((entry) => {
+        this.commands.add(entry)
+      })
+      this._decoratedCommands = undefined
+    }
 
     this.on(
       'messageCreate',
@@ -123,43 +146,48 @@ export class CommandClient extends Client implements CommandClientOptions {
       if (isGuildBlacklisted === true) return
     }
 
-    let prefix: string | string[] = await awaitSync(
-      this.getUserPrefix(msg.author.id)
-    )
+    let prefix: string | string[] = []
+    if (typeof this.prefix === 'string') prefix = [...prefix, this.prefix]
+    else prefix = [...prefix, ...this.prefix]
+
+    const userPrefix = await awaitSync(this.getUserPrefix(msg.author.id))
+    if (userPrefix !== undefined) {
+      if (typeof userPrefix === 'string') prefix = [...prefix, userPrefix]
+      else prefix = [...prefix, ...userPrefix]
+    }
 
     if (msg.guild !== undefined) {
-      prefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
+      const guildPrefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
+      if (guildPrefix !== undefined) {
+        if (typeof guildPrefix === 'string') prefix = [...prefix, guildPrefix]
+        else prefix = [...prefix, ...guildPrefix]
+      }
     }
+
+    prefix = [...new Set(prefix)]
 
     let mentionPrefix = false
 
-    if (typeof prefix === 'string') {
-      if (msg.content.startsWith(prefix) === false) {
-        if (this.mentionPrefix) mentionPrefix = true
-        else return
-      }
-    } else {
-      const usedPrefix = prefix.find((v) => msg.content.startsWith(v))
-      if (usedPrefix === undefined) {
-        if (this.mentionPrefix) mentionPrefix = true
-        else return
-      } else prefix = usedPrefix
-    }
+    let usedPrefix = prefix
+      .filter((v) => msg.content.startsWith(v))
+      .sort((b, a) => a.length - b.length)[0]
+    if (usedPrefix === undefined && this.mentionPrefix) mentionPrefix = true
 
     if (mentionPrefix) {
       if (msg.content.startsWith(this.user?.mention as string) === true)
-        prefix = this.user?.mention as string
+        usedPrefix = this.user?.mention as string
       else if (
         msg.content.startsWith(this.user?.nickMention as string) === true
       )
-        prefix = this.user?.nickMention as string
+        usedPrefix = this.user?.nickMention as string
       else return
     }
 
-    if (typeof prefix !== 'string') return
+    if (typeof usedPrefix !== 'string') return
+    prefix = usedPrefix
 
     const parsed = parseCommand(this, msg, prefix)
-    const command = this.commands.find(parsed.name)
+    const command = this.commands.fetch(parsed)
 
     if (command === undefined) return
     const category =
@@ -249,6 +277,13 @@ export class CommandClient extends Client implements CommandClientOptions {
       msg.guild !== undefined
     )
       return this.emit('commandDmOnly', ctx, command)
+
+    if (
+      command.nsfw === true &&
+      (msg.guild === undefined ||
+        ((msg.channel as unknown) as GuildTextChannel).nsfw !== true)
+    )
+      return this.emit('commandNSFW', ctx, command)
 
     const allPermissions =
       command.permissions !== undefined
@@ -343,5 +378,23 @@ export class CommandClient extends Client implements CommandClientOptions {
     } catch (e) {
       this.emit('commandError', command, ctx, e)
     }
+  }
+}
+
+export function command(options?: CommandOptions) {
+  return function (target: CommandClient | Extension, name: string) {
+    const command = new Command()
+
+    command.name = name
+    command.execute = ((target as unknown) as {
+      [name: string]: (ctx: CommandContext) => any
+    })[name]
+
+    if (options !== undefined) Object.assign(command, options)
+
+    if (target instanceof Extension) command.extension = target
+
+    if (target._decoratedCommands === undefined) target._decoratedCommands = {}
+    target._decoratedCommands[command.name] = command
   }
 }

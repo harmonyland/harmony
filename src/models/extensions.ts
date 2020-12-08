@@ -67,11 +67,33 @@ export class Extension {
   description?: string
   /** Extensions's Commands Manager */
   commands: ExtensionCommands = new ExtensionCommands(this)
+  /** Sub-Prefix to be used for ALL of Extenion's Commands. */
+  subPrefix?: string
   /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}
 
+  _decoratedCommands?: { [name: string]: Command }
+  _decoratedEvents?: { [name: string]: (...args: any[]) => any }
+
   constructor(client: CommandClient) {
     this.client = client
+    if (this._decoratedCommands !== undefined) {
+      Object.entries(this._decoratedCommands).forEach((entry) => {
+        entry[1].extension = this
+        this.commands.add(entry[1])
+      })
+      this._decoratedCommands = undefined
+    }
+
+    if (
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
+    ) {
+      Object.entries(this._decoratedEvents).forEach((entry) => {
+        this.listen(entry[0], entry[1])
+      })
+      this._decoratedEvents = undefined
+    }
   }
 
   /** Listens for an Event through Extension. */
