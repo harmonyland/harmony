@@ -139,21 +139,6 @@ export class Client extends EventEmitter {
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
-  /**
-   * EXPERIMENTAL Decorators support for listening to events.
-   * @param event Event name to listen for
-   */
-  event(event: string): CallableFunction {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const parent = this
-    return function (
-      target: { [name: string]: CallableFunction },
-      prop: string
-    ) {
-      parent.addListener(event, target[prop] as (...args: any[]) => any)
-    }
-  }
-
   // TODO(DjDeveloperr): Implement this
   // fetchApplication(): Promise<Application>
 

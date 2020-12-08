@@ -4,7 +4,8 @@ import {
   Intents,
   command,
   CommandContext,
-  Extension
+  Extension,
+  CommandBuilder
 } from '../../mod.ts'
 import { TOKEN } from './config.ts'
 
@@ -21,15 +22,16 @@ class MyClient extends CommandClient {
     console.log(`Logged in as ${this.user?.tag}!`)
   }
 
-  @command({
-    aliases: 'pong'
-  })
+  @command({ aliases: 'pong' })
   Ping(ctx: CommandContext): void {
     ctx.message.reply('Pong!')
   }
 }
 
 class VCExtension extends Extension {
+  name = 'VC'
+  subPrefix = 'vc'
+
   @command()
   async join(ctx: CommandContext): Promise<void> {
     const userVS = await ctx.guild?.voiceStates.get(ctx.author.id)
@@ -58,5 +60,11 @@ class VCExtension extends Extension {
 const client = new MyClient()
 
 client.extensions.load(VCExtension)
+
+client.commands.add(
+  new CommandBuilder()
+    .setName('join')
+    .onExecute((ctx) => ctx.message.reply('haha'))
+)
 
 client.connect(TOKEN, Intents.All)

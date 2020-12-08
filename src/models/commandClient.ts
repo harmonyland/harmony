@@ -164,7 +164,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (typeof prefix !== 'string') return
 
     const parsed = parseCommand(this, msg, prefix)
-    const command = this.commands.find(parsed.name)
+    const command = this.commands.fetch(parsed)
 
     if (command === undefined) return
     const category =
@@ -361,6 +361,8 @@ export function command(options?: CommandOptions) {
     })[name]
 
     if (options !== undefined) Object.assign(command, options)
+
+    if (target instanceof Extension) command.extension = target
 
     if (target._decoratedCommands === undefined) target._decoratedCommands = {}
     target._decoratedCommands[command.name] = command

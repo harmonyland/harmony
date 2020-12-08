@@ -101,7 +101,7 @@ export class Command implements CommandOptions {
 
   toString(): string {
     return `Command: ${this.name}${
-      this.extension !== undefined
+      this.extension !== undefined && this.extension.name !== ''
         ? ` [${this.extension.name}]`
         : this.category !== undefined
         ? ` [${this.category}]`
@@ -290,38 +290,86 @@ export class CommandsManager {
     return this.list.size
   }
 
-  /** Find a Command by name/alias */
-  find(search: string): Command | undefined {
+  /** Filter out Commands by name/alias */
+  filter(search: string, subPrefix?: string): Collection<string, Command> {
     if (this.client.caseSensitive === false) search = search.toLowerCase()
-    return this.list.find((cmd: Command): boolean => {
+    return this.list.filter((cmd: Command): boolean => {
+      if (subPrefix !== undefined) {
+        if (
+          this.client.caseSensitive === true
+            ? subPrefix !== cmd.extension?.subPrefix
+            : subPrefix.toLowerCase() !==
+              cmd.extension?.subPrefix?.toLowerCase()
+        ) {
+          return false
+        }
+      } else if (
+        subPrefix === undefined &&
+        cmd.extension?.subPrefix !== undefined
+      ) {
+        return false
+      }
+
       const name =
         this.client.caseSensitive === true ? cmd.name : cmd.name.toLowerCase()
-      if (name === search) return true
-      else if (cmd.aliases !== undefined) {
+      if (name === search) {
+        return true
+      } else if (cmd.aliases !== undefined) {
         let aliases: string[]
         if (typeof cmd.aliases === 'string') aliases = [cmd.aliases]
         else aliases = cmd.aliases
         if (this.client.caseSensitive === false)
           aliases = aliases.map((e) => e.toLowerCase())
+
         return aliases.includes(search)
-      } else return false
+      } else {
+        return false
+      }
     })
   }
 
-  /** Fetch a Command including disable checks */
-  fetch(name: string, bypassDisable?: boolean): Command | undefined {
-    const cmd = this.find(name)
+  /** Find a Command by name/alias */
+  find(search: string, subPrefix?: string): Command | undefined {
+    const filtered = this.filter(search, subPrefix)
+    return filtered.first()
+  }
+
+  /** Fetch a Command including disable checks and subPrefix implementation */
+  fetch(parsed: ParsedCommand, bypassDisable?: boolean): Command | undefined {
+    let cmd = this.find(parsed.name)
+    if (cmd?.extension?.subPrefix !== undefined) cmd = undefined
+
+    if (cmd === undefined && parsed.args.length > 0) {
+      cmd = this.find(parsed.args[0], parsed.name)
+      if (cmd === undefined || cmd.extension?.subPrefix === undefined) return
+      if (
+        this.client.caseSensitive === true
+          ? cmd.extension.subPrefix !== parsed.name
+          : cmd.extension.subPrefix.toLowerCase() !== parsed.name.toLowerCase()
+      )
+        return
+
+      parsed.args.shift()
+    }
+
     if (cmd === undefined) return
     if (this.isDisabled(cmd) && bypassDisable !== true) return
     return cmd
   }
 
   /** Check whether a Command exists or not */
-  exists(search: Command | string): boolean {
+  exists(search: Command | string, subPrefix?: string): boolean {
     let exists = false
-    if (typeof search === 'string') return this.find(search) !== undefined
+
+    if (typeof search === 'string')
+      return this.find(search, subPrefix) !== undefined
     else {
-      exists = this.find(search.name) !== undefined
+      exists =
+        this.find(
+          search.name,
+          subPrefix === undefined ? search.extension?.subPrefix : subPrefix
+        ) !== undefined
+
       if (search.aliases !== undefined) {
         const aliases: string[] =
           typeof search.aliases === 'string' ? [search.aliases] : search.aliases
@@ -330,6 +378,7 @@ export class CommandsManager {
             .map((alias) => this.find(alias) !== undefined)
             .find((e) => e) ?? false
       }
+
       return exists
     }
   }
@@ -338,11 +387,20 @@ export class CommandsManager {
   add(cmd: Command | typeof Command): boolean {
     // eslint-disable-next-line new-cap
     if (!(cmd instanceof Command)) cmd = new cmd()
-    if (this.exists(cmd))
+    if (this.exists(cmd, cmd.extension?.subPrefix))
       throw new Error(
         `Failed to add Command '${cmd.toString()}' with name/alias already exists.`
       )
-    this.list.set(cmd.name, cmd)
+    this.list.set(
+      `${cmd.name}-${
+        this.list.filter((e) =>
+          this.client.caseSensitive === true
+            ? e.name === cmd.name
+            : e.name.toLowerCase() === cmd.name.toLowerCase()
+        ).size
+      }`,
+      cmd
+    )
     return true
   }
 

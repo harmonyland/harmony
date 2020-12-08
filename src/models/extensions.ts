@@ -67,6 +67,8 @@ export class Extension {
   description?: string
   /** Extensions's Commands Manager */
   commands: ExtensionCommands = new ExtensionCommands(this)
+  /** Sub-Prefix to be used for ALL of Extenion's Commands. */
+  subPrefix?: string
   /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}
 
@@ -77,6 +79,7 @@ export class Extension {
     this.client = client
     if (this._decoratedCommands !== undefined) {
       Object.entries(this._decoratedCommands).forEach((entry) => {
+        entry[1].extension = this
         this.commands.add(entry[1])
       })
       this._decoratedCommands = undefined
