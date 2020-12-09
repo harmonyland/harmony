@@ -120,11 +120,11 @@ export interface IdentityPayload {
 }
 
 export interface IdentityConnection {
-  $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'harmony' | 'Firefox'
-  $device: 'harmony' | ''
-  $referrer?: ''
-  $referring_domain?: ''
+  $os: 'darwin' | 'windows' | 'linux' | 'custom os' | string
+  $browser: 'harmony' | 'Firefox' | string
+  $device: 'harmony' | string
+  $referrer?: '' | string
+  $referring_domain?: '' | string
 }
 
 export interface Resume {

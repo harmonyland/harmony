@@ -13,6 +13,13 @@ import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
 import { Extension } from './extensions.ts'
 
+/** OS related properties sent with Gateway Identify */
+export interface ClientProperties {
+  os?: 'darwin' | 'windows' | 'linux' | 'custom_os' | string
+  browser?: 'harmony' | string
+  device?: 'harmony' | string
+}
+
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
   /** Token of the Bot/User */
@@ -33,6 +40,8 @@ export interface ClientOptions {
   reactionCacheLifetime?: number
   /** Whether to fetch Uncached Message of Reaction or not? */
   fetchUncachedReactions?: boolean
+  /** Client Properties */
+  clientProperties?: ClientProperties
 }
 
 /**
@@ -61,6 +70,8 @@ export class Client extends EventEmitter {
   reactionCacheLifetime: number = 3600000
   /** Whether to fetch Uncached Message of Reaction or not? */
   fetchUncachedReactions: boolean = false
+  /** Client Properties */
+  clientProperties: ClientProperties
 
   users: UsersManager = new UsersManager(this)
   guilds: GuildManager = new GuildManager(this)
@@ -113,6 +124,15 @@ export class Client extends EventEmitter {
       })
       this._decoratedEvents = undefined
     }
+
+    this.clientProperties =
+      options.clientProperties === undefined
+        ? {
+            os: Deno.build.os,
+            browser: 'harmony',
+            device: 'harmony'
+          }
+        : options.clientProperties
   }
 
   /**
