@@ -2,7 +2,6 @@ import {
   Client,
   Intents,
   Message,
-  ClientPresence,
   Member,
   Role,
   GuildChannel,
@@ -15,10 +14,9 @@ import {
 import { TOKEN } from './config.ts'
 
 const client = new Client({
-  presence: new ClientPresence({
-    name: 'Pokémon Sword',
-    type: 'COMPETING'
-  })
+  clientProperties: {
+    browser: 'Discord iOS'
+  }
   // bot: false,
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',

@@ -252,9 +252,9 @@ class Gateway {
     const payload: IdentityPayload = {
       token: this.token,
       properties: {
-        $os: Deno.build.os,
-        $browser: 'harmony',
-        $device: 'harmony'
+        $os: this.client.clientProperties.os ?? Deno.build.os,
+        $browser: this.client.clientProperties.browser ?? 'harmony',
+        $device: this.client.clientProperties.device ?? 'harmony'
       },
       compress: true,
       shard: [0, 1], // TODO: Make sharding possible

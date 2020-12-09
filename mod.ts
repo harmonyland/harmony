@@ -2,6 +2,7 @@ export { GatewayIntents } from './src/types/gateway.ts'
 export { default as EventEmitter } from 'https://deno.land/std@0.74.0/node/events.ts'
 export { Base } from './src/structures/base.ts'
 export { Gateway } from './src/gateway/index.ts'
+export type { ClientEvents } from './src/gateway/handlers/index.ts'
 export * from './src/models/client.ts'
 export { RESTManager } from './src/models/rest.ts'
 export * from './src/models/cacheAdapter.ts'
@@ -80,3 +81,41 @@ export type {
   StatusType
 } from './src/types/presence.ts'
 export { ChannelTypes } from './src/types/channel.ts'
+export type { ApplicationPayload } from './src/types/application.ts'
+export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
+export type {
+  ChannelMention,
+  ChannelPayload,
+  FollowedChannel,
+  GuildNewsChannelPayload,
+  GuildChannelCategoryPayload,
+  GuildChannelPayload,
+  GuildTextChannelPayload,
+  GuildVoiceChannelPayload,
+  GroupDMChannelPayload
+} from './src/types/channel.ts'
+export type { EmojiPayload } from './src/types/emoji.ts'
+export type {
+  GuildBanPayload,
+  GuildFeatures,
+  GuildIntegrationPayload,
+  GuildPayload
+} from './src/types/guild.ts'
+export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
+export { PermissionFlags } from './src/types/permissionFlags.ts'
+export type {
+  ActivityAssets,
+  ActivityEmoji,
+  ActivityFlags,
+  ActivityParty,
+  ActivityPayload,
+  ActivitySecrets,
+  ActivityTimestamps,
+  ActivityType
+} from './src/types/presence.ts'
+export type { RolePayload } from './src/types/role.ts'
+export type { TemplatePayload } from './src/types/template.ts'
+export type { UserPayload } from './src/types/user.ts'
+export { UserFlags } from './src/types/userFlags.ts'
+export type { VoiceStatePayload } from './src/types/voice.ts'
+export type { WebhookPayload } from './src/types/webhook.ts'
