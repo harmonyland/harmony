@@ -53,6 +53,7 @@ import {
   EveryChannelTypes,
   EveryTextChannelTypes
 } from '../../utils/getChannelByType.ts'
+import { interactionCreate } from './interactionCreate.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -93,7 +94,8 @@ export const gatewayHandlers: {
   USER_UPDATE: userUpdate,
   VOICE_STATE_UPDATE: voiceStateUpdate,
   VOICE_SERVER_UPDATE: voiceServerUpdate,
-  WEBHOOKS_UPDATE: webhooksUpdate
+  WEBHOOKS_UPDATE: webhooksUpdate,
+  INTERACTION_CREATE: interactionCreate
 }
 
 export interface EventTypes {

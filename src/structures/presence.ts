@@ -91,7 +91,6 @@ export class ClientPresence {
   }
 
   create(): StatusPayload {
-    console.log(this)
     return {
       afk: this.afk === undefined ? false : this.afk,
       activities: this.createActivity(),
