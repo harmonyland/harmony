@@ -1,4 +1,5 @@
 import { Client, Intents } from '../../mod.ts'
+import { Embed } from '../structures/embed.ts'
 import { SlashCommandOptionType } from '../types/slash.ts'
 import { TOKEN } from './config.ts'
 
@@ -9,12 +10,12 @@ client.on('ready', () => {
   client.slash.commands
     .create(
       {
-        name: 'eval',
-        description: 'Run some JS code!',
+        name: 'send',
+        description: 'Send a Message through Bot!',
         options: [
           {
-            name: 'code',
-            description: 'Code to run',
+            name: 'content',
+            description: 'Message to send',
             type: SlashCommandOptionType.STRING,
             required: true
           }
@@ -45,7 +46,7 @@ client.on('interactionCreate', async (d) => {
         }
         d.respond({
           content: '```js\n' + `${res}` + '\n```'
-        })
+        }).catch(() => {})
       } catch (e) {
         d.respond({
           content: '```js\n' + `${e.stack}` + '\n```'
@@ -53,10 +54,30 @@ client.on('interactionCreate', async (d) => {
       }
     }
     return
+  } else if (d.name === 'hug') {
+    const id = d.data.options.find((e) => e.name === 'user')?.value as string
+    const user = (await client.users.get(id)) ?? (await client.users.fetch(id))
+    const url = await fetch('https://nekos.life/api/v2/img/hug')
+      .then((r) => r.json())
+      .then((e) => e.url)
+
+    d.respond({
+      embeds: [
+        new Embed()
+          .setTitle(`${d.user.username} hugged ${user?.username}!`)
+          .setImage({ url })
+          .setColor(0x2f3136)
+      ]
+    })
+    return
+  } else if (d.name === 'send') {
+    d.respond({
+      content: d.data.options.find((e) => e.name === 'content')?.value as string
+    })
+    return
   }
   await d.respond({
-    content: `Hi, ${d.member.user.username}!`,
-    flags: 64
+    content: `Hi, ${d.member.user.username}! You used /${d.name}`
   })
 })
 
