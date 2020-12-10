@@ -13,6 +13,7 @@ import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
 import { Extension } from './extensions.ts'
 import { SlashClient } from './slashClient.ts'
+import { Interaction } from '../structures/slash.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -43,6 +44,8 @@ export interface ClientOptions {
   fetchUncachedReactions?: boolean
   /** Client Properties */
   clientProperties?: ClientProperties
+  /** Enable/Disable Slash Commands Integration (enabled by default) */
+  enableSlash?: boolean
 }
 
 /**
@@ -86,6 +89,11 @@ export class Client extends EventEmitter {
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
   _decoratedEvents?: { [name: string]: (...args: any[]) => any }
+  _decoratedSlash?: Array<{
+    name: string
+    guild?: string
+    handler: (interaction: Interaction) => any
+  }>
 
   private readonly _untypedOn = this.on
 
@@ -137,7 +145,9 @@ export class Client extends EventEmitter {
           }
         : options.clientProperties
 
-    this.slash = new SlashClient(this)
+    this.slash = new SlashClient(this, {
+      enabled: options.enableSlash
+    })
   }
 
   /**
@@ -198,5 +208,16 @@ export function event(name?: string) {
     })[prop]
     if (client._decoratedEvents === undefined) client._decoratedEvents = {}
     client._decoratedEvents[name === undefined ? prop : name] = listener
+  }
+}
+
+export function slash(name?: string, guild?: string) {
+  return function (client: Client, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    client._decoratedSlash.push({
+      name: name ?? prop,
+      guild,
+      handler: (client as { [name: string]: any })[prop]
+    })
   }
 }

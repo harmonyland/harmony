@@ -19,22 +19,33 @@ export interface SlashOptions {
 }
 
 export class SlashCommand {
+  slash: SlashCommandsManager
   id: string
   applicationID: string
   name: string
   description: string
   options: SlashCommandOption[]
+  _guild?: string
 
-  constructor(data: SlashCommandPayload) {
+  constructor(manager: SlashCommandsManager, data: SlashCommandPayload) {
+    this.slash = manager
     this.id = data.id
     this.applicationID = data.application_id
     this.name = data.name
     this.description = data.description
     this.options = data.options
   }
+
+  async delete(): Promise<void> {
+    await this.slash.delete(this.id, this._guild)
+  }
+
+  async edit(data: SlashCommandPartial): Promise<void> {
+    await this.slash.edit(this.id, data, this._guild)
+  }
 }
 
-export class SlashCommands {
+export class SlashCommandsManager {
   client: Client
   slash: SlashClient
 
@@ -53,7 +64,8 @@ export class SlashCommands {
     if (!Array.isArray(res)) return col
 
     for (const raw of res) {
-      col.set(raw.id, new SlashCommand(raw))
+      const cmd = new SlashCommand(this, raw)
+      col.set(raw.id, cmd)
     }
 
     return col
@@ -74,7 +86,9 @@ export class SlashCommands {
     if (!Array.isArray(res)) return col
 
     for (const raw of res) {
-      col.set(raw.id, new SlashCommand(raw))
+      const cmd = new SlashCommand(this, raw)
+      cmd._guild = typeof guild === 'string' ? guild : guild.id
+      col.set(raw.id, cmd)
     }
 
     return col
@@ -95,14 +109,19 @@ export class SlashCommands {
       data
     )
 
-    return new SlashCommand(payload)
+    const cmd = new SlashCommand(this, payload)
+    cmd._guild =
+      typeof guild === 'string' || guild === undefined ? guild : guild.id
+
+    return cmd
   }
 
+  /** Edit a Slash Command (global or Guild) */
   async edit(
     id: string,
-    data: SlashCommandPayload,
-    guild?: Guild
-  ): Promise<SlashCommands> {
+    data: SlashCommandPartial,
+    guild?: Guild | string
+  ): Promise<SlashCommandsManager> {
     await this.client.rest.patch(
       guild === undefined
         ? APPLICATION_COMMAND(this.client.user?.id as string, id)
@@ -115,19 +134,50 @@ export class SlashCommands {
     )
     return this
   }
+
+  /** Delete a Slash Command (global or Guild) */
+  async delete(
+    id: string,
+    guild?: Guild | string
+  ): Promise<SlashCommandsManager> {
+    await this.client.rest.delete(
+      guild === undefined
+        ? APPLICATION_COMMAND(this.client.user?.id as string, id)
+        : APPLICATION_GUILD_COMMAND(
+            this.client.user?.id as string,
+            typeof guild === 'string' ? guild : guild.id,
+            id
+          )
+    )
+    return this
+  }
+}
+
+export type SlashCommandHandlerCallback = (interaction: Interaction) => any
+export interface SlashCommandHandler {
+  name: string
+  guild?: string
+  handler: SlashCommandHandlerCallback
 }
 
 export class SlashClient {
   client: Client
   enabled: boolean = true
-  commands: SlashCommands
+  commands: SlashCommandsManager
+  handlers: SlashCommandHandler[] = []
 
   constructor(client: Client, options?: SlashOptions) {
     this.client = client
-    this.commands = new SlashCommands(client)
+    this.commands = new SlashCommandsManager(client)
 
     if (options !== undefined) {
       this.enabled = options.enabled ?? true
+    }
+
+    if (this.client._decoratedSlash !== undefined) {
+      this.client._decoratedSlash.forEach((e) => {
+        this.handlers.push(e)
+      })
     }
 
     this.client.on('interactionCreate', (interaction) =>
@@ -135,10 +185,34 @@ export class SlashClient {
     )
   }
 
-  process(interaction: Interaction): any {}
-
-  handle(fn: (interaction: Interaction) => any): SlashClient {
-    this.process = fn
+  /** Adds a new Slash Command Handler */
+  handle(
+    name: string,
+    handler: SlashCommandHandlerCallback,
+    guild?: string
+  ): SlashClient {
+    this.handlers.push({
+      name,
+      guild,
+      handler
+    })
     return this
+  }
+
+  process(interaction: Interaction): any {
+    if (!this.enabled) return
+
+    let cmd
+
+    if (interaction.guild !== undefined)
+      cmd =
+        this.handlers.find(
+          (e) => e.guild !== undefined && e.name === interaction.name
+        ) ?? this.handlers.find((e) => e.name === interaction.name)
+    else cmd = this.handlers.find((e) => e.name === interaction.name)
+
+    if (cmd === undefined) return
+
+    cmd.handler(interaction)
   }
 }

@@ -1,33 +1,23 @@
-import { Client, Intents } from '../../mod.ts'
+import { Client, Intents, event, slash } from '../../mod.ts'
 import { Embed } from '../structures/embed.ts'
-import { SlashCommandOptionType } from '../types/slash.ts'
+import { Interaction } from '../structures/slash.ts'
 import { TOKEN } from './config.ts'
 
-const client = new Client()
+export class MyClient extends Client {
+  @event()
+  ready(): void {
+    console.log(`Logged in as ${this.user?.tag}!`)
+  }
 
-client.on('ready', () => {
-  console.log('Logged in!')
-  client.slash.commands
-    .create(
-      {
-        name: 'send',
-        description: 'Send a Message through Bot!',
-        options: [
-          {
-            name: 'content',
-            description: 'Message to send',
-            type: SlashCommandOptionType.STRING,
-            required: true
-          }
-        ]
-      },
-      '783319033205751809'
-    )
-    .then(console.log)
-})
+  @slash()
+  send(d: Interaction): void {
+    d.respond({
+      content: d.data.options.find((e) => e.name === 'content')?.value
+    })
+  }
 
-client.on('interactionCreate', async (d) => {
-  if (d.name === 'eval') {
+  @slash()
+  async eval(d: Interaction): Promise<void> {
     if (d.user.id !== '422957901716652033') {
       d.respond({
         content: 'This command can only be used by owner!'
@@ -53,8 +43,10 @@ client.on('interactionCreate', async (d) => {
         })
       }
     }
-    return
-  } else if (d.name === 'hug') {
+  }
+
+  @slash()
+  async hug(d: Interaction): Promise<void> {
     const id = d.data.options.find((e) => e.name === 'user')?.value as string
     const user = (await client.users.get(id)) ?? (await client.users.fetch(id))
     const url = await fetch('https://nekos.life/api/v2/img/hug')
@@ -69,16 +61,8 @@ client.on('interactionCreate', async (d) => {
           .setColor(0x2f3136)
       ]
     })
-    return
-  } else if (d.name === 'send') {
-    d.respond({
-      content: d.data.options.find((e) => e.name === 'content')?.value as string
-    })
-    return
   }
-  await d.respond({
-    content: `Hi, ${d.member.user.username}! You used /${d.name}`
-  })
-})
+}
 
+const client = new MyClient()
 client.connect(TOKEN, Intents.None)
