@@ -12,6 +12,7 @@ import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
 import { Extension } from './extensions.ts'
+import { SlashClient } from './slashClient.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -72,6 +73,8 @@ export class Client extends EventEmitter {
   fetchUncachedReactions: boolean = false
   /** Client Properties */
   clientProperties: ClientProperties
+  /** Slash-Commands Management client */
+  slash: SlashClient
 
   users: UsersManager = new UsersManager(this)
   guilds: GuildManager = new GuildManager(this)
@@ -133,6 +136,8 @@ export class Client extends EventEmitter {
             device: 'harmony'
           }
         : options.clientProperties
+
+    this.slash = new SlashClient(this)
   }
 
   /**

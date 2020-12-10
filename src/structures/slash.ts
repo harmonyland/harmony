@@ -1,6 +1,5 @@
 import { Client } from '../models/client.ts'
 import { INTERACTION_CALLBACK } from '../types/endpoint.ts'
-import { MemberPayload } from '../types/guild.ts'
 import {
   InteractionData,
   InteractionPayload,
@@ -8,6 +7,10 @@ import {
   InteractionResponseType
 } from '../types/slash.ts'
 import { Embed } from './embed.ts'
+import { Guild } from './guild.ts'
+import { Member } from './member.ts'
+import { GuildTextChannel } from './textChannel.ts'
+import { User } from './user.ts'
 
 export interface InteractionResponse {
   type?: InteractionResponseType
@@ -21,17 +24,37 @@ export class Interaction {
   client: Client
   type: number
   token: string
-  member: MemberPayload
   id: string
   data: InteractionData
+  channel: GuildTextChannel
+  guild: Guild
+  member: Member
 
-  constructor(client: Client, data: InteractionPayload) {
+  constructor(
+    client: Client,
+    data: InteractionPayload,
+    others: {
+      channel: GuildTextChannel
+      guild: Guild
+      member: Member
+    }
+  ) {
     this.client = client
     this.type = data.type
     this.token = data.token
-    this.member = data.member
+    this.member = others.member
     this.id = data.id
     this.data = data.data
+    this.guild = others.guild
+    this.channel = others.channel
+  }
+
+  get user(): User {
+    return this.member.user
+  }
+
+  get name(): string {
+    return this.data.name
   }
 
   async respond(data: InteractionResponse): Promise<Interaction> {

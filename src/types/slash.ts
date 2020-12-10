@@ -24,6 +24,8 @@ export interface InteractionPayload {
   member: MemberPayload
   id: string
   data: InteractionData
+  guild_id: string
+  channel_id: string
 }
 
 export interface SlashCommandChoice {
@@ -50,10 +52,15 @@ export interface SlashCommandOption {
   choices?: SlashCommandChoice[]
 }
 
-export interface SlashCommandPayload {
+export interface SlashCommandPartial {
   name: string
   description: string
   options: SlashCommandOption[]
+}
+
+export interface SlashCommandPayload extends SlashCommandPartial {
+  id: string
+  application_id: string
 }
 
 export enum InteractionResponseType {

@@ -54,6 +54,7 @@ import {
   EveryTextChannelTypes
 } from '../../utils/getChannelByType.ts'
 import { interactionCreate } from './interactionCreate.ts'
+import { Interaction } from '../../structures/slash.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -328,4 +329,8 @@ export interface ClientEvents extends EventTypes {
    * @param channel Channel of which Webhooks were updated
    */
   webhooksUpdate: (guild: Guild, channel: GuildTextChannel) => void
+  /**
+   * A Slash Command was triggered
+   */
+  interactionCreate: (interaction: Interaction) => void
 }
