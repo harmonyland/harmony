@@ -18,6 +18,7 @@ export interface InteractionResponse {
   embeds?: Embed[]
   tts?: boolean
   flags?: number
+  temp?: boolean
 }
 
 export class Interaction {
@@ -68,7 +69,7 @@ export class Interaction {
               content: data.content ?? '',
               embeds: data.embeds,
               tts: data.tts ?? false,
-              flags: data.flags ?? undefined
+              flags: data.temp === true ? 64 : data.flags ?? undefined
             }
           : undefined
     }

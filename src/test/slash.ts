@@ -18,7 +18,10 @@ export class MyClient extends Client {
 
   @slash()
   async eval(d: Interaction): Promise<void> {
-    if (d.user.id !== '422957901716652033') {
+    if (
+      d.user.id !== '422957901716652033' &&
+      d.user.id !== '682849186227552266'
+    ) {
       d.respond({
         content: 'This command can only be used by owner!'
       })
@@ -60,6 +63,31 @@ export class MyClient extends Client {
           .setImage({ url })
           .setColor(0x2f3136)
       ]
+    })
+  }
+
+  @slash()
+  async kiss(d: Interaction): Promise<void> {
+    const id = d.data.options.find((e) => e.name === 'user')?.value as string
+    const user = (await client.users.get(id)) ?? (await client.users.fetch(id))
+    const url = await fetch('https://nekos.life/api/v2/img/kiss')
+      .then((r) => r.json())
+      .then((e) => e.url)
+
+    d.respond({
+      embeds: [
+        new Embed()
+          .setTitle(`${d.user.username} kissed ${user?.username}!`)
+          .setImage({ url })
+          .setColor(0x2f3136)
+      ]
+    })
+  }
+
+  @slash('ping')
+  pingCmd(d: Interaction): void {
+    d.respond({
+      content: `Pong!`
     })
   }
 }
