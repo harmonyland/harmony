@@ -14,6 +14,7 @@ import { ClientEvents } from '../gateway/handlers/index.ts'
 import { Extension } from './extensions.ts'
 import { SlashClient } from './slashClient.ts'
 import { Interaction } from '../structures/slash.ts'
+import { SlashModule } from './slashModule.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -94,6 +95,8 @@ export class Client extends EventEmitter {
     guild?: string
     handler: (interaction: Interaction) => any
   }>
+
+  _decoratedSlashModules?: SlashModule[]
 
   private readonly _untypedOn = this.on
 
@@ -206,18 +209,34 @@ export function event(name?: string) {
     const listener = ((client as unknown) as {
       [name: string]: (...args: any[]) => any
     })[prop]
+    if (typeof listener !== 'function')
+      throw new Error('@event decorator requires a function')
     if (client._decoratedEvents === undefined) client._decoratedEvents = {}
     client._decoratedEvents[name === undefined ? prop : name] = listener
   }
 }
 
 export function slash(name?: string, guild?: string) {
-  return function (client: Client, prop: string) {
+  return function (client: Client | SlashModule, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
-    client._decoratedSlash.push({
-      name: name ?? prop,
-      guild,
-      handler: (client as { [name: string]: any })[prop]
-    })
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      client._decoratedSlash.push(item)
+    } else
+      client._decoratedSlash.push({
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+export function slashModule() {
+  return function (client: Client, prop: string) {
+    if (client._decoratedSlashModules === undefined)
+      client._decoratedSlashModules = []
+
+    const mod = ((client as unknown) as { [key: string]: any })[prop]
+    client._decoratedSlashModules.push(mod)
   }
 }

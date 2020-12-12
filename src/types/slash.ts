@@ -8,9 +8,9 @@ export interface InteractionOption {
 }
 
 export interface InteractionData {
-  options: InteractionOption[]
   name: string
   id: string
+  options: InteractionOption[]
 }
 
 export enum InteractionType {
@@ -50,6 +50,7 @@ export interface SlashCommandOption {
   type: SlashCommandOptionType
   required: boolean
   choices?: SlashCommandChoice[]
+  options?: SlashCommandOption[]
 }
 
 export interface SlashCommandPartial {

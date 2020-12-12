@@ -76,7 +76,7 @@ export class Interaction {
     return this.data.name
   }
 
-  option(name: string): any {
+  option<T = any>(name: string): T {
     return this.data.options.find((e) => e.name === name)?.value
   }
 
@@ -118,6 +118,16 @@ export class Interaction {
       content: data.content ?? '',
       embeds: data.embeds ?? []
     })
+    return this
+  }
+
+  async deleteResponse(): Promise<Interaction> {
+    const url = WEBHOOK_MESSAGE(
+      this.client.user?.id as string,
+      this.token,
+      '@original'
+    )
+    await this.client.rest.delete(url)
     return this
   }
 

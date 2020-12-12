@@ -383,18 +383,26 @@ export class CommandClient extends Client implements CommandClientOptions {
 
 export function command(options?: CommandOptions) {
   return function (target: CommandClient | Extension, name: string) {
+    if (target._decoratedCommands === undefined) target._decoratedCommands = {}
+
+    const prop = ((target as unknown) as {
+      [name: string]: (ctx: CommandContext) => any
+    })[name]
+
+    if (prop instanceof Command) {
+      target._decoratedCommands[prop.name] = prop
+      return
+    }
+
     const command = new Command()
 
     command.name = name
-    command.execute = ((target as unknown) as {
-      [name: string]: (ctx: CommandContext) => any
-    })[name]
+    command.execute = prop
 
     if (options !== undefined) Object.assign(command, options)
 
     if (target instanceof Extension) command.extension = target
 
-    if (target._decoratedCommands === undefined) target._decoratedCommands = {}
     target._decoratedCommands[command.name] = command
   }
 }

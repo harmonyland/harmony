@@ -7,6 +7,7 @@ import {
   APPLICATION_GUILD_COMMANDS
 } from '../types/endpoint.ts'
 import {
+  InteractionType,
   SlashCommandOption,
   SlashCommandPartial,
   SlashCommandPayload
@@ -199,8 +200,11 @@ export class SlashClient {
     return this
   }
 
-  process(interaction: Interaction): any {
+  /** Process an incoming Slash Command (interaction) */
+  private process(interaction: Interaction): void {
     if (!this.enabled) return
+
+    if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
     let cmd
 
