@@ -28,7 +28,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
 		const arr = this.array()
 		if (typeof amount === 'undefined') return arr[arr.length - 1]
 		if (amount < 0) return this.first(amount * -1)
-		if (!amount) return []
+		if (typeof amount !== 'number' && !amount) return []
 		return arr.slice(-amount)
 	}
 
@@ -38,7 +38,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
 	random(amount?: number): V | V[] {
 		let arr = this.array()
 		if (typeof amount === 'undefined') return arr[Math.floor(Math.random() * arr.length)]
-		if (arr.length === 0 || !amount) return []
+		if (arr.length === 0 || typeof amount !== 'number' && !amount) return []
 		arr = arr.slice()
 		return Array.from({ length: amount }, (): V => arr.splice(Math.floor(Math.random() * arr.length), 1)[0])
 	}
