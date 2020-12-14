@@ -10,20 +10,37 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     return [...this.values()]
   }
 
-  /** Get first value in Collection */
-  first(): V {
-    return this.values().next().value
+  /** Get first value(s) in Collection */
+  first(): V | undefined;
+  first(amount: number): V[];
+  first(amount?: number): V | V[] | undefined {
+    if (typeof amount === 'undefined') return this.values().next().value
+    if (amount < 0) return this.last(amount * -1)
+    amount = Math.min(this.size, amount)
+    const iter = this.values()
+    return Array.from({ length: amount }, (): V => iter.next().value)
   }
 
-  /** Get last value in Collection */
-  last(): V {
-    return [...this.values()][this.size - 1]
+  /** Get last value(s) in Collection */
+  last(): V | undefined;
+  last(amount: number): V[];
+  last(amount?: number): V | V[] | undefined {
+    const arr = this.array()
+    if (typeof amount === 'undefined') return arr[arr.length - 1]
+    if (amount < 0) return this.first(amount * -1)
+    if (!amount) return [] // eslint-disable-line
+    return arr.slice(-amount)
   }
 
-  /** Get a random value from Collection */
-  random(): V {
-    const arr = [...this.values()]
-    return arr[Math.floor(Math.random() * arr.length)]
+  /** Get random value(s) from Collection */
+  random(): V;
+  random(amount: number): V[];
+  random(amount?: number): V | V[] {
+    let arr = this.array()
+    if (typeof amount === 'undefined') return arr[Math.floor(Math.random() * arr.length)]
+    if (arr.length === 0 || !amount) return [] // eslint-disable-line
+    arr = arr.slice()
+    return Array.from({ length: amount }, (): V => arr.splice(Math.floor(Math.random() * arr.length), 1)[0])
   }
 
   /** Find a value from Collection using callback */
