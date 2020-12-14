@@ -10,7 +10,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     return [...this.values()]
   }
 
-  /** Get first value in Collection */
+  /** Get first value(s) in Collection */
   first(): V | undefined;
 	first(amount: number): V[];
 	first(amount?: number): V | V[] | undefined {
@@ -21,7 +21,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
 		return Array.from({ length: amount }, (): V => iter.next().value)
 	}
 
-  /** Get last value in Collection */
+  /** Get last value(s) in Collection */
   last(): V | undefined;
 	last(amount: number): V[];
 	last(amount?: number): V | V[] | undefined {
@@ -32,7 +32,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
 		return arr.slice(-amount)
 	}
 
-  /** Get a random value from Collection */
+  /** Get random value(s) from Collection */
   random(): V;
 	random(amount: number): V[];
 	random(amount?: number): V | V[] {
