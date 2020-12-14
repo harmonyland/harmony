@@ -101,6 +101,41 @@ client.commands.add(PingCommand)
 client.connect('super secret token comes here', Intents.All)
 ```
 
+Or with Decorator!
+```ts
+import {
+  CommandClient,
+  event,
+  Intents,
+  command,
+  CommandContext,
+} from 'https://deno.land/x/harmony/mod.ts'
+
+class MyClient extends CommandClient {
+  constructor() {
+    super({
+      prefix: ['!', '!!'],
+      caseSensitive: false
+    })
+  }
+
+  @event()
+  ready(): void {
+    console.log(`Logged in as ${this.user?.tag}!`)
+  }
+
+  @command({ aliases: 'pong' })
+  Ping(ctx: CommandContext): void {
+    ctx.message.reply('Pong!')
+  }
+}
+
+// Connect to gateway
+// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
+client.connect('super secret token comes here', Intents.All)
+```
+
+
 ## Docs
 
 Documentation is available for `main` (branch) and `stable` (release).
