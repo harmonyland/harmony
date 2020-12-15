@@ -15,6 +15,8 @@ export class VoiceState extends Base {
   sessionID: string
   deaf: boolean
   mute: boolean
+  selfDeaf: boolean
+  selfMute: boolean
   stream?: boolean
   video: boolean
   suppress: boolean
@@ -38,8 +40,8 @@ export class VoiceState extends Base {
     this.guild = _data.guild
     this.deaf = data.deaf
     this.mute = data.mute
-    this.deaf = data.self_deaf
-    this.mute = data.self_mute
+    this.selfDeaf = data.self_deaf
+    this.selfMute = data.self_mute
     this.stream = data.self_stream
     this.video = data.self_video
     this.suppress = data.suppress
@@ -52,6 +54,8 @@ export class VoiceState extends Base {
     this.mute = data.mute ?? this.mute
     this.deaf = data.self_deaf ?? this.deaf
     this.mute = data.self_mute ?? this.mute
+    this.selfDeaf = data.self_deaf ?? this.selfDeaf
+    this.selfMute = data.self_mute ?? this.selfMute
     this.stream = data.self_stream ?? this.stream
     this.video = data.self_video ?? this.video
     this.suppress = data.suppress ?? this.suppress

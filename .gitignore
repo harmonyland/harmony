@@ -113,3 +113,5 @@ src/test/config.ts
 
 # macOS is shit xD
 **/.DS_Store
+
+src/test/music.mp3

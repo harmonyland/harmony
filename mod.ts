@@ -20,6 +20,7 @@ export {
   ExtensionCommands,
   ExtensionsManager
 } from './src/models/extensions.ts'
+export { SlashModule } from './src/models/slashModule.ts'
 export { CommandClient, command } from './src/models/commandClient.ts'
 export type { CommandClientOptions } from './src/models/commandClient.ts'
 export { BaseManager } from './src/managers/base.ts'
