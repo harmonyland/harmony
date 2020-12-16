@@ -159,6 +159,7 @@ export interface SlashCommandHandler {
   name: string
   guild?: string
   parent?: string
+  group?: string
   handler: SlashCommandHandlerCallback
 }
 
@@ -183,7 +184,7 @@ export class SlashClient {
     }
 
     this.client.on('interactionCreate', (interaction) =>
-      this.process(interaction)
+      this._process(interaction)
     )
   }
 
@@ -201,20 +202,35 @@ export class SlashClient {
     return this
   }
 
+  private _getCommand(i: Interaction): SlashCommandHandler | undefined {
+    return this.handlers.find((e) => {
+      const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
+      const groupMatched =
+        e.group !== undefined && e.parent !== undefined
+          ? i.options
+              .find((o) => o.name === e.group)
+              ?.options?.find((o) => o.name === e.name) !== undefined
+          : true
+      const subMatched =
+        e.group === undefined && e.parent !== undefined
+          ? i.options.find((o) => o.name === e.name) !== undefined
+          : true
+      const nameMatched1 = e.name === i.name
+      const parentMatched = hasGroupOrParent ? e.parent === i.name : true
+      const nameMatched = hasGroupOrParent ? parentMatched : nameMatched1
+
+      const matched = groupMatched && subMatched && nameMatched
+      return matched
+    })
+  }
+
   /** Process an incoming Slash Command (interaction) */
-  private process(interaction: Interaction): void {
+  private _process(interaction: Interaction): void {
     if (!this.enabled) return
 
     if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
-    let cmd
-
-    if (interaction.guild !== undefined)
-      cmd =
-        this.handlers.find(
-          (e) => e.guild !== undefined && e.name === interaction.name
-        ) ?? this.handlers.find((e) => e.name === interaction.name)
-    else cmd = this.handlers.find((e) => e.name === interaction.name)
+    const cmd = this._getCommand(interaction)
 
     if (cmd === undefined) return
 

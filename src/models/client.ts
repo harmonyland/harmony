@@ -95,6 +95,7 @@ export class Client extends EventEmitter {
     name: string
     guild?: string
     parent?: string
+    group?: string
     handler: (interaction: Interaction) => any
   }>
 
@@ -247,6 +248,30 @@ export function subslash(parent: string, name?: string, guild?: string) {
       client._decoratedSlash.push(item)
     } else
       client._decoratedSlash.push({
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+export function groupslash(
+  parent: string,
+  group: string,
+  name?: string,
+  guild?: string
+) {
+  return function (client: Client | SlashModule, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      item.parent = parent
+      item.group = group
+      client._decoratedSlash.push(item)
+    } else
+      client._decoratedSlash.push({
+        group,
         parent,
         name: name ?? prop,
         guild,
