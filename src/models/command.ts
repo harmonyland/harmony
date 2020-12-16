@@ -503,12 +503,13 @@ export const parseCommand = (
   client: CommandClient,
   msg: Message,
   prefix: string
-): ParsedCommand => {
+): ParsedCommand | undefined => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
   const args = parse(content)._.map((e) => e.toString())
 
-  const name = args.shift() as string
+  const name = args.shift()
+  if (name === undefined) return
   const argString = content.slice(name.length).trim()
 
   return {

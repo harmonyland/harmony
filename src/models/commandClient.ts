@@ -187,6 +187,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     prefix = usedPrefix
 
     const parsed = parseCommand(this, msg, prefix)
+    if (parsed === undefined) return
     const command = this.commands.fetch(parsed)
 
     if (command === undefined) return
