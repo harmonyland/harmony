@@ -189,16 +189,8 @@ export class SlashClient {
   }
 
   /** Adds a new Slash Command Handler */
-  handle(
-    name: string,
-    handler: SlashCommandHandlerCallback,
-    guild?: string
-  ): SlashClient {
-    this.handlers.push({
-      name,
-      guild,
-      handler
-    })
+  handle(handler: SlashCommandHandler): SlashClient {
+    this.handlers.push(handler)
     return this
   }
 
