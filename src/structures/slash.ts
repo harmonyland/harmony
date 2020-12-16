@@ -3,6 +3,7 @@ import { MessageOption } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
   InteractionData,
+  InteractionOption,
   InteractionPayload,
   InteractionResponsePayload,
   InteractionResponseType
@@ -76,10 +77,15 @@ export class Interaction {
     return this.data.name
   }
 
-  option<T = any>(name: string): T {
-    return this.data.options.find((e) => e.name === name)?.value
+  get options(): InteractionOption[] {
+    return this.data.options ?? []
   }
 
+  option<T = any>(name: string): T {
+    return this.options.find((e) => e.name === name)?.value
+  }
+
+  /** Respond to an Interaction */
   async respond(data: InteractionResponse): Promise<Interaction> {
     const payload: InteractionResponsePayload = {
       type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
@@ -105,6 +111,7 @@ export class Interaction {
     return this
   }
 
+  /** Edit the original Interaction response */
   async editResponse(data: {
     content?: string
     embeds?: Embed[]
@@ -121,6 +128,7 @@ export class Interaction {
     return this
   }
 
+  /** Delete the original Interaction Response */
   async deleteResponse(): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(
       this.client.user?.id as string,
@@ -135,6 +143,7 @@ export class Interaction {
     return `https://discord.com/api/v8/webhooks/${this.client.user?.id}/${this.token}`
   }
 
+  /** Send a followup message */
   async send(
     text?: string | AllWebhookMessageOptions,
     option?: AllWebhookMessageOptions
@@ -195,6 +204,7 @@ export class Interaction {
     return res
   }
 
+  /** Edit a Followup message */
   async editMessage(
     msg: Message | string,
     data: {

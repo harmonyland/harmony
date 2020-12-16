@@ -3,6 +3,8 @@ import {
   event,
   Intents,
   command,
+  subslash,
+  groupslash,
   CommandContext,
   Extension,
   Collection
@@ -11,7 +13,10 @@ import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
   Manager,
   Player
-} from 'https://raw.githubusercontent.com/DjDeveloperr/lavaclient-deno/master/mod.ts'
+} from 'https://raw.githubusercontent.com/Lavaclient/lavadeno/master/mod.ts'
+import { Interaction } from '../structures/slash.ts'
+import { slash } from '../models/client.ts'
+// import { SlashCommandOptionType } from '../types/slash.ts'
 
 export const nodes = [
   {
@@ -54,10 +59,68 @@ class MyClient extends CommandClient {
     })
   }
 
+  @subslash('cmd', 'sub-cmd-no-grp')
+  subCmdNoGrp(d: Interaction): void {
+    d.respond({ content: 'sub-cmd-no-group worked' })
+  }
+
+  @groupslash('cmd', 'sub-cmd-group', 'sub-cmd')
+  subCmdGrp(d: Interaction): void {
+    d.respond({ content: 'sub-cmd-group worked' })
+  }
+
+  @slash()
+  run(d: Interaction): void {
+    console.log(d.name)
+  }
+
   @event()
   ready(): void {
     console.log(`Logged in as ${this.user?.tag}!`)
     this.manager.init(this.user?.id as string)
+    // client.slash.commands.create(
+    //   {
+    //     name: 'cmd',
+    //     description: 'Parent command',
+    //     options: [
+    //       {
+    //         name: 'sub-cmd-group',
+    //         type: SlashCommandOptionType.SUB_COMMAND_GROUP,
+    //         description: 'Sub Cmd Group',
+    //         options: [
+    //           {
+    //             name: 'sub-cmd',
+    //             type: SlashCommandOptionType.SUB_COMMAND,
+    //             description: 'Sub Cmd'
+    //           }
+    //         ]
+    //       },
+    //       {
+    //         name: 'sub-cmd-no-grp',
+    //         type: SlashCommandOptionType.SUB_COMMAND,
+    //         description: 'Sub Cmd'
+    //       },
+    //       {
+    //         name: 'sub-cmd-grp-2',
+    //         type: SlashCommandOptionType.SUB_COMMAND_GROUP,
+    //         description: 'Sub Cmd Group 2',
+    //         options: [
+    //           {
+    //             name: 'sub-cmd-1',
+    //             type: SlashCommandOptionType.SUB_COMMAND,
+    //             description: 'Sub Cmd 1'
+    //           },
+    //           {
+    //             name: 'sub-cmd-2',
+    //             type: SlashCommandOptionType.SUB_COMMAND,
+    //             description: 'Sub Cmd 2'
+    //           }
+    //         ]
+    //       }
+    //     ]
+    //   },
+    //   '783319033205751809'
+    // )
   }
 }
 

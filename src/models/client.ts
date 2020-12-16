@@ -15,6 +15,7 @@ import { Extension } from './extensions.ts'
 import { SlashClient } from './slashClient.ts'
 import { Interaction } from '../structures/slash.ts'
 import { SlashModule } from './slashModule.ts'
+import type { ShardManager } from './shard.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -93,6 +94,8 @@ export class Client extends EventEmitter {
   _decoratedSlash?: Array<{
     name: string
     guild?: string
+    parent?: string
+    group?: string
     handler: (interaction: Interaction) => any
   }>
 
@@ -109,6 +112,11 @@ export class Client extends EventEmitter {
     event: K,
     ...args: Parameters<ClientEvents[K]>
   ): boolean => this._untypedEmit(event, ...args)
+
+  /** Shard on which this Client is */
+  shard: number = 0
+  /** Shard Manager of this Client if Sharded */
+  shardManager?: ShardManager
 
   constructor(options: ClientOptions = {}) {
     super()
@@ -224,6 +232,47 @@ export function slash(name?: string, guild?: string) {
       client._decoratedSlash.push(item)
     } else
       client._decoratedSlash.push({
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+export function subslash(parent: string, name?: string, guild?: string) {
+  return function (client: Client | SlashModule, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      item.parent = parent
+      client._decoratedSlash.push(item)
+    } else
+      client._decoratedSlash.push({
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+export function groupslash(
+  parent: string,
+  group: string,
+  name?: string,
+  guild?: string
+) {
+  return function (client: Client | SlashModule, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      item.parent = parent
+      item.group = group
+      client._decoratedSlash.push(item)
+    } else
+      client._decoratedSlash.push({
+        group,
+        parent,
         name: name ?? prop,
         guild,
         handler: item

@@ -330,7 +330,7 @@ export interface ClientEvents extends EventTypes {
    */
   webhooksUpdate: (guild: Guild, channel: GuildTextChannel) => void
   /**
-   * A Slash Command was triggered
+   * An Interaction was created
    */
   interactionCreate: (interaction: Interaction) => void
 }
