@@ -105,7 +105,8 @@ export enum GatewayEvents {
   User_Update = 'USER_UPDATE',
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
   Voice_State_Update = 'VOICE_STATE_UPDATE',
-  Webhooks_Update = 'WEBHOOKS_UPDATE'
+  Webhooks_Update = 'WEBHOOKS_UPDATE',
+  Interaction_Create = 'INTERACTION_CREATE'
 }
 
 export interface IdentityPayload {
@@ -120,11 +121,11 @@ export interface IdentityPayload {
 }
 
 export interface IdentityConnection {
-  $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'harmony' | 'Firefox'
-  $device: 'harmony' | ''
-  $referrer?: ''
-  $referring_domain?: ''
+  $os: 'darwin' | 'windows' | 'linux' | 'custom os' | string
+  $browser: 'harmony' | 'Firefox' | string
+  $device: 'harmony' | string
+  $referrer?: '' | string
+  $referring_domain?: '' | string
 }
 
 export interface Resume {

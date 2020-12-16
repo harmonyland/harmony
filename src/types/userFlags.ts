@@ -1,7 +1,6 @@
 export const UserFlags = {
   DISCORD_EMPLOYEE: 1 << 0,
   PARTNERED_SERVER_OWNER: 1 << 1,
-  DISCORD_PARTNER: 1 << 1,
   HYPESQUAD_EVENTS: 1 << 2,
   BUGHUNTER_LEVEL_1: 1 << 3,
   HOUSE_BRAVERY: 1 << 6,

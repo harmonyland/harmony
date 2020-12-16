@@ -12,6 +12,7 @@ import { Message } from './message.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
+import { WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 
 export interface WebhookMessageOptions extends MessageOption {
   embeds?: Embed[]
@@ -190,5 +191,41 @@ export class Webhook {
     const resp = await this.rest.delete(this.url, undefined, 0, undefined, true)
     if (resp.response.status !== 204) return false
     else return true
+  }
+
+  async editMessage(
+    message: string | Message,
+    data: {
+      content?: string
+      embeds?: Embed[]
+      file?: any
+      allowed_mentions?: {
+        parse?: string
+        roles?: string[]
+        users?: string[]
+        everyone?: boolean
+      }
+    }
+  ): Promise<Webhook> {
+    await this.client?.rest.patch(
+      WEBHOOK_MESSAGE(
+        this.id,
+        (this.token ?? this.client.token) as string,
+        typeof message === 'string' ? message : message.id
+      ),
+      data
+    )
+    return this
+  }
+
+  async deleteMessage(message: string | Message): Promise<Webhook> {
+    await this.client?.rest.delete(
+      WEBHOOK_MESSAGE(
+        this.id,
+        (this.token ?? this.client.token) as string,
+        typeof message === 'string' ? message : message.id
+      )
+    )
+    return this
   }
 }

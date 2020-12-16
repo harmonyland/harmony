@@ -277,11 +277,11 @@ export class RESTManager {
       message: body?.message,
       errors: Object.fromEntries(
         Object.entries(
-          body?.errors as {
+          (body?.errors as {
             [name: string]: {
               _errors: Array<{ code: string; message: string }>
             }
-          }
+          }) ?? {}
         ).map((entry) => {
           return [entry[0], entry[1]._errors]
         })

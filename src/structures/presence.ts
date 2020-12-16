@@ -50,17 +50,23 @@ export class Presence extends Base {
   }
 }
 
+interface StatusPayload extends StatusUpdatePayload {
+  client_status?: ClientStatus
+}
+
 export class ClientPresence {
   status: StatusType = 'online'
   activity?: ActivityGame | ActivityGame[]
   since?: number | null
   afk?: boolean
+  clientStatus?: ClientStatus
 
-  constructor(data?: ClientActivity | StatusUpdatePayload | ActivityGame) {
+  constructor(data?: ClientActivity | StatusPayload | ActivityGame) {
     if (data !== undefined) {
       if ((data as ClientActivity).activity !== undefined) {
         Object.assign(this, data)
-      } else if ((data as StatusUpdatePayload).activities !== undefined) {
+      } else if ((data as StatusPayload).activities !== undefined) {
+        this.parse(data as StatusPayload)
       } else if ((data as ActivityGame).name !== undefined) {
         if (this.activity === undefined) {
           this.activity = data as ActivityGame
@@ -71,11 +77,12 @@ export class ClientPresence {
     }
   }
 
-  parse(payload: StatusUpdatePayload): ClientPresence {
+  parse(payload: StatusPayload): ClientPresence {
     this.afk = payload.afk
     this.activity = payload.activities ?? undefined
     this.since = payload.since
     this.status = payload.status
+    // this.clientStatus = payload.client_status
     return this
   }
 
@@ -83,12 +90,13 @@ export class ClientPresence {
     return new ClientPresence().parse(payload)
   }
 
-  create(): StatusUpdatePayload {
+  create(): StatusPayload {
     return {
       afk: this.afk === undefined ? false : this.afk,
       activities: this.createActivity(),
       since: this.since === undefined ? null : this.since,
       status: this.status === undefined ? 'online' : this.status
+      // client_status: this.clientStatus
     }
   }
 
@@ -144,4 +152,13 @@ export class ClientPresence {
     this.since = since
     return this
   }
+
+  // setClientStatus(
+  //   client: 'desktop' | 'web' | 'mobile',
+  //   status: StatusType
+  // ): ClientPresence {
+  //   if (this.clientStatus === undefined) this.clientStatus = {}
+  //   this.clientStatus[client] = status
+  //   return this
+  // }
 }
