@@ -11,7 +11,7 @@ import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
   Manager,
   Player
-} from 'https://raw.githubusercontent.com/DjDeveloperr/lavaclient-deno/master/mod.ts'
+} from 'https://raw.githubusercontent.com/Lavaclient/lavadeno/master/mod.ts'
 
 export const nodes = [
   {

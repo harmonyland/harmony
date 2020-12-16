@@ -15,6 +15,7 @@ import { Extension } from './extensions.ts'
 import { SlashClient } from './slashClient.ts'
 import { Interaction } from '../structures/slash.ts'
 import { SlashModule } from './slashModule.ts'
+import type { ShardManager } from './shard.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -93,6 +94,7 @@ export class Client extends EventEmitter {
   _decoratedSlash?: Array<{
     name: string
     guild?: string
+    parent?: string
     handler: (interaction: Interaction) => any
   }>
 
@@ -109,6 +111,11 @@ export class Client extends EventEmitter {
     event: K,
     ...args: Parameters<ClientEvents[K]>
   ): boolean => this._untypedEmit(event, ...args)
+
+  /** Shard on which this Client is */
+  shard: number = 0
+  /** Shard Manager of this Client if Sharded */
+  shardManager?: ShardManager
 
   constructor(options: ClientOptions = {}) {
     super()

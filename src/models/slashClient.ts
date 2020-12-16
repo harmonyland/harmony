@@ -158,6 +158,7 @@ export type SlashCommandHandlerCallback = (interaction: Interaction) => any
 export interface SlashCommandHandler {
   name: string
   guild?: string
+  parent?: string
   handler: SlashCommandHandlerCallback
 }
 
