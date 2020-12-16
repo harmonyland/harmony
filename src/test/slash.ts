@@ -12,7 +12,7 @@ export class MyClient extends Client {
   @slash()
   send(d: Interaction): void {
     d.respond({
-      content: d.data.options.find((e) => e.name === 'content')?.value
+      content: d.data.options?.find((e) => e.name === 'content')?.value
     })
   }
 
@@ -26,7 +26,7 @@ export class MyClient extends Client {
         content: 'This command can only be used by owner!'
       })
     } else {
-      const code = d.data.options.find((e) => e.name === 'code')
+      const code = d.data.options?.find((e) => e.name === 'code')
         ?.value as string
       try {
         // eslint-disable-next-line no-eval
@@ -50,7 +50,7 @@ export class MyClient extends Client {
 
   @slash()
   async hug(d: Interaction): Promise<void> {
-    const id = d.data.options.find((e) => e.name === 'user')?.value as string
+    const id = d.data.options?.find((e) => e.name === 'user')?.value as string
     const user = (await client.users.get(id)) ?? (await client.users.fetch(id))
     const url = await fetch('https://nekos.life/api/v2/img/hug')
       .then((r) => r.json())
@@ -68,7 +68,7 @@ export class MyClient extends Client {
 
   @slash()
   async kiss(d: Interaction): Promise<void> {
-    const id = d.data.options.find((e) => e.name === 'user')?.value as string
+    const id = d.data.options?.find((e) => e.name === 'user')?.value as string
     const user = (await client.users.get(id)) ?? (await client.users.fetch(id))
     const url = await fetch('https://nekos.life/api/v2/img/kiss')
       .then((r) => r.json())

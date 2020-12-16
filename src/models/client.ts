@@ -238,6 +238,23 @@ export function slash(name?: string, guild?: string) {
   }
 }
 
+export function subslash(parent: string, name?: string, guild?: string) {
+  return function (client: Client | SlashModule, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      item.parent = parent
+      client._decoratedSlash.push(item)
+    } else
+      client._decoratedSlash.push({
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
 export function slashModule() {
   return function (client: Client, prop: string) {
     if (client._decoratedSlashModules === undefined)

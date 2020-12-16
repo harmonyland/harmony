@@ -34,7 +34,7 @@ export class SlashCommand {
     this.applicationID = data.application_id
     this.name = data.name
     this.description = data.description
-    this.options = data.options
+    this.options = data.options ?? []
   }
 
   async delete(): Promise<void> {
