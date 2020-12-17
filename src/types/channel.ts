@@ -96,6 +96,7 @@ export interface MessagePayload {
   application?: MessageApplication
   message_reference?: MessageReference
   flags?: number
+  stickers?: MessageStickerPayload[]
 }
 
 export interface MessageOption {
@@ -255,4 +256,21 @@ export enum MessageFlags {
 export interface FollowedChannel {
   channel_id: string
   webhook_id: string
+}
+
+export enum MessageStickerFormatTypes {
+  PNG = 1,
+  APNG = 2,
+  LOTTIE = 3
+}
+
+export interface MessageStickerPayload {
+  id: string
+  pack_id: string
+  name: string
+  description: string
+  tags?: string
+  asset: string
+  preview_asset: string | null
+  format_type: MessageStickerFormatTypes
 }

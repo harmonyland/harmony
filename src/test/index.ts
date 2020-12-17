@@ -14,9 +14,9 @@ import {
 import { TOKEN } from './config.ts'
 
 const client = new Client({
-  clientProperties: {
-    browser: 'Discord iOS'
-  }
+  // clientProperties: {
+  //   browser: 'Discord iOS'
+  // }
   // bot: false,
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
@@ -47,7 +47,15 @@ client.on('channelUpdate', (b: EveryChannelTypes, a: EveryChannelTypes) => {
 
 client.on('messageCreate', async (msg: Message) => {
   if (msg.author.bot === true) return
-  console.log(`${msg.author.tag}: ${msg.content}`)
+  if (msg.stickers !== undefined) {
+    console.log(
+      `${msg.author.tag}: (Sticker)${msg.stickers.map(
+        (sticker) => `Name: ${sticker.name}, Tags: ${sticker.tags}`
+      )}`
+    )
+  } else {
+    console.log(`${msg.author.tag}: ${msg.content}`)
+  }
   if (msg.content === '!ping') {
     msg.reply(`Pong! Ping: ${client.ping}ms`)
   } else if (msg.content === '!members') {
