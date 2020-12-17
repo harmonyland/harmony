@@ -101,10 +101,10 @@ client.commands.add(PingCommand)
 client.connect('super secret token comes here', Intents.All)
 ```
 
-Or with Decorator!
+Or with Decorators!
 ```ts
 import {
-  CommandClient,
+  Client,
   event,
   Intents,
   command,
@@ -132,9 +132,8 @@ class MyClient extends CommandClient {
 
 // Connect to gateway
 // Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-client.connect('super secret token comes here', Intents.All)
+new MyClient().connect('super secret token comes here', Intents.All)
 ```
-
 
 ## Docs
 
