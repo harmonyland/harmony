@@ -16,6 +16,7 @@ import { MessageMentions } from './messageMentions.ts'
 import { TextChannel } from './textChannel.ts'
 import { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
+import { MessageSticker } from './messageSticker.ts'
 
 type AllMessageOptions = MessageOption | Embed
 
@@ -43,6 +44,7 @@ export class Message extends Base {
   application?: MessageApplication
   messageReference?: MessageReference
   flags?: number
+  stickers?: MessageSticker[]
 
   constructor(
     client: Client,
@@ -72,6 +74,12 @@ export class Message extends Base {
     this.messageReference = data.message_reference
     this.flags = data.flags
     this.channel = channel
+    this.stickers =
+      data.stickers !== undefined
+        ? data.stickers.map(
+            (payload) => new MessageSticker(this.client, payload)
+          )
+        : undefined
   }
 
   readFromData(data: MessagePayload): void {
@@ -91,6 +99,12 @@ export class Message extends Base {
     this.application = data.application ?? this.application
     this.messageReference = data.message_reference ?? this.messageReference
     this.flags = data.flags ?? this.flags
+    this.stickers =
+      data.stickers !== undefined
+        ? data.stickers.map(
+            (payload) => new MessageSticker(this.client, payload)
+          )
+        : this.stickers
   }
 
   /** Edits this message. */
