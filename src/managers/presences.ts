@@ -27,6 +27,25 @@ export class GuildPresencesManager extends BaseManager<
     return presence
   }
 
+  async array(): Promise<Presence[]> {
+    let arr = await (this.client.cache.array(
+      this.cacheName
+    ) as PresenceUpdatePayload[])
+    if (arr === undefined) arr = []
+
+    const result: Presence[] = []
+    await Promise.all(
+      arr.map(async (raw) => {
+        let user = await this.client.users.get(raw.user.id)
+        if (user === undefined) user = new User(this.client, raw.user)
+        const guild = await this.client.guilds.get(raw.guild_id)
+        if (guild === undefined) return
+        result.push(new Presence(this.client, raw, user, guild))
+      })
+    )
+    return result
+  }
+
   async fromPayload(
     data: PresenceUpdatePayload[]
   ): Promise<GuildPresencesManager> {

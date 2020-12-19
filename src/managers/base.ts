@@ -42,7 +42,7 @@ export class BaseManager<T, T2> {
   }
 
   /** Gets an Array of values from Cache */
-  async array(): Promise<undefined | T2[]> {
+  async array(): Promise<T2[]> {
     let arr = await (this.client.cache.array(this.cacheName) as T[])
     if (arr === undefined) arr = []
     return arr.map((e) => new this.DataType(this.client, e)) as any
