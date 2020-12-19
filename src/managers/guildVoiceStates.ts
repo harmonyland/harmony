@@ -29,7 +29,7 @@ export class GuildVoiceStatesManager extends BaseManager<
     return new VoiceState(this.client, raw, {
       user: ((await this.client.users.get(raw.user_id)) as unknown) as User,
       channel:
-        raw.channel_id == null
+        raw.channel_id === null
           ? null
           : (((await this.client.channels.get<VoiceChannel>(
               raw.channel_id
@@ -38,6 +38,37 @@ export class GuildVoiceStatesManager extends BaseManager<
       member:
         guild === undefined ? undefined : await guild.members.get(raw.user_id)
     })
+  }
+
+  async array(): Promise<VoiceState[]> {
+    let arr = await (this.client.cache.array(
+      this.cacheName
+    ) as VoiceStatePayload[])
+    if (arr === undefined) arr = []
+
+    return await Promise.all(
+      arr.map(async (raw) => {
+        const guild =
+          raw.guild_id === undefined
+            ? undefined
+            : await this.client.guilds.get(raw.guild_id)
+
+        return new VoiceState(this.client, raw, {
+          user: ((await this.client.users.get(raw.user_id)) as unknown) as User,
+          channel:
+            raw.channel_id === null
+              ? null
+              : (((await this.client.channels.get<VoiceChannel>(
+                  raw.channel_id
+                )) as unknown) as VoiceChannel),
+          guild,
+          member:
+            guild === undefined
+              ? undefined
+              : await guild.members.get(raw.user_id)
+        })
+      })
+    )
   }
 
   async fromPayload(d: VoiceStatePayload[]): Promise<void> {

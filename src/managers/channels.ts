@@ -25,7 +25,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     return res as any
   }
 
-  async array(): Promise<undefined | Channel[]> {
+  async array(): Promise<Channel[]> {
     const arr = await (this.client.cache.array(
       this.cacheName
     ) as ChannelPayload[])

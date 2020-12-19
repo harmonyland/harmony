@@ -59,10 +59,9 @@ client.on('messageCreate', async (msg: Message) => {
   if (msg.content === '!ping') {
     msg.reply(`Pong! Ping: ${client.ping}ms`)
   } else if (msg.content === '!members') {
-    const col = await msg.guild?.members.collection()
+    const col = await msg.guild?.members.array()
     const data = col
-      ?.array()
-      .map((c: Member, i: number) => {
+      ?.map((c: Member, i: number) => {
         return `${i + 1}. ${c.user.tag}`
       })
       .join('\n') as string

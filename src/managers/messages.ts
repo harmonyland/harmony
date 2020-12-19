@@ -44,6 +44,42 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     )
   }
 
+  async array(): Promise<Message[]> {
+    let arr = await (this.client.cache.array(
+      this.cacheName
+    ) as MessagePayload[])
+    if (arr === undefined) arr = []
+
+    const result: Message[] = []
+    await Promise.all(
+      arr.map(async (raw) => {
+        if (raw.author === undefined) return
+
+        let channel = await this.client.channels.get(raw.channel_id)
+        if (channel === undefined)
+          channel = await this.client.channels.fetch(raw.channel_id)
+        if (channel === undefined) return
+
+        let author = ((await this.client.users.get(
+          raw.author.id
+        )) as unknown) as User
+
+        if (author === undefined) author = new User(this.client, raw.author)
+
+        const res = new Message(
+          this.client,
+          raw,
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          channel as TextChannel,
+          author
+        )
+        await res.mentions.fromPayload(raw)
+        result.push(res)
+      })
+    )
+    return result
+  }
+
   async fetch(id: string): Promise<Message> {
     return await new Promise((resolve, reject) => {
       this.client.rest

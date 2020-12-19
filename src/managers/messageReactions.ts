@@ -37,6 +37,20 @@ export class MessageReactionsManager extends BaseManager<
     )
   }
 
+  async array(): Promise<MessageReaction[]> {
+    let arr = await (this.client.cache.array(this.cacheName) as Reaction[])
+    if (arr === undefined) arr = []
+
+    return await Promise.all(
+      arr.map(async (raw) => {
+        let emoji = await this.client.emojis.get(raw.emoji.id)
+        if (emoji === undefined) emoji = new Emoji(this.client, raw.emoji)
+
+        return new MessageReaction(this.client, raw, this.message, emoji)
+      })
+    )
+  }
+
   async flush(): Promise<any> {
     await this.client.cache.deleteCache(`reaction_users:${this.message.id}`)
     return this.client.cache.deleteCache(this.cacheName)
