@@ -34,14 +34,12 @@ client.on('channelUpdate', (b: EveryChannelTypes, a: EveryChannelTypes) => {
   if (b.type === ChannelTypes.GUILD_TEXT) {
     const before = (b as unknown) as GuildTextChannel
     const after = (a as unknown) as GuildTextChannel
-    console.log(
-      before.send('', {
-        embed: new Embed({
-          title: 'Channel Update',
-          description: `Name Before: ${before.name}\nName After: ${after.name}`
-        })
+    before.send('', {
+      embed: new Embed({
+        title: 'Channel Update',
+        description: `Name Before: ${before.name}\nName After: ${after.name}`
       })
-    )
+    })
   }
 })
 
@@ -94,6 +92,26 @@ client.on('messageCreate', async (msg: Message) => {
       })
       .join('\n') as string
     msg.channel.send('Channels List:\n' + data)
+  } else if (msg.content === '!messages') {
+    const col = await msg.channel.messages.array()
+    const data = col
+      ?.slice(-5)
+      .map((c: Message, i: number) => {
+        return `${i + 1}. ${c.content}`
+      })
+      .join('\n') as string
+    msg.channel.send('Top 5 Message List:\n' + data)
+  } else if (msg.content === '!editChannel') {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const channel = msg.channel as GuildTextChannel
+    const newChannel = await channel.edit({
+      name: 'gggg'
+    })
+    if (newChannel.name === 'gggg') {
+      msg.channel.send('Done!')
+    } else {
+      msg.channel.send('Failed...')
+    }
   }
 })
 

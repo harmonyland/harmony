@@ -4,10 +4,16 @@ import {
   GuildTextChannelPayload,
   MessageOption,
   MessageReference,
+  ModifyGuildTextChannelOption,
+  ModifyGuildTextChannelPayload,
   Overwrite,
   TextChannelPayload
 } from '../types/channel.ts'
-import { CHANNEL_MESSAGE, CHANNEL_MESSAGES } from '../types/endpoint.ts'
+import {
+  CHANNEL,
+  CHANNEL_MESSAGE,
+  CHANNEL_MESSAGES
+} from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
@@ -163,5 +169,20 @@ export class GuildTextChannel extends TextChannel {
     this.parentID = data.parent_id ?? this.parentID
     this.topic = data.topic ?? this.topic
     this.rateLimit = data.rate_limit_per_user ?? this.rateLimit
+  }
+
+  async edit(
+    options?: ModifyGuildTextChannelOption
+  ): Promise<GuildTextChannel> {
+    const body: ModifyGuildTextChannelPayload = {
+      name: options?.name,
+      position: options?.position,
+      permission_overwrites: options?.permissionOverwrites,
+      parent_id: options?.parentID
+    }
+
+    const resp = await this.client.rest.patch(CHANNEL(this.id), body)
+
+    return new GuildTextChannel(this.client, resp, this.guild)
   }
 }

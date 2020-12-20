@@ -1,7 +1,13 @@
 import { VoiceServerUpdateData } from '../gateway/handlers/index.ts'
 import { VoiceStateOptions } from '../gateway/index.ts'
 import { Client } from '../models/client.ts'
-import { GuildVoiceChannelPayload, Overwrite } from '../types/channel.ts'
+import {
+  GuildVoiceChannelPayload,
+  ModifyVoiceChannelOption,
+  ModifyVoiceChannelPayload,
+  Overwrite
+} from '../types/channel.ts'
+import { CHANNEL } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Guild } from './guild.ts'
 import { VoiceState } from './voiceState.ts'
@@ -14,7 +20,6 @@ export class VoiceChannel extends Channel {
   guild: Guild
   position: number
   permissionOverwrites: Overwrite[]
-  nsfw: boolean
   parentID?: string
 
   constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
@@ -26,7 +31,6 @@ export class VoiceChannel extends Channel {
     this.position = data.position
     this.guild = guild
     this.permissionOverwrites = data.permission_overwrites
-    this.nsfw = data.nsfw
     this.parentID = data.parent_id
     // TODO: Cache in Gateway Event Code
     // cache.set('guildvoicechannel', this.id, this)
@@ -85,7 +89,21 @@ export class VoiceChannel extends Channel {
     this.position = data.position ?? this.position
     this.permissionOverwrites =
       data.permission_overwrites ?? this.permissionOverwrites
-    this.nsfw = data.nsfw ?? this.nsfw
     this.parentID = data.parent_id ?? this.parentID
+  }
+
+  async edit(options?: ModifyVoiceChannelOption): Promise<VoiceChannel> {
+    const body: ModifyVoiceChannelPayload = {
+      name: options?.name,
+      position: options?.position,
+      permission_overwrites: options?.permissionOverwrites,
+      parent_id: options?.parentID,
+      bitrate: options?.bitrate,
+      user_limit: options?.userLimit
+    }
+
+    const resp = await this.client.rest.patch(CHANNEL(this.id), body)
+
+    return new VoiceChannel(this.client, resp, this.guild)
   }
 }
