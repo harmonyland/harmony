@@ -18,13 +18,13 @@ export interface GuildChannelPayload extends ChannelPayload {
   name: string
   position: number
   permission_overwrites: Overwrite[]
-  nsfw: boolean
   parent_id?: string
 }
 
 export interface GuildTextChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
+  nsfw: boolean
   rate_limit_per_user: number
   topic?: string
 }
@@ -33,6 +33,7 @@ export interface GuildNewsChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
   topic?: string
+  nsfw: boolean
 }
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
