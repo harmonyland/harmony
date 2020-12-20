@@ -51,7 +51,7 @@ export interface GroupDMChannelPayload extends DMChannelPayload {
   owner_id: string
 }
 
-export interface GuildChannelCategoryPayload
+export interface GuildCategoryChannelPayload
   extends ChannelPayload,
     GuildChannelPayload {}
 
