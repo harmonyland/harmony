@@ -55,6 +55,61 @@ export interface GuildCategoryChannelPayload
   extends ChannelPayload,
     GuildChannelPayload {}
 
+export interface ModifyChannelPayload {
+  name?: string
+  position?: number | null
+  permission_overwrites?: Overwrite[] | null
+  parent_id?: string
+}
+
+export interface ModifyGuildCategoryChannelPayload
+  extends ModifyChannelPayload {}
+
+export interface ModifyGuildTextChannelPayload extends ModifyChannelPayload {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+  rate_limit_per_user?: number | null
+}
+
+export interface ModifyGuildNewsChannelPayload extends ModifyChannelPayload {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+}
+
+export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
+  bitrate?: number | null
+  user_limit?: number | null
+}
+
+export interface ModifyChannelOption {
+  name?: string
+  position?: number | null
+  permissionOverwrites?: Overwrite[] | null
+  parentID?: string
+}
+
+export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
+
+export interface ModifyGuildTextChannelOption extends ModifyChannelOption {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+  rateLimitPerUser?: number | null
+}
+
+export interface ModifyGuildNewsChannelOption extends ModifyChannelOption {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+}
+
+export interface ModifyVoiceChannelOption extends ModifyChannelOption {
+  bitrate?: number | null
+  userLimit?: number | null
+}
+
 export interface Overwrite {
   id: string
   type: number
