@@ -18,6 +18,7 @@ import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
+import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
 
 export interface RequestMembersOptions {
   limit?: number
@@ -34,11 +35,11 @@ export interface VoiceStateOptions {
 export const RECONNECT_REASON = 'harmony-reconnect'
 
 /**
- * Handles Discord gateway connection.
+ * Handles Discord Gateway connection.
  *
  * You should not use this and rather use Client class.
  */
-class Gateway {
+export class Gateway extends EventEmitter {
   websocket: WebSocket
   token: string
   intents: GatewayIntents[]
@@ -55,6 +56,7 @@ class Gateway {
   private timedIdentify: number | null = null
 
   constructor(client: Client, token: string, intents: GatewayIntents[]) {
+    super()
     this.token = token
     this.intents = intents
     this.client = client
@@ -74,6 +76,7 @@ class Gateway {
   private onopen(): void {
     this.connected = true
     this.debug('Connected to Gateway!')
+    this.emit('connect')
   }
 
   private async onmessage(event: MessageEvent): Promise<void> {
@@ -112,6 +115,7 @@ class Gateway {
       case GatewayOpcodes.HEARTBEAT_ACK:
         this.heartbeatServerResponded = true
         this.client.ping = Date.now() - this.lastPingTimestamp
+        this.emit('ping', this.client.ping)
         this.debug(
           `Received Heartbeat Ack. Ping Recognized: ${this.client.ping}ms`
         )
@@ -142,6 +146,7 @@ class Gateway {
           await this.cache.set('seq', s)
         }
         if (t !== null && t !== undefined) {
+          this.emit(t, d)
           this.client.emit('raw', t, d)
 
           const handler = gatewayHandlers[t]
@@ -158,9 +163,11 @@ class Gateway {
         this.sequenceID = d.seq
         await this.cache.set('seq', d.seq)
         await this.cache.set('session_id', this.sessionID)
+        this.emit('resume')
         break
       }
       case GatewayOpcodes.RECONNECT: {
+        this.emit('reconnectRequired')
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.reconnect()
         break
@@ -172,6 +179,7 @@ class Gateway {
 
   private async onclose(event: CloseEvent): Promise<void> {
     if (event.reason === RECONNECT_REASON) return
+    this.emit('close', event.code, event.reason)
     this.debug(`Connection Closed with code: ${event.code}`)
 
     if (event.code === GatewayCloseCodes.UNKNOWN_ERROR) {
@@ -223,7 +231,7 @@ class Gateway {
 
   private onerror(event: Event | ErrorEvent): void {
     const eventError = event as ErrorEvent
-    console.log(eventError)
+    this.emit('error', eventError)
   }
 
   private async sendIdentify(forceNewSession?: boolean): Promise<void> {
@@ -266,6 +274,7 @@ class Gateway {
     }
 
     this.debug('Sending Identify payload...')
+    this.emit('sentIdentify')
     this.send({
       op: GatewayOpcodes.IDENTIFY,
       d: payload
@@ -291,6 +300,7 @@ class Gateway {
         seq: this.sequenceID ?? null
       }
     }
+    this.emit('sentResume')
     this.debug('Sending Resume payload...')
     this.send(resumePayload)
   }
@@ -341,6 +351,7 @@ class Gateway {
   }
 
   async reconnect(forceNew?: boolean): Promise<void> {
+    this.emit('reconnecting')
     clearInterval(this.heartbeatIntervalID)
     if (forceNew === true) {
       await this.cache.delete('session_id')
@@ -351,6 +362,7 @@ class Gateway {
   }
 
   initWebsocket(): void {
+    this.emit('init')
     this.debug('Initializing WebSocket...')
     this.websocket = new WebSocket(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -414,5 +426,3 @@ class Gateway {
 }
 
 export type GatewayEventHandler = (gateway: Gateway, d: any) => void
-
-export { Gateway }

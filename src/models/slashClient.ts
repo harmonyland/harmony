@@ -14,10 +14,7 @@ import {
 } from '../types/slash.ts'
 import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
-
-export interface SlashOptions {
-  enabled?: boolean
-}
+import { RESTManager } from './rest.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -47,20 +44,22 @@ export class SlashCommand {
 }
 
 export class SlashCommandsManager {
-  client: Client
   slash: SlashClient
 
-  constructor(client: Client) {
-    this.client = client
-    this.slash = client.slash
+  get rest(): RESTManager {
+    return this.slash.rest
+  }
+
+  constructor(client: SlashClient) {
+    this.slash = client
   }
 
   /** Get all Global Slash Commands */
   async all(): Promise<Collection<string, SlashCommand>> {
     const col = new Collection<string, SlashCommand>()
 
-    const res = (await this.client.rest.get(
-      APPLICATION_COMMANDS(this.client.user?.id as string)
+    const res = (await this.rest.get(
+      APPLICATION_COMMANDS(this.slash.getID())
     )) as SlashCommandPayload[]
     if (!Array.isArray(res)) return col
 
@@ -78,9 +77,9 @@ export class SlashCommandsManager {
   ): Promise<Collection<string, SlashCommand>> {
     const col = new Collection<string, SlashCommand>()
 
-    const res = (await this.client.rest.get(
+    const res = (await this.rest.get(
       APPLICATION_GUILD_COMMANDS(
-        this.client.user?.id as string,
+        this.slash.getID(),
         typeof guild === 'string' ? guild : guild.id
       )
     )) as SlashCommandPayload[]
@@ -100,11 +99,11 @@ export class SlashCommandsManager {
     data: SlashCommandPartial,
     guild?: Guild | string
   ): Promise<SlashCommand> {
-    const payload = await this.client.rest.post(
+    const payload = await this.rest.post(
       guild === undefined
-        ? APPLICATION_COMMANDS(this.client.user?.id as string)
+        ? APPLICATION_COMMANDS(this.slash.getID())
         : APPLICATION_GUILD_COMMANDS(
-            this.client.user?.id as string,
+            this.slash.getID(),
             typeof guild === 'string' ? guild : guild.id
           ),
       data
@@ -123,11 +122,11 @@ export class SlashCommandsManager {
     data: SlashCommandPartial,
     guild?: Guild | string
   ): Promise<SlashCommandsManager> {
-    await this.client.rest.patch(
+    await this.rest.patch(
       guild === undefined
-        ? APPLICATION_COMMAND(this.client.user?.id as string, id)
+        ? APPLICATION_COMMAND(this.slash.getID(), id)
         : APPLICATION_GUILD_COMMAND(
-            this.client.user?.id as string,
+            this.slash.getID(),
             typeof guild === 'string' ? guild : guild.id,
             id
           ),
@@ -141,16 +140,30 @@ export class SlashCommandsManager {
     id: string,
     guild?: Guild | string
   ): Promise<SlashCommandsManager> {
-    await this.client.rest.delete(
+    await this.rest.delete(
       guild === undefined
-        ? APPLICATION_COMMAND(this.client.user?.id as string, id)
+        ? APPLICATION_COMMAND(this.slash.getID(), id)
         : APPLICATION_GUILD_COMMAND(
-            this.client.user?.id as string,
+            this.slash.getID(),
             typeof guild === 'string' ? guild : guild.id,
             id
           )
     )
     return this
+  }
+
+  /** Get a Slash Command (global or Guild) */
+  async get(id: string, guild?: Guild | string): Promise<SlashCommand> {
+    const data = await this.rest.get(
+      guild === undefined
+        ? APPLICATION_COMMAND(this.slash.getID(), id)
+        : APPLICATION_GUILD_COMMAND(
+            this.slash.getID(),
+            typeof guild === 'string' ? guild : guild.id,
+            id
+          )
+    )
+    return new SlashCommand(this, data)
   }
 }
 
@@ -163,29 +176,59 @@ export interface SlashCommandHandler {
   handler: SlashCommandHandlerCallback
 }
 
+export interface SlashOptions {
+  id?: string | (() => string)
+  client?: Client
+  enabled?: boolean
+  token?: string
+  rest?: RESTManager
+}
+
 export class SlashClient {
-  client: Client
+  id: string | (() => string)
+  client?: Client
+  token?: string
   enabled: boolean = true
   commands: SlashCommandsManager
   handlers: SlashCommandHandler[] = []
+  rest: RESTManager
 
-  constructor(client: Client, options?: SlashOptions) {
-    this.client = client
-    this.commands = new SlashCommandsManager(client)
+  constructor(options: SlashOptions) {
+    let id = options.id
+    if (options.token !== undefined) id = atob(options.token?.split('.')[0])
+    if (id === undefined)
+      throw new Error('ID could not be found. Pass at least client or token')
+    this.id = id
+    this.client = options.client
+    this.token = options.token
+    this.commands = new SlashCommandsManager(this)
 
     if (options !== undefined) {
       this.enabled = options.enabled ?? true
     }
 
-    if (this.client._decoratedSlash !== undefined) {
+    if (this.client?._decoratedSlash !== undefined) {
       this.client._decoratedSlash.forEach((e) => {
         this.handlers.push(e)
       })
     }
 
-    this.client.on('interactionCreate', (interaction) =>
+    this.rest =
+      options.client === undefined
+        ? options.rest === undefined
+          ? new RESTManager({
+              token: this.token
+            })
+          : options.rest
+        : options.client.rest
+
+    this.client?.on('interactionCreate', (interaction) =>
       this._process(interaction)
     )
+  }
+
+  getID(): string {
+    return typeof this.id === 'string' ? this.id : this.id()
   }
 
   /** Adds a new Slash Command Handler */

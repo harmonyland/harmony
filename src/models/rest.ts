@@ -1,5 +1,4 @@
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
-import { Client } from './client.ts'
 import { Collection } from '../utils/collection.ts'
 
 export type RequestMethods =
@@ -94,8 +93,14 @@ export const builder = (rest: RESTManager, acum = '/'): APIMap => {
   return (proxy as unknown) as APIMap
 }
 
+export interface RESTOptions {
+  token?: string
+  headers?: { [name: string]: string | undefined }
+  canary?: boolean
+}
+
 export class RESTManager {
-  client?: Client
+  client?: RESTOptions
   queues: { [key: string]: QueuedItem[] } = {}
   rateLimits = new Collection<string, RateLimit>()
   globalRateLimit: boolean = false
@@ -103,7 +108,7 @@ export class RESTManager {
   version: number = 8
   api: APIMap
 
-  constructor(client?: Client) {
+  constructor(client?: RESTOptions) {
     this.client = client
     this.api = builder(this)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -206,9 +211,15 @@ export class RESTManager {
       form.append('file', body.file.blob, body.file.name)
       form.append('payload_json', JSON.stringify({ ...body, file: undefined }))
       body.file = form
-    } else if (body !== undefined && !['get', 'delete'].includes(method)) {
+    } else if (
+      body !== undefined &&
+      !['get', 'delete'].includes(method.toLowerCase())
+    ) {
       headers['Content-Type'] = 'application/json'
     }
+
+    if (this.client?.headers !== undefined)
+      Object.assign(headers, this.client.headers)
 
     const data: { [name: string]: any } = {
       headers,
