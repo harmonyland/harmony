@@ -16,6 +16,7 @@ import { SlashClient } from './slashClient.ts'
 import { Interaction } from '../structures/slash.ts'
 import { SlashModule } from './slashModule.ts'
 import type { ShardManager } from './shard.ts'
+import { Application } from '../structures/application.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -26,6 +27,8 @@ export interface ClientProperties {
 
 /** Some Client Options to modify behaviour */
 export interface ClientOptions {
+  /** ID of the Client/Application to initialize Slash Client REST */
+  id?: string
   /** Token of the Bot/User */
   token?: string
   /** Gateway Intents */
@@ -100,6 +103,7 @@ export class Client extends EventEmitter {
   }>
 
   _decoratedSlashModules?: SlashModule[]
+  _id?: string
 
   private readonly _untypedOn = this.on
 
@@ -120,6 +124,7 @@ export class Client extends EventEmitter {
 
   constructor(options: ClientOptions = {}) {
     super()
+    this._id = options.id
     this.token = options.token
     this.intents = options.intents
     this.forceNewSession = options.forceNewSession
@@ -156,7 +161,9 @@ export class Client extends EventEmitter {
           }
         : options.clientProperties
 
-    this.slash = new SlashClient(this, {
+    this.slash = new SlashClient({
+      id: () => this.getEstimatedID(),
+      client: this,
       enabled: options.enableSlash
     })
   }
@@ -185,8 +192,24 @@ export class Client extends EventEmitter {
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
-  // TODO(DjDeveloperr): Implement this
-  // fetchApplication(): Promise<Application>
+  getEstimatedID(): string {
+    if (this.user !== undefined) return this.user.id
+    else if (this.token !== undefined) {
+      try {
+        return atob(this.token.split('.')[0])
+      } catch (e) {
+        return this._id ?? 'unknown'
+      }
+    } else {
+      return this._id ?? 'unknown'
+    }
+  }
+
+  /** Fetch Application of the Client */
+  async fetchApplication(): Promise<Application> {
+    const app = await this.rest.api.oauth2.applications['@me'].get()
+    return new Application(this, app)
+  }
 
   /**
    * This function is used for connecting to discord.

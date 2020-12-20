@@ -60,12 +60,12 @@ class MyClient extends CommandClient {
   }
 
   @subslash('cmd', 'sub-cmd-no-grp')
-  subCmdNoGrp(d: Interaction): void {
+  subCmdNoGroup(d: Interaction): void {
     d.respond({ content: 'sub-cmd-no-group worked' })
   }
 
   @groupslash('cmd', 'sub-cmd-group', 'sub-cmd')
-  subCmdGrp(d: Interaction): void {
+  subCmdGroup(d: Interaction): void {
     d.respond({ content: 'sub-cmd-group worked' })
   }
 
@@ -75,13 +75,22 @@ class MyClient extends CommandClient {
   }
 
   @event()
+  raw(evt: string, d: any): void {
+    if (!evt.startsWith('APPLICATION')) return
+    console.log(evt, d)
+  }
+
+  @event()
   ready(): void {
     console.log(`Logged in as ${this.user?.tag}!`)
     this.manager.init(this.user?.id as string)
+    this.slash.commands.all().then(console.log)
+
+    // this.rest.api.users['422957901716652033'].get().then(console.log)
     // client.slash.commands.create(
     //   {
     //     name: 'cmd',
-    //     description: 'Parent command',
+    //     description: 'Parent command!',
     //     options: [
     //       {
     //         name: 'sub-cmd-group',
@@ -121,6 +130,7 @@ class MyClient extends CommandClient {
     //   },
     //   '783319033205751809'
     // )
+    // client.slash.commands.delete('788719077329207296', '783319033205751809')
   }
 }
 
@@ -166,7 +176,7 @@ class VCExtension extends Extension {
 
     await player.play(track)
 
-    ctx.channel.send(`Now playing ${info.title}!`)
+    ctx.channel.send(`Now playing ${info.title}!\nDebug Track: ${track}`)
   }
 
   @command()

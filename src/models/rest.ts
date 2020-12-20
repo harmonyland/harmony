@@ -1,5 +1,4 @@
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
-import { Client } from './client.ts'
 import { Collection } from '../utils/collection.ts'
 
 export type RequestMethods =
@@ -51,15 +50,67 @@ export interface RateLimit {
   bucket: string | null
 }
 
+const METHODS = ['get', 'post', 'patch', 'put', 'delete', 'head']
+
+export type MethodFunction = (
+  body?: unknown,
+  maxRetries?: number,
+  bucket?: string | null,
+  rawResponse?: boolean
+) => Promise<any>
+
+export interface APIMap extends MethodFunction {
+  get: APIMap
+  post: APIMap
+  patch: APIMap
+  put: APIMap
+  delete: APIMap
+  head: APIMap
+  [name: string]: APIMap
+}
+
+export const builder = (rest: RESTManager, acum = '/'): APIMap => {
+  const routes = {}
+  const proxy = new Proxy(routes, {
+    get: (_, p, __) => {
+      if (p === 'toString') return () => acum
+      if (METHODS.includes(String(p))) {
+        const method = ((rest as unknown) as {
+          [name: string]: MethodFunction
+        })[String(p)]
+        return async (...args: any[]) =>
+          await method.bind(rest)(
+            `${baseEndpoints.DISCORD_API_URL}/v${rest.version}${acum.substring(
+              0,
+              acum.length - 1
+            )}`,
+            ...args
+          )
+      }
+      return builder(rest, acum + String(p) + '/')
+    }
+  })
+  return (proxy as unknown) as APIMap
+}
+
+export interface RESTOptions {
+  token?: string
+  headers?: { [name: string]: string | undefined }
+  canary?: boolean
+}
+
 export class RESTManager {
-  client?: Client
+  client?: RESTOptions
   queues: { [key: string]: QueuedItem[] } = {}
   rateLimits = new Collection<string, RateLimit>()
   globalRateLimit: boolean = false
   processing: boolean = false
+  version: number = 8
+  api: APIMap
 
-  constructor(client?: Client) {
+  constructor(client?: RESTOptions) {
     this.client = client
+    this.api = builder(this)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
   }
@@ -160,9 +211,15 @@ export class RESTManager {
       form.append('file', body.file.blob, body.file.name)
       form.append('payload_json', JSON.stringify({ ...body, file: undefined }))
       body.file = form
-    } else if (body !== undefined && !['get', 'delete'].includes(method)) {
+    } else if (
+      body !== undefined &&
+      !['get', 'delete'].includes(method.toLowerCase())
+    ) {
       headers['Content-Type'] = 'application/json'
     }
+
+    if (this.client?.headers !== undefined)
+      Object.assign(headers, this.client.headers)
 
     const data: { [name: string]: any } = {
       headers,
