@@ -51,15 +51,61 @@ export interface RateLimit {
   bucket: string | null
 }
 
+const METHODS = ['get', 'post', 'patch', 'put', 'delete', 'head']
+
+export type MethodFunction = (
+  body?: unknown,
+  maxRetries?: number,
+  bucket?: string | null,
+  rawResponse?: boolean
+) => Promise<any>
+
+export interface APIMap extends MethodFunction {
+  get: APIMap
+  post: APIMap
+  patch: APIMap
+  put: APIMap
+  delete: APIMap
+  head: APIMap
+  [name: string]: APIMap
+}
+
+export const builder = (rest: RESTManager, acum = '/'): APIMap => {
+  const routes = {}
+  const proxy = new Proxy(routes, {
+    get: (_, p, __) => {
+      if (p === 'toString') return () => acum
+      if (METHODS.includes(String(p))) {
+        const method = ((rest as unknown) as {
+          [name: string]: MethodFunction
+        })[String(p)]
+        return async (...args: any[]) =>
+          await method.bind(rest)(
+            `${baseEndpoints.DISCORD_API_URL}/v${rest.version}${acum.substring(
+              0,
+              acum.length - 1
+            )}`,
+            ...args
+          )
+      }
+      return builder(rest, acum + String(p) + '/')
+    }
+  })
+  return (proxy as unknown) as APIMap
+}
+
 export class RESTManager {
   client?: Client
   queues: { [key: string]: QueuedItem[] } = {}
   rateLimits = new Collection<string, RateLimit>()
   globalRateLimit: boolean = false
   processing: boolean = false
+  version: number = 8
+  api: APIMap
 
   constructor(client?: Client) {
     this.client = client
+    this.api = builder(this)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
   }

@@ -7,7 +7,8 @@ import {
   groupslash,
   CommandContext,
   Extension,
-  Collection
+  Collection,
+  SlashCommandOptionType
 } from '../../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
@@ -60,12 +61,12 @@ class MyClient extends CommandClient {
   }
 
   @subslash('cmd', 'sub-cmd-no-grp')
-  subCmdNoGrp(d: Interaction): void {
+  subCmdNoGroup(d: Interaction): void {
     d.respond({ content: 'sub-cmd-no-group worked' })
   }
 
   @groupslash('cmd', 'sub-cmd-group', 'sub-cmd')
-  subCmdGrp(d: Interaction): void {
+  subCmdGroup(d: Interaction): void {
     d.respond({ content: 'sub-cmd-group worked' })
   }
 
@@ -75,52 +76,61 @@ class MyClient extends CommandClient {
   }
 
   @event()
+  raw(evt: string, d: any): void {
+    if (!evt.startsWith('APPLICATION')) return
+    console.log(evt, d)
+  }
+
+  @event()
   ready(): void {
     console.log(`Logged in as ${this.user?.tag}!`)
     this.manager.init(this.user?.id as string)
-    // client.slash.commands.create(
-    //   {
-    //     name: 'cmd',
-    //     description: 'Parent command',
-    //     options: [
-    //       {
-    //         name: 'sub-cmd-group',
-    //         type: SlashCommandOptionType.SUB_COMMAND_GROUP,
-    //         description: 'Sub Cmd Group',
-    //         options: [
-    //           {
-    //             name: 'sub-cmd',
-    //             type: SlashCommandOptionType.SUB_COMMAND,
-    //             description: 'Sub Cmd'
-    //           }
-    //         ]
-    //       },
-    //       {
-    //         name: 'sub-cmd-no-grp',
-    //         type: SlashCommandOptionType.SUB_COMMAND,
-    //         description: 'Sub Cmd'
-    //       },
-    //       {
-    //         name: 'sub-cmd-grp-2',
-    //         type: SlashCommandOptionType.SUB_COMMAND_GROUP,
-    //         description: 'Sub Cmd Group 2',
-    //         options: [
-    //           {
-    //             name: 'sub-cmd-1',
-    //             type: SlashCommandOptionType.SUB_COMMAND,
-    //             description: 'Sub Cmd 1'
-    //           },
-    //           {
-    //             name: 'sub-cmd-2',
-    //             type: SlashCommandOptionType.SUB_COMMAND,
-    //             description: 'Sub Cmd 2'
-    //           }
-    //         ]
-    //       }
-    //     ]
-    //   },
-    //   '783319033205751809'
-    // )
+
+    // this.rest.api.users['422957901716652033'].get().then(console.log)
+    client.slash.commands.create(
+      {
+        name: 'cmd',
+        description: 'Parent command!',
+        options: [
+          {
+            name: 'sub-cmd-group',
+            type: SlashCommandOptionType.SUB_COMMAND_GROUP,
+            description: 'Sub Cmd Group',
+            options: [
+              {
+                name: 'sub-cmd',
+                type: SlashCommandOptionType.SUB_COMMAND,
+                description: 'Sub Cmd'
+              }
+            ]
+          },
+          {
+            name: 'sub-cmd-no-grp',
+            type: SlashCommandOptionType.SUB_COMMAND,
+            description: 'Sub Cmd'
+          },
+          {
+            name: 'sub-cmd-grp-2',
+            type: SlashCommandOptionType.SUB_COMMAND_GROUP,
+            description: 'Sub Cmd Group 2',
+            options: [
+              {
+                name: 'sub-cmd-1',
+                type: SlashCommandOptionType.SUB_COMMAND,
+                description: 'Sub Cmd 1'
+              },
+              {
+                name: 'sub-cmd-2',
+                type: SlashCommandOptionType.SUB_COMMAND,
+                description: 'Sub Cmd 2'
+              }
+            ]
+          }
+        ]
+      },
+      '783319033205751809'
+    )
+    // client.slash.commands.delete('788719077329207296', '783319033205751809')
   }
 }
 
@@ -166,7 +176,7 @@ class VCExtension extends Extension {
 
     await player.play(track)
 
-    ctx.channel.send(`Now playing ${info.title}!`)
+    ctx.channel.send(`Now playing ${info.title}!\nDebug Track: ${track}`)
   }
 
   @command()
