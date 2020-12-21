@@ -205,6 +205,10 @@ class VCExtension extends Extension {
 
 const client = new MyClient()
 
+client.on('raw', (e, d) => {
+  if (e === 'READY') console.log(d)
+})
+
 client.extensions.load(VCExtension)
 
 client.connect(TOKEN, Intents.None)

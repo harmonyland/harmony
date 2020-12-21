@@ -1,14 +1,10 @@
 import { Guild } from '../structures/guild.ts'
 import { Interaction } from '../structures/slash.ts'
 import {
-  APPLICATION_COMMAND,
-  APPLICATION_COMMANDS,
-  APPLICATION_GUILD_COMMAND,
-  APPLICATION_GUILD_COMMANDS
-} from '../types/endpoint.ts'
-import {
   InteractionType,
+  SlashCommandChoice,
   SlashCommandOption,
+  SlashCommandOptionType,
   SlashCommandPartial,
   SlashCommandPayload
 } from '../types/slash.ts'
@@ -43,6 +39,147 @@ export class SlashCommand {
   }
 }
 
+export interface CreateOptions {
+  name: string
+  description?: string
+  options?: Array<SlashCommandOption | SlashOptionCallable>
+  choices?: Array<SlashCommandChoice | string>
+}
+
+function createSlashOption(
+  type: SlashCommandOptionType,
+  data: CreateOptions
+): SlashCommandOption {
+  return {
+    name: data.name,
+    type,
+    description:
+      type === 0 || type === 1
+        ? undefined
+        : data.description ?? 'No description.',
+    options: data.options?.map((e) =>
+      typeof e === 'function' ? e(SlashOptionCallableBuilder) : e
+    ),
+    choices:
+      data.choices === undefined
+        ? undefined
+        : data.choices.map((e) =>
+            typeof e === 'string' ? { name: e, value: e } : e
+          )
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+export class SlashOptionCallableBuilder {
+  static string(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.STRING, data)
+  }
+
+  static bool(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.BOOLEAN, data)
+  }
+
+  static subCommand(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.SUB_COMMAND, data)
+  }
+
+  static subCommandGroup(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.SUB_COMMAND_GROUP, data)
+  }
+
+  static role(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.ROLE, data)
+  }
+
+  static channel(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.CHANNEL, data)
+  }
+
+  static user(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.USER, data)
+  }
+
+  static number(data: CreateOptions): SlashCommandOption {
+    return createSlashOption(SlashCommandOptionType.INTEGER, data)
+  }
+}
+
+export type SlashOptionCallable = (
+  o: typeof SlashOptionCallableBuilder
+) => SlashCommandOption
+
+export type SlashBuilderOptionsData =
+  | Array<SlashCommandOption | SlashOptionCallable>
+  | {
+      [name: string]:
+        | {
+            description: string
+            type: SlashCommandOptionType
+            options?: SlashCommandOption[]
+            choices?: SlashCommandChoice[]
+          }
+        | SlashOptionCallable
+    }
+
+function buildOptionsArray(
+  options: SlashBuilderOptionsData
+): SlashCommandOption[] {
+  return Array.isArray(options)
+    ? options.map((op) =>
+        typeof op === 'function' ? op(SlashOptionCallableBuilder) : op
+      )
+    : Object.entries(options).map((entry) =>
+        typeof entry[1] === 'function'
+          ? entry[1](SlashOptionCallableBuilder)
+          : Object.assign(entry[1], { name: entry[0] })
+      )
+}
+
+export class SlashBuilder {
+  data: SlashCommandPartial
+
+  constructor(
+    name?: string,
+    description?: string,
+    options?: SlashBuilderOptionsData
+  ) {
+    this.data = {
+      name: name ?? '',
+      description: description ?? 'No description.',
+      options: options === undefined ? [] : buildOptionsArray(options)
+    }
+  }
+
+  name(name: string): SlashBuilder {
+    this.data.name = name
+    return this
+  }
+
+  description(desc: string): SlashBuilder {
+    this.data.description = desc
+    return this
+  }
+
+  option(option: SlashOptionCallable | SlashCommandOption): SlashBuilder {
+    if (this.data.options === undefined) this.data.options = []
+    this.data.options.push(
+      typeof option === 'function' ? option(SlashOptionCallableBuilder) : option
+    )
+    return this
+  }
+
+  options(options: SlashBuilderOptionsData): SlashBuilder {
+    this.data.options = buildOptionsArray(options)
+    return this
+  }
+
+  export(): SlashCommandPartial {
+    if (this.data.name === '')
+      throw new Error('Name was not provided in Slash Builder')
+    return this.data
+  }
+}
+
 export class SlashCommandsManager {
   slash: SlashClient
 
@@ -58,9 +195,9 @@ export class SlashCommandsManager {
   async all(): Promise<Collection<string, SlashCommand>> {
     const col = new Collection<string, SlashCommand>()
 
-    const res = (await this.rest.get(
-      APPLICATION_COMMANDS(this.slash.getID())
-    )) as SlashCommandPayload[]
+    const res = (await this.rest.api.applications[
+      this.slash.getID()
+    ].commands.get()) as SlashCommandPayload[]
     if (!Array.isArray(res)) return col
 
     for (const raw of res) {
@@ -77,12 +214,9 @@ export class SlashCommandsManager {
   ): Promise<Collection<string, SlashCommand>> {
     const col = new Collection<string, SlashCommand>()
 
-    const res = (await this.rest.get(
-      APPLICATION_GUILD_COMMANDS(
-        this.slash.getID(),
-        typeof guild === 'string' ? guild : guild.id
-      )
-    )) as SlashCommandPayload[]
+    const res = (await this.rest.api.applications[this.slash.getID()].guilds[
+      typeof guild === 'string' ? guild : guild.id
+    ].commands.get()) as SlashCommandPayload[]
     if (!Array.isArray(res)) return col
 
     for (const raw of res) {
@@ -99,15 +233,14 @@ export class SlashCommandsManager {
     data: SlashCommandPartial,
     guild?: Guild | string
   ): Promise<SlashCommand> {
-    const payload = await this.rest.post(
+    const route =
       guild === undefined
-        ? APPLICATION_COMMANDS(this.slash.getID())
-        : APPLICATION_GUILD_COMMANDS(
-            this.slash.getID(),
+        ? this.rest.api.applications[this.slash.getID()].commands
+        : this.rest.api.applications[this.slash.getID()].guilds[
             typeof guild === 'string' ? guild : guild.id
-          ),
-      data
-    )
+          ].commands
+
+    const payload = await route.post(data)
 
     const cmd = new SlashCommand(this, payload)
     cmd._guild =
@@ -122,16 +255,14 @@ export class SlashCommandsManager {
     data: SlashCommandPartial,
     guild?: Guild | string
   ): Promise<SlashCommandsManager> {
-    await this.rest.patch(
+    const route =
       guild === undefined
-        ? APPLICATION_COMMAND(this.slash.getID(), id)
-        : APPLICATION_GUILD_COMMAND(
-            this.slash.getID(),
-            typeof guild === 'string' ? guild : guild.id,
-            id
-          ),
-      data
-    )
+        ? this.rest.api.applications[this.slash.getID()].commands[id]
+        : this.rest.api.applications[this.slash.getID()].guilds[
+            typeof guild === 'string' ? guild : guild.id
+          ].commands[id]
+
+    await route.patch(data)
     return this
   }
 
@@ -140,29 +271,28 @@ export class SlashCommandsManager {
     id: string,
     guild?: Guild | string
   ): Promise<SlashCommandsManager> {
-    await this.rest.delete(
+    const route =
       guild === undefined
-        ? APPLICATION_COMMAND(this.slash.getID(), id)
-        : APPLICATION_GUILD_COMMAND(
-            this.slash.getID(),
-            typeof guild === 'string' ? guild : guild.id,
-            id
-          )
-    )
+        ? this.rest.api.applications[this.slash.getID()].commands[id]
+        : this.rest.api.applications[this.slash.getID()].guilds[
+            typeof guild === 'string' ? guild : guild.id
+          ].commands[id]
+
+    await route.delete()
     return this
   }
 
   /** Get a Slash Command (global or Guild) */
   async get(id: string, guild?: Guild | string): Promise<SlashCommand> {
-    const data = await this.rest.get(
+    const route =
       guild === undefined
-        ? APPLICATION_COMMAND(this.slash.getID(), id)
-        : APPLICATION_GUILD_COMMAND(
-            this.slash.getID(),
-            typeof guild === 'string' ? guild : guild.id,
-            id
-          )
-    )
+        ? this.rest.api.applications[this.slash.getID()].commands[id]
+        : this.rest.api.applications[this.slash.getID()].guilds[
+            typeof guild === 'string' ? guild : guild.id
+          ].commands[id]
+
+    const data = await route.get()
+
     return new SlashCommand(this, data)
   }
 }
