@@ -5,7 +5,7 @@ import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import { GuildTextChannel } from '../structures/textChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import {
-  GuildChannelCategoryPayload,
+  GuildCategoryChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload
 } from '../types/channel.ts'
@@ -16,7 +16,7 @@ import { ChannelsManager } from './channels.ts'
 export type GuildChannelPayloads =
   | GuildTextChannelPayload
   | GuildVoiceChannelPayload
-  | GuildChannelCategoryPayload
+  | GuildCategoryChannelPayload
 export type GuildChannel = GuildTextChannel | VoiceChannel | CategoryChannel
 
 export class GuildChannelsManager extends BaseChildManager<

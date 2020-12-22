@@ -6,7 +6,6 @@ export const guildIntegrationsUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: GuildIntegrationsUpdatePayload
 ) => {
-  console.log(d)
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
   if (guild === undefined) return
 

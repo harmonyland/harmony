@@ -92,7 +92,7 @@ export type {
   ChannelPayload,
   FollowedChannel,
   GuildNewsChannelPayload,
-  GuildChannelCategoryPayload,
+  GuildCategoryChannelPayload,
   GuildChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,

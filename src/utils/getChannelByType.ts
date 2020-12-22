@@ -4,7 +4,7 @@ import {
   ChannelTypes,
   DMChannelPayload,
   GroupDMChannelPayload,
-  GuildChannelCategoryPayload,
+  GuildCategoryChannelPayload,
   GuildNewsChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
@@ -41,7 +41,7 @@ export type EveryChannelTypes =
 
 export type EveryChannelPayloadTypes =
   | ChannelPayload
-  | GuildChannelCategoryPayload
+  | GuildCategoryChannelPayload
   | GuildVoiceChannelPayload
   | EveryTextChannelPayloadTypes
 
@@ -57,7 +57,7 @@ const getChannelByType = (
         throw new Error('No Guild was provided to construct Channel')
       return new CategoryChannel(
         client,
-        data as GuildChannelCategoryPayload,
+        data as GuildCategoryChannelPayload,
         guild
       )
     case ChannelTypes.GUILD_NEWS:
