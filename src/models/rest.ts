@@ -410,6 +410,7 @@ export class RESTManager {
           const query =
             method === 'get' && body !== undefined
               ? Object.entries(body as any)
+                  .filter(([k, v]) => v !== undefined)
                   .map(
                     ([key, value]) =>
                       `${encodeURIComponent(key)}=${encodeURIComponent(

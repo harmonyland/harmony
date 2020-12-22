@@ -7,7 +7,8 @@ import {
   groupslash,
   CommandContext,
   Extension,
-  Collection
+  Collection,
+  GuildTextChannel
 } from '../../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
@@ -67,6 +68,17 @@ class MyClient extends CommandClient {
   @groupslash('cmd', 'sub-cmd-group', 'sub-cmd')
   subCmdGroup(d: Interaction): void {
     d.respond({ content: 'sub-cmd-group worked' })
+  }
+
+  @command()
+  rmrf(ctx: CommandContext): any {
+    if (ctx.author.id !== '422957901716652033') return
+    ;((ctx.channel as any) as GuildTextChannel)
+      .bulkDelete(3)
+      .then((chan) => {
+        ctx.channel.send(`Bulk deleted 2 in ${chan}`)
+      })
+      .catch((e) => ctx.channel.send(`${e.message}`))
   }
 
   @slash()

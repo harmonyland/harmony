@@ -50,7 +50,7 @@ export interface SlashCommandChoice {
   /** (Display) name of the Choice */
   name: string
   /** Actual value to be sent in Interaction */
-  value: string
+  value: any
 }
 
 export enum SlashCommandOptionType {

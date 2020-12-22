@@ -1,36 +1,16 @@
-import { SlashClient, SlashBuilder } from '../models/slashClient.ts'
+import { SlashClient } from '../models/slashClient.ts'
+import { SlashCommandPartial } from '../types/slash.ts'
 import { TOKEN } from './config.ts'
 
-const slash = new SlashClient({ token: TOKEN })
+export const slash = new SlashClient({ token: TOKEN })
 
-slash.commands.all().then(console.log)
+// Cmd objects come here
+const commands: SlashCommandPartial[] = []
 
-const cmd = new SlashBuilder()
-  .name('searchmusic')
-  .description('Search for music.')
-  .option((o) =>
-    o.string({ name: 'query', description: 'Query to search with.' })
-  )
-  .option((o) =>
-    o.string({
-      name: 'engine',
-      description: 'Search engine to use.',
-      choices: [{ name: 'YouTube', value: 'youtube' }, 'Spotify']
-    })
-  )
-  .options({
-    query: {
-      description: 'Query UWU',
-      type: 3
-    },
-    engine: {
-      description: 'Engine UWU',
-      type: 3,
-      choices: [
-        { name: 'YouTube', value: 'youtube' },
-        { name: 'Spotify', value: 'spotify' }
-      ]
-    }
-  })
-
-console.log(JSON.stringify(cmd.export()))
+console.log('Creating...')
+commands.forEach((cmd) => {
+  slash.commands
+    .create(cmd, '!! Your testing guild ID comes here !!')
+    .then((c) => console.log(`Created command ${c.name}!`))
+    .catch((e) => `Failed to create ${cmd.name} - ${e.message}`)
+})

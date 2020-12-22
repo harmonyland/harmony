@@ -3,6 +3,7 @@ import { Client } from '../models/client.ts'
 import {
   GuildTextChannelPayload,
   MessageOption,
+  MessagePayload,
   MessageReference,
   ModifyGuildTextChannelOption,
   ModifyGuildTextChannelPayload,
@@ -14,6 +15,7 @@ import {
   CHANNEL_MESSAGE,
   CHANNEL_MESSAGES
 } from '../types/endpoint.ts'
+import { Collection } from '../utils/collection.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
@@ -124,6 +126,48 @@ export class TextChannel extends Channel {
     await res.mentions.fromPayload(newMsg)
     return res
   }
+
+  /**
+   * Fetch Messages of a Channel
+   * @param options Options to configure fetching Messages
+   */
+  async fetchMessages(options?: {
+    limit?: number
+    around?: Message | string
+    before?: Message | string
+    after?: Message | string
+  }): Promise<Collection<string, Message>> {
+    const res = new Collection<string, Message>()
+    const raws = (await this.client.rest.api.channels[this.id].messages.get({
+      limit: options?.limit ?? 50,
+      around:
+        options?.around === undefined
+          ? undefined
+          : typeof options.around === 'string'
+          ? options.around
+          : options.around.id,
+      before:
+        options?.before === undefined
+          ? undefined
+          : typeof options.before === 'string'
+          ? options.before
+          : options.before.id,
+      after:
+        options?.after === undefined
+          ? undefined
+          : typeof options.after === 'string'
+          ? options.after
+          : options.after.id
+    })) as MessagePayload[]
+
+    for (const raw of raws) {
+      await this.messages.set(raw.id, raw)
+      const msg = ((await this.messages.get(raw.id)) as unknown) as Message
+      res.set(msg.id, msg)
+    }
+
+    return res
+  }
 }
 
 export class GuildTextChannel extends TextChannel {
@@ -184,5 +228,41 @@ export class GuildTextChannel extends TextChannel {
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
 
     return new GuildTextChannel(this.client, resp, this.guild)
+  }
+
+  /**
+   * Bulk Delete Messages in a Guild Text Channel
+   * @param messages Messages to delete. Can be a number, or Array of Message or IDs
+   */
+  async bulkDelete(
+    messages: Array<Message | string> | number
+  ): Promise<GuildTextChannel> {
+    let ids: string[] = []
+
+    if (Array.isArray(messages))
+      ids = messages.map((e) => (typeof e === 'string' ? e : e.id))
+    else {
+      let list = await this.messages.array()
+      if (list.length < messages) list = (await this.fetchMessages()).array()
+      ids = list
+        .sort((b, a) => a.createdAt.getTime() - b.createdAt.getTime())
+        .filter((e, i) => i < messages)
+        .filter(
+          (e) =>
+            new Date().getTime() - e.createdAt.getTime() <=
+            1000 * 60 * 60 * 24 * 14
+        )
+        .map((e) => e.id)
+    }
+
+    ids = [...new Set(ids)]
+    if (ids.length < 2 || ids.length > 100)
+      throw new Error('bulkDelete can only delete messages in range 2-100')
+
+    await this.client.rest.api.channels[this.id].messages['bulk-delete'].post({
+      messages: ids
+    })
+
+    return this
   }
 }
