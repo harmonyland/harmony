@@ -11,6 +11,14 @@ import {
 import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
+import { SlashModule } from './slashModule.ts'
+import { verify as edverify } from 'https://deno.land/x/ed25519/mod.ts'
+import { Buffer } from 'https://deno.land/std@0.80.0/node/buffer.ts'
+import {
+  Request as ORequest,
+  Response as OResponse
+} from 'https://deno.land/x/opine@1.0.0/src/types.ts'
+import { Context } from 'https://deno.land/x/oak@v6.4.0/mod.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -37,6 +45,21 @@ export class SlashCommand {
   async edit(data: SlashCommandPartial): Promise<void> {
     await this.slash.edit(this.id, data, this._guild)
   }
+
+  /** Create a handler for this Slash Command */
+  handle(
+    func: SlashCommandHandlerCallback,
+    options?: { parent?: string; group?: string }
+  ): SlashCommand {
+    this.slash.slash.handle({
+      name: this.name,
+      parent: options?.parent,
+      group: options?.group,
+      guild: this._guild,
+      handler: func
+    })
+    return this
+  }
 }
 
 export interface CreateOptions {
@@ -58,7 +81,7 @@ function createSlashOption(
         ? undefined
         : data.description ?? 'No description.',
     options: data.options?.map((e) =>
-      typeof e === 'function' ? e(SlashOptionCallableBuilder) : e
+      typeof e === 'function' ? e(SlashOption) : e
     ),
     choices:
       data.choices === undefined
@@ -70,7 +93,7 @@ function createSlashOption(
 }
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class SlashOptionCallableBuilder {
+export class SlashOption {
   static string(data: CreateOptions): SlashCommandOption {
     return createSlashOption(SlashCommandOptionType.STRING, data)
   }
@@ -104,9 +127,7 @@ export class SlashOptionCallableBuilder {
   }
 }
 
-export type SlashOptionCallable = (
-  o: typeof SlashOptionCallableBuilder
-) => SlashCommandOption
+export type SlashOptionCallable = (o: typeof SlashOption) => SlashCommandOption
 
 export type SlashBuilderOptionsData =
   | Array<SlashCommandOption | SlashOptionCallable>
@@ -125,12 +146,10 @@ function buildOptionsArray(
   options: SlashBuilderOptionsData
 ): SlashCommandOption[] {
   return Array.isArray(options)
-    ? options.map((op) =>
-        typeof op === 'function' ? op(SlashOptionCallableBuilder) : op
-      )
+    ? options.map((op) => (typeof op === 'function' ? op(SlashOption) : op))
     : Object.entries(options).map((entry) =>
         typeof entry[1] === 'function'
-          ? entry[1](SlashOptionCallableBuilder)
+          ? entry[1](SlashOption)
           : Object.assign(entry[1], { name: entry[0] })
       )
 }
@@ -163,7 +182,7 @@ export class SlashBuilder {
   option(option: SlashOptionCallable | SlashCommandOption): SlashBuilder {
     if (this.data.options === undefined) this.data.options = []
     this.data.options.push(
-      typeof option === 'function' ? option(SlashOptionCallableBuilder) : option
+      typeof option === 'function' ? option(SlashOption) : option
     )
     return this
   }
@@ -312,6 +331,7 @@ export interface SlashOptions {
   enabled?: boolean
   token?: string
   rest?: RESTManager
+  publicKey?: string
 }
 
 export class SlashClient {
@@ -322,6 +342,18 @@ export class SlashClient {
   commands: SlashCommandsManager
   handlers: SlashCommandHandler[] = []
   rest: RESTManager
+  modules: SlashModule[] = []
+  publicKey?: string
+
+  _decoratedSlash?: Array<{
+    name: string
+    guild?: string
+    parent?: string
+    group?: string
+    handler: (interaction: Interaction) => any
+  }>
+
+  _decoratedSlashModules?: SlashModule[]
 
   constructor(options: SlashOptions) {
     let id = options.id
@@ -332,6 +364,7 @@ export class SlashClient {
     this.client = options.client
     this.token = options.token
     this.commands = new SlashCommandsManager(this)
+    this.publicKey = options.publicKey
 
     if (options !== undefined) {
       this.enabled = options.enabled ?? true
@@ -340,6 +373,24 @@ export class SlashClient {
     if (this.client?._decoratedSlash !== undefined) {
       this.client._decoratedSlash.forEach((e) => {
         this.handlers.push(e)
+      })
+    }
+
+    if (this.client?._decoratedSlashModules !== undefined) {
+      this.client._decoratedSlashModules.forEach((e) => {
+        this.modules.push(e)
+      })
+    }
+
+    if (this._decoratedSlash !== undefined) {
+      this._decoratedSlash.forEach((e) => {
+        this.handlers.push(e)
+      })
+    }
+
+    if (this._decoratedSlashModules !== undefined) {
+      this._decoratedSlashModules.forEach((e) => {
+        this.modules.push(e)
       })
     }
 
@@ -367,8 +418,16 @@ export class SlashClient {
     return this
   }
 
+  getHandlers(): SlashCommandHandler[] {
+    let res = this.handlers
+    for (const mod of this.modules) {
+      res = [...res, ...mod.commands]
+    }
+    return res
+  }
+
   private _getCommand(i: Interaction): SlashCommandHandler | undefined {
-    return this.handlers.find((e) => {
+    return this.getHandlers().find((e) => {
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
@@ -400,5 +459,79 @@ export class SlashClient {
     if (cmd === undefined) return
 
     cmd.handler(interaction)
+  }
+
+  async verifyKey(
+    rawBody: string | Uint8Array | Buffer,
+    signature: string,
+    timestamp: string
+  ): Promise<boolean> {
+    if (this.publicKey === undefined)
+      throw new Error('Public Key is not present')
+    return edverify(
+      signature,
+      Buffer.concat([
+        Buffer.from(timestamp, 'utf-8'),
+        Buffer.from(
+          rawBody instanceof Uint8Array
+            ? new TextDecoder().decode(rawBody)
+            : rawBody
+        )
+      ]),
+      this.publicKey
+    ).catch(() => false)
+  }
+
+  async verifyOpineRequest(req: ORequest): Promise<boolean> {
+    const signature = req.headers.get('x-signature-ed25519')
+    const timestamp = req.headers.get('x-signature-timestamp')
+    const contentLength = req.headers.get('content-length')
+
+    if (signature === null || timestamp === null || contentLength === null)
+      return false
+
+    const body = new Uint8Array(parseInt(contentLength))
+    await req.body.read(body)
+
+    const verified = await this.verifyKey(body, signature, timestamp)
+    if (!verified) return false
+
+    return true
+  }
+
+  /** Middleware to verify request in Opine framework. */
+  async verifyOpineMiddleware(
+    req: ORequest,
+    res: OResponse,
+    next: CallableFunction
+  ): Promise<any> {
+    const verified = await this.verifyOpineRequest(req)
+    if (!verified) return res.setStatus(401).end()
+
+    await next()
+    return true
+  }
+
+  // TODO: create verifyOakMiddleware too
+  /** Method to verify Request from Oak server "Context". */
+  async verifyOakRequest(ctx: Context): Promise<any> {
+    const signature = ctx.request.headers.get('x-signature-ed25519')
+    const timestamp = ctx.request.headers.get('x-signature-timestamp')
+    const contentLength = ctx.request.headers.get('content-length')
+
+    if (
+      signature === null ||
+      timestamp === null ||
+      contentLength === null ||
+      ctx.request.hasBody !== true
+    ) {
+      return false
+    }
+
+    const body = await ctx.request.body().value
+
+    const verified = await this.verifyKey(body as any, signature, timestamp)
+    if (!verified) return false
+    return true
   }
 }

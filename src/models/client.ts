@@ -288,7 +288,7 @@ export function groupslash(
   name?: string,
   guild?: string
 ) {
-  return function (client: Client | SlashModule, prop: string) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
