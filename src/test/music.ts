@@ -218,9 +218,9 @@ class VCExtension extends Extension {
 const client = new MyClient()
 
 client.on('raw', (e, d) => {
-  if (e === 'READY') console.log(d)
+  if (e === 'GUILD_MEMBER_ADD' || e === 'GUILD_MEMBER_UPDATE') console.log(e, d)
 })
 
 client.extensions.load(VCExtension)
 
-client.connect(TOKEN, Intents.None)
+client.connect(TOKEN, Intents.All)

@@ -418,10 +418,22 @@ export class SlashClient {
     return this
   }
 
+  loadModule(module: SlashModule): SlashClient {
+    this.modules.push(module)
+    return this
+  }
+
   getHandlers(): SlashCommandHandler[] {
     let res = this.handlers
     for (const mod of this.modules) {
-      res = [...res, ...mod.commands]
+      if (mod === undefined) continue
+      res = [
+        ...res,
+        ...mod.commands.map((cmd) => {
+          cmd.handler = cmd.handler.bind(mod)
+          return cmd
+        })
+      ]
     }
     return res
   }
