@@ -12,10 +12,12 @@ import {
 import {
   CHANNEL,
   CHANNEL_MESSAGE,
-  CHANNEL_MESSAGES
+  CHANNEL_MESSAGES,
+  MESSAGE_REACTION_ME
 } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
+import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
 import { Message } from './message.ts'
 
@@ -123,6 +125,42 @@ export class TextChannel extends Channel {
     const res = new Message(this.client, newMsg, this, this.client.user)
     await res.mentions.fromPayload(newMsg)
     return res
+  }
+
+  async addReaction(
+    message: Message | string,
+    emoji: Emoji | string
+  ): Promise<void> {
+    if (emoji instanceof Emoji) {
+      emoji = emoji.getEmojiString
+    }
+    if (message instanceof Message) {
+      message = message.id
+    }
+
+    const encodedEmoji = encodeURI(emoji)
+
+    await this.client.rest.put(
+      MESSAGE_REACTION_ME(this.id, message, encodedEmoji)
+    )
+  }
+
+  async removeReaction(
+    message: Message | string,
+    emoji: Emoji | string
+  ): Promise<void> {
+    if (emoji instanceof Emoji) {
+      emoji = emoji.getEmojiString
+    }
+    if (message instanceof Message) {
+      message = message.id
+    }
+
+    const encodedEmoji = encodeURI(emoji)
+
+    await this.client.rest.delete(
+      MESSAGE_REACTION_ME(this.id, message, encodedEmoji)
+    )
   }
 }
 
