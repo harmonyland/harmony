@@ -29,15 +29,16 @@ export const messageReactionAdd: GatewayEventHandler = async (
     } else return
   }
 
-  let reaction = await message.reactions.get(d.emoji.id)
+  const emojiID = d.emoji.id !== null ? d.emoji.id : d.emoji.name
+  let reaction = await message.reactions.get(emojiID)
   if (reaction === undefined) {
-    await message.reactions.set(d.emoji.id, {
+    await message.reactions.set(emojiID, {
       count: 1,
       emoji: d.emoji,
       me: d.user_id === gateway.client.user?.id
     })
     reaction = ((await message.reactions.get(
-      d.emoji.id
+      emojiID
     )) as unknown) as MessageReaction
   }
 
