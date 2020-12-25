@@ -46,29 +46,30 @@ export class TextChannel extends Channel {
 
   /**
    *
-   * @param text Text content of the Message to send.
+   * @param content Text content of the Message to send.
    * @param option Various other Message options.
    * @param reply Reference to a Message object to reply-to.
    */
   async send(
-    text?: string | AllMessageOptions,
+    content?: string | AllMessageOptions,
     option?: AllMessageOptions,
     reply?: Message
   ): Promise<Message> {
-    if (typeof text === 'object') {
-      option = text
-      text = undefined
+    if (typeof content === 'object') {
+      option = content
+      content = undefined
     }
-    if (text === undefined && option === undefined) {
+    if (content === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
     }
-    if (option instanceof Embed)
+    if (option instanceof Embed) {
       option = {
         embed: option
       }
+    }
 
     const payload: any = {
-      content: text,
+      content: content,
       embed: option?.embed,
       file: option?.file,
       tts: option?.tts,
