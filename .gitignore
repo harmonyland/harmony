@@ -108,10 +108,10 @@ package-lock.json
 yarn.lock
 
 # PRIVACY XDDDD
-src/test/config.ts
+test/config.ts
 .vscode
 
 # macOS is shit xD
 **/.DS_Store
 
-src/test/music.mp3
+test/music.mp3
