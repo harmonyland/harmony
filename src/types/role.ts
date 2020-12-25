@@ -7,4 +7,14 @@ export interface RolePayload {
   permissions: string
   managed: boolean
   mentionable: boolean
+  tags: RoleTagsPayload | null
+}
+
+export interface RoleTagsPayload {
+  /** The id of the bot who has this role */
+  bot_id?: string
+  /** Whether this is the premium subscriber role for this guild */
+  premium_subscriber?: null
+  /** The id of the integration this role belongs to */
+  integration_id?: string
 }

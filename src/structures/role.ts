@@ -12,14 +12,7 @@ export class Role extends Base {
   permissions: Permissions
   managed: boolean
   mentionable: boolean
-
-  get mention(): string {
-    return `<@&${this.id}>`
-  }
-
-  toString(): string {
-    return this.mention
-  }
+  tags?: RoleTags
 
   constructor(client: Client, data: RolePayload) {
     super(client, data)
@@ -31,6 +24,14 @@ export class Role extends Base {
     this.permissions = new Permissions(data.permissions)
     this.managed = data.managed
     this.mentionable = data.mentionable
+    this.tags =
+      data.tags !== null
+        ? {
+            botID: data.tags?.bot_id,
+            integrationID: data.tags?.integration_id,
+            premiumSubscriber: 'premium_subscriber' in (data.tags ?? {})
+          }
+        : undefined
   }
 
   readFromData(data: RolePayload): void {
@@ -45,4 +46,13 @@ export class Role extends Base {
     this.managed = data.managed ?? this.managed
     this.mentionable = data.mentionable ?? this.mentionable
   }
+}
+
+export interface RoleTags {
+  /** The id of the bot who has this role */
+  botID?: string
+  /** Whether this is the premium subscriber role for this guild */
+  premiumSubscriber: boolean
+  /** The id of the integration this role belongs to */
+  integrationID?: string
 }
