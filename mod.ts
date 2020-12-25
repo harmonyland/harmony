@@ -66,7 +66,7 @@ export {
   ActivityTypes
 } from './src/structures/presence.ts'
 export { Role } from './src/structures/role.ts'
-export { Snowflake } from './src/structures/snowflake.ts'
+export { Snowflake } from './src/utils/snowflake.ts'
 export { TextChannel, GuildTextChannel } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
 export { User } from './src/structures/user.ts'
