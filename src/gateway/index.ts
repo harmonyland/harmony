@@ -177,12 +177,12 @@ export class Gateway extends EventEmitter {
     }
   }
 
-  private async onclose(event: CloseEvent): Promise<void> {
-    if (event.reason === RECONNECT_REASON) return
-    this.emit('close', event.code, event.reason)
-    this.debug(`Connection Closed with code: ${event.code}`)
+  private async onclose({ reason, code }: CloseEvent): Promise<void> {
+    if (reason === RECONNECT_REASON) return
+    this.emit('close', code, reason)
+    this.debug(`Connection Closed with code: ${code}`)
 
-    switch (event.code) {
+    switch (code) {
       case GatewayCloseCodes.UNKNOWN_ERROR:
         this.debug('API has encountered Unknown Error. Reconnecting...')
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
