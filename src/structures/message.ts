@@ -135,7 +135,10 @@ export class Message extends Base {
     return this.channel.addReaction(this, emoji)
   }
 
-  async removeReaction(emoji: string | Emoji): Promise<void> {
-    return this.channel.removeReaction(this, emoji)
+  async removeReaction(
+    emoji: string | Emoji,
+    user?: User | Member | string
+  ): Promise<void> {
+    return this.channel.removeReaction(this, emoji, user)
   }
 }

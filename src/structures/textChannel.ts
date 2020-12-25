@@ -13,13 +13,16 @@ import {
   CHANNEL,
   CHANNEL_MESSAGE,
   CHANNEL_MESSAGES,
-  MESSAGE_REACTION_ME
+  MESSAGE_REACTION_ME,
+  MESSAGE_REACTION_USER
 } from '../types/endpoint.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
+import { Member } from './member.ts'
 import { Message } from './message.ts'
+import { User } from './user.ts'
 
 export type AllMessageOptions = MessageOption | Embed
 
@@ -147,7 +150,8 @@ export class TextChannel extends Channel {
 
   async removeReaction(
     message: Message | string,
-    emoji: Emoji | string
+    emoji: Emoji | string,
+    user?: User | Member | string
   ): Promise<void> {
     if (emoji instanceof Emoji) {
       emoji = emoji.getEmojiString
@@ -155,12 +159,23 @@ export class TextChannel extends Channel {
     if (message instanceof Message) {
       message = message.id
     }
+    if (user !== undefined) {
+      if (typeof user !== 'string') {
+        user = user.id
+      }
+    }
 
     const encodedEmoji = encodeURI(emoji)
 
-    await this.client.rest.delete(
-      MESSAGE_REACTION_ME(this.id, message, encodedEmoji)
-    )
+    if (user === undefined) {
+      await this.client.rest.delete(
+        MESSAGE_REACTION_ME(this.id, message, encodedEmoji)
+      )
+    } else {
+      await this.client.rest.delete(
+        MESSAGE_REACTION_USER(this.id, message, encodedEmoji, user)
+      )
+    }
   }
 }
 
