@@ -1,15 +1,14 @@
 import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
+import { EMOJI } from '../types/endpoint.ts'
 import { Base } from './base.ts'
-import { Guild } from './guild.ts'
 import { User } from './user.ts'
 
 export class Emoji extends Base {
-  id: string
+  id: string | null;
   name: string
   roles?: string[]
   user?: User
-  guild?: Guild
   requireColons?: boolean
   managed?: boolean
   animated?: boolean
@@ -37,6 +36,18 @@ export class Emoji extends Base {
     this.available = data.available
   }
 
+  /** Modify the given emoji. Requires the MANAGE_EMOJIS permission. Returns the updated emoji object on success. Fires a Guild Emojis Update Gateway event. */
+  async edit(guildID: string, data: ModifyGuildEmojiParams) {
+    const res = await this.client.rest.patch(EMOJI(guildID, this.id!));
+    return new Emoji(this.client, res);
+  }
+
+  /** Delete the given emoji. Requires the MANAGE_EMOJIS permission. Returns `true` on success. Fires a Guild Emojis Update Gateway event. */
+  async delete(guildID: string): Promise<boolean> {
+    await this.client.rest.patch(EMOJI(guildID, this.id!));
+    return true;
+  }
+
   readFromData(data: EmojiPayload): void {
     this.id = data.id ?? this.id
     this.name = data.name ?? this.name
@@ -47,4 +58,12 @@ export class Emoji extends Base {
     this.available = data.available ?? this.available
     if (data.user !== undefined) this.user = new User(this.client, data.user)
   }
+}
+
+/** https://discord.com/developers/docs/resources/emoji#modify-guild-emoji-json-params */
+export interface ModifyGuildEmojiParams {
+  /** Name of the emoji */
+  name: string;
+  /** Roles to which this emoji will be whitelisted */
+  roles: string[] | null;
 }

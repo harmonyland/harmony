@@ -1,7 +1,7 @@
 import { UserPayload } from './user.ts'
 
 export interface EmojiPayload {
-  id: string
+  id: string | null
   name: string
   roles?: string[]
   user?: UserPayload
