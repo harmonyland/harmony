@@ -2,7 +2,7 @@ import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
 import { EMOJI } from '../types/endpoint.ts'
 import { Base } from './base.ts'
-import { Guild } from "./guild.ts"
+import { Guild } from './guild.ts'
 import { User } from './user.ts'
 
 export class Emoji extends Base {
@@ -10,7 +10,7 @@ export class Emoji extends Base {
   name: string
   roles?: string[]
   user?: User
-  guild?: Guild;
+  guild?: Guild
   requireColons?: boolean
   managed?: boolean
   animated?: boolean
@@ -40,14 +40,17 @@ export class Emoji extends Base {
 
   /** Modify the given emoji. Requires the MANAGE_EMOJIS permission. Returns the updated emoji object on success. Fires a Guild Emojis Update Gateway event. */
   async edit(data: ModifyGuildEmojiParams) {
-    if (!this.guild) throw new Error("Guild is undefined");
-    const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), data)
+    if (!this.guild) throw new Error('Guild is undefined')
+    const res = await this.client.rest.patch(
+      EMOJI(this.guild.id, this.id),
+      data
+    )
     return new Emoji(this.client, res)
   }
 
   /** Delete the given emoji. Requires the MANAGE_EMOJIS permission. Returns `true` on success. Fires a Guild Emojis Update Gateway event. */
   async delete(): Promise<boolean> {
-    if (!this.guild) throw new Error("Guild is undefined");
+    if (!this.guild) throw new Error('Guild is undefined')
     await this.client.rest.patch(EMOJI(this.guild.id, this.id))
     return true
   }
