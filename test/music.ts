@@ -1,21 +1,9 @@
-import {
-  CommandClient,
-  event,
-  Intents,
-  command,
-  subslash,
-  groupslash,
-  CommandContext,
-  Extension,
-  Collection
-} from '../../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
   Manager,
   Player
 } from 'https://raw.githubusercontent.com/Lavaclient/lavadeno/master/mod.ts'
-import { Interaction } from '../structures/slash.ts'
-import { slash } from '../models/client.ts'
+import { slash, Interaction, CommandClient, event, Intents, command, subslash, groupslash, CommandContext, Extension, Collection } from '../mod.ts'
 // import { SlashCommandOptionType } from '../types/slash.ts'
 
 export const nodes = [

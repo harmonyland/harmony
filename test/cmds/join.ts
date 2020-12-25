@@ -1,5 +1,4 @@
-import { Command } from '../../../mod.ts'
-import { CommandContext } from '../../models/command.ts'
+import { Command, CommandContext } from '../../mod.ts'
 
 export default class JoinCommand extends Command {
   name = 'join'

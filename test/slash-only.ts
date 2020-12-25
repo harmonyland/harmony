@@ -1,4 +1,4 @@
-import { SlashClient } from '../models/slashClient.ts'
+import { SlashClient } from '../mod.ts'
 import { TOKEN } from './config.ts'
 
 const slash = new SlashClient({ token: TOKEN })

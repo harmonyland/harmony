@@ -1,6 +1,4 @@
-import { Client, Intents, event, slash } from '../../mod.ts'
-import { Embed } from '../structures/embed.ts'
-import { Interaction } from '../structures/slash.ts'
+import { Interaction, Embed, Client, Intents, event, slash } from '../mod.ts'
 import { TOKEN } from './config.ts'
 
 export class MyClient extends Client {

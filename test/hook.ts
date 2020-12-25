@@ -1,4 +1,4 @@
-import { Webhook } from '../../mod.ts'
+import { Webhook } from '../mod.ts'
 import { WEBHOOK } from './config.ts'
 
 const webhook = await Webhook.fromURL(WEBHOOK)

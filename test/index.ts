@@ -10,7 +10,7 @@ import {
   EveryChannelTypes,
   ChannelTypes,
   GuildTextChannel
-} from '../../mod.ts'
+} from '../mod.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
