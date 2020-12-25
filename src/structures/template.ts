@@ -6,27 +6,27 @@ import { Guild } from './guild.ts'
 import { User } from './user.ts'
 
 export class Template extends Base {
-  /** the template code (unique ID) */
+  /** The template code (unique ID) */
   code: string
-  /** template name */
+  /** The template name */
   name: string
-  /** the description for the template */
+  /** The description for the template */
   description: string | null
-  /** number of times this template has been used */
+  /** Number of times this template has been used */
   usageCount: number
-  /** the ID of the user who created the template */
+  /** The ID of the user who created the template */
   creatorID: string
-  /** the user who created the template */
+  /** The user who created the template */
   creator: User
-  /** when this template was created (in ms) */
+  /** When this template was created (in ms) */
   createdAt: number
-  /** when this template was last synced to the source guild (in ms) */
+  /** When this template was last synced to the source guild (in ms) */
   updatedAt: number
-  /** the ID of the guild this template is based on */
+  /** The ID of the guild this template is based on */
   sourceGuildID: string
-  /** the guild snapshot this template contains */
+  /** The guild snapshot this template contains */
   serializedSourceGuild: Guild
-  /** whether the template has unsynced changes */
+  /** Whether the template has unsynced changes */
   isDirty: boolean | null
 
   constructor(client: Client, data: TemplatePayload) {
