@@ -5,7 +5,7 @@ import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
 import { Extension } from './extensions.ts'
-import { parse } from 'https://deno.land/x/mutil@0.1.2/mod.ts'
+import { parse } from '../../deps.ts'
 
 export interface CommandContext {
   /** The Client object */

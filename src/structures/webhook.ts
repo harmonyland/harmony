@@ -11,7 +11,7 @@ import { Embed } from './embed.ts'
 import { Message } from './message.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
-import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
+import { fetchAuto } from '../../deps.ts'
 import { WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 
 export interface WebhookMessageOptions extends MessageOption {
