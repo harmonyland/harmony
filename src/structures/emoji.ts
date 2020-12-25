@@ -6,7 +6,7 @@ import { Guild } from "./guild.ts"
 import { User } from './user.ts'
 
 export class Emoji extends Base {
-  id: string | null
+  id: string
   name: string
   roles?: string[]
   user?: User
@@ -41,14 +41,14 @@ export class Emoji extends Base {
   /** Modify the given emoji. Requires the MANAGE_EMOJIS permission. Returns the updated emoji object on success. Fires a Guild Emojis Update Gateway event. */
   async edit(data: ModifyGuildEmojiParams) {
     if (!this.guild) throw new Error("Guild is undefined");
-    const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id!), data)
+    const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), data)
     return new Emoji(this.client, res)
   }
 
   /** Delete the given emoji. Requires the MANAGE_EMOJIS permission. Returns `true` on success. Fires a Guild Emojis Update Gateway event. */
   async delete(): Promise<boolean> {
     if (!this.guild) throw new Error("Guild is undefined");
-    await this.client.rest.patch(EMOJI(this.guild.id, this.id!))
+    await this.client.rest.patch(EMOJI(this.guild.id, this.id))
     return true
   }
 
