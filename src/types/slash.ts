@@ -32,7 +32,10 @@ export interface InteractionPayload {
   /** Token of the Interaction to respond */
   token: string
   /** Member object of user who invoked */
-  member: MemberPayload
+  member: MemberPayload & {
+    /** Total permissions of the member in the channel, including overrides */
+    permissions: string
+  }
   /** ID of the Interaction */
   id: string
   /**
