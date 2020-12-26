@@ -247,6 +247,7 @@ export function event(name?: string) {
   }
 }
 
+/** Decorator to create a Slash Command handler */
 export function slash(name?: string, guild?: string) {
   return function (client: Client | SlashModule, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
@@ -262,6 +263,7 @@ export function slash(name?: string, guild?: string) {
   }
 }
 
+/** Decorator to create a Sub-Slash Command handler */
 export function subslash(parent: string, name?: string, guild?: string) {
   return function (client: Client | SlashModule, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
@@ -279,13 +281,14 @@ export function subslash(parent: string, name?: string, guild?: string) {
   }
 }
 
+/** Decorator to create a Grouped Slash Command handler */
 export function groupslash(
   parent: string,
   group: string,
   name?: string,
   guild?: string
 ) {
-  return function (client: Client | SlashModule, prop: string) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
@@ -303,6 +306,7 @@ export function groupslash(
   }
 }
 
+/** Decorator to add a Slash Module to Client */
 export function slashModule() {
   return function (client: Client, prop: string) {
     if (client._decoratedSlashModules === undefined)
