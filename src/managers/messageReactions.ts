@@ -23,7 +23,7 @@ export class MessageReactionsManager extends BaseManager<
 
     const emojiID = raw.emoji.id !== null ? raw.emoji.id : raw.emoji.name
 
-    let emoji = await this.client.emojis.get(emojiID)
+    let emoji = await this.client.emojis.get(emojiID as string)
     if (emoji === undefined) emoji = new Emoji(this.client, raw.emoji)
 
     const reaction = new MessageReaction(this.client, raw, this.message, emoji)
@@ -46,7 +46,7 @@ export class MessageReactionsManager extends BaseManager<
     return await Promise.all(
       arr.map(async (raw) => {
         const emojiID = raw.emoji.id !== null ? raw.emoji.id : raw.emoji.name
-        let emoji = await this.client.emojis.get(emojiID)
+        let emoji = await this.client.emojis.get(emojiID as string)
         if (emoji === undefined) emoji = new Emoji(this.client, raw.emoji)
 
         return new MessageReaction(this.client, raw, this.message, emoji)
