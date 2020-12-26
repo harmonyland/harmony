@@ -47,9 +47,12 @@ export class Emoji extends Base {
   async edit(data: ModifyGuildEmojiParams): Promise<Emoji> {
     if (this.id === null) throw new Error('Emoji ID is not valid.')
     if (this.guild === undefined) throw new Error('Guild is undefined')
+    const roles = Array.isArray(data.roles)
+      ? data.roles?.map((role) => (role instanceof Role ? role.id : role))
+      : [data.roles instanceof Role ? data.roles.id : data.roles]
     const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), {
       ...data,
-      roles: data.roles?.map((role) => role.id)
+      roles
     })
     return new Emoji(this.client, res)
   }
@@ -79,5 +82,5 @@ export interface ModifyGuildEmojiParams {
   /** Name of the emoji */
   name?: string
   /** Roles to which this emoji will be whitelisted */
-  roles?: Role[]
+  roles?: string | Role | (string | Role)[]
 }
