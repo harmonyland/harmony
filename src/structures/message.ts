@@ -47,6 +47,10 @@ export class Message extends Base {
   flags?: number
   stickers?: MessageSticker[]
 
+  get createdAt(): Date {
+    return new Date(this.timestamp)
+  }
+
   constructor(
     client: Client,
     data: MessagePayload,

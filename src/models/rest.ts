@@ -97,6 +97,7 @@ export interface RESTOptions {
   token?: string
   headers?: { [name: string]: string | undefined }
   canary?: boolean
+  version?: 6 | 7 | 8
 }
 
 export class RESTManager {
@@ -111,6 +112,7 @@ export class RESTManager {
   constructor(client?: RESTOptions) {
     this.client = client
     this.api = builder(this)
+    if (client?.version !== undefined) this.version = client.version
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
   }
@@ -408,6 +410,7 @@ export class RESTManager {
           const query =
             method === 'get' && body !== undefined
               ? Object.entries(body as any)
+                  .filter(([k, v]) => v !== undefined)
                   .map(
                     ([key, value]) =>
                       `${encodeURIComponent(key)}=${encodeURIComponent(

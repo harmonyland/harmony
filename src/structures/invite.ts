@@ -1,5 +1,6 @@
 import { Client } from '../models/client.ts'
 import { ChannelPayload } from '../types/channel.ts'
+import { INVITE } from '../types/endpoint.ts'
 import { GuildPayload } from '../types/guild.ts'
 import { InvitePayload } from '../types/invite.ts'
 import { UserPayload } from '../types/user.ts'
@@ -29,6 +30,12 @@ export class Invite extends Base {
     this.targetUserType = data.target_user_type
     this.approximateMemberCount = data.approximate_member_count
     this.approximatePresenceCount = data.approximate_presence_count
+  }
+
+  /** Delete an invite. Requires the MANAGE_CHANNELS permission on the channel this invite belongs to, or MANAGE_GUILD to remove any invite across the guild. Returns an invite object on success. Fires a Invite Delete Gateway event. */
+  async delete(): Promise<Invite> {
+    const res = await this.client.rest.delete(INVITE(this.code))
+    return new Invite(this.client, res)
   }
 
   readFromData(data: InvitePayload): void {

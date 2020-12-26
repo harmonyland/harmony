@@ -1,6 +1,6 @@
 import { Collection } from '../utils/collection.ts'
 import { Client, ClientOptions } from './client.ts'
-import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
+import {EventEmitter} from '../../deps.ts'
 import { RESTManager } from './rest.ts'
 // import { GATEWAY_BOT } from '../types/endpoint.ts'
 // import { GatewayBotPayload } from '../types/gatewayBot.ts'

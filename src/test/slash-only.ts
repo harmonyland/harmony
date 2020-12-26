@@ -1,6 +1,16 @@
 import { SlashClient } from '../models/slashClient.ts'
+import { SlashCommandPartial } from '../types/slash.ts'
 import { TOKEN } from './config.ts'
 
-const slash = new SlashClient({ token: TOKEN })
+export const slash = new SlashClient({ token: TOKEN })
 
-slash.commands.all().then(console.log)
+// Cmd objects come here
+const commands: SlashCommandPartial[] = []
+
+console.log('Creating...')
+commands.forEach((cmd) => {
+  slash.commands
+    .create(cmd, '!! Your testing guild ID comes here !!')
+    .then((c) => console.log(`Created command ${c.name}!`))
+    .catch((e) => `Failed to create ${cmd.name} - ${e.message}`)
+})
