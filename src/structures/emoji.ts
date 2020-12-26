@@ -3,6 +3,7 @@ import { EmojiPayload } from '../types/emoji.ts'
 import { EMOJI } from '../types/endpoint.ts'
 import { Base } from './base.ts'
 import { Guild } from './guild.ts'
+import { Role } from './role.ts'
 import { User } from './user.ts'
 
 export class Emoji extends Base {
@@ -41,10 +42,10 @@ export class Emoji extends Base {
   /** Modify the given emoji. Requires the MANAGE_EMOJIS permission. Returns the updated emoji object on success. Fires a Guild Emojis Update Gateway event. */
   async edit(data: ModifyGuildEmojiParams): Promise<Emoji> {
     if (this.guild === undefined) throw new Error('Guild is undefined')
-    const res = await this.client.rest.patch(
-      EMOJI(this.guild.id, this.id),
-      data
-    )
+    const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), {
+      ...data,
+      roles: data.roles?.map((role) => role.id)
+    })
     return new Emoji(this.client, res)
   }
 
@@ -70,7 +71,7 @@ export class Emoji extends Base {
 /** https://discord.com/developers/docs/resources/emoji#modify-guild-emoji-json-params */
 export interface ModifyGuildEmojiParams {
   /** Name of the emoji */
-  name: string
+  name?: string
   /** Roles to which this emoji will be whitelisted */
-  roles: string[] | null
+  roles?: Role[]
 }
