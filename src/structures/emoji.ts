@@ -5,7 +5,7 @@ import { Guild } from './guild.ts'
 import { User } from './user.ts'
 
 export class Emoji extends Base {
-  id: string
+  id: string | null
   name: string
   roles?: string[]
   user?: User
@@ -16,9 +16,13 @@ export class Emoji extends Base {
   available?: boolean
 
   get getEmojiString(): string {
-    if (this.animated === false) {
-      return `<:${this.name}:${this.id}>`
-    } else return `<a:${this.name}:${this.id}>`
+    if (this.id === null) {
+      return this.name
+    } else {
+      if (this.animated === false) {
+        return `<:${this.name}:${this.id}>`
+      } else return `<a:${this.name}:${this.id}>`
+    }
   }
 
   toString(): string {

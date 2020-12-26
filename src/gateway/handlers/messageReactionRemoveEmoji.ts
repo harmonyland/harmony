@@ -19,7 +19,8 @@ export const messageReactionRemoveEmoji: GatewayEventHandler = async (
     } else return
   }
 
-  const reaction = await message.reactions.get(d.emoji.id)
+  const emojiID = d.emoji.id !== null ? d.emoji.id : d.emoji.name
+  const reaction = await message.reactions.get(emojiID)
   if (reaction === undefined) return
 
   await reaction.users.flush()

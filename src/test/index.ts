@@ -112,6 +112,17 @@ client.on('messageCreate', async (msg: Message) => {
     } else {
       msg.channel.send('Failed...')
     }
+  } else if (msg.content === '!react') {
+    msg.addReaction('🤔')
+  }
+})
+
+client.on('messageReactionRemove', (reaction, user) => {
+  const msg = reaction.message
+
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  if (reaction.me && reaction.emoji.getEmojiString === '🤔') {
+    msg.removeReaction(reaction.emoji)
   }
 })
 

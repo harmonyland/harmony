@@ -17,6 +17,7 @@ import { TextChannel } from './textChannel.ts'
 import { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
+import { Emoji } from './emoji.ts'
 
 type AllMessageOptions = MessageOption | Embed
 
@@ -148,5 +149,16 @@ export class Message extends Base {
   /** Deletes the Message. */
   async delete(): Promise<void> {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
+  }
+
+  async addReaction(emoji: string | Emoji): Promise<void> {
+    return this.channel.addReaction(this, emoji)
+  }
+
+  async removeReaction(
+    emoji: string | Emoji,
+    user?: User | Member | string
+  ): Promise<void> {
+    return this.channel.removeReaction(this, emoji, user)
   }
 }

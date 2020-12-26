@@ -87,7 +87,8 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   async flush(): Promise<boolean> {
     const arr = await this.array()
     for (const elem of arr) {
-      this.parent.delete(elem.id)
+      const emojiID = elem.id !== null ? elem.id : elem.name
+      this.parent.delete(emojiID)
     }
     return true
   }

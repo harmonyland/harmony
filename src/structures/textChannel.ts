@@ -13,13 +13,18 @@ import {
 import {
   CHANNEL,
   CHANNEL_MESSAGE,
-  CHANNEL_MESSAGES
+  CHANNEL_MESSAGES,
+  MESSAGE_REACTION_ME,
+  MESSAGE_REACTION_USER
 } from '../types/endpoint.ts'
 import { Collection } from '../utils/collection.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
+import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
+import { Member } from './member.ts'
 import { Message } from './message.ts'
+import { User } from './user.ts'
 
 export type AllMessageOptions = MessageOption | Embed
 
@@ -126,6 +131,54 @@ export class TextChannel extends Channel {
     const res = new Message(this.client, newMsg, this, this.client.user)
     await res.mentions.fromPayload(newMsg)
     return res
+  }
+
+  async addReaction(
+    message: Message | string,
+    emoji: Emoji | string
+  ): Promise<void> {
+    if (emoji instanceof Emoji) {
+      emoji = emoji.getEmojiString
+    }
+    if (message instanceof Message) {
+      message = message.id
+    }
+
+    const encodedEmoji = encodeURI(emoji)
+
+    await this.client.rest.put(
+      MESSAGE_REACTION_ME(this.id, message, encodedEmoji)
+    )
+  }
+
+  async removeReaction(
+    message: Message | string,
+    emoji: Emoji | string,
+    user?: User | Member | string
+  ): Promise<void> {
+    if (emoji instanceof Emoji) {
+      emoji = emoji.getEmojiString
+    }
+    if (message instanceof Message) {
+      message = message.id
+    }
+    if (user !== undefined) {
+      if (typeof user !== 'string') {
+        user = user.id
+      }
+    }
+
+    const encodedEmoji = encodeURI(emoji)
+
+    if (user === undefined) {
+      await this.client.rest.delete(
+        MESSAGE_REACTION_ME(this.id, message, encodedEmoji)
+      )
+    } else {
+      await this.client.rest.delete(
+        MESSAGE_REACTION_USER(this.id, message, encodedEmoji, user)
+      )
+    }
   }
 
   /**
