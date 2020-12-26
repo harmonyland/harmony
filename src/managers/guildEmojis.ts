@@ -6,7 +6,7 @@ import { EmojiPayload } from '../types/emoji.ts'
 import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { EmojisManager } from './emojis.ts'
-import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
+import { fetchAuto } from '../../deps.ts'
 
 export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   guild: Guild
@@ -87,7 +87,8 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   async flush(): Promise<boolean> {
     const arr = await this.array()
     for (const elem of arr) {
-      this.parent.delete(elem.id)
+      const emojiID = elem.id !== null ? elem.id : elem.name
+      this.parent.delete(emojiID)
     }
     return true
   }

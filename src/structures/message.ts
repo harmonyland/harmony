@@ -17,6 +17,7 @@ import { TextChannel } from './textChannel.ts'
 import { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
+import { Emoji } from './emoji.ts'
 
 type AllMessageOptions = MessageOption | Embed
 
@@ -45,6 +46,10 @@ export class Message extends Base {
   messageReference?: MessageReference
   flags?: number
   stickers?: MessageSticker[]
+
+  get createdAt(): Date {
+    return new Date(this.timestamp)
+  }
 
   constructor(
     client: Client,
@@ -108,25 +113,52 @@ export class Message extends Base {
   }
 
   /** Edits this message. */
-  async edit(text?: string, option?: MessageOption): Promise<Message> {
+  async edit(
+    content?: string | AllMessageOptions,
+    option?: AllMessageOptions
+  ): Promise<Message> {
+    if (typeof content === 'object') {
+      option = content
+      content = undefined
+    }
+    if (content === undefined && option === undefined) {
+      throw new Error('Either text or option is necessary.')
+    }
+    if (option instanceof Embed) {
+      option = {
+        embed: option
+      }
+    }
     if (
       this.client.user !== undefined &&
       this.author.id !== this.client.user?.id
-    )
+    ) {
       throw new Error("Cannot edit other users' messages")
-    return this.channel.editMessage(this.id, text, option)
+    }
+    return this.channel.editMessage(this.id, content, option)
   }
 
   /** Creates a Reply to this Message. */
   async reply(
-    text?: string | AllMessageOptions,
+    content?: string | AllMessageOptions,
     option?: AllMessageOptions
   ): Promise<Message> {
-    return this.channel.send(text, option, this)
+    return this.channel.send(content, option, this)
   }
 
   /** Deletes the Message. */
   async delete(): Promise<void> {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
+  }
+
+  async addReaction(emoji: string | Emoji): Promise<void> {
+    return this.channel.addReaction(this, emoji)
+  }
+
+  async removeReaction(
+    emoji: string | Emoji,
+    user?: User | Member | string
+  ): Promise<void> {
+    return this.channel.removeReaction(this, emoji, user)
   }
 }

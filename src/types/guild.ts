@@ -62,6 +62,7 @@ export interface MemberPayload {
   premium_since?: string
   deaf: boolean
   mute: boolean
+  pending?: boolean
 }
 
 export enum MessageNotification {
@@ -113,6 +114,9 @@ export type GuildFeatures =
   | 'FEATURABLE'
   | 'ANIMATED_ICON'
   | 'BANNER'
+  | 'WELCOME_SCREEN_ENABLED'
+  | 'MEMBER_VERIFICATION_GATE_ENABLED'
+  | 'PREVIEW_ENABLED'
 
 export enum IntegrationExpireBehavior {
   REMOVE_ROLE = 0,

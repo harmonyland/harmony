@@ -3,7 +3,7 @@ import {
   connect,
   Redis,
   RedisConnectOptions
-} from 'https://denopkg.com/keroxp/deno-redis/mod.ts'
+} from '../../deps.ts'
 
 /**
  * ICacheAdapter is the interface to be implemented by Cache Adapters for them to be usable with Harmony.

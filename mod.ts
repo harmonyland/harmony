@@ -1,5 +1,4 @@
 export { GatewayIntents } from './src/types/gateway.ts'
-export { default as EventEmitter } from 'https://deno.land/std@0.74.0/node/events.ts'
 export { Base } from './src/structures/base.ts'
 export { Gateway } from './src/gateway/index.ts'
 export type { ClientEvents } from './src/gateway/handlers/index.ts'
@@ -66,7 +65,7 @@ export {
   ActivityTypes
 } from './src/structures/presence.ts'
 export { Role } from './src/structures/role.ts'
-export { Snowflake } from './src/structures/snowflake.ts'
+export { Snowflake } from './src/utils/snowflake.ts'
 export { TextChannel, GuildTextChannel } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
 export { User } from './src/structures/user.ts'
