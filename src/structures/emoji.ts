@@ -82,5 +82,5 @@ export interface ModifyGuildEmojiParams {
   /** Name of the emoji */
   name?: string
   /** Roles to which this emoji will be whitelisted */
-  roles?: string | Role | (string | Role)[]
+  roles?: string | Role | string[] | Array<Role>;
 }
