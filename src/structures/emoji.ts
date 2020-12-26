@@ -48,7 +48,7 @@ export class Emoji extends Base {
     if (this.id === null) throw new Error('Emoji ID is not valid.')
     if (this.guild === undefined) throw new Error('Guild is undefined')
     const roles = Array.isArray(data.roles)
-      ? data.roles?.map((role) => (role instanceof Role ? role.id : role))
+      ? data.roles.map(role => (role instanceof Role ? role.id : role))
       : [data.roles instanceof Role ? data.roles.id : data.roles]
     const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), {
       ...data,
@@ -82,5 +82,5 @@ export interface ModifyGuildEmojiParams {
   /** Name of the emoji */
   name?: string
   /** Roles to which this emoji will be whitelisted */
-  roles?: string | Role | string[] | Role[];
+  roles?: string | Role | Array<string | Role>;
 }
