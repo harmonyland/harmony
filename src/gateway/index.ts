@@ -177,55 +177,61 @@ export class Gateway extends EventEmitter {
     }
   }
 
-  private async onclose(event: CloseEvent): Promise<void> {
-    if (event.reason === RECONNECT_REASON) return
-    this.emit('close', event.code, event.reason)
-    this.debug(`Connection Closed with code: ${event.code}`)
+  private async onclose({ reason, code }: CloseEvent): Promise<void> {
+    if (reason === RECONNECT_REASON) return
+    this.emit('close', code, reason)
+    this.debug(`Connection Closed with code: ${code}`)
 
-    if (event.code === GatewayCloseCodes.UNKNOWN_ERROR) {
-      this.debug('API has encountered Unknown Error. Reconnecting...')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
-    } else if (event.code === GatewayCloseCodes.UNKNOWN_OPCODE) {
-      throw new Error("Unknown OP Code was sent. This shouldn't happen!")
-    } else if (event.code === GatewayCloseCodes.DECODE_ERROR) {
-      throw new Error("Invalid Payload was sent. This shouldn't happen!")
-    } else if (event.code === GatewayCloseCodes.NOT_AUTHENTICATED) {
-      throw new Error('Not Authorized: Payload was sent before Identifying.')
-    } else if (event.code === GatewayCloseCodes.AUTHENTICATION_FAILED) {
-      throw new Error('Invalid Token provided!')
-    } else if (event.code === GatewayCloseCodes.INVALID_SEQ) {
-      this.debug('Invalid Seq was sent. Reconnecting.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
-    } else if (event.code === GatewayCloseCodes.RATE_LIMITED) {
-      throw new Error("You're ratelimited. Calm down.")
-    } else if (event.code === GatewayCloseCodes.SESSION_TIMED_OUT) {
-      this.debug('Session Timeout. Reconnecting.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect(true)
-    } else if (event.code === GatewayCloseCodes.INVALID_SHARD) {
-      this.debug('Invalid Shard was sent. Reconnecting.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
-    } else if (event.code === GatewayCloseCodes.SHARDING_REQUIRED) {
-      throw new Error("Couldn't connect. Sharding is required!")
-    } else if (event.code === GatewayCloseCodes.INVALID_API_VERSION) {
-      throw new Error("Invalid API Version was used. This shouldn't happen!")
-    } else if (event.code === GatewayCloseCodes.INVALID_INTENTS) {
-      throw new Error('Invalid Intents')
-    } else if (event.code === GatewayCloseCodes.DISALLOWED_INTENTS) {
-      throw new Error("Given Intents aren't allowed")
-    } else {
-      this.debug(
-        'Unknown Close code, probably connection error. Reconnecting in 5s.'
-      )
-      if (this.timedIdentify !== null) {
-        clearTimeout(this.timedIdentify)
-        this.debug('Timed Identify found. Cleared timeout.')
-      }
-      await delay(5000)
-      await this.reconnect(true)
+    switch (code) {
+      case GatewayCloseCodes.UNKNOWN_ERROR:
+        this.debug('API has encountered Unknown Error. Reconnecting...')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect()
+        break
+      case GatewayCloseCodes.UNKNOWN_OPCODE:
+        throw new Error("Unknown OP Code was sent. This shouldn't happen!")
+      case GatewayCloseCodes.DECODE_ERROR:
+        throw new Error("Invalid Payload was sent. This shouldn't happen!")
+      case GatewayCloseCodes.NOT_AUTHENTICATED:
+        throw new Error('Not Authorized: Payload was sent before Identifying.')
+      case GatewayCloseCodes.AUTHENTICATION_FAILED:
+        throw new Error('Invalid Token provided!')
+      case GatewayCloseCodes.INVALID_SEQ:
+        this.debug('Invalid Seq was sent. Reconnecting.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect()
+        break
+      case GatewayCloseCodes.RATE_LIMITED:
+        throw new Error("You're ratelimited. Calm down.")
+      case GatewayCloseCodes.SESSION_TIMED_OUT:
+        this.debug('Session Timeout. Reconnecting.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect(true)
+        break
+      case GatewayCloseCodes.INVALID_SHARD:
+        this.debug('Invalid Shard was sent. Reconnecting.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect()
+        break
+      case GatewayCloseCodes.SHARDING_REQUIRED:
+        throw new Error("Couldn't connect. Sharding is required!")
+      case GatewayCloseCodes.INVALID_API_VERSION:
+        throw new Error("Invalid API Version was used. This shouldn't happen!")
+      case GatewayCloseCodes.INVALID_INTENTS:
+        throw new Error('Invalid Intents')
+      case GatewayCloseCodes.DISALLOWED_INTENTS:
+        throw new Error("Given Intents aren't allowed")
+      default:
+        this.debug(
+          'Unknown Close code, probably connection error. Reconnecting in 5s.'
+        )
+        if (this.timedIdentify !== null) {
+          clearTimeout(this.timedIdentify)
+          this.debug('Timed Identify found. Cleared timeout.')
+        }
+        await delay(5000)
+        await this.reconnect(true)
+        break
     }
   }
 
