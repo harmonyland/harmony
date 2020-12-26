@@ -10,15 +10,12 @@
 <br>
 
 - Lightweight and easy to use.
-- Built-in Command Framework,
-  - Easily build Commands on the fly.
-  - Completely Customizable.
-  - Complete Object-Oriented approach.
-- 100% Discord API Coverage.
-- Customizable caching.
-  - Built in support for Redis.
-  - Write Custom Cache Adapters.
-- Complete TypeScript support.
+- Complete Object-Oriented approach.
+- Slash Commands supported.
+- Built-in Commands framework.
+- Customizable Caching, with Redis support.
+- Use `@decorators` to easily make things!
+- Made with ❤️ TypeScript.
 
 ## Table of Contents
 
@@ -102,13 +99,14 @@ client.connect('super secret token comes here', Intents.All)
 ```
 
 Or with Decorators!
+
 ```ts
 import {
   Client,
   event,
   Intents,
   command,
-  CommandContext,
+  CommandContext
 } from 'https://deno.land/x/harmony/mod.ts'
 
 class MyClient extends CommandClient {
@@ -141,6 +139,7 @@ Documentation is available for `main` (branch) and `stable` (release).
 
 - [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
+- [Guide](https://harmony-org.github.io)
 
 ## Found a bug or want support? Join our discord server!
 

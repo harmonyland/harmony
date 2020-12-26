@@ -7,13 +7,14 @@ import {
   groupslash,
   CommandContext,
   Extension,
-  Collection
+  Collection,
+  GuildTextChannel
 } from '../../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
   Manager,
   Player
-} from 'https://raw.githubusercontent.com/Lavaclient/lavadeno/master/mod.ts'
+} from '../../deps.ts'
 import { Interaction } from '../structures/slash.ts'
 import { slash } from '../models/client.ts'
 // import { SlashCommandOptionType } from '../types/slash.ts'
@@ -67,6 +68,17 @@ class MyClient extends CommandClient {
   @groupslash('cmd', 'sub-cmd-group', 'sub-cmd')
   subCmdGroup(d: Interaction): void {
     d.respond({ content: 'sub-cmd-group worked' })
+  }
+
+  @command()
+  rmrf(ctx: CommandContext): any {
+    if (ctx.author.id !== '422957901716652033') return
+    ;((ctx.channel as any) as GuildTextChannel)
+      .bulkDelete(3)
+      .then((chan) => {
+        ctx.channel.send(`Bulk deleted 2 in ${chan}`)
+      })
+      .catch((e) => ctx.channel.send(`${e.message}`))
   }
 
   @slash()
@@ -205,6 +217,10 @@ class VCExtension extends Extension {
 
 const client = new MyClient()
 
+client.on('raw', (e, d) => {
+  if (e === 'GUILD_MEMBER_ADD' || e === 'GUILD_MEMBER_UPDATE') console.log(e, d)
+})
+
 client.extensions.load(VCExtension)
 
-client.connect(TOKEN, Intents.None)
+client.connect(TOKEN, Intents.All)

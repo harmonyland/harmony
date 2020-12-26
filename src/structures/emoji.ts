@@ -18,9 +18,13 @@ export class Emoji extends Base {
   available?: boolean
 
   get getEmojiString(): string {
-    if (this.animated === false) {
-      return `<:${this.name}:${this.id}>`
-    } else return `<a:${this.name}:${this.id}>`
+    if (this.id === null) {
+      return this.name as string;
+    } else {
+      if (this.animated === false) {
+        return `<:${this.name}:${this.id}>`
+      } else return `<a:${this.name}:${this.id}>`
+    }
   }
 
   toString(): string {

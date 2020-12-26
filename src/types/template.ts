@@ -4,7 +4,7 @@ import { UserPayload } from './user.ts'
 export interface TemplatePayload {
   code: string
   name: string
-  description: string | undefined
+  description: string | null
   usage_count: number
   creator_id: string
   creator: UserPayload
@@ -12,5 +12,5 @@ export interface TemplatePayload {
   updated_at: string
   source_guild_id: string
   serialized_source_guild: GuildPayload
-  is_dirty: boolean | undefined
+  is_dirty: boolean | null
 }
