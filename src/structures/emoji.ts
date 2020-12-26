@@ -52,7 +52,7 @@ export class Emoji extends Base {
   /** Delete the given emoji. Requires the MANAGE_EMOJIS permission. Returns `true` on success. Fires a Guild Emojis Update Gateway event. */
   async delete(): Promise<boolean> {
     if (this.guild === undefined) return false
-    await this.client.rest.patch(EMOJI(this.guild.id, this.id))
+    await this.client.rest.delete(EMOJI(this.guild.id, this.id))
     return true
   }
 
