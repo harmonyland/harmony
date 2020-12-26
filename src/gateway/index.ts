@@ -1,4 +1,4 @@
-import { unzlib } from 'https://deno.land/x/denoflate@1.1/mod.ts'
+import { unzlib, EventEmitter } from '../../deps.ts'
 import { Client } from '../models/client.ts'
 import {
   DISCORD_GATEWAY_URL,
@@ -18,7 +18,6 @@ import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
-import EventEmitter from 'https://deno.land/std@0.74.0/node/events.ts'
 
 export interface RequestMembersOptions {
   limit?: number

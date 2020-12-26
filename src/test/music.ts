@@ -13,7 +13,7 @@ import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import {
   Manager,
   Player
-} from 'https://raw.githubusercontent.com/Lavaclient/lavadeno/master/mod.ts'
+} from '../../deps.ts'
 import { Interaction } from '../structures/slash.ts'
 import { slash } from '../models/client.ts'
 // import { SlashCommandOptionType } from '../types/slash.ts'
