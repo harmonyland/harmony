@@ -47,7 +47,7 @@ export class Emoji extends Base {
   async edit(data: ModifyGuildEmojiParams): Promise<Emoji> {
     if (this.id === null) throw new Error('Emoji ID is not valid.')
     if (this.guild === undefined) throw new Error('Guild is undefined')
-    const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id!), {
+    const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), {
       ...data,
       roles: data.roles?.map((role) => role.id)
     })
