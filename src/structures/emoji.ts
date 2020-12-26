@@ -19,7 +19,7 @@ export class Emoji extends Base {
 
   get getEmojiString(): string {
     if (this.id === null) {
-      return this.name as string;
+      return this.name as string
     } else {
       if (this.animated === false) {
         return `<:${this.name}:${this.id}>`
@@ -45,7 +45,7 @@ export class Emoji extends Base {
 
   /** Modify the given emoji. Requires the MANAGE_EMOJIS permission. Returns the updated emoji object on success. Fires a Guild Emojis Update Gateway event. */
   async edit(data: ModifyGuildEmojiParams): Promise<Emoji> {
-    if (this.id === null) throw new Error("Emoji ID is not valid.");
+    if (this.id === null) throw new Error('Emoji ID is not valid.')
     if (this.guild === undefined) throw new Error('Guild is undefined')
     const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id!), {
       ...data,
@@ -56,7 +56,7 @@ export class Emoji extends Base {
 
   /** Delete the given emoji. Requires the MANAGE_EMOJIS permission. Returns `true` on success. Fires a Guild Emojis Update Gateway event. */
   async delete(): Promise<boolean> {
-    if (this.id === null) return false;
+    if (this.id === null) return false
     if (this.guild === undefined) return false
     await this.client.rest.delete(EMOJI(this.guild.id, this.id))
     return true
