@@ -179,6 +179,7 @@ export class TextChannel extends Channel {
         MESSAGE_REACTION_USER(this.id, message, encodedEmoji, user)
       )
     }
+  }
 
   /**
    * Fetch Messages of a Channel
