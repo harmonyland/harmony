@@ -4,6 +4,7 @@ import { Guild } from '../structures/guild.ts'
 import { Message } from '../structures/message.ts'
 import { MessageReaction } from '../structures/messageReaction.ts'
 import { Reaction } from '../types/channel.ts'
+import { MESSAGE_REACTION, MESSAGE_REACTIONS } from '../types/endpoint.ts'
 import { BaseManager } from './base.ts'
 
 export class MessageReactionsManager extends BaseManager<
@@ -57,5 +58,23 @@ export class MessageReactionsManager extends BaseManager<
   async flush(): Promise<any> {
     await this.client.cache.deleteCache(`reaction_users:${this.message.id}`)
     return this.client.cache.deleteCache(this.cacheName)
+  }
+
+  /** Remove all Reactions from the Message */
+  async removeAll(): Promise<void> {
+    await this.client.rest.delete(
+      MESSAGE_REACTIONS(this.message.channel.id, this.message.id)
+    )
+  }
+
+  /** Remove a specific Emoji from Reactions */
+  async removeEmoji(emoji: Emoji | string): Promise<MessageReactionsManager> {
+    const val = encodeURIComponent(
+      typeof emoji === 'object' ? emoji.id ?? emoji.name : emoji
+    )
+    await this.client.rest.delete(
+      MESSAGE_REACTION(this.message.channel.id, this.message.id, val)
+    )
+    return this
   }
 }

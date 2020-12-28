@@ -58,6 +58,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
     )
   }
 
+  /** Fetch a Guild Member */
   async fetch(id: string): Promise<Member> {
     return await new Promise((resolve, reject) => {
       this.client.rest

@@ -17,6 +17,8 @@ import { Interaction } from '../structures/slash.ts'
 import { SlashModule } from './slashModule.ts'
 import type { ShardManager } from './shard.ts'
 import { Application } from '../structures/application.ts'
+import { Invite } from '../structures/invite.ts'
+import { INVITE } from '../types/endpoint.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -209,6 +211,18 @@ export class Client extends EventEmitter {
   async fetchApplication(): Promise<Application> {
     const app = await this.rest.api.oauth2.applications['@me'].get()
     return new Application(this, app)
+  }
+
+  /** Fetch an Invite */
+  async fetch(id: string): Promise<Invite> {
+    return await new Promise((resolve, reject) => {
+      this.rest
+        .get(INVITE(id))
+        .then((data) => {
+          resolve(new Invite(this, data))
+        })
+        .catch((e) => reject(e))
+    })
   }
 
   /**
