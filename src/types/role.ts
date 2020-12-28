@@ -7,7 +7,7 @@ export interface RolePayload {
   permissions: string
   managed: boolean
   mentionable: boolean
-  tags: RoleTagsPayload | null
+  tags?: RoleTagsPayload
 }
 
 export interface RoleTagsPayload {
