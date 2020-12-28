@@ -25,7 +25,7 @@ export class Role extends Base {
     this.managed = data.managed
     this.mentionable = data.mentionable
     this.tags =
-      data.tags !== null
+      data.tags !== undefined
         ? {
             botID: data.tags?.bot_id,
             integrationID: data.tags?.integration_id,
