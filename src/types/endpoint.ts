@@ -24,8 +24,8 @@ const GUILD_INTEGRATION = (guildID: string, integrationID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations/${integrationID}`
 const GUILD_INTEGRATIONS = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations`
-const GUILD_INTEGARTION_SYNC = (guildID: string): string =>
-  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations?include_appilications=true`
+const GUILD_INTEGRATIONS_SYNC = (guildID: string): string =>
+  `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/integrations?include_applications=true`
 const GUILD_BAN = (guildID: string, userID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/bans/${userID}`
 const GUILD_BANS = (guildID: string): string =>
@@ -229,7 +229,7 @@ export {
   GUILD_ROLES,
   GUILD_INTEGRATION,
   GUILD_INTEGRATIONS,
-  GUILD_INTEGARTION_SYNC,
+  GUILD_INTEGRATIONS_SYNC,
   GUILD_WIDGET_IMAGE,
   GUILD_BAN,
   GUILD_BANS,

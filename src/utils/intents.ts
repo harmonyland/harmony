@@ -1,11 +1,11 @@
 import { GatewayIntents } from '../types/gateway.ts'
 
-export type PriviligedIntents = 'GUILD_MEMBERS' | 'GUILD_PRESENCES'
+export type PrivilegedIntents = 'GUILD_MEMBERS' | 'GUILD_PRESENCES'
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
 /** Utility class for handling Gateway Intents */
 export class Intents {
-  static NonPriviliged: number[] = [
+  static NonPrivileged: number[] = [
     GatewayIntents.GUILD_MESSAGES,
     GatewayIntents.DIRECT_MESSAGES,
     GatewayIntents.DIRECT_MESSAGE_REACTIONS,
@@ -24,32 +24,32 @@ export class Intents {
   static All: number[] = [
     GatewayIntents.GUILD_MEMBERS,
     GatewayIntents.GUILD_PRESENCES,
-    ...Intents.NonPriviliged
+    ...Intents.NonPrivileged
   ]
 
   static Presence: number[] = [
     GatewayIntents.GUILD_PRESENCES,
-    ...Intents.NonPriviliged
+    ...Intents.NonPrivileged
   ]
 
   static GuildMembers: number[] = [
     GatewayIntents.GUILD_MEMBERS,
-    ...Intents.NonPriviliged
+    ...Intents.NonPrivileged
   ]
 
-  static None: number[] = [...Intents.NonPriviliged]
+  static None: number[] = [...Intents.NonPrivileged]
 
-  /** Create an Array of Intents easily passing Intents you're priviliged for and disable the ones you don't need */
+  /** Create an Array of Intents easily passing Intents you're privileged for and disable the ones you don't need */
   static create(
-    priviliged?: PriviligedIntents[],
+    privileged?: PrivilegedIntents[],
     disable?: number[]
   ): number[] {
-    let intents: number[] = [...Intents.NonPriviliged]
+    let intents: number[] = [...Intents.NonPrivileged]
 
-    if (priviliged !== undefined && priviliged.length !== 0) {
-      if (priviliged.includes('GUILD_MEMBERS'))
+    if (privileged !== undefined && privileged.length !== 0) {
+      if (privileged.includes('GUILD_MEMBERS'))
         intents.push(GatewayIntents.GUILD_MEMBERS)
-      if (priviliged.includes('GUILD_PRESENCES'))
+      if (privileged.includes('GUILD_PRESENCES'))
         intents.push(GatewayIntents.GUILD_PRESENCES)
     }
 

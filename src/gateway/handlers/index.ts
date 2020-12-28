@@ -200,7 +200,7 @@ export interface ClientEvents extends EventTypes {
   /**
    * A Guild Member was updated. Nickname changed, role assigned, etc.
    * @param before Member object before update
-   * @param after Meber object after update
+   * @param after Member object after update
    */
   guildMemberUpdate: (before: Member, after: Member) => void
   /**

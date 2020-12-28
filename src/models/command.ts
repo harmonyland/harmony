@@ -18,7 +18,7 @@ export interface CommandContext {
   channel: TextChannel
   /** Prefix which was used */
   prefix: string
-  /** Oject of Command which was used */
+  /** Object of Command which was used */
   command: Command
   /** Name of Command which was used */
   name: string

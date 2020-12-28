@@ -67,7 +67,7 @@ export class Extension {
   description?: string
   /** Extensions's Commands Manager */
   commands: ExtensionCommands = new ExtensionCommands(this)
-  /** Sub-Prefix to be used for ALL of Extenion's Commands. */
+  /** Sub-Prefix to be used for ALL of Extension's Commands. */
   subPrefix?: string
   /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}

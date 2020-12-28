@@ -7,7 +7,7 @@ import { RESTManager } from './rest.ts'
 
 // TODO(DjDeveloperr)
 // I'm kinda confused; will continue on this later once
-// Deno namespace in Web Woker is stable!
+// Deno namespace in Web Worker is stable!
 export interface ShardManagerOptions {
   client: Client | typeof Client
   token?: string
