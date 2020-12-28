@@ -105,10 +105,6 @@ export class Client extends EventEmitter {
   _decoratedSlashModules?: SlashModule[]
   _id?: string
 
-  private readonly _untypedOn = this.on
-
-  private readonly _untypedEmit = this.emit
-
   public on = <K extends string>(event: K, listener: ClientEvents[K]): this =>
     this._untypedOn(event, listener)
 
@@ -116,6 +112,10 @@ export class Client extends EventEmitter {
     event: K,
     ...args: Parameters<ClientEvents[K]>
   ): boolean => this._untypedEmit(event, ...args)
+
+  private readonly _untypedOn = this.on
+
+  private readonly _untypedEmit = this.emit
 
   /** Shard on which this Client is */
   shard: number = 0
