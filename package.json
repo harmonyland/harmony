@@ -1,6 +1,6 @@
 {
   "name": "harmony",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Discord Deno API that is easy to use.",
   "main": "mod.ts",
   "repository": "https://github.com/harmony-org/harmony.git",
