@@ -99,238 +99,248 @@ export const gatewayHandlers: {
   INTERACTION_CREATE: interactionCreate
 }
 
-export interface EventTypes {
-  [name: string]: (...args: any[]) => void
-}
-
 export interface VoiceServerUpdateData {
   token: string
   endpoint: string
   guild: Guild
 }
 
-export interface ClientEvents extends EventTypes {
+export interface ClientEvents {
   /** When Client has successfully connected to Discord */
-  ready: () => void
+  ready: []
   /** When a successful reconnect has been made */
-  reconnect: () => void
+  reconnect: []
   /** When a successful session resume has been done */
-  resumed: () => void
+  resumed: []
   /**
    * When a new Channel is created
    * @param channel New Channel object
    */
-  channelCreate: (channel: EveryChannelTypes) => void
+  channelCreate: [channel: EveryChannelTypes]
   /**
    * When a Channel was deleted
    * @param channel Channel object which was deleted
    */
-  channelDelete: (channel: EveryChannelTypes) => void
+  channelDelete: [channel: EveryChannelTypes]
   /**
    * Channel's Pinned Messages were updated
    * @param before Channel object before update
    * @param after Channel object after update
    */
-  channelPinsUpdate: (
+  channelPinsUpdate: [
     before: EveryTextChannelTypes,
     after: EveryTextChannelTypes
-  ) => void
+  ]
   /**
    * A Channel was updated
    * @param before Channel object before update
    * @param after Channel object after update
    */
-  channelUpdate: (before: EveryChannelTypes, after: EveryChannelTypes) => void
+  channelUpdate: [before: EveryChannelTypes, after: EveryChannelTypes]
   /**
    * A User was banned from a Guild
    * @param guild The Guild from which User was banned
    * @param user The User who was banned
    */
-  guildBanAdd: (guild: Guild, user: User) => void
+  guildBanAdd: [guild: Guild, user: User]
   /**
    * A ban from a User in Guild was elevated
    * @param guild Guild from which ban was removed
    * @param user User of which ban was elevated
    */
-  guildBanRemove: (guild: Guild, user: User) => void
+  guildBanRemove: [guild: Guild, user: User]
   /**
    * Client has joined a new Guild.
    * @param guild The new Guild object
    */
-  guildCreate: (guild: Guild) => void
+  guildCreate: [guild: Guild]
   /**
    * A Guild in which Client was either deleted, or bot was kicked
    * @param guild The Guild object
    */
-  guildDelete: (guild: Guild) => void
+  guildDelete: [guild: Guild]
   /**
    * A new Emoji was added to Guild
    * @param guild Guild in which Emoji was added
    * @param emoji The Emoji which was added
    */
-  guildEmojiAdd: (guild: Guild, emoji: Emoji) => void
+  guildEmojiAdd: [guild: Guild, emoji: Emoji]
   /**
    * An Emoji was deleted from Guild
    * @param guild Guild from which Emoji was deleted
    * @param emoji Emoji which was deleted
    */
-  guildEmojiDelete: (guild: Guild, emoji: Emoji) => void
+  guildEmojiDelete: [Guild, Emoji]
   /**
    * An Emoji in a Guild was updated
    * @param guild Guild in which Emoji was updated
    * @param before Emoji object before update
    * @param after Emoji object after update
    */
-  guildEmojiUpdate: (guild: Guild, before: Emoji, after: Emoji) => void
+  guildEmojiUpdate: [guild: Guild, before: Emoji, after: Emoji]
   /**
    * Guild's Integrations were updated
    * @param guild The Guild object
    */
-  guildIntegrationsUpdate: (guild: Guild) => void
+  guildIntegrationsUpdate: [guild: Guild]
   /**
    * A new Member has joined a Guild
    * @param member The Member object
    */
-  guildMemberAdd: (member: Member) => void
+  guildMemberAdd: [member: Member]
   /**
    * A Guild Member has either left or was kicked from Guild
    * @param member The Member object
    */
-  guildMemberRemove: (member: Member) => void
+  guildMemberRemove: [member: Member]
   /**
    * A Guild Member was updated. Nickname changed, role assigned, etc.
    * @param before Member object before update
    * @param after Member object after update
    */
-  guildMemberUpdate: (before: Member, after: Member) => void
+  guildMemberUpdate: [before: Member, after: Member]
   /**
    * A new Role was created in Guild
    * @param role The new Role object
    */
-  guildRoleCreate: (role: Role) => void
+  guildRoleCreate: [role: Role]
   /**
    * A Role was deleted from the Guild
    * @param role The Role object
    */
-  guildRoleDelete: (role: Role) => void
+  guildRoleDelete: [role: Role]
   /**
    * A Role was updated in a Guild
    * @param before Role object before update
    * @param after Role object after updated
    */
-  guildRoleUpdate: (before: Role, after: Role) => void
+  guildRoleUpdate: [before: Role, after: Role]
   /**
    * A Guild has been updated. For example name, icon, etc.
    * @param before Guild object before update
    * @param after Guild object after update
    */
-  guildUpdate: (before: Guild, after: Guild) => void
+  guildUpdate: [before: Guild, after: Guild]
   /**
    * A new Message was created (sent)
    * @param message The new Message object
    */
-  messageCreate: (message: Message) => void
+  messageCreate: [message: Message]
   /**
    * A Message was deleted.
    * @param message The Message object
    */
-  messageDelete: (message: Message) => void
+  messageDelete: [message: Message]
   /**
    * Messages were bulk deleted in a Guild Text Channel
    * @param channel Channel in which Messages were deleted
    * @param messages Collection of Messages deleted
    * @param uncached Set of Messages deleted's IDs which were not cached
    */
-  messageDeleteBulk: (
+  messageDeleteBulk: [
     channel: GuildTextChannel,
     messages: Collection<string, Message>,
     uncached: Set<string>
-  ) => void
+  ]
   /**
    * A Message was updated. For example content, embed, etc.
    * @param before Message object before update
    * @param after Message object after update
    */
-  messageUpdate: (before: Message, after: Message) => void
+  messageUpdate: [before: Message, after: Message]
   /**
    * Reaction was added to a Message
    * @param reaction Reaction object
    * @param user User who added the reaction
    */
-  messageReactionAdd: (reaction: MessageReaction, user: User) => void
+  messageReactionAdd: [reaction: MessageReaction, user: User]
   /**
    * Reaction was removed fro a Message
    * @param reaction Reaction object
    * @param user User to who removed the reaction
    */
-  messageReactionRemove: (reaction: MessageReaction, user: User) => void
+  messageReactionRemove: [reaction: MessageReaction, user: User]
   /**
    * All reactions were removed from a Message
    * @param message Message from which reactions were removed
    */
-  messageReactionRemoveAll: (message: Message) => void
+  messageReactionRemoveAll: [message: Message]
   /**
    * All reactions of a single Emoji were removed
    * @param message The Message object
    * @param emoji The Emoji object
    */
-  messageReactionRemoveEmoji: (message: Message, emoji: Emoji) => void
+  messageReactionRemoveEmoji: [message: Message, emoji: Emoji]
   /**
    * A User has started typing in a Text Channel
+   * @param user User who started typing
+   * @param channel Channel which user started typing in
+   * @param at Date when user started typing
+   * @param guild Guild which user started typing in (can be undefined)
    */
-  typingStart: (
+  typingStart: [
     user: User,
     channel: TextChannel,
     at: Date,
-    guildData?: TypingStartGuildData
-  ) => void
+    guild: TypingStartGuildData | undefined
+  ]
   /**
    * A new Invite was created
    * @param invite New Invite object
    */
-  inviteCreate: (invite: Invite) => void
+  inviteCreate: [invite: Invite]
   /**
    * An Invite was deleted
    * @param invite Invite object
    */
-  inviteDelete: (invite: Invite) => void
+  inviteDelete: [invite: Invite]
   /**
    * A User was updated. For example username, avatar, etc.
    * @param before The User object before update
    * @param after The User object after update
    */
-  userUpdate: (before: User, after: User) => void
+  userUpdate: [before: User, after: User]
   /**
    * Client has received credentials for establishing connection to Voice Server
+   * @param data Updated voice server object
    */
-  voiceServerUpdate: (data: VoiceServerUpdateData) => void
+  voiceServerUpdate: [data: VoiceServerUpdateData]
   /**
    * A User has joined a Voice Channel
+   * @param state Added voice state object
    */
-  voiceStateAdd: (state: VoiceState) => void
+  voiceStateAdd: [state: VoiceState]
   /**
    * A User has left a Voice Channel
+   * @param state Removed voice state object
    */
-  voiceStateRemove: (state: VoiceState) => void
+  voiceStateRemove: [state: VoiceState]
   /**
    * Voice State of a User has been updated
    * @param before Voice State object before update
    * @param after Voice State object after update
    */
-  voiceStateUpdate: (state: VoiceState, after: VoiceState) => void
+  voiceStateUpdate: [before: VoiceState, after: VoiceState]
   /**
    * A User's presence has been updated
    * @param presence New Presence
    */
-  presenceUpdate: (presence: Presence) => void
+  presenceUpdate: [presence: Presence]
   /**
    * Webhooks of a Channel in a Guild has been updated
    * @param guild Guild in which Webhooks were updated
    * @param channel Channel of which Webhooks were updated
    */
-  webhooksUpdate: (guild: Guild, channel: GuildTextChannel) => void
+  webhooksUpdate: [guild: Guild, channel: GuildTextChannel]
   /**
    * An Interaction was created
+   * @param interaction Created interaction object
    */
-  interactionCreate: (interaction: Interaction) => void
+  interactionCreate: [interaction: Interaction]
+
+  /**
+   * When debug message was made
+   * @param message Debug message
+   */
+  debug: [message: string]
 }

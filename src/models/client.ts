@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/method-signature-style */
 import { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
@@ -10,13 +11,15 @@ import { ChannelsManager } from '../managers/channels.ts'
 import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
-import { ClientEvents } from '../gateway/handlers/index.ts'
 import { Extension } from './extensions.ts'
 import { SlashClient } from './slashClient.ts'
 import { Interaction } from '../structures/slash.ts'
 import { SlashModule } from './slashModule.ts'
 import type { ShardManager } from './shard.ts'
 import { Application } from '../structures/application.ts'
+import { Invite } from '../structures/invite.ts'
+import { INVITE } from '../types/endpoint.ts'
+import { ClientEvents } from '../gateway/handlers/index.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -51,6 +54,32 @@ export interface ClientOptions {
   clientProperties?: ClientProperties
   /** Enable/Disable Slash Commands Integration (enabled by default) */
   enableSlash?: boolean
+}
+
+export declare interface Client {
+  on<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => void
+  ): this
+  on(event: string | symbol, listener: (...args: any[]) => void): this
+
+  once<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => void
+  ): this
+  once(event: string | symbol, listener: (...args: any[]) => void): this
+
+  emit<K extends keyof ClientEvents>(
+    event: K,
+    ...args: ClientEvents[K]
+  ): boolean
+  emit(event: string | symbol, ...args: any[]): boolean
+
+  off<K extends keyof ClientEvents>(
+    event: K,
+    listener: (...args: ClientEvents[K]) => void
+  ): this
+  off(event: string | symbol, listener: (...args: any[]) => void): this
 }
 
 /**
@@ -93,7 +122,10 @@ export class Client extends EventEmitter {
   canary: boolean = false
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
-  _decoratedEvents?: { [name: string]: (...args: any[]) => any }
+  _decoratedEvents?: {
+    [name: string]: (...args: any[]) => void
+  }
+
   _decoratedSlash?: Array<{
     name: string
     guild?: string
@@ -104,18 +136,6 @@ export class Client extends EventEmitter {
 
   _decoratedSlashModules?: SlashModule[]
   _id?: string
-
-  public on = <K extends string>(event: K, listener: ClientEvents[K]): this =>
-    this._untypedOn(event, listener)
-
-  public emit = <K extends string>(
-    event: K,
-    ...args: Parameters<ClientEvents[K]>
-  ): boolean => this._untypedEmit(event, ...args)
-
-  private readonly _untypedOn = this.on
-
-  private readonly _untypedEmit = this.emit
 
   /** Shard on which this Client is */
   shard: number = 0
@@ -211,6 +231,18 @@ export class Client extends EventEmitter {
     return new Application(this, app)
   }
 
+  /** Fetch an Invite */
+  async fetchInvite(id: string): Promise<Invite> {
+    return await new Promise((resolve, reject) => {
+      this.rest
+        .get(INVITE(id))
+        .then((data) => {
+          resolve(new Invite(this, data))
+        })
+        .catch((e) => reject(e))
+    })
+  }
+
   /**
    * This function is used for connecting to discord.
    * @param token Your token. This is required.
@@ -233,17 +265,43 @@ export class Client extends EventEmitter {
     } else throw new Error('No Gateway Intents were provided')
     this.gateway = new Gateway(this, token, intents)
   }
+
+  async waitFor<K extends keyof ClientEvents>(
+    event: K,
+    checkFunction: (...args: ClientEvents[K]) => boolean,
+    timeout?: number
+  ): Promise<ClientEvents[K] | []> {
+    return await new Promise((resolve) => {
+      let timeoutID: number | undefined
+      if (timeout !== undefined) {
+        timeoutID = setTimeout(() => {
+          this.off(event, eventFunc)
+          resolve([])
+        }, timeout)
+      }
+      const eventFunc = (...args: ClientEvents[K]): void => {
+        if (checkFunction(...args)) {
+          resolve(args)
+          this.off(event, eventFunc)
+          if (timeoutID !== undefined) clearTimeout(timeoutID)
+        }
+      }
+      this.on(event, eventFunc)
+    })
+  }
 }
 
-export function event(name?: string) {
-  return function (client: Client | Extension, prop: string) {
+export function event(name?: keyof ClientEvents) {
+  return function (client: Client | Extension, prop: keyof ClientEvents) {
     const listener = ((client as unknown) as {
-      [name: string]: (...args: any[]) => any
+      [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
     })[prop]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
     if (client._decoratedEvents === undefined) client._decoratedEvents = {}
-    client._decoratedEvents[name === undefined ? prop : name] = listener
+    const key = name === undefined ? prop : name
+
+    client._decoratedEvents[key] = listener
   }
 }
 

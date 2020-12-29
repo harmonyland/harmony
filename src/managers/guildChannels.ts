@@ -36,6 +36,7 @@ export class GuildChannelsManager extends BaseChildManager<
     else return undefined
   }
 
+  /** Delete a Guild Channel */
   async delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
   }

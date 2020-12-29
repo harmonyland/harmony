@@ -27,7 +27,7 @@ export const messageReactionRemove: GatewayEventHandler = async (
     } else return
   }
 
-  const emojiID = d.emoji.id !== null ? d.emoji.id : d.emoji.name
+  const emojiID = (d.emoji.id !== null ? d.emoji.id : d.emoji.name) as string
   const reaction = await message.reactions.get(emojiID)
   if (reaction === undefined) return
 
