@@ -7,7 +7,3 @@ export type {
   Redis,
   RedisConnectOptions
 } from 'https://deno.land/x/redis@v0.14.1/mod.ts'
-export {
-  Manager,
-  Player
-} from 'https://raw.githubusercontent.com/Lavaclient/lavadeno/master/mod.ts'

@@ -114,6 +114,14 @@ client.on('messageCreate', async (msg: Message) => {
     }
   } else if (msg.content === '!react') {
     msg.addReaction('🤔')
+  } else if (msg.content === '!wait_for') {
+    msg.channel.send('Send anything!')
+    const [receivedMsg] = await client.waitFor(
+      'messageCreate',
+      (message) => message.author.id === msg.author.id
+    )
+
+    msg.channel.send(`Received: ${receivedMsg?.content}`)
   }
 })
 

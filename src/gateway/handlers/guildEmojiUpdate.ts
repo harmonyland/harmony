@@ -17,7 +17,7 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
     const _updated: EmojiPayload[] = []
 
     for (const raw of d.emojis) {
-      const emojiID = raw.id !== null ? raw.id : raw.name
+      const emojiID = (raw.id !== null ? raw.id : raw.name) as string
       const has = emojis.get(emojiID)
       if (has === undefined) {
         await guild.emojis.set(emojiID, raw)
@@ -27,7 +27,7 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
     }
 
     for (const emoji of emojis.values()) {
-      const emojiID = emoji.id !== null ? emoji.id : emoji.name
+      const emojiID = (emoji.id !== null ? emoji.id : emoji.name) as string
       const find = _updated.find((e) => {
         const eID = e.id !== null ? e.id : e.name
         return emojiID === eID
@@ -36,7 +36,7 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
         await guild.emojis.delete(emojiID)
         deleted.push(emoji)
       } else {
-        const foundID = find.id !== null ? find.id : find.name
+        const foundID = (find.id !== null ? find.id : find.name) as string
         const before = (await guild.emojis.get(foundID)) as Emoji
         await guild.emojis.set(foundID, find)
         const after = (await guild.emojis.get(foundID)) as Emoji
