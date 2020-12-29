@@ -70,7 +70,7 @@ export class MessageReactionsManager extends BaseManager<
   /** Remove a specific Emoji from Reactions */
   async removeEmoji(emoji: Emoji | string): Promise<MessageReactionsManager> {
     const val = encodeURIComponent(
-      typeof emoji === 'object' ? emoji.id ?? emoji.name : emoji
+      (typeof emoji === 'object' ? emoji.id ?? emoji.name : emoji) as string
     )
     await this.client.rest.delete(
       MESSAGE_REACTION(this.message.channel.id, this.message.id, val)
