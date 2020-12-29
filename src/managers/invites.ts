@@ -1,7 +1,7 @@
 import { Client } from '../models/client.ts'
 import { Guild } from '../structures/guild.ts'
 import { Invite } from '../structures/invite.ts'
-import { GUILD_INVITES } from '../types/endpoint.ts'
+import { INVITE } from '../types/endpoint.ts'
 import { InvitePayload } from '../types/invite.ts'
 import { BaseManager } from './base.ts'
 
@@ -19,14 +19,15 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
     return new Invite(this.client, raw)
   }
 
-  async fetch(id: string): Promise<Invite | undefined> {
+  /** Fetch an Invite */
+  async fetch(id: string): Promise<Invite> {
     return await new Promise((resolve, reject) => {
       this.client.rest
-        .get(GUILD_INVITES(this.guild.id))
+        .get(INVITE(id))
         .then(async (data) => {
           this.set(id, data as InvitePayload)
           const newInvite = await this.get(data.code)
-          resolve(newInvite)
+          resolve(newInvite as Invite)
         })
         .catch((e) => reject(e))
     })

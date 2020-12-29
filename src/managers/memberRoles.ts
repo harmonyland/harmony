@@ -60,7 +60,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
       true
     )
 
-    return res.status === 204
+    return res.response.status === 204
   }
 
   async remove(role: string | Role): Promise<boolean> {
@@ -76,6 +76,6 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
       true
     )
 
-    return res.status === 204
+    return res.response.status === 204
   }
 }
