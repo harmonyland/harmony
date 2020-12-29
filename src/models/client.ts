@@ -214,7 +214,7 @@ export class Client extends EventEmitter {
   }
 
   /** Fetch an Invite */
-  async fetch(id: string): Promise<Invite> {
+  async fetchInvite(id: string): Promise<Invite> {
     return await new Promise((resolve, reject) => {
       this.rest
         .get(INVITE(id))
