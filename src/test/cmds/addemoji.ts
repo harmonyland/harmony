@@ -17,7 +17,7 @@ export default class AddEmojiCommand extends Command {
       .then((emoji) => {
         if (emoji === undefined) throw new Error('Unknown')
         ctx.message.reply(
-          `Successfuly added emoji ${emoji.toString()} ${emoji.name}!`
+          `Successfully added emoji ${emoji.toString()} ${emoji.name}!`
         )
       })
       .catch((e) => {

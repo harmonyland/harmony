@@ -265,7 +265,7 @@ export interface MessageActivity {
 export interface MessageApplication {
   id: string
   cover_image?: string
-  desription: string
+  description: string
   icon: string | undefined
   name: string
 }
