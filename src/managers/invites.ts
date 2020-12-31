@@ -91,7 +91,7 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
             : typeof options.targetUser === 'string'
             ? options.targetUser
             : options.targetUser.id,
-        target_user_type: options?.targetUser
+        target_user_type: options?.targetUserType
       }
     )) as unknown) as InvitePayload
 
