@@ -76,7 +76,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   }
 }
 
-/** Redis Cache Adatper for using Redis as a cache-provider. */
+/** Redis Cache Adapter for using Redis as a cache-provider. */
 export class RedisCacheAdapter implements ICacheAdapter {
   _redis: Promise<Redis>
   redis?: Redis

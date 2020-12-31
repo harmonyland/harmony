@@ -114,4 +114,7 @@ src/test/config.ts
 # macOS is shit xD
 **/.DS_Store
 
+# Webstorm dont forget this duude :)
+.idea/
+
 src/test/music.mp3

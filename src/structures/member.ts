@@ -164,7 +164,7 @@ export class Member extends Base {
   /**
    * Bans the Member.
    * @param reason Reason for the Ban.
-   * @param deleteMessagesDays Delete Old Messages? If yes, how much days.
+   * @param deleteOldMessages Delete Old Messages? If yes, how much days.
    */
   async ban(reason?: string, deleteOldMessages?: number): Promise<void> {
     return this.guild.bans.add(this.id, reason, deleteOldMessages)
