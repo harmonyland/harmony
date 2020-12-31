@@ -19,7 +19,6 @@ export const inviteDelete: GatewayEventHandler = async (
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const cachedGuild = await gateway.client.guilds.get(d.guild_id!)
 
-  // TODO(DjDeveloperr): Make it support self-bots and make Guild not always defined
   if (cachedInvite === undefined) {
     const uncachedInvite: PartialInvitePayload = {
       guild: (cachedGuild as unknown) as Guild,
@@ -28,7 +27,7 @@ export const inviteDelete: GatewayEventHandler = async (
     }
     return gateway.client.emit('inviteDeleteUncached', uncachedInvite)
   } else {
-    await guild.invites.delete(d.code)
+    await guild.invites._delete(d.code)
     gateway.client.emit('inviteDelete', cachedInvite)
   }
 }
