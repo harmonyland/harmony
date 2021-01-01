@@ -1,16 +1,8 @@
 import { SlashClient } from '../models/slashClient.ts'
 import { SlashCommandPartial } from '../types/slash.ts'
 import { TOKEN } from './config.ts'
-import { SlashModule, slashModule } from '../../mod.ts'
 
-class MyMod extends SlashModule {}
-
-class MySlashClient extends SlashClient {
-  @slashModule()
-  mod = new MyMod()
-}
-
-export const slash = new MySlashClient({ token: TOKEN })
+export const slash = new SlashClient({ token: TOKEN })
 
 console.log(slash.modules)
 
