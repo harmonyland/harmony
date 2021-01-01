@@ -134,7 +134,6 @@ export class Client extends EventEmitter {
     handler: (interaction: Interaction) => any
   }>
 
-  _decoratedSlashModules?: string[]
   _id?: string
 
   /** Shard on which this Client is */
@@ -360,14 +359,5 @@ export function groupslash(
         guild,
         handler: item
       })
-  }
-}
-
-/** Decorator to add a Slash Module to Client */
-export function slashModule() {
-  return function (client: Client | SlashClient, prop: string) {
-    if (client._decoratedSlashModules === undefined)
-      client._decoratedSlashModules = []
-    client._decoratedSlashModules.push(prop)
   }
 }

@@ -353,8 +353,6 @@ export class SlashClient {
     handler: (interaction: Interaction) => any
   }>
 
-  _decoratedSlashModules?: string[]
-
   constructor(options: SlashOptions) {
     let id = options.id
     if (options.token !== undefined) id = atob(options.token?.split('.')[0])
@@ -376,33 +374,9 @@ export class SlashClient {
       })
     }
 
-    if (this.client?._decoratedSlashModules !== undefined) {
-      this.client._decoratedSlashModules.forEach((e) => {
-        const mod = ((this.client as unknown) as {
-          [name: string]: SlashModule
-        })[e]
-        if (!(mod instanceof SlashModule))
-          throw new Error(
-            '@slashModule can only be used on SlashModule instances'
-          )
-        this.modules.push(mod)
-      })
-    }
-
     if (this._decoratedSlash !== undefined) {
       this._decoratedSlash.forEach((e) => {
         this.handlers.push(e)
-      })
-    }
-
-    if (this._decoratedSlashModules !== undefined) {
-      this._decoratedSlashModules.forEach((e) => {
-        const mod = ((this as unknown) as { [name: string]: SlashModule })[e]
-        if (!(mod instanceof SlashModule))
-          throw new Error(
-            '@slashModule can only be used on SlashModule instances'
-          )
-        this.modules.push(mod)
       })
     }
 
