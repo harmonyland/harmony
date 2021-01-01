@@ -290,6 +290,24 @@ export class Guild extends Base {
       resolve(this)
     })
   }
+
+  /**
+   * Fulfills promise when guild becomes available
+   * @param delay the delay between checking guild availability
+   */
+  async awaitAvailiable(
+    delay: number = 1000
+  ): Promise<void> {
+    const promise1 = new Promise((resolve, reject) => {
+      while(true) {
+        await new Promise(reso => setTimeout(reso, delay))
+        if(!this.unavailable) {
+          resolve()
+          break;
+        }
+      }
+    });
+  }
 }
 
 export class GuildIntegration extends Base {
