@@ -398,10 +398,6 @@ export class SlashClient {
     if (this._decoratedSlashModules !== undefined) {
       this._decoratedSlashModules.forEach((e) => {
         const mod = ((this as unknown) as { [name: string]: SlashModule })[e]
-        if (!(mod instanceof SlashModule))
-          throw new Error(
-            '@slashModule can only be used on SlashModule instances'
-          )
         this.modules.push(mod)
       })
     }
