@@ -1,9 +1,5 @@
 import { Collection } from '../utils/collection.ts'
-import {
-  connect,
-  Redis,
-  RedisConnectOptions
-} from '../../deps.ts'
+import { connect, Redis, RedisConnectOptions } from '../../deps.ts'
 
 /**
  * ICacheAdapter is the interface to be implemented by Cache Adapters for them to be usable with Harmony.
