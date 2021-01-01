@@ -17,6 +17,13 @@ export class GuildVoiceStatesManager extends BaseManager<
     this.guild = guild
   }
 
+  /** Get Client's Voice State in the Guild */
+  async me(): Promise<VoiceState | undefined> {
+    const member = await this.guild.me()
+    return await this.get(member.id)
+  }
+
+  /** Get a Voice State by User ID */
   async get(key: string): Promise<VoiceState | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return

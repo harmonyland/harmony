@@ -13,8 +13,6 @@ export class GroupDMChannel extends Channel {
     this.name = data.name
     this.icon = data.icon
     this.ownerID = data.owner_id
-    // TODO: Cache in Gateway Event Code
-    // cache.set('groupchannel', this.id, this)
   }
 
   readFromData(data: GroupDMChannelPayload): void {
