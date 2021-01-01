@@ -368,8 +368,6 @@ export function slashModule() {
   return function (client: Client | SlashClient, prop: string) {
     if (client._decoratedSlashModules === undefined)
       client._decoratedSlashModules = []
-
-    const mod = ((client as unknown) as { [key: string]: any })[prop]
-    client._decoratedSlashModules.push(mod)
+    client._decoratedSlashModules.push(prop)
   }
 }
