@@ -163,9 +163,8 @@ export class Guild extends Base {
 
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
-    this.id = data.id
+    this.readFromData(data)
     this.bans = new GuildBans(client, this)
-    this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
     this.voiceStates = new GuildVoiceStatesManager(client, this)
     this.presences = new GuildPresencesManager(client, this)
@@ -177,45 +176,6 @@ export class Guild extends Base {
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
-
-    if (!this.unavailable) {
-      this.name = data.name
-      this.icon = data.icon
-      this.iconHash = data.icon_hash
-      this.splash = data.splash
-      this.discoverySplash = data.discovery_splash
-      this.owner = data.owner
-      this.ownerID = data.owner_id
-      this.permissions = data.permissions
-      this.region = data.region
-      this.afkTimeout = data.afk_timeout
-      this.afkChannelID = data.afk_channel_id
-      this.widgetEnabled = data.widget_enabled
-      this.widgetChannelID = data.widget_channel_id
-      this.verificationLevel = data.verification_level
-      this.defaultMessageNotifications = data.default_message_notifications
-      this.explicitContentFilter = data.explicit_content_filter
-      this.features = data.features
-      this.mfaLevel = data.mfa_level
-      this.systemChannelID = data.system_channel_id
-      this.systemChannelFlags = data.system_channel_flags
-      this.rulesChannelID = data.rules_channel_id
-      this.joinedAt = data.joined_at
-      this.large = data.large
-      this.memberCount = data.member_count
-      this.maxPresences = data.max_presences
-      this.maxMembers = data.max_members
-      this.vanityURLCode = data.vanity_url_code
-      this.description = data.description
-      this.banner = data.banner
-      this.premiumTier = data.premium_tier
-      this.premiumSubscriptionCount = data.premium_subscription_count
-      this.preferredLocale = data.preferred_locale
-      this.publicUpdatesChannelID = data.public_updates_channel_id
-      this.maxVideoChannelUsers = data.max_video_channel_users
-      this.approximateNumberCount = data.approximate_number_count
-      this.approximatePresenceCount = data.approximate_presence_count
-    }
   }
 
   readFromData(data: GuildPayload): void {
