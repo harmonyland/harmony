@@ -163,6 +163,8 @@ export class Guild extends Base {
 
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
+    this.id = data.id
+    this.unavailable = data.unavailable
     this.readFromData(data)
     this.bans = new GuildBans(client, this)
     this.members = new MembersManager(this.client, this)
@@ -298,15 +300,12 @@ export class Guild extends Base {
   async awaitAvailability(
     delay: number = 1000
   ): Promise<void> {
-    const promise1 = new Promise((resolve, reject) => {
       while(true) {
-        await new Promise(reso => setTimeout(reso, delay))
+        await new Promise(resolve => setTimeout(resolve, delay))
         if(!this.unavailable) {
-          resolve()
-          break;
+          return;
         }
-      }
-    });
+    }
   }
 }
 
