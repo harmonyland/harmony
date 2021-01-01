@@ -327,7 +327,6 @@ export class Guild extends Base {
           }
         }, timeout)
       }
-      resolve(this)
     })
   }
 }
