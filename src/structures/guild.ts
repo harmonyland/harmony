@@ -313,7 +313,7 @@ export class Guild extends Base {
   async awaitAvailability(delay: number = 1000): Promise<void> {
     return await new Promise((resolve, reject) => {
       if(!this.unavailable) return;
-      let listener = (guild: Guild): void => {
+      const listener = (guild: Guild): void => {
         if (guild.id === this.id) {
           this.client.removeListener('guildLoaded', listener);
           resolve();
