@@ -14,11 +14,11 @@ import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
 import { verify as edverify } from 'https://deno.land/x/ed25519/mod.ts'
 import { Buffer } from 'https://deno.land/std@0.80.0/node/buffer.ts'
-import {
+import type {
   Request as ORequest,
   Response as OResponse
 } from 'https://deno.land/x/opine@1.0.0/src/types.ts'
-import { Context } from 'https://deno.land/x/oak@v6.4.0/mod.ts'
+import type { Context } from 'https://deno.land/x/oak@v6.4.0/mod.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -353,8 +353,6 @@ export class SlashClient {
     handler: (interaction: Interaction) => any
   }>
 
-  _decoratedSlashModules?: SlashModule[]
-
   constructor(options: SlashOptions) {
     let id = options.id
     if (options.token !== undefined) id = atob(options.token?.split('.')[0])
@@ -376,21 +374,9 @@ export class SlashClient {
       })
     }
 
-    if (this.client?._decoratedSlashModules !== undefined) {
-      this.client._decoratedSlashModules.forEach((e) => {
-        this.modules.push(e)
-      })
-    }
-
     if (this._decoratedSlash !== undefined) {
       this._decoratedSlash.forEach((e) => {
         this.handlers.push(e)
-      })
-    }
-
-    if (this._decoratedSlashModules !== undefined) {
-      this._decoratedSlashModules.forEach((e) => {
-        this.modules.push(e)
       })
     }
 
@@ -418,11 +404,13 @@ export class SlashClient {
     return this
   }
 
+  /** Load a Slash Module */
   loadModule(module: SlashModule): SlashClient {
     this.modules.push(module)
     return this
   }
 
+  /** Get all Handlers. Including Slash Modules */
   getHandlers(): SlashCommandHandler[] {
     let res = this.handlers
     for (const mod of this.modules) {
@@ -438,6 +426,7 @@ export class SlashClient {
     return res
   }
 
+  /** Get Handler for an Interaction. Supports nested sub commands and sub command groups. */
   private _getCommand(i: Interaction): SlashCommandHandler | undefined {
     return this.getHandlers().find((e) => {
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
@@ -467,6 +456,10 @@ export class SlashClient {
     if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
     const cmd = this._getCommand(interaction)
+    if (cmd?.group !== undefined)
+      interaction.data.options = interaction.data.options[0].options ?? []
+    if (cmd?.parent !== undefined)
+      interaction.data.options = interaction.data.options[0].options ?? []
 
     if (cmd === undefined) return
 

@@ -15,6 +15,6 @@ export const messageDelete: GatewayEventHandler = async (
   const message = await channel.messages.get(d.id)
   if (message === undefined)
     return gateway.client.emit('messageDeleteUncached', d)
-  await channel.messages.delete(d.id)
+  await channel.messages._delete(d.id)
   gateway.client.emit('messageDelete', message)
 }

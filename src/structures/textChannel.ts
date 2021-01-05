@@ -1,3 +1,4 @@
+import { CreateInviteOptions } from '../managers/invites.ts'
 import { MessagesManager } from '../managers/messages.ts'
 import { Client } from '../models/client.ts'
 import {
@@ -22,6 +23,7 @@ import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
+import { Invite } from './invite.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
 import { User } from './user.ts'
@@ -318,5 +320,10 @@ export class GuildTextChannel extends TextChannel {
     })
 
     return this
+  }
+
+  /** Create an Invite for this Channel */
+  async createInvite(options?: CreateInviteOptions): Promise<Invite> {
+    return this.guild.invites.create(this.id, options)
   }
 }

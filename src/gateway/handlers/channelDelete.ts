@@ -7,7 +7,7 @@ export const channelDelete: GatewayEventHandler = async (
 ) => {
   const channel = await gateway.client.channels.get(d.id)
   if (channel !== undefined) {
-    await gateway.client.channels.delete(d.id)
+    await gateway.client.channels._delete(d.id)
     gateway.client.emit('channelDelete', channel)
   }
 }

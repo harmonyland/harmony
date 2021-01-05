@@ -382,6 +382,7 @@ export class CommandClient extends Client implements CommandClientOptions {
   }
 }
 
+/** Command decorator */
 export function command(options?: CommandOptions) {
   return function (target: CommandClient | Extension, name: string) {
     if (target._decoratedCommands === undefined) target._decoratedCommands = {}
@@ -390,10 +391,8 @@ export function command(options?: CommandOptions) {
       [name: string]: (ctx: CommandContext) => any
     })[name]
 
-    if (prop instanceof Command) {
-      target._decoratedCommands[prop.name] = prop
-      return
-    }
+    if (typeof prop !== 'function')
+      throw new Error('@command decorator can only be used on functions')
 
     const command = new Command()
 

@@ -30,5 +30,5 @@ export const guildCreate: GatewayEventHandler = async (
   if (hasGuild === undefined) {
     // It wasn't lazy load, so emit event
     gateway.client.emit('guildCreate', guild)
-  }
+  } else gateway.client.emit('guildLoaded', guild)
 }

@@ -155,6 +155,11 @@ export interface ClientEvents {
    */
   guildCreate: [guild: Guild]
   /**
+   * A Guild was successfully loaded.
+   * @param guild The Guild object
+   */
+  guildLoaded: [guild: Guild]
+  /**
    * A Guild in which Client was either deleted, or bot was kicked
    * @param guild The Guild object
    */

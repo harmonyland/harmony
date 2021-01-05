@@ -8,9 +8,13 @@ import {
   IntegrationExpireBehavior
 } from '../types/guild.ts'
 import { Base } from './base.ts'
-import { RolesManager } from '../managers/roles.ts'
+import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
 import { InviteManager } from '../managers/invites.ts'
-import { GuildChannelsManager } from '../managers/guildChannels.ts'
+import {
+  CreateChannelOptions,
+  GuildChannel,
+  GuildChannelsManager
+} from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
 import { GuildEmojisManager } from '../managers/guildEmojis.ts'
@@ -297,6 +301,16 @@ export class Guild extends Base {
     return raw.map((e) => new GuildIntegration(this.client, e))
   }
 
+  /** Create a new Guild Channel */
+  async createChannel(options: CreateChannelOptions): Promise<GuildChannel> {
+    return this.channels.create(options)
+  }
+
+  /** Create a new Guild Role */
+  async createRole(options?: CreateGuildRoleOptions): Promise<Role> {
+    return this.roles.create(options)
+  }
+
   /**
    * Chunks the Guild Members, i.e. cache them.
    * @param options Options regarding the Members Request
@@ -327,7 +341,6 @@ export class Guild extends Base {
           }
         }, timeout)
       }
-      resolve(this)
     })
   }
 }

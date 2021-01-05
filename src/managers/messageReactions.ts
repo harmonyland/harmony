@@ -3,8 +3,13 @@ import { Emoji } from '../structures/emoji.ts'
 import { Guild } from '../structures/guild.ts'
 import { Message } from '../structures/message.ts'
 import { MessageReaction } from '../structures/messageReaction.ts'
+import { User } from '../structures/user.ts'
 import { Reaction } from '../types/channel.ts'
-import { MESSAGE_REACTION, MESSAGE_REACTIONS } from '../types/endpoint.ts'
+import {
+  MESSAGE_REACTION,
+  MESSAGE_REACTIONS,
+  MESSAGE_REACTION_USER
+} from '../types/endpoint.ts'
 import { BaseManager } from './base.ts'
 
 export class MessageReactionsManager extends BaseManager<
@@ -74,6 +79,25 @@ export class MessageReactionsManager extends BaseManager<
     )
     await this.client.rest.delete(
       MESSAGE_REACTION(this.message.channel.id, this.message.id, val)
+    )
+    return this
+  }
+
+  /** Remove a specific Emoji from Reactions */
+  async removeUser(
+    emoji: Emoji | string,
+    user: User | string
+  ): Promise<MessageReactionsManager> {
+    const val = encodeURIComponent(
+      (typeof emoji === 'object' ? emoji.id ?? emoji.name : emoji) as string
+    )
+    await this.client.rest.delete(
+      MESSAGE_REACTION_USER(
+        this.message.channel.id,
+        this.message.id,
+        val,
+        typeof user === 'string' ? user : user.id
+      )
     )
     return this
   }

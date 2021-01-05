@@ -134,7 +134,6 @@ export class Client extends EventEmitter {
     handler: (interaction: Interaction) => any
   }>
 
-  _decoratedSlashModules?: SlashModule[]
   _id?: string
 
   /** Shard on which this Client is */
@@ -266,6 +265,7 @@ export class Client extends EventEmitter {
     this.gateway = new Gateway(this, token, intents)
   }
 
+  /** Wait for an Event (optionally satisfying an event) to occur */
   async waitFor<K extends keyof ClientEvents>(
     event: K,
     checkFunction: (...args: ClientEvents[K]) => boolean,
@@ -291,6 +291,7 @@ export class Client extends EventEmitter {
   }
 }
 
+/** Event decorator to create an Event handler from function */
 export function event(name?: keyof ClientEvents) {
   return function (client: Client | Extension, prop: keyof ClientEvents) {
     const listener = ((client as unknown) as {
@@ -307,11 +308,11 @@ export function event(name?: keyof ClientEvents) {
 
 /** Decorator to create a Slash Command handler */
 export function slash(name?: string, guild?: string) {
-  return function (client: Client | SlashModule, prop: string) {
+  return function (client: Client | SlashClient | SlashModule, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
-      client._decoratedSlash.push(item)
+      throw new Error('@slash decorator requires a function')
     } else
       client._decoratedSlash.push({
         name: name ?? prop,
@@ -323,12 +324,11 @@ export function slash(name?: string, guild?: string) {
 
 /** Decorator to create a Sub-Slash Command handler */
 export function subslash(parent: string, name?: string, guild?: string) {
-  return function (client: Client | SlashModule, prop: string) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
-      item.parent = parent
-      client._decoratedSlash.push(item)
+      throw new Error('@subslash decorator requires a function')
     } else
       client._decoratedSlash.push({
         parent,
@@ -350,9 +350,7 @@ export function groupslash(
     if (client._decoratedSlash === undefined) client._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
-      item.parent = parent
-      item.group = group
-      client._decoratedSlash.push(item)
+      throw new Error('@groupslash decorator requires a function')
     } else
       client._decoratedSlash.push({
         group,
@@ -361,16 +359,5 @@ export function groupslash(
         guild,
         handler: item
       })
-  }
-}
-
-/** Decorator to add a Slash Module to Client */
-export function slashModule() {
-  return function (client: Client, prop: string) {
-    if (client._decoratedSlashModules === undefined)
-      client._decoratedSlashModules = []
-
-    const mod = ((client as unknown) as { [key: string]: any })[prop]
-    client._decoratedSlashModules.push(mod)
   }
 }
