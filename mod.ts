@@ -122,3 +122,10 @@ export type { UserPayload } from './src/types/user.ts'
 export { UserFlags } from './src/types/userFlags.ts'
 export type { VoiceStatePayload } from './src/types/voice.ts'
 export type { WebhookPayload } from './src/types/webhook.ts'
+
+// harmony utils
+export type {
+  MarkdownEscapeOptions,
+  ParsedEmoji
+} from './src/types/harmonyutils.ts'
+export { HarmonyUtils } from './src/utils/harmonyutils.ts'
