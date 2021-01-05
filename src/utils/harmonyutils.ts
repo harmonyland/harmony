@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // based on discord.js util
 
 import { ParsedEmoji, MarkdownEscapeOptions } from '../types/harmonyutils.ts';
