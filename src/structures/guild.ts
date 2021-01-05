@@ -313,7 +313,7 @@ export class Guild extends Base {
   async awaitAvailability(delay: number = 1000): Promise<void> {
     if(!this.unavailable) return;
     var loaded = false;
-    var listener = (guild: Guild) => loaded = loaded || guild.id == this.id;
+    var listener = (guild: Guild) => loaded = loaded || guild.id === this.id;
     this.client.on('guildLoaded', listener);
     while(true) {
       await new Promise(resolve => setTimeout(resolve, delay));
