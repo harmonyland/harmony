@@ -308,9 +308,8 @@ export class Guild extends Base {
 
   /**
    * Fulfills promise when guild becomes available
-   * @param delay the delay between checking guild availability
    */
-  async awaitAvailability(delay: number = 1000): Promise<void> {
+  async awaitAvailability(): Promise<void> {
     return await new Promise((resolve, reject) => {
       if(!this.unavailable) return;
       const listener = (guild: Guild): void => {
