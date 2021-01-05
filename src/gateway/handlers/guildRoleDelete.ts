@@ -13,6 +13,7 @@ export const guildRoleDelete: GatewayEventHandler = async (
   const role = await guild.roles.get(d.role_id)
   // Shouldn't happen either
   if (role === undefined) return
+  await guild.roles._delete(d.role_id)
 
   gateway.client.emit('guildRoleDelete', role)
 }

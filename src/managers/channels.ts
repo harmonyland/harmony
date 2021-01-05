@@ -29,6 +29,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     const arr = await (this.client.cache.array(
       this.cacheName
     ) as ChannelPayload[])
+    if (arr === undefined) return []
     const result: any[] = []
     for (const elem of arr) {
       let guild

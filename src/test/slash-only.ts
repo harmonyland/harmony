@@ -4,6 +4,8 @@ import { TOKEN } from './config.ts'
 
 export const slash = new SlashClient({ token: TOKEN })
 
+console.log(slash.modules)
+
 // Cmd objects come here
 const commands: SlashCommandPartial[] = []
 

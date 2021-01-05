@@ -32,7 +32,7 @@ const GUILD_BANS = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/bans`
 const GUILD_CHANNEL = (channelID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/channels/${channelID}`
-const GUILD_CHANNELS = (guildID: string, channelID: string): string =>
+const GUILD_CHANNELS = (guildID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/channels`
 const GUILD_MEMBER = (guildID: string, memberID: string): string =>
   `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/guilds/${guildID}/members/${memberID}`

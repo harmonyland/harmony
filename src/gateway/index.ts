@@ -188,7 +188,9 @@ export class Gateway extends EventEmitter {
         this.reconnect()
         break
       case GatewayCloseCodes.UNKNOWN_OPCODE:
-        throw new Error("Unknown OP Code was sent. This shouldn't happen!")
+        throw new Error(
+          "Invalid OP Code or Payload was sent. This shouldn't happen!"
+        )
       case GatewayCloseCodes.DECODE_ERROR:
         throw new Error("Invalid Payload was sent. This shouldn't happen!")
       case GatewayCloseCodes.NOT_AUTHENTICATED:
@@ -320,8 +322,8 @@ export class Gateway extends EventEmitter {
       op: GatewayOpcodes.REQUEST_GUILD_MEMBERS,
       d: {
         guild_id: guild,
-        query: options.query,
-        limit: options.limit,
+        query: options.query ?? '',
+        limit: options.limit ?? 0,
         presences: options.presences,
         user_ids: options.users,
         nonce
@@ -387,14 +389,13 @@ export class Gateway extends EventEmitter {
 
   send(data: GatewayResponse): boolean {
     if (this.websocket.readyState !== this.websocket.OPEN) return false
-    this.websocket.send(
-      JSON.stringify({
-        op: data.op,
-        d: data.d,
-        s: typeof data.s === 'number' ? data.s : null,
-        t: data.t === undefined ? null : data.t
-      })
-    )
+    const packet = JSON.stringify({
+      op: data.op,
+      d: data.d,
+      s: typeof data.s === 'number' ? data.s : null,
+      t: data.t === undefined ? null : data.t
+    })
+    this.websocket.send(packet)
     return true
   }
 
