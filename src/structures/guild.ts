@@ -313,14 +313,14 @@ export class Guild extends Base {
   async awaitAvailability(delay: number = 1000): Promise<void> {
     return await new Promise((resolve, reject) => {
       if(!this.unavailable) return;
-      var listener = (guild: Guild): void => {
+      let listener = (guild: Guild): void => {
         if (guild.id === this.id) {
-          this.removeListener('guildLoaded', listener);
+          this.client.removeListener('guildLoaded', listener);
           resolve();
         }
       };
       this.client.on('guildLoaded', listener);
-    }
+    });
   }
 }
 
