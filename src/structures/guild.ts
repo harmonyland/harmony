@@ -311,16 +311,15 @@ export class Guild extends Base {
    * @param delay the delay between checking guild availability
    */
   async awaitAvailability(delay: number = 1000): Promise<void> {
-    if(!this.unavailable) return;
-    var loaded = false;
-    var listener = (guild: Guild): void => { loaded = loaded || guild.id === this.id };
-    this.client.on('guildLoaded', listener);
-    while(true) {
-      await new Promise(resolve => setTimeout(resolve, delay));
-      if(loaded) {
-        this.client.removeListener('guildLoaded', listener);
-        return;
-      }
+    return await new Promise((resolve, reject) => {
+      if(!this.unavailable) return;
+      var listener = (guild: Guild): void => {
+        if (guild.id === this.id) {
+          this.removeListener('guildLoaded', listener);
+          resolve();
+        }
+      };
+      this.client.on('guildLoaded', listener);
     }
   }
 }
