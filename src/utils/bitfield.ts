@@ -1,6 +1,7 @@
 // Ported from https://github.com/discordjs/discord.js/blob/master/src/util/BitField.js
 export type BitFieldResolvable = number | BitField | string | BitField[]
 
+/** Bit Field utility to work with Bits and Flags */
 export class BitField {
   flags: { [name: string]: number } = {}
   bitfield: number
@@ -19,12 +20,13 @@ export class BitField {
   }
 
   has(bit: BitFieldResolvable, ...args: any[]): boolean {
-    if (Array.isArray(bit)) return bit.every(p => this.has(p))
+    if (Array.isArray(bit)) return bit.every((p) => this.has(p))
     return (this.bitfield & BitField.resolve(this.flags, bit)) === bit
   }
 
   missing(bits: any, ...hasParams: any[]): string[] {
-    if (!Array.isArray(bits)) bits = new BitField(this.flags, bits).toArray(false)
+    if (!Array.isArray(bits))
+      bits = new BitField(this.flags, bits).toArray(false)
     return bits.filter((p: any) => !this.has(p, ...hasParams))
   }
 
@@ -37,7 +39,8 @@ export class BitField {
     for (const bit of bits) {
       total |= BitField.resolve(this.flags, bit)
     }
-    if (Object.isFrozen(this)) return new BitField(this.flags, this.bitfield | total)
+    if (Object.isFrozen(this))
+      return new BitField(this.flags, this.bitfield | total)
     this.bitfield |= total
     return this
   }
@@ -47,19 +50,26 @@ export class BitField {
     for (const bit of bits) {
       total |= BitField.resolve(this.flags, bit)
     }
-    if (Object.isFrozen(this)) return new BitField(this.flags, this.bitfield & ~total)
+    if (Object.isFrozen(this))
+      return new BitField(this.flags, this.bitfield & ~total)
     this.bitfield &= ~total
     return this
   }
 
   serialize(...hasParams: any[]): { [key: string]: any } {
     const serialized: { [key: string]: any } = {}
-    for (const [flag, bit] of Object.entries(this.flags)) serialized[flag] = this.has(BitField.resolve(this.flags, bit), ...hasParams)
+    for (const [flag, bit] of Object.entries(this.flags))
+      serialized[flag] = this.has(
+        BitField.resolve(this.flags, bit),
+        ...hasParams
+      )
     return serialized
   }
 
   toArray(...hasParams: any[]): string[] {
-    return Object.keys(this.flags).filter(bit => this.has(BitField.resolve(this.flags, bit), ...hasParams))
+    return Object.keys(this.flags).filter((bit) =>
+      this.has(BitField.resolve(this.flags, bit), ...hasParams)
+    )
   }
 
   toJSON(): number {
@@ -78,8 +88,12 @@ export class BitField {
     if (typeof bit === 'string' && !isNaN(parseInt(bit))) return parseInt(bit)
     if (typeof bit === 'number' && bit >= 0) return bit
     if (bit instanceof BitField) return this.resolve(flags, bit.bitfield)
-    if (Array.isArray(bit)) return bit.map(p => this.resolve(flags, p)).reduce((prev, p) => prev | p, 0)
-    if (typeof bit === 'string' && typeof flags[bit] !== 'undefined') return flags[bit]
+    if (Array.isArray(bit))
+      return bit
+        .map((p) => this.resolve(flags, p))
+        .reduce((prev, p) => prev | p, 0)
+    if (typeof bit === 'string' && typeof flags[bit] !== 'undefined')
+      return flags[bit]
     const error = new RangeError('BITFIELD_INVALID')
     throw error
   }

@@ -1,13 +1,11 @@
 import { Base } from './base.ts'
 import {
   Attachment,
-  ChannelMention,
   MessageActivity,
   MessageApplication,
   MessageOption,
   MessagePayload,
-  MessageReference,
-  Reaction
+  MessageReference
 } from '../types/channel.ts'
 import { Client } from '../models/client.ts'
 import { User } from './user.ts'
@@ -17,6 +15,9 @@ import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
 import { TextChannel } from './textChannel.ts'
 import { Guild } from './guild.ts'
+import { MessageReactionsManager } from '../managers/messageReactions.ts'
+import { MessageSticker } from './messageSticker.ts'
+import { Emoji } from './emoji.ts'
 
 type AllMessageOptions = MessageOption | Embed
 
@@ -32,13 +33,10 @@ export class Message extends Base {
   timestamp: string
   editedTimestamp?: string
   tts: boolean
-  mentionEveryone: boolean
   mentions: MessageMentions
-  mentionRoles: string[]
-  mentionChannels?: ChannelMention[]
   attachments: Attachment[]
   embeds: Embed[]
-  reactions?: Reaction[]
+  reactions: MessageReactionsManager
   nonce?: string | number
   pinned: boolean
   webhookID?: string
@@ -47,8 +45,13 @@ export class Message extends Base {
   application?: MessageApplication
   messageReference?: MessageReference
   flags?: number
+  stickers?: MessageSticker[]
 
-  constructor (
+  get createdAt(): Date {
+    return new Date(this.timestamp)
+  }
+
+  constructor(
     client: Client,
     data: MessagePayload,
     channel: TextChannel,
@@ -63,13 +66,10 @@ export class Message extends Base {
     this.timestamp = data.timestamp
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
-    this.mentionEveryone = data.mention_everyone
     this.mentions = new MessageMentions(this.client, this)
-    this.mentionRoles = data.mention_roles
-    this.mentionChannels = data.mention_channels
     this.attachments = data.attachments
-    this.embeds = data.embeds.map(v => new Embed(v))
-    this.reactions = data.reactions
+    this.embeds = data.embeds.map((v) => new Embed(v))
+    this.reactions = new MessageReactionsManager(this.client, this)
     this.nonce = data.nonce
     this.pinned = data.pinned
     this.webhookID = data.webhook_id
@@ -79,22 +79,23 @@ export class Message extends Base {
     this.messageReference = data.message_reference
     this.flags = data.flags
     this.channel = channel
+    this.stickers =
+      data.stickers !== undefined
+        ? data.stickers.map(
+            (payload) => new MessageSticker(this.client, payload)
+          )
+        : undefined
   }
 
-  protected readFromData (data: MessagePayload): void {
-    super.readFromData(data)
+  readFromData(data: MessagePayload): void {
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
     this.content = data.content ?? this.content
     this.timestamp = data.timestamp ?? this.timestamp
     this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp
     this.tts = data.tts ?? this.tts
-    this.mentionEveryone = data.mention_everyone ?? this.mentionEveryone
-    this.mentionRoles = data.mention_roles ?? this.mentionRoles
-    this.mentionChannels = data.mention_channels ?? this.mentionChannels
     this.attachments = data.attachments ?? this.attachments
-    this.embeds = data.embeds.map(v => new Embed(v)) ?? this.embeds
-    this.reactions = data.reactions ?? this.reactions
+    this.embeds = data.embeds.map((v) => new Embed(v)) ?? this.embeds
     this.nonce = data.nonce ?? this.nonce
     this.pinned = data.pinned ?? this.pinned
     this.webhookID = data.webhook_id ?? this.webhookID
@@ -103,18 +104,61 @@ export class Message extends Base {
     this.application = data.application ?? this.application
     this.messageReference = data.message_reference ?? this.messageReference
     this.flags = data.flags ?? this.flags
+    this.stickers =
+      data.stickers !== undefined
+        ? data.stickers.map(
+            (payload) => new MessageSticker(this.client, payload)
+          )
+        : this.stickers
   }
 
-  async edit (text?: string, option?: MessageOption): Promise<Message> {
-    return this.channel.editMessage(this.id, text, option)  
+  /** Edits this message. */
+  async edit(
+    content?: string | AllMessageOptions,
+    option?: AllMessageOptions
+  ): Promise<Message> {
+    if (typeof content === 'object') {
+      option = content
+      content = undefined
+    }
+    if (content === undefined && option === undefined) {
+      throw new Error('Either text or option is necessary.')
+    }
+    if (option instanceof Embed) {
+      option = {
+        embed: option
+      }
+    }
+    if (
+      this.client.user !== undefined &&
+      this.author.id !== this.client.user?.id
+    ) {
+      throw new Error("Cannot edit other users' messages")
+    }
+    return this.channel.editMessage(this.id, content, option)
   }
 
-  /** These will **not** work in all servers, as this feature is coming slowly. */
-  async reply(text?: string | AllMessageOptions, option?: AllMessageOptions): Promise<Message> {
-    return this.channel.send(text, option, this)
+  /** Creates a Reply to this Message. */
+  async reply(
+    content?: string | AllMessageOptions,
+    option?: AllMessageOptions
+  ): Promise<Message> {
+    return this.channel.send(content, option, this)
   }
 
-  async delete (): Promise<void> {
+  /** Deletes the Message. */
+  async delete(): Promise<void> {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
+  }
+
+  async addReaction(emoji: string | Emoji): Promise<void> {
+    return this.channel.addReaction(this, emoji)
+  }
+
+  async removeReaction(
+    emoji: string | Emoji,
+    user?: User | Member | string
+  ): Promise<void> {
+    return this.channel.removeReaction(this, emoji, user)
   }
 }

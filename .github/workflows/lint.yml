@@ -5,27 +5,22 @@ name: Lint Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macOS-latest, windows-latest, ubuntu-latest]
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v2.1.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.1.2
 
-    - name: Setup ESLint
-      run: npm install
-      
-    - name: Test ESLint
-      run: npx eslint src/
+      - name: Setup ESLint
+        run: npm install
+
+      - name: Test ESLint
+        run: npx eslint src/

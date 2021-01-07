@@ -6,20 +6,17 @@ export class Channel extends Base {
   type: ChannelTypes
   id: string
   static cacheName = 'channel'
-  get mention (): string {
+  get mention(): string {
     return `<#${this.id}>`
   }
 
-  constructor (client: Client, data: ChannelPayload) {
+  constructor(client: Client, data: ChannelPayload) {
     super(client, data)
     this.type = data.type
     this.id = data.id
-    // TODO: Cache in Gateway Event Code
-    // this.client.channels.set(this.id, data)
   }
 
-  protected readFromData (data: ChannelPayload): void {
-    super.readFromData(data)
+  readFromData(data: ChannelPayload): void {
     this.type = data.type ?? this.type
     this.id = data.id ?? this.id
   }

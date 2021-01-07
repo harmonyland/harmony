@@ -1,5 +1,7 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
+import { Guild } from '../structures/guild.ts'
+import { Member } from '../structures/member.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import {
@@ -14,7 +16,7 @@ import { UserPayload } from './user.ts'
 /**
  * Gateway OPcodes from Discord docs.
  */
-export enum GatewayOpcodes { // 문서를 확인해본 결과 Opcode 5번은 비어있다. - UnderC -
+export enum GatewayOpcodes { // Opcode 5 is empty according to discord api docs.
   DISPATCH = 0,
   HEARTBEAT = 1,
   IDENTIFY = 2,
@@ -102,7 +104,9 @@ export enum GatewayEvents {
   Typing_Start = 'TYPING_START',
   User_Update = 'USER_UPDATE',
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
-  Webhooks_Update = 'WEBHOOKS_UPDATE'
+  Voice_State_Update = 'VOICE_STATE_UPDATE',
+  Webhooks_Update = 'WEBHOOKS_UPDATE',
+  Interaction_Create = 'INTERACTION_CREATE'
 }
 
 export interface IdentityPayload {
@@ -117,11 +121,11 @@ export interface IdentityPayload {
 }
 
 export interface IdentityConnection {
-  $os: 'darwin' | 'windows' | 'linux' | 'custom os'
-  $browser: 'harmony' | 'Firefox'
-  $device: 'harmony' | ''
-  $referrer?: ''
-  $referring_domain?: ''
+  $os: 'darwin' | 'windows' | 'linux' | 'custom os' | string
+  $browser: 'harmony' | 'Firefox' | string
+  $device: 'harmony' | string
+  $referrer?: '' | string
+  $referring_domain?: '' | string
 }
 
 export interface Resume {
@@ -287,6 +291,13 @@ export interface MessageReactionRemoveAllPayload {
   message_id: string
 }
 
+export interface MessageReactionRemoveEmojiPayload {
+  channel_id: string
+  message_id: string
+  guild_id?: string
+  emoji: EmojiPayload
+}
+
 export interface PresenceUpdatePayload {
   user: UserPayload
   guild_id: string
@@ -319,4 +330,17 @@ export interface VoiceServerUpdatePayload {
 export interface WebhooksUpdatePayload {
   guild_id: string
   channel_id: string
+}
+
+export interface TypingStartPayload {
+  channel_id: string
+  user_id: string
+  guild_id?: string
+  timestamp: number
+  member?: MemberPayload
+}
+
+export interface TypingStartGuildData {
+  guild: Guild
+  member: Member
 }

@@ -1,4 +1,4 @@
-import { unzlib } from 'https://deno.land/x/denoflate@1.1/mod.ts'
+import { unzlib, EventEmitter } from '../../deps.ts'
 import { Client } from '../models/client.ts'
 import {
   DISCORD_GATEWAY_URL,
@@ -16,14 +16,29 @@ import { gatewayHandlers } from './handlers/index.ts'
 import { GATEWAY_BOT } from '../types/endpoint.ts'
 import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
+import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { Guild } from '../structures/guild.ts'
+
+export interface RequestMembersOptions {
+  limit?: number
+  presences?: boolean
+  query?: string
+  users?: string[]
+}
+
+export interface VoiceStateOptions {
+  mute?: boolean
+  deaf?: boolean
+}
+
+export const RECONNECT_REASON = 'harmony-reconnect'
 
 /**
- * Handles Discord gateway connection.
- * You should not use this and rather use Client class.
+ * Handles Discord Gateway connection.
  *
- * @beta
+ * You should not use this and rather use Client class.
  */
-class Gateway {
+export class Gateway extends EventEmitter {
   websocket: WebSocket
   token: string
   intents: GatewayIntents[]
@@ -37,8 +52,10 @@ class Gateway {
   private heartbeatServerResponded = false
   client: Client
   cache: GatewayCache
+  private timedIdentify: number | null = null
 
-  constructor (client: Client, token: string, intents: GatewayIntents[]) {
+  constructor(client: Client, token: string, intents: GatewayIntents[]) {
+    super()
     this.token = token
     this.intents = intents
     this.client = client
@@ -55,12 +72,13 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  private onopen (): void {
+  private onopen(): void {
     this.connected = true
     this.debug('Connected to Gateway!')
+    this.emit('connect')
   }
 
-  private async onmessage (event: MessageEvent): Promise<void> {
+  private async onmessage(event: MessageEvent): Promise<void> {
     let data = event.data
     if (data instanceof ArrayBuffer) {
       data = new Uint8Array(data)
@@ -96,6 +114,7 @@ class Gateway {
       case GatewayOpcodes.HEARTBEAT_ACK:
         this.heartbeatServerResponded = true
         this.client.ping = Date.now() - this.lastPingTimestamp
+        this.emit('ping', this.client.ping)
         this.debug(
           `Received Heartbeat Ack. Ping Recognized: ${this.client.ping}ms`
         )
@@ -103,10 +122,20 @@ class Gateway {
 
       case GatewayOpcodes.INVALID_SESSION:
         // Because we know this gonna be bool
-        this.debug(`Invalid Session! Identifying with forced new session`)
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        // eslint-disable-next-line @typescript-eslint/promise-function-async
-        setTimeout(() => this.sendIdentify(true), 3000)
+        this.debug(
+          `Invalid Session received! Resumeable? ${d === true ? 'Yes' : 'No'}`
+        )
+        if (d !== true) {
+          this.debug(`Session was invalidated, deleting from cache`)
+          await this.cache.delete('session_id')
+          await this.cache.delete('seq')
+          this.sessionID = undefined
+          this.sequenceID = undefined
+        }
+        this.timedIdentify = setTimeout(async () => {
+          this.timedIdentify = null
+          await this.sendIdentify(!(d as boolean))
+        }, 5000)
         break
 
       case GatewayOpcodes.DISPATCH: {
@@ -116,6 +145,7 @@ class Gateway {
           await this.cache.set('seq', s)
         }
         if (t !== null && t !== undefined) {
+          this.emit(t, d)
           this.client.emit('raw', t, d)
 
           const handler = gatewayHandlers[t]
@@ -132,9 +162,11 @@ class Gateway {
         this.sequenceID = d.seq
         await this.cache.set('seq', d.seq)
         await this.cache.set('session_id', this.sessionID)
+        this.emit('resume')
         break
       }
       case GatewayOpcodes.RECONNECT: {
+        this.emit('reconnectRequired')
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.reconnect()
         break
@@ -144,88 +176,100 @@ class Gateway {
     }
   }
 
-  private async onclose (event: CloseEvent): Promise<void> {
-    this.debug(`Connection Closed with code: ${event.code}`)
+  private async onclose({ reason, code }: CloseEvent): Promise<void> {
+    if (reason === RECONNECT_REASON) return
+    this.emit('close', code, reason)
+    this.debug(`Connection Closed with code: ${code}`)
 
-    if (event.code === GatewayCloseCodes.UNKNOWN_ERROR) {
-      this.debug('API has encountered Unknown Error. Reconnecting...')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
-    } else if (event.code === GatewayCloseCodes.UNKNOWN_OPCODE) {
-      throw new Error("Unknown OP Code was sent. This shouldn't happen!")
-    } else if (event.code === GatewayCloseCodes.DECODE_ERROR) {
-      throw new Error("Invalid Payload was sent. This shouldn't happen!")
-    } else if (event.code === GatewayCloseCodes.NOT_AUTHENTICATED) {
-      throw new Error('Not Authorized: Payload was sent before Identifying.')
-    } else if (event.code === GatewayCloseCodes.AUTHENTICATION_FAILED) {
-      throw new Error('Invalid Token provided!')
-    } else if (event.code === GatewayCloseCodes.INVALID_SEQ) {
-      this.debug('Invalid Seq was sent. Reconnecting.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
-    } else if (event.code === GatewayCloseCodes.RATE_LIMITED) {
-      throw new Error("You're ratelimited. Calm down.")
-    } else if (event.code === GatewayCloseCodes.SESSION_TIMED_OUT) {
-      this.debug('Session Timeout. Reconnecting.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect(true)
-    } else if (event.code === GatewayCloseCodes.INVALID_SHARD) {
-      this.debug('Invalid Shard was sent. Reconnecting.')
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
-    } else if (event.code === GatewayCloseCodes.SHARDING_REQUIRED) {
-      throw new Error("Couldn't connect. Sharding is requried!")
-    } else if (event.code === GatewayCloseCodes.INVALID_API_VERSION) {
-      throw new Error("Invalid API Version was used. This shouldn't happen!")
-    } else if (event.code === GatewayCloseCodes.INVALID_INTENTS) {
-      throw new Error('Invalid Intents')
-    } else if (event.code === GatewayCloseCodes.DISALLOWED_INTENTS) {
-      throw new Error("Given Intents aren't allowed")
-    } else {
-      this.debug(
-        'Unknown Close code, probably connection error. Reconnecting in 5s.'
-      )
-      await delay(5000)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
+    switch (code) {
+      case GatewayCloseCodes.UNKNOWN_ERROR:
+        this.debug('API has encountered Unknown Error. Reconnecting...')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect()
+        break
+      case GatewayCloseCodes.UNKNOWN_OPCODE:
+        throw new Error(
+          "Invalid OP Code or Payload was sent. This shouldn't happen!"
+        )
+      case GatewayCloseCodes.DECODE_ERROR:
+        throw new Error("Invalid Payload was sent. This shouldn't happen!")
+      case GatewayCloseCodes.NOT_AUTHENTICATED:
+        throw new Error('Not Authorized: Payload was sent before Identifying.')
+      case GatewayCloseCodes.AUTHENTICATION_FAILED:
+        throw new Error('Invalid Token provided!')
+      case GatewayCloseCodes.INVALID_SEQ:
+        this.debug('Invalid Seq was sent. Reconnecting.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect()
+        break
+      case GatewayCloseCodes.RATE_LIMITED:
+        throw new Error("You're ratelimited. Calm down.")
+      case GatewayCloseCodes.SESSION_TIMED_OUT:
+        this.debug('Session Timeout. Reconnecting.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect(true)
+        break
+      case GatewayCloseCodes.INVALID_SHARD:
+        this.debug('Invalid Shard was sent. Reconnecting.')
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.reconnect()
+        break
+      case GatewayCloseCodes.SHARDING_REQUIRED:
+        throw new Error("Couldn't connect. Sharding is required!")
+      case GatewayCloseCodes.INVALID_API_VERSION:
+        throw new Error("Invalid API Version was used. This shouldn't happen!")
+      case GatewayCloseCodes.INVALID_INTENTS:
+        throw new Error('Invalid Intents')
+      case GatewayCloseCodes.DISALLOWED_INTENTS:
+        throw new Error("Given Intents aren't allowed")
+      default:
+        this.debug(
+          'Unknown Close code, probably connection error. Reconnecting in 5s.'
+        )
+        if (this.timedIdentify !== null) {
+          clearTimeout(this.timedIdentify)
+          this.debug('Timed Identify found. Cleared timeout.')
+        }
+        await delay(5000)
+        await this.reconnect(true)
+        break
     }
   }
 
-  private onerror (event: Event | ErrorEvent): void {
+  private onerror(event: Event | ErrorEvent): void {
     const eventError = event as ErrorEvent
-    console.log(eventError)
+    this.emit('error', eventError)
   }
 
-  private async sendIdentify (forceNewSession?: boolean): Promise<void> {
-    if (this.client.bot === true) {
-      this.debug('Fetching /gateway/bot...')
-      const info = await this.client.rest.get(GATEWAY_BOT())
-      if (info.session_start_limit.remaining === 0)
-        throw new Error(
-          `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
-        )
-      this.debug(`Recommended Shards: ${info.shards}`)
-      this.debug('=== Session Limit Info ===')
-      this.debug(
-        `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
+  private async sendIdentify(forceNewSession?: boolean): Promise<void> {
+    this.debug('Fetching /gateway/bot...')
+    const info = await this.client.rest.get(GATEWAY_BOT())
+    if (info.session_start_limit.remaining === 0)
+      throw new Error(
+        `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
       )
-      this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
-      if (forceNewSession === undefined || !forceNewSession) {
-        const sessionIDCached = await this.cache.get('session_id')
-        if (sessionIDCached !== undefined) {
-          this.debug(`Found Cached SessionID: ${sessionIDCached}`)
-          this.sessionID = sessionIDCached
-          return await this.sendResume()
-        }
+    this.debug(`Recommended Shards: ${info.shards}`)
+    this.debug('=== Session Limit Info ===')
+    this.debug(
+      `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
+    )
+    this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
+
+    if (forceNewSession === undefined || !forceNewSession) {
+      const sessionIDCached = await this.cache.get('session_id')
+      if (sessionIDCached !== undefined) {
+        this.debug(`Found Cached SessionID: ${sessionIDCached}`)
+        this.sessionID = sessionIDCached
+        return await this.sendResume()
       }
     }
 
     const payload: IdentityPayload = {
       token: this.token,
       properties: {
-        $os: Deno.build.os,
-        $browser: 'harmony',
-        $device: 'harmony'
+        $os: this.client.clientProperties.os ?? Deno.build.os,
+        $browser: this.client.clientProperties.browser ?? 'harmony',
+        $device: this.client.clientProperties.device ?? 'harmony'
       },
       compress: true,
       shard: [0, 1], // TODO: Make sharding possible
@@ -236,26 +280,19 @@ class Gateway {
       presence: this.client.presence.create()
     }
 
-    if (this.client.bot === false) {
-      this.debug('Modify Identify Payload for Self-bot..')
-      delete payload.intents
-      payload.presence = undefined
-      payload.properties = {
-        $os: 'windows',
-        $browser: 'Firefox',
-        $device: '',
-        $referrer: '',
-        $referring_domain: ''
-      }
-    }
-
+    this.debug('Sending Identify payload...')
+    this.emit('sentIdentify')
     this.send({
       op: GatewayOpcodes.IDENTIFY,
       d: payload
     })
   }
 
-  private async sendResume (): Promise<void> {
+  private async sendResume(): Promise<void> {
+    if (this.sessionID === undefined) {
+      this.sessionID = await this.cache.get('session_id')
+      if (this.sessionID === undefined) return await this.sendIdentify()
+    }
     this.debug(`Preparing to resume with Session: ${this.sessionID}`)
     if (this.sequenceID === undefined) {
       const cached = await this.cache.get('seq')
@@ -270,22 +307,70 @@ class Gateway {
         seq: this.sequenceID ?? null
       }
     }
+    this.emit('sentResume')
+    this.debug('Sending Resume payload...')
     this.send(resumePayload)
   }
 
-  debug (msg: string): void {
+  requestMembers(guild: string, options: RequestMembersOptions = {}): string {
+    if (options.query !== undefined && options.limit === undefined)
+      throw new Error(
+        'Missing limit property when specifying query for Requesting Members!'
+      )
+    const nonce = `${guild}_${new Date().getTime()}`
+    this.send({
+      op: GatewayOpcodes.REQUEST_GUILD_MEMBERS,
+      d: {
+        guild_id: guild,
+        query: options.query ?? '',
+        limit: options.limit ?? 0,
+        presences: options.presences,
+        user_ids: options.users,
+        nonce
+      }
+    })
+    return nonce
+  }
+
+  updateVoiceState(
+    guild: Guild | string,
+    channel?: VoiceChannel | string,
+    voiceOptions: VoiceStateOptions = {}
+  ): void {
+    this.send({
+      op: GatewayOpcodes.VOICE_STATE_UPDATE,
+      d: {
+        guild_id: typeof guild === 'string' ? guild : guild.id,
+        channel_id:
+          channel === undefined
+            ? null
+            : typeof channel === 'string'
+            ? channel
+            : channel?.id,
+        self_mute: voiceOptions.mute === undefined ? false : voiceOptions.mute,
+        self_deaf: voiceOptions.deaf === undefined ? false : voiceOptions.deaf
+      }
+    })
+  }
+
+  debug(msg: string): void {
     this.client.debug('Gateway', msg)
   }
 
-  async reconnect (forceNew?: boolean): Promise<void> {
+  async reconnect(forceNew?: boolean): Promise<void> {
+    this.emit('reconnecting')
     clearInterval(this.heartbeatIntervalID)
-    if (forceNew === undefined || !forceNew)
+    if (forceNew === true) {
       await this.cache.delete('session_id')
-    this.close()
+      await this.cache.delete('seq')
+    }
+    this.close(1000, RECONNECT_REASON)
     this.initWebsocket()
   }
 
-  initWebsocket (): void {
+  initWebsocket(): void {
+    this.emit('init')
+    this.debug('Initializing WebSocket...')
     this.websocket = new WebSocket(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
@@ -298,31 +383,30 @@ class Gateway {
     this.websocket.onerror = this.onerror.bind(this)
   }
 
-  close (): void {
-    this.websocket.close(1000)
+  close(code: number = 1000, reason?: string): void {
+    return this.websocket.close(code, reason)
   }
 
-  send (data: GatewayResponse): boolean {
+  send(data: GatewayResponse): boolean {
     if (this.websocket.readyState !== this.websocket.OPEN) return false
-    this.websocket.send(
-      JSON.stringify({
-        op: data.op,
-        d: data.d,
-        s: typeof data.s === 'number' ? data.s : null,
-        t: data.t === undefined ? null : data.t
-      })
-    )
+    const packet = JSON.stringify({
+      op: data.op,
+      d: data.d,
+      s: typeof data.s === 'number' ? data.s : null,
+      t: data.t === undefined ? null : data.t
+    })
+    this.websocket.send(packet)
     return true
   }
 
-  sendPresence (data: StatusUpdatePayload): void {
+  sendPresence(data: StatusUpdatePayload): void {
     this.send({
       op: GatewayOpcodes.PRESENCE_UPDATE,
       d: data
     })
   }
 
-  sendHeartbeat (): void {
+  sendHeartbeat(): void {
     const payload = {
       op: GatewayOpcodes.HEARTBEAT,
       d: this.sequenceID ?? null
@@ -332,10 +416,11 @@ class Gateway {
     this.lastPingTimestamp = Date.now()
   }
 
-  heartbeat (): void {
+  heartbeat(): void {
     if (this.heartbeatServerResponded) {
       this.heartbeatServerResponded = false
     } else {
+      this.debug('Found dead connection, reconnecting...')
       clearInterval(this.heartbeatIntervalID)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.reconnect()
@@ -347,5 +432,3 @@ class Gateway {
 }
 
 export type GatewayEventHandler = (gateway: Gateway, d: any) => void
-
-export { Gateway }

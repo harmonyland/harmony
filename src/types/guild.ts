@@ -1,3 +1,4 @@
+import { ApplicationPayload } from './application.ts'
 import { ChannelPayload } from './channel.ts'
 import { EmojiPayload } from './emoji.ts'
 import { PresenceUpdatePayload } from './gateway.ts'
@@ -61,6 +62,7 @@ export interface MemberPayload {
   premium_since?: string
   deaf: boolean
   mute: boolean
+  pending?: boolean
 }
 
 export enum MessageNotification {
@@ -112,3 +114,39 @@ export type GuildFeatures =
   | 'FEATURABLE'
   | 'ANIMATED_ICON'
   | 'BANNER'
+  | 'WELCOME_SCREEN_ENABLED'
+  | 'MEMBER_VERIFICATION_GATE_ENABLED'
+  | 'PREVIEW_ENABLED'
+
+export enum IntegrationExpireBehavior {
+  REMOVE_ROLE = 0,
+  KICK = 1
+}
+
+export interface IntegrationAccountPayload {
+  id: string
+  name: string
+}
+
+export interface GuildIntegrationPayload {
+  id: string
+  name: string
+  type: string
+  enabled: boolean
+  syncing?: boolean
+  role_id?: string
+  enable_emoticons?: boolean
+  expire_behaviour?: IntegrationExpireBehavior
+  expire_grace_period?: number
+  user?: UserPayload
+  account: IntegrationAccountPayload
+  synced_at?: string // Actually a ISO Timestamp, but we parse in constructor
+  subscriber_count?: number
+  revoked?: boolean
+  application?: ApplicationPayload
+}
+
+export interface GuildBanPayload {
+  reason: string | null
+  user: UserPayload
+}

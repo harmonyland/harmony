@@ -7,17 +7,15 @@ export class GroupDMChannel extends Channel {
   icon?: string
   ownerID: string
 
-  constructor (client: Client, data: GroupDMChannelPayload) {
+  constructor(client: Client, data: GroupDMChannelPayload) {
     super(client, data)
 
     this.name = data.name
     this.icon = data.icon
     this.ownerID = data.owner_id
-    // TODO: Cache in Gateway Event Code
-    // cache.set('groupchannel', this.id, this)
   }
 
-  protected readFromData (data: GroupDMChannelPayload): void {
+  readFromData(data: GroupDMChannelPayload): void {
     super.readFromData(data)
     this.name = data.name ?? this.name
     this.icon = data.icon ?? this.icon

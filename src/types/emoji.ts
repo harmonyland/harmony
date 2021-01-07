@@ -1,8 +1,8 @@
 import { UserPayload } from './user.ts'
 
 export interface EmojiPayload {
-  id: string
-  name: string
+  id: string | null
+  name: string | null
   roles?: string[]
   user?: UserPayload
   require_colons?: boolean

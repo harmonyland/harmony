@@ -6,12 +6,12 @@ import getChannelByType from '../utils/getChannelByType.ts'
 import { BaseManager } from './base.ts'
 
 export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
-  constructor (client: Client) {
+  constructor(client: Client) {
     super(client, 'channels', Channel)
   }
 
   // Override get method as Generic
-  async get<T = Channel> (key: string): Promise<T | undefined> {
+  async get<T = Channel>(key: string): Promise<T | undefined> {
     const data = await this._get(key)
     if (data === undefined) return
     let guild
@@ -25,10 +25,11 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     return res as any
   }
 
-  async array (): Promise<undefined | Channel[]> {
+  async array(): Promise<Channel[]> {
     const arr = await (this.client.cache.array(
       this.cacheName
     ) as ChannelPayload[])
+    if (arr === undefined) return []
     const result: any[] = []
     for (const elem of arr) {
       let guild
@@ -43,19 +44,26 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     return result
   }
 
-  async fetch (id: string): Promise<Channel> {
+  /** Fetches a Channel by ID, cache it, resolve it */
+  async fetch<T = Channel>(id: string): Promise<T> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(CHANNEL(id))
-        .then(async data => {
+        .then(async (data) => {
           this.set(id, data as ChannelPayload)
           let guild
           if (data.guild_id !== undefined) {
             guild = await this.client.guilds.get(data.guild_id)
           }
-          resolve(getChannelByType(this.client, data as ChannelPayload, guild))
+          resolve(
+            (getChannelByType(
+              this.client,
+              data as ChannelPayload,
+              guild
+            ) as unknown) as T
+          )
         })
-        .catch(e => reject(e))
+        .catch((e) => reject(e))
     })
   }
 }

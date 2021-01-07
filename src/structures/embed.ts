@@ -25,7 +25,7 @@ export class Embed {
   author?: EmbedAuthor
   fields?: EmbedField[]
 
-  constructor (data?: EmbedPayload) {
+  constructor(data?: EmbedPayload) {
     this.title = data?.title
     this.type = data?.type
     this.description = data?.description
@@ -42,7 +42,7 @@ export class Embed {
   }
 
   // khk4912
-  toJSON (): EmbedPayload {
+  toJSON(): EmbedPayload {
     return {
       title: this.title,
       type: this.type,
@@ -60,72 +60,72 @@ export class Embed {
     }
   }
 
-  setTitle (title: string): Embed {
+  setTitle(title: string): Embed {
     this.title = title
     return this
   }
 
-  setDescription (description: string): Embed {
+  setDescription(description: string): Embed {
     this.description = description
     return this
   }
 
-  setType (type: EmbedTypes): Embed {
+  setType(type: EmbedTypes): Embed {
     this.type = type
     return this
   }
 
-  setURL (url: string): Embed {
+  setURL(url: string): Embed {
     this.url = url
     return this
   }
 
-  setTimestamp (timestamp: string): Embed {
+  setTimestamp(timestamp: string): Embed {
     this.timestamp = timestamp
     return this
   }
 
-  setColor (hex: number): Embed {
+  setColor(hex: number): Embed {
     this.color = hex
     return this
   }
 
-  setFooter (footer: EmbedFooter): Embed {
+  setFooter(footer: EmbedFooter): Embed {
     this.footer = footer
     return this
   }
 
-  setImage (image: EmbedImage): Embed {
+  setImage(image: EmbedImage): Embed {
     this.image = image
     return this
   }
 
-  setThumbnail (thumbnail: EmbedThumbnail): Embed {
+  setThumbnail(thumbnail: EmbedThumbnail): Embed {
     this.thumbnail = thumbnail
     return this
   }
 
-  setVideo (video: EmbedVideo): Embed {
+  setVideo(video: EmbedVideo): Embed {
     this.video = video
     return this
   }
 
-  setProvider (provider: EmbedProvider): Embed {
+  setProvider(provider: EmbedProvider): Embed {
     this.provider = provider
     return this
   }
 
-  setAuthor (author: EmbedAuthor): Embed {
+  setAuthor(author: EmbedAuthor): Embed {
     this.author = author
     return this
   }
 
-  setFields (fields: EmbedField[]): Embed {
+  setFields(fields: EmbedField[]): Embed {
     this.fields = fields
     return this
   }
 
-  addField (name: string, value: string, inline?: boolean): Embed {
+  addField(name: string, value: string, inline?: boolean): Embed {
     if (this.fields === undefined) {
       this.fields = [
         {

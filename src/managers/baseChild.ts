@@ -2,8 +2,10 @@ import { Client } from '../models/client.ts'
 import { Collection } from '../utils/collection.ts'
 import { BaseManager } from './base.ts'
 
+/** Child Managers validate data from their parents i.e. from Managers */
 export class BaseChildManager<T, T2> {
   client: Client
+  /** Parent Manager */
   parent: BaseManager<T, T2>
 
   constructor(client: Client, parent: BaseManager<T, T2>) {
@@ -28,12 +30,12 @@ export class BaseChildManager<T, T2> {
   }
 
   async collection(): Promise<Collection<string, T2>> {
-    const arr = await this.array() as undefined | T2[]
+    const arr = (await this.array()) as undefined | T2[]
     if (arr === undefined) return new Collection()
     const collection = new Collection()
     for (const elem of arr) {
-      // @ts-expect-error
-      collection.set(elem.id, elem)
+      // any is required here. Else you would need ts-ignore or expect-error.
+      collection.set((elem as any).id, elem)
     }
     return collection
   }

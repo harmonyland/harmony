@@ -6,12 +6,9 @@ import { EmojiPayload } from '../types/emoji.ts'
 import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { EmojisManager } from './emojis.ts'
-import { fetchAuto } from 'https://raw.githubusercontent.com/DjDeveloperr/fetch-base64/main/mod.ts'
+import { fetchAuto } from '../../deps.ts'
 
-export class GuildEmojisManager extends BaseChildManager<
-  EmojiPayload,
-  Emoji
-  > {
+export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   guild: Guild
 
   constructor(client: Client, parent: EmojisManager, guild: Guild) {
@@ -33,28 +30,34 @@ export class GuildEmojisManager extends BaseChildManager<
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD_EMOJI(this.guild.id, id))
-        .then(async data => {
+        .then(async (data) => {
           const emoji = new Emoji(this.client, data as EmojiPayload)
           data.guild_id = this.guild.id
           await this.set(id, data as EmojiPayload)
           emoji.guild = this.guild
           resolve(emoji)
         })
-        .catch(e => reject(e))
+        .catch((e) => reject(e))
     })
   }
 
-  async create(name: string, url: string, roles?: Role[] | string[] | string): Promise<Emoji | undefined> {
+  async create(
+    name: string,
+    url: string,
+    roles?: Role[] | string[] | string
+  ): Promise<Emoji | undefined> {
     let data = url
-    if (!data.startsWith("data:")) {
+    if (!data.startsWith('data:')) {
       data = await fetchAuto(url)
     }
     return await new Promise((resolve, reject) => {
       let roleIDs: string[] = []
-      if (roles !== undefined && typeof roles === "string") roleIDs = [roles]
+      if (roles !== undefined && typeof roles === 'string') roleIDs = [roles]
       else if (roles !== undefined) {
-        if (roles?.length === 0) reject(new Error("Empty Roles array was provided"))
-        if (roles[0] instanceof Role) roleIDs = (roles as any).map((r: Role) => r.id)
+        if (roles?.length === 0)
+          reject(new Error('Empty Roles array was provided'))
+        if (roles[0] instanceof Role)
+          roleIDs = (roles as any).map((r: Role) => r.id)
         else roleIDs = roles as string[]
       } else roles = [this.guild.id]
       this.client.rest
@@ -63,14 +66,14 @@ export class GuildEmojisManager extends BaseChildManager<
           image: data,
           roles: roleIDs
         })
-        .then(async data => {
+        .then(async (data) => {
           const emoji = new Emoji(this.client, data as EmojiPayload)
           data.guild_id = this.guild.id
           await this.set(data.id, data as EmojiPayload)
           emoji.guild = this.guild
           resolve(emoji)
         })
-        .catch(e => reject(e))
+        .catch((e) => reject(e))
     })
   }
 
@@ -84,7 +87,8 @@ export class GuildEmojisManager extends BaseChildManager<
   async flush(): Promise<boolean> {
     const arr = await this.array()
     for (const elem of arr) {
-      this.parent.delete(elem.id)
+      const emojiID = elem.id !== null ? elem.id : elem.name
+      this.parent.delete(emojiID as string)
     }
     return true
   }

@@ -18,13 +18,13 @@ export interface GuildChannelPayload extends ChannelPayload {
   name: string
   position: number
   permission_overwrites: Overwrite[]
-  nsfw: boolean
   parent_id?: string
 }
 
 export interface GuildTextChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
+  nsfw: boolean
   rate_limit_per_user: number
   topic?: string
 }
@@ -33,6 +33,7 @@ export interface GuildNewsChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
   topic?: string
+  nsfw: boolean
 }
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
@@ -50,9 +51,64 @@ export interface GroupDMChannelPayload extends DMChannelPayload {
   owner_id: string
 }
 
-export interface GuildChannelCategoryPayload
+export interface GuildCategoryChannelPayload
   extends ChannelPayload,
     GuildChannelPayload {}
+
+export interface ModifyChannelPayload {
+  name?: string
+  position?: number | null
+  permission_overwrites?: Overwrite[] | null
+  parent_id?: string
+}
+
+export interface ModifyGuildCategoryChannelPayload
+  extends ModifyChannelPayload {}
+
+export interface ModifyGuildTextChannelPayload extends ModifyChannelPayload {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+  rate_limit_per_user?: number | null
+}
+
+export interface ModifyGuildNewsChannelPayload extends ModifyChannelPayload {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+}
+
+export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
+  bitrate?: number | null
+  user_limit?: number | null
+}
+
+export interface ModifyChannelOption {
+  name?: string
+  position?: number | null
+  permissionOverwrites?: Overwrite[] | null
+  parentID?: string
+}
+
+export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
+
+export interface ModifyGuildTextChannelOption extends ModifyChannelOption {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+  rateLimitPerUser?: number | null
+}
+
+export interface ModifyGuildNewsChannelOption extends ModifyChannelOption {
+  type?: number
+  topic?: string | null
+  nsfw?: boolean | null
+}
+
+export interface ModifyVoiceChannelOption extends ModifyChannelOption {
+  bitrate?: number | null
+  userLimit?: number | null
+}
 
 export interface Overwrite {
   id: string
@@ -96,16 +152,17 @@ export interface MessagePayload {
   application?: MessageApplication
   message_reference?: MessageReference
   flags?: number
+  stickers?: MessageStickerPayload[]
 }
 
 export interface MessageOption {
   tts?: boolean
   embed?: Embed
   file?: Attachment
-  allowedMention?: {
-    parse: 'everyone' | 'users' | 'roles'
-    roles: string[]
-    users: string[]
+  allowedMentions?: {
+    parse?: 'everyone' | 'users' | 'roles'
+    roles?: string[]
+    users?: string[]
   }
 }
 
@@ -208,7 +265,7 @@ export interface MessageActivity {
 export interface MessageApplication {
   id: string
   cover_image?: string
-  desription: string
+  description: string
   icon: string | undefined
   name: string
 }
@@ -255,4 +312,21 @@ export enum MessageFlags {
 export interface FollowedChannel {
   channel_id: string
   webhook_id: string
+}
+
+export enum MessageStickerFormatTypes {
+  PNG = 1,
+  APNG = 2,
+  LOTTIE = 3
+}
+
+export interface MessageStickerPayload {
+  id: string
+  pack_id: string
+  name: string
+  description: string
+  tags?: string
+  asset: string
+  preview_asset: string | null
+  format_type: MessageStickerFormatTypes
 }

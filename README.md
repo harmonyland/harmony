@@ -1,44 +1,47 @@
-# harmony
+![banner](https://cdn.discordapp.com/attachments/783319033730564098/783399012547035176/HarmonyBanner.png)
 
-![banner](banner.png)
+<p align=center><i><b>An easy to use Discord API Library for Deno</b></i></p>
+<p align=center>
+<img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
+<a href=https://discord.gg/WVN2JF2FRv>
+  <img src="https://img.shields.io/discord/783319033205751809.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge" alt="Support">
+ </a>
+</p>
+<br>
 
-[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
-
-**An easy to use Discord API Library for Deno.**
-* Lightweight and easy to use.
-* Built-in Command Framework,
-  * Easily build Commands on the fly.
-  * Completely Customizable.
-  * Complete Object-Oriented approach.
-* 100% Discord API Coverage.
-* Customizable caching.
-  * Built in support for Redis.
-  * Write Custom Cache Adapters.
-* Complete TypeScript support.
-
-Note: Library is yet under development and not completely usable. You're still always welcome to use, but there may be breaking changes.
+- Lightweight and easy to use.
+- Complete Object-Oriented approach.
+- Slash Commands supported.
+- Built-in Commands framework.
+- Customizable Caching, with Redis support.
+- Use `@decorators` to easily make things!
+- Made with ❤️ TypeScript.
 
 ## Table of Contents
 
 - [Usage](#usage)
 - [Docs](#docs)
+- [Discord](#discord)
 - [Maintainer](#maintainer)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Usage
-Right now, the package is not published anywhere, as its not completely usable.
-You can import it from this Raw GitHub URL: https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts
+
+You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts too.
 
 For a quick example, run this:
+
 ```bash
-deno run --allow-net https://raw.githubusercontent.com/harmony-org/harmony/main/examples/ping.ts
+deno run --allow-net https://deno.land/x/harmony/examples/ping.ts
 ```
+
 And input your bot's token and Intents.
 
 Here is a small example of how to use harmony,
+
 ```ts
-import { Client, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+import { Client, Message, Intents } from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new Client()
 
@@ -60,8 +63,15 @@ client.connect('super secret token comes here', Intents.All)
 ```
 
 Or with CommandClient!
+
 ```ts
-import { CommandClient, Command, CommandContext, Message, Intents } from 'https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts'
+import {
+  CommandClient,
+  Command,
+  CommandContext,
+  Message,
+  Intents
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new CommandClient({
   prefix: '!'
@@ -74,7 +84,7 @@ client.on('ready', () => {
 
 // Create a new Command
 class PingCommand extends Command {
-  name = "ping"
+  name = 'ping'
 
   execute(ctx: CommandContext) {
     ctx.message.reply(`pong! Ping: ${ctx.client.ping}ms`)
@@ -88,9 +98,52 @@ client.commands.add(PingCommand)
 client.connect('super secret token comes here', Intents.All)
 ```
 
+Or with Decorators!
+
+```ts
+import {
+  Client,
+  event,
+  Intents,
+  command,
+  CommandContext
+} from 'https://deno.land/x/harmony/mod.ts'
+
+class MyClient extends CommandClient {
+  constructor() {
+    super({
+      prefix: ['!', '!!'],
+      caseSensitive: false
+    })
+  }
+
+  @event()
+  ready(): void {
+    console.log(`Logged in as ${this.user?.tag}!`)
+  }
+
+  @command({ aliases: 'pong' })
+  Ping(ctx: CommandContext): void {
+    ctx.message.reply('Pong!')
+  }
+}
+
+// Connect to gateway
+// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
+new MyClient().connect('super secret token comes here', Intents.All)
+```
+
 ## Docs
 
-Not made yet.
+Documentation is available for `main` (branch) and `stable` (release).
+
+- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
+- [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
+- [Guide](https://harmony-org.github.io)
+
+## Found a bug or want support? Join our discord server!
+
+[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/WVN2JF2FRv)
 
 ## Maintainer
 
@@ -100,10 +153,12 @@ Not made yet.
 
 See [the contributing file](CONTRIBUTING.md)!
 
-PRs are accepted.
+Pull Requests are accepted.
 
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## License
 
-[MIT © 2020 Helloyunho](LICENSE)
+[MIT © 2020-2021 Harmony Org](LICENSE)
+
+#### Made with ❤ by Harmony-org

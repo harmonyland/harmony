@@ -1,14 +1,120 @@
 import { Client } from '../models/client.ts'
-import { GuildFeatures, GuildPayload } from '../types/guild.ts'
-import { PresenceUpdatePayload } from '../types/gateway.ts'
+import {
+  GuildBanPayload,
+  GuildFeatures,
+  GuildIntegrationPayload,
+  GuildPayload,
+  IntegrationAccountPayload,
+  IntegrationExpireBehavior
+} from '../types/guild.ts'
 import { Base } from './base.ts'
-import { VoiceState } from './voiceState.ts'
-import { RolesManager } from '../managers/roles.ts'
-import { GuildChannelsManager } from '../managers/guildChannels.ts'
+import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
+import { InviteManager } from '../managers/invites.ts'
+import {
+  CreateChannelOptions,
+  GuildChannel,
+  GuildChannelsManager
+} from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
 import { Role } from './role.ts'
 import { GuildEmojisManager } from '../managers/guildEmojis.ts'
-import { Member } from "./member.ts"
+import { Member } from './member.ts'
+import { User } from './user.ts'
+import { Application } from './application.ts'
+import { GUILD_BAN, GUILD_BANS, GUILD_INTEGRATIONS } from '../types/endpoint.ts'
+import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
+import { RequestMembersOptions } from '../gateway/index.ts'
+import { GuildPresencesManager } from '../managers/presences.ts'
+
+export class GuildBan extends Base {
+  guild: Guild
+  reason?: string
+  user: User
+
+  constructor(client: Client, data: GuildBanPayload, guild: Guild) {
+    super(client, data)
+    this.guild = guild
+    this.reason = data.reason === null ? undefined : data.reason
+    this.user = new User(client, data.user)
+  }
+}
+
+export class GuildBans {
+  client: Client
+  guild: Guild
+
+  constructor(client: Client, guild: Guild) {
+    this.client = client
+    this.guild = guild
+  }
+
+  /**
+   * Gets all bans in the Guild.
+   */
+  async all(): Promise<GuildBan[]> {
+    const res = await this.client.rest.get(GUILD_BANS(this.guild.id))
+    if (typeof res !== 'object' || !Array.isArray(res))
+      throw new Error('Failed to fetch Guild Bans')
+
+    const bans = (res as GuildBanPayload[]).map(
+      (ban) => new GuildBan(this.client, ban, this.guild)
+    )
+    return bans
+  }
+
+  /**
+   * Gets ban details of a User if any.
+   * @param user User to get ban of, ID or User object.
+   */
+  async get(user: string | User): Promise<GuildBan> {
+    const res = await this.client.rest.get(
+      GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id)
+    )
+    if (typeof res !== 'object') throw new Error('Failed to fetch Guild Ban')
+    return new GuildBan(this.client, res, this.guild)
+  }
+
+  /**
+   * Bans a User.
+   * @param user User to ban, ID or User object.
+   * @param reason Reason for the Ban.
+   * @param deleteMessagesDays Delete Old Messages? If yes, how much days.
+   */
+  async add(
+    user: string | User,
+    reason?: string,
+    deleteMessagesDays?: number
+  ): Promise<void> {
+    const res = await this.client.rest.put(
+      GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id),
+      {
+        reason,
+        delete_message_days: deleteMessagesDays
+      },
+      undefined,
+      null,
+      true
+    )
+    if (res.response.status !== 204) throw new Error('Failed to Add Guild Ban')
+  }
+
+  /**
+   * Unbans (removes ban from) a User.
+   * @param user User to unban, ID or User object.
+   */
+  async remove(user: string | User): Promise<boolean> {
+    const res = await this.client.rest.delete(
+      GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id),
+      undefined,
+      undefined,
+      null,
+      true
+    )
+
+    if (res.response.status !== 204) return false
+    else return true
+  }
+}
 
 export class Guild extends Base {
   id: string
@@ -30,6 +136,7 @@ export class Guild extends Base {
   explicitContentFilter?: string
   roles: RolesManager
   emojis: GuildEmojisManager
+  invites: InviteManager
   features?: GuildFeatures[]
   mfaLevel?: string
   applicationID?: string
@@ -40,10 +147,10 @@ export class Guild extends Base {
   large?: boolean
   unavailable: boolean
   memberCount?: number
-  voiceStates?: VoiceState[]
+  voiceStates: GuildVoiceStatesManager
   members: MembersManager
   channels: GuildChannelsManager
-  presences?: PresenceUpdatePayload[]
+  presences: GuildPresencesManager
   maxPresences?: number
   maxMembers?: number
   vanityURLCode?: string
@@ -56,19 +163,24 @@ export class Guild extends Base {
   maxVideoChannelUsers?: number
   approximateNumberCount?: number
   approximatePresenceCount?: number
+  bans: GuildBans
 
-  constructor (client: Client, data: GuildPayload) {
+  constructor(client: Client, data: GuildPayload) {
     super(client, data)
     this.id = data.id
+    this.bans = new GuildBans(client, this)
     this.unavailable = data.unavailable
     this.members = new MembersManager(this.client, this)
+    this.voiceStates = new GuildVoiceStatesManager(client, this)
+    this.presences = new GuildPresencesManager(client, this)
     this.channels = new GuildChannelsManager(
-      this.client, 
-      this.client.channels, 
+      this.client,
+      this.client.channels,
       this
     )
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
+    this.invites = new InviteManager(this.client, this)
 
     if (!this.unavailable) {
       this.name = data.name
@@ -87,15 +199,6 @@ export class Guild extends Base {
       this.verificationLevel = data.verification_level
       this.defaultMessageNotifications = data.default_message_notifications
       this.explicitContentFilter = data.explicit_content_filter
-      // this.roles = data.roles.map(
-      //   v => cache.get('role', v.id) ?? new Role(client, v)
-      // )
-      // data.roles.forEach(role => {
-      //   this.roles.set(role.id, new Role(client, role))
-      // })
-      // this.emojis = data.emojis.map(
-      //   v => cache.get('emoji', v.id) ?? new Emoji(client, v)
-      // )
       this.features = data.features
       this.mfaLevel = data.mfa_level
       this.systemChannelID = data.system_channel_id
@@ -104,21 +207,6 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at
       this.large = data.large
       this.memberCount = data.member_count
-      // TODO: Cache in Gateway Event code
-      // this.voiceStates = data.voice_states?.map(
-      //   v =>
-      //     cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
-      //     new VoiceState(client, v)
-      // )
-      // this.members = data.members?.map(
-      //   v =>
-      //     cache.get('member', `${this.id}:${v.user.id}`) ??
-      //     new Member(client, v)
-      // )
-      // this.channels = data.channels?.map(
-      //   v => cache.get('channel', v.id) ?? getChannelByType(this.client, v)
-      // )
-      this.presences = data.presences
       this.maxPresences = data.max_presences
       this.maxMembers = data.max_members
       this.vanityURLCode = data.vanity_url_code
@@ -134,8 +222,7 @@ export class Guild extends Base {
     }
   }
 
-  protected readFromData (data: GuildPayload): void {
-    super.readFromData(data)
+  readFromData(data: GuildPayload): void {
     this.id = data.id ?? this.id
     this.unavailable = data.unavailable ?? this.unavailable
 
@@ -158,14 +245,6 @@ export class Guild extends Base {
         data.default_message_notifications ?? this.defaultMessageNotifications
       this.explicitContentFilter =
         data.explicit_content_filter ?? this.explicitContentFilter
-      // this.roles =
-      //   data.roles.map(
-      //     v => cache.get('role', v.id) ?? new Role(this.client, v)
-      //   ) ?? this.roles
-      // this.emojis =
-      //   data.emojis.map(
-      //     v => cache.get('emoji', v.id) ?? new Emoji(this.client, v)
-      //   ) ?? this.emojis
       this.features = data.features ?? this.features
       this.mfaLevel = data.mfa_level ?? this.mfaLevel
       this.systemChannelID = data.system_channel_id ?? this.systemChannelID
@@ -175,23 +254,6 @@ export class Guild extends Base {
       this.joinedAt = data.joined_at ?? this.joinedAt
       this.large = data.large ?? this.large
       this.memberCount = data.member_count ?? this.memberCount
-      // this.voiceStates =
-      //   data.voice_states?.map(
-      //     v =>
-      //       cache.get('voiceState', `${v.guild_id}:${v.user_id}`) ??
-      //       new VoiceState(this.client, v)
-      //   ) ?? this.voiceStates
-      // this.members =
-      //   data.members?.map(
-      //     v =>
-      //       cache.get('member', `${this.id}:${v.user.id}`) ??
-      //       new Member(this.client, v)
-      //   ) ?? this.members
-      // this.channels =
-      //   data.channels?.map(
-      //     v => cache.get('channel', v.id) ?? getChannelByType(this.client, v, this)
-      //   ) ?? this.members
-      this.presences = data.presences ?? this.presences
       this.maxPresences = data.max_presences ?? this.maxPresences
       this.maxMembers = data.max_members ?? this.maxMembers
       this.vanityURLCode = data.vanity_url_code ?? this.vanityURLCode
@@ -212,13 +274,115 @@ export class Guild extends Base {
     }
   }
 
-  async getEveryoneRole (): Promise<Role> {
-    return (await this.roles.array().then(arr => arr?.sort((b, a) => a.position - b.position)[0]) as any) as Role
+  /**
+   * Gets Everyone role of the Guild
+   */
+  async getEveryoneRole(): Promise<Role> {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return (await this.roles.get(this.id)) as Role
   }
 
+  /**
+   * Gets current client's member in the Guild
+   */
   async me(): Promise<Member> {
     const get = await this.members.get(this.client.user?.id as string)
     if (get === undefined) throw new Error('Guild#me is not cached')
     return get
+  }
+
+  /**
+   * Fetches Guild's Integrations (Webhooks, Bots, etc.)
+   */
+  async fetchIntegrations(): Promise<GuildIntegration[]> {
+    const raw = (await this.client.rest.get(
+      GUILD_INTEGRATIONS(this.id)
+    )) as GuildIntegrationPayload[]
+    return raw.map((e) => new GuildIntegration(this.client, e))
+  }
+
+  /** Create a new Guild Channel */
+  async createChannel(options: CreateChannelOptions): Promise<GuildChannel> {
+    return this.channels.create(options)
+  }
+
+  /** Create a new Guild Role */
+  async createRole(options?: CreateGuildRoleOptions): Promise<Role> {
+    return this.roles.create(options)
+  }
+
+  /**
+   * Chunks the Guild Members, i.e. cache them.
+   * @param options Options regarding the Members Request
+   * @param wait Whether to wait for all Members to come before resolving Promise or not.
+   * @param timeout Configurable timeout to cancel the wait to safely remove listener.
+   */
+  async chunk(
+    options: RequestMembersOptions,
+    wait: boolean = false,
+    timeout: number = 60000
+  ): Promise<Guild> {
+    return await new Promise((resolve, reject) => {
+      this.client.gateway?.requestMembers(this.id, options)
+      if (!wait) return resolve(this)
+      else {
+        let chunked = false
+        const listener = (guild: Guild): void => {
+          if (guild.id === this.id) {
+            chunked = true
+            this.client.removeListener('guildMembersChunked', listener)
+            resolve(this)
+          }
+        }
+        this.client.on('guildMembersChunked', listener)
+        setTimeout(() => {
+          if (!chunked) {
+            this.client.removeListener('guildMembersChunked', listener)
+          }
+        }, timeout)
+      }
+    })
+  }
+}
+
+export class GuildIntegration extends Base {
+  id: string
+  name: string
+  type: string
+  enabled: boolean
+  syncing?: boolean
+  roleID?: string
+  enableEmoticons?: boolean
+  expireBehaviour?: IntegrationExpireBehavior
+  expireGracePeriod?: number
+  user?: User
+  account: IntegrationAccountPayload
+  syncedAt?: string // Actually a ISO Timestamp, but we parse in constructor
+  subscriberCount?: number
+  revoked?: boolean
+  application?: Application
+
+  constructor(client: Client, data: GuildIntegrationPayload) {
+    super(client, data)
+
+    this.id = data.id
+    this.name = data.name
+    this.type = data.type
+    this.enabled = data.enabled
+    this.syncing = data.syncing
+    this.roleID = data.role_id
+    this.enableEmoticons = data.enable_emoticons
+    this.expireBehaviour = data.expire_behaviour
+    this.expireGracePeriod = data.expire_grace_period
+    this.user =
+      data.user !== undefined ? new User(client, data.user) : undefined
+    this.account = data.account
+    this.syncedAt = data.synced_at
+    this.subscriberCount = data.subscriber_count
+    this.revoked = data.revoked
+    this.application =
+      data.application !== undefined
+        ? new Application(client, data.application)
+        : undefined
   }
 }

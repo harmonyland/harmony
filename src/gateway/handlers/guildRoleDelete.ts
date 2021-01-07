@@ -1,6 +1,6 @@
 import { Gateway, GatewayEventHandler } from '../index.ts'
 import { Guild } from '../../structures/guild.ts'
-import { GuildRoleDeletePayload } from "../../types/gateway.ts"
+import { GuildRoleDeletePayload } from '../../types/gateway.ts'
 
 export const guildRoleDelete: GatewayEventHandler = async (
   gateway: Gateway,
@@ -12,7 +12,8 @@ export const guildRoleDelete: GatewayEventHandler = async (
 
   const role = await guild.roles.get(d.role_id)
   // Shouldn't happen either
-  if(role === undefined) return
+  if (role === undefined) return
+  await guild.roles._delete(d.role_id)
 
   gateway.client.emit('guildRoleDelete', role)
 }
