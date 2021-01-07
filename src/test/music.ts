@@ -11,10 +11,7 @@ import {
   GuildTextChannel
 } from '../../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
-import {
-  Manager,
-  Player
-} from '../../deps.ts'
+import { Manager, Player } from 'https://deno.land/x/lavadeno/mod.ts'
 import { Interaction } from '../structures/slash.ts'
 import { slash } from '../models/client.ts'
 // import { SlashCommandOptionType } from '../types/slash.ts'

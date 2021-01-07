@@ -4,7 +4,9 @@ export { Gateway } from './src/gateway/index.ts'
 export type { ClientEvents } from './src/gateway/handlers/index.ts'
 export * from './src/models/client.ts'
 export * from './src/models/slashClient.ts'
-export { RESTManager } from './src/models/rest.ts'
+export { RESTManager, TokenType, HttpResponseCode } from './src/models/rest.ts'
+export type { RequestHeaders } from './src/models/rest.ts'
+export type { RESTOptions } from './src/models/rest.ts'
 export * from './src/models/cacheAdapter.ts'
 export {
   Command,
