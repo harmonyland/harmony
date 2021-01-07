@@ -308,10 +308,11 @@ export class Guild extends Base {
 
   /**
    * Fulfills promise when guild becomes available
+   * @param timeout Configurable timeout to cancel the wait to safely remove listener.
    */
-  async awaitAvailability(): Promise<Guild> {
+  async awaitAvailability(timeout: number = 1000): Promise<Guild> {
     return await new Promise((resolve, reject) => {
-      if(!this.unavailable) return;
+      if(!this.unavailable) resolve(this);
       const listener = (guild: Guild): void => {
         if (guild.id === this.id) {
           this.client.removeListener('guildLoaded', listener);
@@ -319,6 +320,10 @@ export class Guild extends Base {
         }
       };
       this.client.on('guildLoaded', listener);
+      setTimeout(() => {
+        this.client.removeListener('guildLoaded', listener);
+        reject(Error("Timeout. Guild didn't arrive in time."));
+      }, timeout);
     });
   }
 }
