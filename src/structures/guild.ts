@@ -7,7 +7,8 @@ import {
   IntegrationAccountPayload,
   IntegrationExpireBehavior,
   Verification,
-  GuildChannels
+  GuildChannels,
+  GuildPreview
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
@@ -326,6 +327,10 @@ export class Guild extends Base {
         reject(Error("Timeout. Guild didn't arrive in time."))
       }, timeout)
     })
+  }
+
+  async preview(): Promise<GuildPreview> {
+    return this.client.guilds.preview(this.id)
   }
 }
 
