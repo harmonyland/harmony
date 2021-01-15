@@ -1,3 +1,4 @@
+import { Emoji } from '../structures/emoji.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { GuildTextChannel } from '../structures/textChannel.ts'
@@ -203,4 +204,30 @@ export interface GuildCreateChannelOptions {
   name: string
   type: ChannelTypes
   parentID?: string
+}
+
+export interface GuildPreviewPayload {
+  id: string
+  name: string
+  icon: string | null
+  splash: string | null
+  discovery_splash: string | null
+  emojis: EmojiPayload[]
+  features: GuildFeatures[]
+  approximate_member_count: number
+  approximate_presence_count: number
+  description: string | null
+}
+
+export interface GuildPreview {
+  id: string
+  name: string
+  icon: string | null
+  splash: string | null
+  discoverySplash: string | null
+  emojis: Emoji[]
+  features: GuildFeatures[]
+  approximateMemberCount: number
+  approximatePresenceCount: number
+  description: string | null
 }

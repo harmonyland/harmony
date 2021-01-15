@@ -1,7 +1,7 @@
 import { Client } from '../models/client.ts'
 import { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
-import { GUILD, GUILDS } from '../types/endpoint.ts'
+import { GUILD, GUILDS, GUILD_PREVIEW } from '../types/endpoint.ts'
 import {
   GuildChannels,
   GuildPayload,
@@ -10,11 +10,14 @@ import {
   GuildCreatePayload,
   Verification,
   GuildCreateChannelOptions,
-  GuildCreateChannelPayload
+  GuildCreateChannelPayload,
+  GuildPreview,
+  GuildPreviewPayload
 } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { MembersManager } from './members.ts'
 import { fetchAuto } from '../../deps.ts'
+import { Emoji } from '../structures/emoji.ts'
 
 export interface GuildCreateOptions {
   name: string
@@ -108,5 +111,26 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     const guild = new Guild(this.client, result)
 
     return guild
+  }
+
+  async preview(guildID: string): Promise<GuildPreview> {
+    const resp: GuildPreviewPayload = await this.client.rest.get(
+      GUILD_PREVIEW(guildID)
+    )
+
+    const result: GuildPreview = {
+      id: resp.id,
+      name: resp.name,
+      icon: resp.icon,
+      splash: resp.splash,
+      discoverySplash: resp.discovery_splash,
+      emojis: resp.emojis.map((emoji) => new Emoji(this.client, emoji)),
+      features: resp.features,
+      approximateMemberCount: resp.approximate_member_count,
+      approximatePresenceCount: resp.approximate_presence_count,
+      description: resp.description
+    }
+
+    return result
   }
 }
