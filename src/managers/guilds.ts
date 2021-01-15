@@ -12,7 +12,9 @@ import {
   GuildCreateChannelOptions,
   GuildCreateChannelPayload,
   GuildPreview,
-  GuildPreviewPayload
+  GuildPreviewPayload,
+  GuildModifyOptions,
+  GuildModifyPayload
 } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { MembersManager } from './members.ts'
@@ -132,5 +134,75 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     }
 
     return result
+  }
+
+  async edit(
+    guildID: string,
+    options: GuildModifyOptions,
+    asRaw: false
+  ): Promise<Guild>
+  async edit(
+    guildID: string,
+    options: GuildModifyOptions,
+    asRaw: true
+  ): Promise<GuildPayload>
+  async edit(
+    guildID: string,
+    options: GuildModifyOptions,
+    asRaw: boolean = false
+  ): Promise<Guild | GuildPayload> {
+    if (
+      options.icon !== undefined &&
+      options.icon !== null &&
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      !options.icon.startsWith('data:')
+    ) {
+      options.icon = await fetchAuto(options.icon)
+    }
+    if (
+      options.splash !== undefined &&
+      options.splash !== null &&
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      !options.splash.startsWith('data:')
+    ) {
+      options.splash = await fetchAuto(options.splash)
+    }
+    if (
+      options.banner !== undefined &&
+      options.banner !== null &&
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      !options.banner.startsWith('data:')
+    ) {
+      options.banner = await fetchAuto(options.banner)
+    }
+
+    const body: GuildModifyPayload = {
+      name: options.name,
+      region: options.region,
+      verification_level: options.verificationLevel,
+      default_message_notifications: options.defaultMessageNotifications,
+      explicit_content_filter: options.explicitContentFilter,
+      afk_channel_id: options.afkChannelID,
+      afk_timeout: options.afkTimeout,
+      icon: options.icon,
+      splash: options.splash,
+      banner: options.banner,
+      system_channel_id: options.systemChannelID,
+      rules_channel_id: options.rulesChannelID,
+      public_updates_channel_id: options.publicUpdatesChannelID,
+      preferred_locale: options.preferredLocale
+    }
+
+    const result: GuildPayload = await this.client.rest.patch(
+      GUILD(guildID),
+      body
+    )
+
+    if (asRaw) {
+      const guild = new Guild(this.client, result)
+      return guild
+    } else {
+      return result
+    }
   }
 }

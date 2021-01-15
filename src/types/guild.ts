@@ -32,8 +32,8 @@ export interface GuildPayload {
   widget_enabled?: boolean
   widget_channel_id?: string
   verification_level: Verification
-  default_message_notifications: number
-  explicit_content_filter: number
+  default_message_notifications: MessageNotification
+  explicit_content_filter: ContentFilter
   roles: RolePayload[]
   emojis: EmojiPayload[]
   features: GuildFeatures[]
@@ -83,7 +83,7 @@ export enum MessageNotification {
 export enum ContentFilter {
   DISABLED = 0,
   MEMBERS_WITHOUT_ROLES = 1,
-  ALL_MEMBERS = 3
+  ALL_MEMBERS = 2
 }
 
 export enum MFA {
@@ -230,4 +230,38 @@ export interface GuildPreview {
   approximateMemberCount: number
   approximatePresenceCount: number
   description: string | null
+}
+
+export interface GuildModifyPayload {
+  name?: string
+  region?: string | null
+  verification_level?: Verification | null
+  default_message_notifications?: MessageNotification | null
+  explicit_content_filter?: ContentFilter | null
+  afk_channel_id?: string | null
+  afk_timeout?: number
+  icon?: string | null
+  splash?: string | null
+  banner?: string | null
+  system_channel_id?: string | null
+  rules_channel_id?: string | null
+  public_updates_channel_id?: string | null
+  preferred_locale?: string | null
+}
+
+export interface GuildModifyOptions {
+  name?: string
+  region?: string | null
+  verificationLevel?: Verification | null
+  defaultMessageNotifications?: MessageNotification | null
+  explicitContentFilter?: ContentFilter | null
+  afkChannelID?: string | null
+  afkTimeout?: number
+  icon?: string | null
+  splash?: string | null
+  banner?: string | null
+  systemChannelID?: string | null
+  rulesChannelID?: string | null
+  publicUpdatesChannelID?: string | null
+  preferredLocale?: string | null
 }

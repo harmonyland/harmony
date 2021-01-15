@@ -8,7 +8,10 @@ import {
   IntegrationExpireBehavior,
   Verification,
   GuildChannels,
-  GuildPreview
+  GuildPreview,
+  MessageNotification,
+  ContentFilter,
+  GuildModifyOptions
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
@@ -134,8 +137,8 @@ export class Guild extends Base {
   widgetEnabled?: boolean
   widgetChannelID?: string
   verificationLevel?: Verification
-  defaultMessageNotifications?: number
-  explicitContentFilter?: number
+  defaultMessageNotifications?: MessageNotification
+  explicitContentFilter?: ContentFilter
   roles: RolesManager
   emojis: GuildEmojisManager
   invites: InviteManager
@@ -331,6 +334,13 @@ export class Guild extends Base {
 
   async preview(): Promise<GuildPreview> {
     return this.client.guilds.preview(this.id)
+  }
+
+  async edit(options: GuildModifyOptions): Promise<Guild> {
+    const result = await this.client.guilds.edit(this.id, options, true)
+    this.readFromData(result)
+
+    return new Guild(this.client, result)
   }
 }
 
