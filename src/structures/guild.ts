@@ -5,14 +5,15 @@ import {
   GuildIntegrationPayload,
   GuildPayload,
   IntegrationAccountPayload,
-  IntegrationExpireBehavior
+  IntegrationExpireBehavior,
+  Verification,
+  GuildChannels
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
 import { InviteManager } from '../managers/invites.ts'
 import {
   CreateChannelOptions,
-  GuildChannel,
   GuildChannelsManager
 } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
@@ -131,9 +132,9 @@ export class Guild extends Base {
   afkTimeout?: number
   widgetEnabled?: boolean
   widgetChannelID?: string
-  verificationLevel?: string
-  defaultMessageNotifications?: string
-  explicitContentFilter?: string
+  verificationLevel?: Verification
+  defaultMessageNotifications?: number
+  explicitContentFilter?: number
   roles: RolesManager
   emojis: GuildEmojisManager
   invites: InviteManager
@@ -264,7 +265,7 @@ export class Guild extends Base {
   }
 
   /** Create a new Guild Channel */
-  async createChannel(options: CreateChannelOptions): Promise<GuildChannel> {
+  async createChannel(options: CreateChannelOptions): Promise<GuildChannels> {
     return this.channels.create(options)
   }
 
@@ -292,14 +293,14 @@ export class Guild extends Base {
         const listener = (guild: Guild): void => {
           if (guild.id === this.id) {
             chunked = true
-            this.client.removeListener('guildMembersChunked', listener)
+            this.client.off('guildMembersChunked', listener)
             resolve(this)
           }
         }
         this.client.on('guildMembersChunked', listener)
         setTimeout(() => {
           if (!chunked) {
-            this.client.removeListener('guildMembersChunked', listener)
+            this.client.off('guildMembersChunked', listener)
           }
         }, timeout)
       }
@@ -312,19 +313,19 @@ export class Guild extends Base {
    */
   async awaitAvailability(timeout: number = 1000): Promise<Guild> {
     return await new Promise((resolve, reject) => {
-      if(!this.unavailable) resolve(this);
+      if (!this.unavailable) resolve(this)
       const listener = (guild: Guild): void => {
         if (guild.id === this.id) {
-          this.client.removeListener('guildLoaded', listener);
-          resolve(this);
+          this.client.removeListener('guildLoaded', listener)
+          resolve(this)
         }
-      };
-      this.client.on('guildLoaded', listener);
+      }
+      this.client.on('guildLoaded', listener)
       setTimeout(() => {
-        this.client.removeListener('guildLoaded', listener);
-        reject(Error("Timeout. Guild didn't arrive in time."));
-      }, timeout);
-    });
+        this.client.removeListener('guildLoaded', listener)
+        reject(Error("Timeout. Guild didn't arrive in time."))
+      }, timeout)
+    })
   }
 }
 

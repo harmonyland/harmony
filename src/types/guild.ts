@@ -1,5 +1,14 @@
+import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { GuildTextChannel } from '../structures/textChannel.ts'
 import { ApplicationPayload } from './application.ts'
-import { ChannelPayload } from './channel.ts'
+import {
+  ChannelPayload,
+  ChannelTypes,
+  GuildCategoryChannelPayload,
+  GuildTextChannelPayload,
+  GuildVoiceChannelPayload
+} from './channel.ts'
 import { EmojiPayload } from './emoji.ts'
 import { PresenceUpdatePayload } from './gateway.ts'
 import { RolePayload } from './role.ts'
@@ -21,9 +30,9 @@ export interface GuildPayload {
   afk_timeout: number
   widget_enabled?: boolean
   widget_channel_id?: string
-  verification_level: string
-  default_message_notifications: string
-  explicit_content_filter: string
+  verification_level: Verification
+  default_message_notifications: number
+  explicit_content_filter: number
   roles: RolePayload[]
   emojis: EmojiPayload[]
   features: GuildFeatures[]
@@ -149,4 +158,49 @@ export interface GuildIntegrationPayload {
 export interface GuildBanPayload {
   reason: string | null
   user: UserPayload
+}
+
+export type GuildChannelPayloads =
+  | GuildTextChannelPayload
+  | GuildVoiceChannelPayload
+  | GuildCategoryChannelPayload
+export type GuildChannels = GuildTextChannel | VoiceChannel | CategoryChannel
+
+export interface GuildCreatePayload {
+  name: string
+  region?: string
+  icon?: string
+  verification_level?: number
+  default_message_notifications?: number
+  explicit_content_filter?: number
+  roles?: GuildCreateRolePayload[]
+  channels?: GuildCreateChannelPayload[]
+  afk_channel_id?: string
+  afk_timeout?: number
+  system_channel_id?: string
+}
+
+export interface GuildCreateRolePayload {
+  id?: string
+  name: string
+  color?: number
+  hoist?: boolean
+  position?: number
+  permissions?: string
+  managed?: boolean
+  mentionable?: boolean
+}
+
+export interface GuildCreateChannelPayload {
+  id?: string
+  name: string
+  type: ChannelTypes
+  parent_id?: string
+}
+
+export interface GuildCreateChannelOptions {
+  id?: string
+  name: string
+  type: ChannelTypes
+  parentID?: string
 }

@@ -28,7 +28,6 @@ export { ChannelsManager } from './src/managers/channels.ts'
 export { EmojisManager } from './src/managers/emojis.ts'
 export { GatewayCache } from './src/managers/gatewayCache.ts'
 export { GuildChannelsManager } from './src/managers/guildChannels.ts'
-export type { GuildChannel } from './src/managers/guildChannels.ts'
 export { GuildManager } from './src/managers/guilds.ts'
 export * from './src/structures/slash.ts'
 export * from './src/types/slash.ts'
@@ -102,7 +101,8 @@ export type {
   GuildBanPayload,
   GuildFeatures,
   GuildIntegrationPayload,
-  GuildPayload
+  GuildPayload,
+  GuildChannels
 } from './src/types/guild.ts'
 export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
 export { PermissionFlags } from './src/types/permissionFlags.ts'
