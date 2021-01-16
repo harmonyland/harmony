@@ -241,6 +241,7 @@ export interface GuildModifyPayload {
   afk_channel_id?: string | null
   afk_timeout?: number
   icon?: string | null
+  owner_id?: string
   splash?: string | null
   banner?: string | null
   system_channel_id?: string | null
@@ -258,6 +259,7 @@ export interface GuildModifyOptions {
   afkChannelID?: string | null
   afkTimeout?: number
   icon?: string | null
+  ownerID?: string
   splash?: string | null
   banner?: string | null
   systemChannelID?: string | null

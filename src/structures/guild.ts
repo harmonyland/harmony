@@ -342,6 +342,12 @@ export class Guild extends Base {
 
     return new Guild(this.client, result)
   }
+
+  async delete(): Promise<Guild> {
+    const result = await this.client.guilds.delete(this.id)
+
+    return result === undefined ? this : result
+  }
 }
 
 export class GuildIntegration extends Base {

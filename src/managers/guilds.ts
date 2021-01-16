@@ -137,17 +137,17 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
   }
 
   async edit(
-    guildID: string,
+    guild: Guild | string,
     options: GuildModifyOptions,
     asRaw: false
   ): Promise<Guild>
   async edit(
-    guildID: string,
+    guild: Guild | string,
     options: GuildModifyOptions,
     asRaw: true
   ): Promise<GuildPayload>
   async edit(
-    guildID: string,
+    guild: Guild | string,
     options: GuildModifyOptions,
     asRaw: boolean = false
   ): Promise<Guild | GuildPayload> {
@@ -175,6 +175,9 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     ) {
       options.banner = await fetchAuto(options.banner)
     }
+    if (guild instanceof Guild) {
+      guild = guild.id
+    }
 
     const body: GuildModifyPayload = {
       name: options.name,
@@ -184,6 +187,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
       explicit_content_filter: options.explicitContentFilter,
       afk_channel_id: options.afkChannelID,
       afk_timeout: options.afkTimeout,
+      owner_id: options.ownerID,
       icon: options.icon,
       splash: options.splash,
       banner: options.banner,
@@ -194,7 +198,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     }
 
     const result: GuildPayload = await this.client.rest.patch(
-      GUILD(guildID),
+      GUILD(guild),
       body
     )
 
@@ -204,5 +208,16 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     } else {
       return result
     }
+  }
+
+  async delete(guild: Guild | string): Promise<Guild | undefined> {
+    if (guild instanceof Guild) {
+      guild = guild.id
+    }
+
+    const oldGuild = await this.get(guild)
+
+    await this.client.rest.delete(GUILD(guild))
+    return oldGuild
   }
 }
