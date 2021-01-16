@@ -11,6 +11,7 @@ import {
   ChannelTypes,
   GuildTextChannel
 } from '../../mod.ts'
+import { Collector } from '../models/collectors.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -122,6 +123,26 @@ client.on('messageCreate', async (msg: Message) => {
     )
 
     msg.channel.send(`Received: ${receivedMsg?.content}`)
+  } else if (msg.content.startsWith('!collect') === true) {
+    let count = parseInt(msg.content.replace(/\D/g, ''))
+    if (isNaN(count)) count = 5
+    await msg.channel.send(`Collecting ${count} messages for 5s`)
+    const coll = new Collector({
+      event: 'messageCreate',
+      filter: (m) => m.author.id === msg.author.id,
+      deinitOnEnd: true,
+      max: count,
+      timeout: 5000
+    })
+    coll.init(client)
+    coll.collect()
+    coll.on('start', () => msg.channel.send('[COL] Started'))
+    coll.on('end', () =>
+      msg.channel.send(`[COL] Ended. Collected Size: ${coll.collected.size}`)
+    )
+    coll.on('collect', (msg) =>
+      msg.channel.send(`[COL] Collect: ${msg.content}`)
+    )
   }
 })
 

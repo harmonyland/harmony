@@ -1,5 +1,6 @@
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
 import { Collection } from '../utils/collection.ts'
+import { Client } from './client.ts'
 
 export type RequestMethods =
   | 'get'
@@ -60,15 +61,23 @@ export type MethodFunction = (
 ) => Promise<any>
 
 export interface APIMap extends MethodFunction {
+  /** Make a GET request to current route */
   get: APIMap
+  /** Make a POST request to current route */
   post: APIMap
+  /** Make a PATCH request to current route */
   patch: APIMap
+  /** Make a PUT request to current route */
   put: APIMap
+  /** Make a DELETE request to current route */
   delete: APIMap
+  /** Make a HEAD request to current route */
   head: APIMap
+  /** Continue building API Route */
   [name: string]: APIMap
 }
 
+/** API Route builder function */
 export const builder = (rest: RESTManager, acum = '/'): APIMap => {
   const routes = {}
   const proxy = new Proxy(routes, {
@@ -94,25 +103,76 @@ export const builder = (rest: RESTManager, acum = '/'): APIMap => {
 }
 
 export interface RESTOptions {
-  token?: string
+  /** Token to use for authorization */
+  token?: string | (() => string | undefined)
+  /** Headers to patch with if any */
   headers?: { [name: string]: string | undefined }
+  /** Whether to use Canary instance of Discord API or not */
   canary?: boolean
+  /** Discord REST API version to use */
   version?: 6 | 7 | 8
+  /** Token Type to use for Authorization */
+  tokenType?: TokenType
+  /** User Agent to use (Header) */
+  userAgent?: string
+  /** Optional Harmony client */
+  client?: Client
 }
 
+/** Token Type for REST API. */
+export enum TokenType {
+  /** Token type for Bot User */
+  Bot = 'Bot',
+  /** Token Type for OAuth2 */
+  Bearer = 'Bearer',
+  /** No Token Type. Can be used for User accounts. */
+  None = ''
+}
+
+/** An easier to use interface for interacting with Discord REST API. */
 export class RESTManager {
-  client?: RESTOptions
   queues: { [key: string]: QueuedItem[] } = {}
   rateLimits = new Collection<string, RateLimit>()
+  /** Whether we are globally ratelimited or not */
   globalRateLimit: boolean = false
+  /** Whether requests are being processed or not */
   processing: boolean = false
+  /** API Version being used by REST Manager */
   version: number = 8
+  /**
+   * API Map - easy to use way for interacting with Discord API.
+   *
+   * Examples:
+   * * ```ts
+   *   rest.api.users['123'].get().then(userPayload => doSomething)
+   *   ```
+   * * ```ts
+   *   rest.api.guilds['123'].channels.post({ name: 'my-channel', type: 0 }).then(channelPayload => {})
+   *   ```
+   */
   api: APIMap
+  /** Token being used for Authorization */
+  token?: string | (() => string | undefined)
+  /** Token Type of the Token if any */
+  tokenType: TokenType = TokenType.Bot
+  /** Headers object which patch the current ones */
+  headers: any = {}
+  /** Optional custom User Agent (header) */
+  userAgent?: string
+  /** Whether REST Manager is using Canary API */
+  canary?: boolean
+  /** Optional Harmony Client object */
+  client?: Client
 
-  constructor(client?: RESTOptions) {
-    this.client = client
+  constructor(options?: RESTOptions) {
     this.api = builder(this)
-    if (client?.version !== undefined) this.version = client.version
+    if (options?.token !== undefined) this.token = options.token
+    if (options?.version !== undefined) this.version = options.version
+    if (options?.headers !== undefined) this.headers = options.headers
+    if (options?.tokenType !== undefined) this.tokenType = options.tokenType
+    if (options?.userAgent !== undefined) this.userAgent = options.userAgent
+    if (options?.canary !== undefined) this.canary = options.canary
+    if (options?.client !== undefined) this.client = options.client
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
   }
@@ -193,13 +253,16 @@ export class RESTManager {
 
   private prepare(body: any, method: RequestMethods): { [key: string]: any } {
     const headers: RequestHeaders = {
-      'User-Agent': `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
+      'User-Agent':
+        this.userAgent ??
+        `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
     }
 
-    if (this.client !== undefined)
-      headers.Authorization = `Bot ${this.client.token}`
-
-    if (this.client?.token === undefined) delete headers.Authorization
+    if (this.token !== undefined) {
+      const token = typeof this.token === 'string' ? this.token : this.token()
+      if (token !== undefined)
+        headers.Authorization = `${this.tokenType} ${token}`.trim()
+    }
 
     if (method === 'get' || method === 'head' || method === 'delete')
       body = undefined
@@ -220,9 +283,7 @@ export class RESTManager {
       headers['Content-Type'] = 'application/json'
     }
 
-    if (this.client?.headers !== undefined)
-      Object.assign(headers, this.client.headers)
-
+    if (this.headers !== undefined) Object.assign(headers, this.headers)
     const data: { [name: string]: any } = {
       headers,
       body: body?.file ?? JSON.stringify(body),
@@ -305,13 +366,25 @@ export class RESTManager {
     body: any,
     data: { [key: string]: any },
     reject: CallableFunction
-  ): Promise<undefined> {
+  ): Promise<void> {
     const status = response.status
 
+    // We have hit ratelimit - this should not happen
+    if (status === HttpResponseCode.TooManyRequests) {
+      if (this.client !== undefined)
+        this.client.emit('rateLimit', {
+          method: data.method,
+          url: response.url,
+          body
+        })
+      reject(new Error('RateLimited'))
+      return
+    }
+
+    // It's a normal status code... just continue
     if (
       (status >= 200 && status < 400) ||
-      status === HttpResponseCode.NoContent ||
-      status === HttpResponseCode.TooManyRequests
+      status === HttpResponseCode.NoContent
     )
       return
 
@@ -322,9 +395,7 @@ export class RESTManager {
 
     if (status === HttpResponseCode.Unauthorized)
       reject(
-        new DiscordAPIError(
-          `Request was not successful (Unauthorized). Invalid Token.\n${text}`
-        )
+        new DiscordAPIError(`Request was Unauthorized. Invalid Token.\n${text}`)
       )
 
     // At this point we know it is error
@@ -342,7 +413,7 @@ export class RESTManager {
             }
           }) ?? {}
         ).map((entry) => {
-          return [entry[0], entry[1]._errors]
+          return [entry[0], entry[1]._errors ?? []]
         })
       )
     }
@@ -379,7 +450,7 @@ export class RESTManager {
   }
 
   /**
-   * Makes a Request to Discord API
+   * Makes a Request to Discord API.
    * @param method HTTP Method to use
    * @param url URL of the Request
    * @param body Body to send with Request
@@ -422,7 +493,18 @@ export class RESTManager {
           let urlToUse =
             method === 'get' && query !== '' ? `${url}?${query}` : url
 
-          if (this.client?.canary === true) {
+          // It doesn't start with HTTP, that means it's an incomplete URL
+          if (!urlToUse.startsWith('http')) {
+            if (!urlToUse.startsWith('/')) urlToUse = `/${urlToUse}`
+            urlToUse =
+              // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+              baseEndpoints.DISCORD_API_URL +
+              '/v' +
+              baseEndpoints.DISCORD_API_VERSION +
+              urlToUse
+          }
+
+          if (this.canary === true && urlToUse.startsWith('http')) {
             const split = urlToUse.split('//')
             urlToUse = split[0] + '//canary.' + split[1]
           }

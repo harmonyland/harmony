@@ -9,6 +9,11 @@ export class MyClient extends Client {
     console.log(`Logged in as ${this.user?.tag}!`)
   }
 
+  @event('debug')
+  debugEvt(txt: string): void {
+    console.log(txt)
+  }
+
   @slash()
   send(d: Interaction): void {
     d.respond({
@@ -92,5 +97,11 @@ export class MyClient extends Client {
   }
 }
 
-const client = new MyClient()
+const client = new MyClient({
+  presence: {
+    status: 'dnd',
+    activity: { name: 'Slash Commands', type: 'LISTENING' }
+  }
+})
+
 client.connect(TOKEN, Intents.None)

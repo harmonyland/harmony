@@ -348,4 +348,11 @@ export interface ClientEvents {
    * @param message Debug message
    */
   debug: [message: string]
+
+  /**
+   * Raw event which gives you access to raw events DISPATCH'd from Gateway
+   * @param evt Event name string
+   * @param payload Payload JSON of the event
+   */
+  raw: [evt: string, payload: any]
 }
