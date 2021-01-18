@@ -332,10 +332,15 @@ export class Guild extends Base {
     })
   }
 
+  /** Gets a preview of the guild. Returns GuildPreview. */
   async preview(): Promise<GuildPreview> {
     return this.client.guilds.preview(this.id)
   }
 
+  /**
+   * Edits the guild.
+   * @param options Guild edit options
+   */
   async edit(options: GuildModifyOptions): Promise<Guild> {
     const result = await this.client.guilds.edit(this.id, options, true)
     this.readFromData(result)
@@ -343,6 +348,7 @@ export class Guild extends Base {
     return new Guild(this.client, result)
   }
 
+  /** Deletes the guild. */
   async delete(): Promise<Guild> {
     const result = await this.client.guilds.delete(this.id)
 

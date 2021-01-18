@@ -151,10 +151,19 @@ export class Message extends Base {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
   }
 
+  /**
+   * Adds a reaction to the message.
+   * @param emoji Emoji in string or object
+   */
   async addReaction(emoji: string | Emoji): Promise<void> {
     return this.channel.addReaction(this, emoji)
   }
 
+  /**
+   * Removes a reaction to the message.
+   * @param emoji Emoji in string or object
+   * @param user User or Member or user id
+   */
   async removeReaction(
     emoji: string | Emoji,
     user?: User | Member | string

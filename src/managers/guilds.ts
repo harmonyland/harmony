@@ -61,6 +61,10 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     })
   }
 
+  /**
+   * Creates a guild. Returns Guild. Fires guildCreate event.
+   * @param options Options for creating a guild
+   */
   async create(options: GuildCreateOptions): Promise<Guild> {
     if (options.icon !== undefined && !options.icon.startsWith('data:')) {
       options.icon = await fetchAuto(options.icon)
@@ -115,6 +119,10 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     return guild
   }
 
+  /**
+   * Gets a preview of a guild. Returns GuildPreview.
+   * @param guildID Guild id
+   */
   async preview(guildID: string): Promise<GuildPreview> {
     const resp: GuildPreviewPayload = await this.client.rest.get(
       GUILD_PREVIEW(guildID)
@@ -136,6 +144,12 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     return result
   }
 
+  /**
+   * Edits a guild.
+   * @param guild Guild or guild id
+   * @param options Guild edit options
+   * @param asRaw true for get raw data, false for get guild(defaults to false)
+   */
   async edit(
     guild: Guild | string,
     options: GuildModifyOptions,
@@ -210,6 +224,10 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     }
   }
 
+  /**
+   * Deletes a guild.
+   * @param guild Guild or guild id
+   */
   async delete(guild: Guild | string): Promise<Guild | undefined> {
     if (guild instanceof Guild) {
       guild = guild.id
