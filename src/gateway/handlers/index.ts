@@ -1,5 +1,9 @@
 import { GatewayEventHandler } from '../index.ts'
-import { GatewayEvents, TypingStartGuildData } from '../../types/gateway.ts'
+import {
+  GatewayEvents,
+  MessageDeletePayload,
+  TypingStartGuildData
+} from '../../types/gateway.ts'
 import { channelCreate } from './channelCreate.ts'
 import { channelDelete } from './channelDelete.ts'
 import { channelUpdate } from './channelUpdate.ts'
@@ -55,6 +59,10 @@ import {
 } from '../../utils/getChannelByType.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import { Interaction } from '../../structures/slash.ts'
+import { CommandContext } from '../../models/command.ts'
+import { RequestMethods } from '../../models/rest.ts'
+import { PartialInvitePayload } from '../../types/invite.ts'
+import { GuildChannel } from '../../managers/guildChannels.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -105,7 +113,8 @@ export interface VoiceServerUpdateData {
   guild: Guild
 }
 
-export interface ClientEvents {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type ClientEvents = {
   /** When Client has successfully connected to Discord */
   ready: []
   /** When a successful reconnect has been made */
@@ -355,4 +364,40 @@ export interface ClientEvents {
    * @param payload Payload JSON of the event
    */
   raw: [evt: string, payload: any]
+
+  /**
+   * An uncached Message was deleted.
+   * @param payload Message Delete Payload
+   */
+  messageDeleteUncached: [payload: MessageDeletePayload]
+
+  guildMembersChunk: [
+    guild: Guild,
+    info: {
+      chunkIndex: number
+      chunkCount: number
+      members: string[]
+      presences: string[] | undefined
+    }
+  ]
+  guildMembersChunked: [guild: Guild, chunks: number]
+  rateLimit: [data: { method: RequestMethods; url: string; body: any }]
+  inviteDeleteUncached: [invite: PartialInvitePayload]
+  voiceStateRemoveUncached: [data: { guild: Guild; member: Member }]
+  userUpdateUncached: [user: User]
+  webhooksUpdateUncached: [guild: Guild, channelID: string]
+  guildRoleUpdateUncached: [role: Role]
+  guildMemberUpdateUncached: [member: Member]
+  guildMemberRemoveUncached: [member: Member]
+  channelUpdateUncached: [channel: GuildChannel]
+
+  commandOwnerOnly: [ctx: CommandContext]
+  commandGuildOnly: [ctx: CommandContext]
+  commandDmOnly: [ctx: CommandContext]
+  commandNSFW: [ctx: CommandContext]
+  commandBotMissingPermissions: [ctx: CommandContext, missing: string[]]
+  commandUserMissingPermissions: [ctx: CommandContext, missing: string[]]
+  commandMissingArgs: [ctx: CommandContext]
+  commandUsed: [ctx: CommandContext]
+  commandError: [ctx: CommandContext, err: Error]
 }

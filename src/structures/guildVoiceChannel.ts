@@ -44,7 +44,7 @@ export class VoiceChannel extends Channel {
       const onVoiceStateAdd = (state: VoiceState): void => {
         if (state.user.id !== this.client.user?.id) return
         if (state.channel?.id !== this.id) return
-        this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
+        this.client.off('voiceStateAdd', onVoiceStateAdd)
         done++
         if (done >= 2) resolve((vcdata as unknown) as VoiceServerUpdateData)
       }
@@ -52,7 +52,7 @@ export class VoiceChannel extends Channel {
       const onVoiceServerUpdate = (data: VoiceServerUpdateData): void => {
         if (data.guild.id !== this.guild.id) return
         vcdata = data
-        this.client.removeListener('voiceServerUpdate', onVoiceServerUpdate)
+        this.client.off('voiceServerUpdate', onVoiceServerUpdate)
         done++
         if (done >= 2) resolve(vcdata)
       }
@@ -64,8 +64,8 @@ export class VoiceChannel extends Channel {
 
       setTimeout(() => {
         if (done < 2) {
-          this.client.removeListener('voiceServerUpdate', onVoiceServerUpdate)
-          this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
+          this.client.off('voiceServerUpdate', onVoiceServerUpdate)
+          this.client.off('voiceStateAdd', onVoiceStateAdd)
           reject(
             new Error(
               "Connection timed out - couldn't connect to Voice Channel"

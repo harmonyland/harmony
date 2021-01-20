@@ -3,7 +3,6 @@ import { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
 import { RESTManager, RESTOptions, TokenType } from './rest.ts'
-import { EventEmitter } from '../../deps.ts'
 import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
 import { UsersManager } from '../managers/users.ts'
 import { GuildManager } from '../managers/guilds.ts'
@@ -21,6 +20,7 @@ import { Invite } from '../structures/invite.ts'
 import { INVITE } from '../types/endpoint.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
 import type { Collector } from './collectors.ts'
+import { HarmonyEventEmitter } from '../utils/events.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -59,40 +59,20 @@ export interface ClientOptions {
   disableEnvToken?: boolean
   /** Override REST Options */
   restOptions?: RESTOptions
-}
-
-export declare interface Client {
-  on<K extends keyof ClientEvents>(
-    event: K,
-    listener: (...args: ClientEvents[K]) => void
-  ): this
-  on(event: string | symbol, listener: (...args: any[]) => void): this
-
-  once<K extends keyof ClientEvents>(
-    event: K,
-    listener: (...args: ClientEvents[K]) => void
-  ): this
-  once(event: string | symbol, listener: (...args: any[]) => void): this
-
-  emit<K extends keyof ClientEvents>(
-    event: K,
-    ...args: ClientEvents[K]
-  ): boolean
-  emit(event: string | symbol, ...args: any[]): boolean
-
-  off<K extends keyof ClientEvents>(
-    event: K,
-    listener: (...args: ClientEvents[K]) => void
-  ): this
-  off(event: string | symbol, listener: (...args: any[]) => void): this
+  /** Whether to fetch Gateway info or not */
+  fetchGatewayInfo?: boolean
+  /** ADVANCED: Shard ID to launch on */
+  shard?: number
+  /** Shard count. Set to 'auto' for automatic sharding */
+  shardCount?: number | 'auto'
 }
 
 /**
  * Discord Client.
  */
-export class Client extends EventEmitter {
+export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Gateway object */
-  gateway?: Gateway
+  gateway: Gateway
   /** REST Manager - used to make all requests */
   rest: RESTManager
   /** User which Client logs in to, undefined until logs in */
@@ -117,11 +97,20 @@ export class Client extends EventEmitter {
   clientProperties: ClientProperties
   /** Slash-Commands Management client */
   slash: SlashClient
+  /** Whether to fetch Gateway info or not */
+  fetchGatewayInfo: boolean = true
 
+  /** Users Manager, containing all Users cached */
   users: UsersManager = new UsersManager(this)
+  /** Guilds Manager, providing cache & API interface to Guilds */
   guilds: GuildManager = new GuildManager(this)
+  /** Channels Manager, providing cache interface to Channels */
   channels: ChannelsManager = new ChannelsManager(this)
+  /** Channels Manager, providing cache interface to Channels */
   emojis: EmojisManager = new EmojisManager(this)
+
+  /** Last READY timestamp */
+  upSince?: Date
 
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
@@ -141,9 +130,22 @@ export class Client extends EventEmitter {
 
   /** Shard on which this Client is */
   shard: number = 0
+  /** Shard Count */
+  shardCount: number | 'auto' = 1
   /** Shard Manager of this Client if Sharded */
-  shardManager?: ShardManager
+  shards?: ShardManager
+  /** Collectors set */
   collectors: Set<Collector> = new Set()
+
+  /** Since when is Client online (ready). */
+  get uptime(): number {
+    if (this.upSince === undefined) return 0
+    else {
+      const dif = Date.now() - this.upSince.getTime()
+      if (dif < 0) return dif
+      else return dif
+    }
+  }
 
   constructor(options: ClientOptions = {}) {
     super()
@@ -169,7 +171,7 @@ export class Client extends EventEmitter {
       Object.keys(this._decoratedEvents).length !== 0
     ) {
       Object.entries(this._decoratedEvents).forEach((entry) => {
-        this.on(entry[0], entry[1])
+        this.on(entry[0] as keyof ClientEvents, entry[1])
       })
       this._decoratedEvents = undefined
     }
@@ -183,11 +185,16 @@ export class Client extends EventEmitter {
           }
         : options.clientProperties
 
+    if (options.shard !== undefined) this.shard = options.shard
+    if (options.shardCount !== undefined) this.shardCount = options.shardCount
+
     this.slash = new SlashClient({
       id: () => this.getEstimatedID(),
       client: this,
       enabled: options.enableSlash
     })
+
+    if (options.fetchGatewayInfo === true) this.fetchGatewayInfo = true
 
     if (this.token === undefined) {
       try {
@@ -209,6 +216,7 @@ export class Client extends EventEmitter {
     if (options.restOptions !== undefined)
       Object.assign(restOptions, options.restOptions)
     this.rest = new RESTManager(restOptions)
+    this.gateway = new Gateway(this)
   }
 
   /**
@@ -232,6 +240,7 @@ export class Client extends EventEmitter {
 
   /** Emits debug event */
   debug(tag: string, msg: string): void {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
@@ -271,7 +280,7 @@ export class Client extends EventEmitter {
    * @param token Your token. This is required if not given in ClientOptions.
    * @param intents Gateway intents in array. This is required if not given in ClientOptions.
    */
-  connect(token?: string, intents?: GatewayIntents[]): void {
+  async connect(token?: string, intents?: GatewayIntents[]): Promise<Client> {
     if (token === undefined && this.token !== undefined) token = this.token
     else if (this.token === undefined && token !== undefined) {
       this.token = token
@@ -288,7 +297,30 @@ export class Client extends EventEmitter {
     } else throw new Error('No Gateway Intents were provided')
 
     this.rest.token = token
-    this.gateway = new Gateway(this, token, intents)
+    this.gateway.token = token
+    this.gateway.intents = intents
+    this.gateway.initWebsocket()
+    return this.waitFor('ready', () => true).then(() => this)
+  }
+
+  /** Destroy the Gateway connection */
+  async destroy(): Promise<Client> {
+    this.gateway.initialized = false
+    this.gateway.sequenceID = undefined
+    this.gateway.sessionID = undefined
+    await this.gateway.cache.delete('seq')
+    await this.gateway.cache.delete('session_id')
+    this.gateway.close()
+    this.user = undefined
+    this.upSince = undefined
+    return this
+  }
+
+  /** Attempt to Close current Gateway connection and Resume */
+  async reconnect(): Promise<Client> {
+    this.gateway.close()
+    this.gateway.initWebsocket()
+    return this.waitFor('ready', () => true).then(() => this)
   }
 
   /** Add a new Collector */
@@ -309,7 +341,7 @@ export class Client extends EventEmitter {
     }
   }
 
-  emit(event: keyof ClientEvents, ...args: any[]): boolean {
+  async emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
     const collectors: Collector[] = []
     for (const collector of this.collectors.values()) {
       if (collector.event === event) collectors.push(collector)
@@ -317,32 +349,10 @@ export class Client extends EventEmitter {
     if (collectors.length !== 0) {
       this.collectors.forEach((collector) => collector._fire(...args))
     }
+    // TODO(DjDeveloperr): Fix this ts-ignore
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore
     return super.emit(event, ...args)
-  }
-
-  /** Wait for an Event (optionally satisfying an event) to occur */
-  async waitFor<K extends keyof ClientEvents>(
-    event: K,
-    checkFunction: (...args: ClientEvents[K]) => boolean,
-    timeout?: number
-  ): Promise<ClientEvents[K] | []> {
-    return await new Promise((resolve) => {
-      let timeoutID: number | undefined
-      if (timeout !== undefined) {
-        timeoutID = setTimeout(() => {
-          this.off(event, eventFunc)
-          resolve([])
-        }, timeout)
-      }
-      const eventFunc = (...args: ClientEvents[K]): void => {
-        if (checkFunction(...args)) {
-          resolve(args)
-          this.off(event, eventFunc)
-          if (timeoutID !== undefined) clearTimeout(timeoutID)
-        }
-      }
-      this.on(event, eventFunc)
-    })
   }
 }
 

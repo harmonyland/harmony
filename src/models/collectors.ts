@@ -1,6 +1,6 @@
 import { Collection } from '../utils/collection.ts'
-import { EventEmitter } from '../../deps.ts'
 import type { Client } from './client.ts'
+import { HarmonyEventEmitter } from '../utils/events.ts'
 
 export type CollectorFilter = (...args: any[]) => boolean | Promise<boolean>
 
@@ -19,7 +19,14 @@ export interface CollectorOptions {
   timeout?: number
 }
 
-export class Collector extends EventEmitter {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type CollectorEvents = {
+  start: []
+  end: []
+  collect: any
+}
+
+export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   client?: Client
   private _started: boolean = false
   event: string
@@ -146,14 +153,14 @@ export class Collector extends EventEmitter {
       let done = false
       const onend = (): void => {
         done = true
-        this.removeListener('end', onend)
+        this.off('end', onend)
         resolve(this)
       }
 
       this.on('end', onend)
       setTimeout(() => {
         if (!done) {
-          this.removeListener('end', onend)
+          this.off('end', onend)
           reject(new Error('Timeout'))
         }
       }, timeout)

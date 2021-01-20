@@ -1,3 +1,4 @@
+import { ClientEvents } from '../../mod.ts'
 import { Collection } from '../utils/collection.ts'
 import { Command } from './command.ts'
 import { CommandClient } from './commandClient.ts'
@@ -90,14 +91,14 @@ export class Extension {
       Object.keys(this._decoratedEvents).length !== 0
     ) {
       Object.entries(this._decoratedEvents).forEach((entry) => {
-        this.listen(entry[0], entry[1])
+        this.listen(entry[0] as keyof ClientEvents, entry[1])
       })
       this._decoratedEvents = undefined
     }
   }
 
   /** Listens for an Event through Extension. */
-  listen(event: string, cb: ExtensionEventCallback): boolean {
+  listen(event: keyof ClientEvents, cb: ExtensionEventCallback): boolean {
     if (this.events[event] !== undefined) return false
     else {
       const fn = (...args: any[]): any => {
@@ -152,7 +153,7 @@ export class ExtensionsManager {
     if (extension === undefined) return false
     extension.commands.deleteAll()
     for (const [k, v] of Object.entries(extension.events)) {
-      this.client.removeListener(k, v)
+      this.client.off(k as keyof ClientEvents, v)
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete extension.events[k]
     }
