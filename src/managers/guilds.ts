@@ -3,35 +3,21 @@ import { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD, GUILDS, GUILD_PREVIEW } from '../types/endpoint.ts'
 import {
-  GuildChannels,
   GuildPayload,
   MemberPayload,
   GuildCreateRolePayload,
   GuildCreatePayload,
-  Verification,
-  GuildCreateChannelOptions,
   GuildCreateChannelPayload,
   GuildPreview,
   GuildPreviewPayload,
   GuildModifyOptions,
-  GuildModifyPayload
+  GuildModifyPayload,
+  GuildCreateOptions
 } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { MembersManager } from './members.ts'
 import { fetchAuto } from '../../deps.ts'
 import { Emoji } from '../structures/emoji.ts'
-
-export interface GuildCreateOptions {
-  name: string
-  region?: string
-  icon?: string
-  verificationLevel?: Verification
-  roles?: Array<Role | GuildCreateRolePayload>
-  channels?: Array<GuildChannels | GuildCreateChannelOptions>
-  afkChannelID?: string
-  afkTimeout?: number
-  systemChannelID?: string
-}
 
 export class GuildManager extends BaseManager<GuildPayload, Guild> {
   constructor(client: Client) {
@@ -66,6 +52,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
    * @param options Options for creating a guild
    */
   async create(options: GuildCreateOptions): Promise<Guild> {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (options.icon !== undefined && !options.icon.startsWith('data:')) {
       options.icon = await fetchAuto(options.icon)
     }
@@ -145,7 +132,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
   }
 
   /**
-   * Edits a guild.
+   * Edits a guild. Returns edited guild.
    * @param guild Guild or guild id
    * @param options Guild edit options
    * @param asRaw true for get raw data, false for get guild(defaults to false)
@@ -225,7 +212,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
   }
 
   /**
-   * Deletes a guild.
+   * Deletes a guild. Returns deleted guild.
    * @param guild Guild or guild id
    */
   async delete(guild: Guild | string): Promise<Guild | undefined> {

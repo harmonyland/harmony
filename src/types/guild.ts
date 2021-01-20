@@ -1,6 +1,7 @@
 import { Emoji } from '../structures/emoji.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { Role } from '../structures/role.ts'
 import { GuildTextChannel } from '../structures/textChannel.ts'
 import { ApplicationPayload } from './application.ts'
 import {
@@ -204,6 +205,18 @@ export interface GuildCreateChannelOptions {
   name: string
   type: ChannelTypes
   parentID?: string
+}
+
+export interface GuildCreateOptions {
+  name: string
+  region?: string
+  icon?: string
+  verificationLevel?: Verification
+  roles?: Array<Role | GuildCreateRolePayload>
+  channels?: Array<GuildChannels | GuildCreateChannelOptions>
+  afkChannelID?: string
+  afkTimeout?: number
+  systemChannelID?: string
 }
 
 export interface GuildPreviewPayload {
