@@ -2,7 +2,7 @@
 import { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/index.ts'
-import { RESTManager } from './rest.ts'
+import { RESTManager, RESTOptions, TokenType } from './rest.ts'
 import { EventEmitter } from '../../deps.ts'
 import { DefaultCacheAdapter, ICacheAdapter } from './cacheAdapter.ts'
 import { UsersManager } from '../managers/users.ts'
@@ -20,6 +20,7 @@ import { Application } from '../structures/application.ts'
 import { Invite } from '../structures/invite.ts'
 import { INVITE } from '../types/endpoint.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
+import type { Collector } from './collectors.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -54,6 +55,10 @@ export interface ClientOptions {
   clientProperties?: ClientProperties
   /** Enable/Disable Slash Commands Integration (enabled by default) */
   enableSlash?: boolean
+  /** Disable taking token from env if not provided (token is taken from env if present by default) */
+  disableEnvToken?: boolean
+  /** Override REST Options */
+  restOptions?: RESTOptions
 }
 
 export declare interface Client {
@@ -89,7 +94,7 @@ export class Client extends EventEmitter {
   /** Gateway object */
   gateway?: Gateway
   /** REST Manager - used to make all requests */
-  rest: RESTManager = new RESTManager(this)
+  rest: RESTManager
   /** User which Client logs in to, undefined until logs in */
   user?: User
   /** WebSocket ping of Client */
@@ -118,8 +123,6 @@ export class Client extends EventEmitter {
   channels: ChannelsManager = new ChannelsManager(this)
   emojis: EmojisManager = new EmojisManager(this)
 
-  /** Whether the REST Manager will use Canary API or not */
-  canary: boolean = false
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
   _decoratedEvents?: {
@@ -140,6 +143,7 @@ export class Client extends EventEmitter {
   shard: number = 0
   /** Shard Manager of this Client if Sharded */
   shardManager?: ShardManager
+  collectors: Set<Collector> = new Set()
 
   constructor(options: ClientOptions = {}) {
     super()
@@ -153,7 +157,6 @@ export class Client extends EventEmitter {
         options.presence instanceof ClientPresence
           ? options.presence
           : new ClientPresence(options.presence)
-    if (options.canary === true) this.canary = true
     if (options.messageCacheLifetime !== undefined)
       this.messageCacheLifetime = options.messageCacheLifetime
     if (options.reactionCacheLifetime !== undefined)
@@ -185,6 +188,27 @@ export class Client extends EventEmitter {
       client: this,
       enabled: options.enableSlash
     })
+
+    if (this.token === undefined) {
+      try {
+        const token = Deno.env.get('DISCORD_TOKEN')
+        if (token !== undefined) {
+          this.token = token
+          this.debug('Info', 'Found token in ENV')
+        }
+      } catch (e) {}
+    }
+
+    const restOptions: RESTOptions = {
+      token: () => this.token,
+      tokenType: TokenType.Bot,
+      canary: options.canary,
+      client: this
+    }
+
+    if (options.restOptions !== undefined)
+      Object.assign(restOptions, options.restOptions)
+    this.rest = new RESTManager(restOptions)
   }
 
   /**
@@ -244,8 +268,8 @@ export class Client extends EventEmitter {
 
   /**
    * This function is used for connecting to discord.
-   * @param token Your token. This is required.
-   * @param intents Gateway intents in array. This is required.
+   * @param token Your token. This is required if not given in ClientOptions.
+   * @param intents Gateway intents in array. This is required if not given in ClientOptions.
    */
   connect(token?: string, intents?: GatewayIntents[]): void {
     if (token === undefined && this.token !== undefined) token = this.token
@@ -262,7 +286,38 @@ export class Client extends EventEmitter {
     } else if (intents !== undefined && this.intents === undefined) {
       this.intents = intents
     } else throw new Error('No Gateway Intents were provided')
+
+    this.rest.token = token
     this.gateway = new Gateway(this, token, intents)
+  }
+
+  /** Add a new Collector */
+  addCollector(collector: Collector): boolean {
+    if (this.collectors.has(collector)) return false
+    else {
+      this.collectors.add(collector)
+      return true
+    }
+  }
+
+  /** Remove a Collector */
+  removeCollector(collector: Collector): boolean {
+    if (!this.collectors.has(collector)) return false
+    else {
+      this.collectors.delete(collector)
+      return true
+    }
+  }
+
+  emit(event: keyof ClientEvents, ...args: any[]): boolean {
+    const collectors: Collector[] = []
+    for (const collector of this.collectors.values()) {
+      if (collector.event === event) collectors.push(collector)
+    }
+    if (collectors.length !== 0) {
+      this.collectors.forEach((collector) => collector._fire(...args))
+    }
+    return super.emit(event, ...args)
   }
 
   /** Wait for an Event (optionally satisfying an event) to occur */
@@ -293,10 +348,13 @@ export class Client extends EventEmitter {
 
 /** Event decorator to create an Event handler from function */
 export function event(name?: keyof ClientEvents) {
-  return function (client: Client | Extension, prop: keyof ClientEvents) {
+  return function (
+    client: Client | Extension,
+    prop: keyof ClientEvents | string
+  ) {
     const listener = ((client as unknown) as {
       [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
-    })[prop]
+    })[name ?? ((prop as unknown) as keyof ClientEvents)]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
     if (client._decoratedEvents === undefined) client._decoratedEvents = {}

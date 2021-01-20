@@ -47,7 +47,9 @@ export class Webhook {
   rest: RESTManager
 
   get url(): string {
-    return `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${this.id}/${this.token}`
+    return `${DISCORD_API_URL}/v${
+      this.rest.version ?? DISCORD_API_VERSION
+    }/webhooks/${this.id}/${this.token}`
   }
 
   constructor(data: WebhookPayload, client?: Client, rest?: RESTManager) {
@@ -170,7 +172,7 @@ export class Webhook {
    * @param options Options to edit the Webhook.
    */
   async edit(options: WebhookEditOptions): Promise<Webhook> {
-    if (options.channelID !== undefined && this.rest.client === undefined)
+    if (options.channelID !== undefined && this.client === undefined)
       throw new Error('Authentication is required for editing Webhook Channel')
     if (
       options.avatar !== undefined &&
