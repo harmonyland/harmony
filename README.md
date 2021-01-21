@@ -28,7 +28,7 @@
 
 ## Usage
 
-You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts too.
+You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
 For a quick example, run this:
 
@@ -137,9 +137,9 @@ new MyClient().connect('super secret token comes here', Intents.All)
 
 Documentation is available for `main` (branch) and `stable` (release).
 
-- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
+- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
-- [Guide](https://harmony-org.github.io)
+- [Guide](https://harmony.mod.land)
 
 ## Found a bug or want support? Join our discord server!
 
@@ -159,6 +159,6 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT © 2020-2021 Harmony Org](LICENSE)
+[MIT © 2020-2021 Harmonyland](LICENSE)
 
-#### Made with ❤ by Harmony-org
+#### Made with ❤ by Harmonyland
