@@ -169,7 +169,8 @@ export interface GuildWidgetPayload {
   channels: Array<{ id: string; name: string; position: number }>
   members: MemberPayload[]
   presence_count: number
-  
+}
+
 export type GuildChannelPayloads =
   | GuildTextChannelPayload
   | GuildVoiceChannelPayload

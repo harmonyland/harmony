@@ -18,7 +18,6 @@ import {
 } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { MembersManager } from './members.ts'
-import { fetchAuto } from '../../deps.ts'
 import { Emoji } from '../structures/emoji.ts'
 
 export class GuildManager extends BaseManager<GuildPayload, Guild> {
@@ -60,6 +59,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
       typeof template === 'object' ? template.code : template
     ].post({ name, icon })
     return new Guild(this.client, guild)
+  }
 
   /**
    * Creates a guild. Returns Guild. Fires guildCreate event.

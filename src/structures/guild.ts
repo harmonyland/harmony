@@ -386,7 +386,7 @@ export class Guild extends Base {
   /** Modify a guild widget object for the guild. */
   async editWidget(data: {
     enabled?: boolean
-    channel?: string | GuildChannel
+    channel?: string | GuildChannels
   }): Promise<Guild> {
     await this.client.rest.api.guilds[this.id].widget.patch({
       enabled: data.enabled,
@@ -460,7 +460,8 @@ export class Guild extends Base {
   async deleteTemplate(code: string): Promise<Guild> {
     await this.client.rest.api.guilds[this.id].templates[code].delete()
     return this
-    
+  }
+
   /** Gets a preview of the guild. Returns GuildPreview. */
   async preview(): Promise<GuildPreview> {
     return this.client.guilds.preview(this.id)

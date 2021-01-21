@@ -92,7 +92,7 @@ export class GuildChannelsManager extends BaseChildManager<
 
   /** Modify the positions of a set of channel positions for the guild. */
   async editPositions(
-    ...positions: Array<{ id: string | GuildChannel; position: number | null }>
+    ...positions: Array<{ id: string | GuildChannels; position: number | null }>
   ): Promise<GuildChannelsManager> {
     if (positions.length === 0)
       throw new Error('No channel positions to change specified')
