@@ -135,6 +135,7 @@ export class Collector extends EventEmitter {
   }
 
   /** Returns a Promise resolved when Collector ends or a timeout occurs */
+  // eslint-disable-next-line
   async wait(timeout: number = this.timeout ?? 0): Promise<Collector> {
     return await new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions

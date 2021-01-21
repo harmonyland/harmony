@@ -99,7 +99,6 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
       options
     )
 
-    const result = new Role(this.client, resp, this.guild)
-    return result
+    return new Role(this.client, resp, this.guild)
   }
 }
