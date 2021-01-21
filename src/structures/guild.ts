@@ -363,13 +363,13 @@ export class Guild extends Base {
     return result === undefined ? this : result
   }
 
-  async getPruneCount(
-    days?: number,
+  async getPruneCount(options?: {
+    days?: number
     includeRoles?: Array<Role | string>
-  ): Promise<number> {
+  }): Promise<number> {
     const query: GuildGetPruneCountPayload = {
-      days: days,
-      include_roles: includeRoles
+      days: options?.days,
+      include_roles: options?.includeRoles
         ?.map((role) => (role instanceof Role ? role.id : role))
         .join(',')
     }
@@ -386,25 +386,25 @@ export class Guild extends Base {
     return result.pruned as number
   }
 
-  async prune(
-    days?: number,
-    computePruneCount?: false,
+  async prune(options?: {
+    days?: number
+    computePruneCount: true | undefined
     includeRoles?: Array<Role | string>
-  ): Promise<null>
-  async prune(
-    days?: number,
-    computePruneCount?: true | undefined,
+  }): Promise<number>
+  async prune(options?: {
+    days?: number
+    computePruneCount: false
     includeRoles?: Array<Role | string>
-  ): Promise<number>
-  async prune(
-    days?: number,
-    computePruneCount?: boolean,
+  }): Promise<null>
+  async prune(options?: {
+    days?: number
+    computePruneCount?: boolean | undefined
     includeRoles?: Array<Role | string>
-  ): Promise<number | null> {
+  }): Promise<number | null> {
     const body: GuildBeginPrunePayload = {
-      days: days,
-      compute_prune_count: computePruneCount,
-      include_roles: includeRoles?.map((role) =>
+      days: options?.days,
+      compute_prune_count: options?.computePruneCount,
+      include_roles: options?.includeRoles?.map((role) =>
         role instanceof Role ? role.id : role
       )
     }
