@@ -173,11 +173,11 @@ export class RESTManager {
     if (options?.userAgent !== undefined) this.userAgent = options.userAgent
     if (options?.canary !== undefined) this.canary = options.canary
     if (options?.client !== undefined) this.client = options.client
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
   }
 
-  private async checkQueues(): Promise<void> {
+  /** Checks the queues of buckets, if empty, delete entry */
+  private checkQueues(): void {
     Object.entries(this.queues).forEach(([key, value]) => {
       if (value.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -186,11 +186,10 @@ export class RESTManager {
     })
   }
 
+  /** Adds a Request to Queue */
   private queue(request: QueuedItem): void {
     const route = request.url.substring(
-      // eslint seriously?
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      baseEndpoints.DISCORD_API_URL.length + 1
+      Number(baseEndpoints.DISCORD_API_URL.length) + 1
     )
     const parts = route.split('/')
     parts.shift()
@@ -243,10 +242,8 @@ export class RESTManager {
     }
 
     if (Object.keys(this.queues).length !== 0) {
-      // await delay(100)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.processQueue()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.checkQueues()
     } else this.processing = false
   }
@@ -293,7 +290,7 @@ export class RESTManager {
     return data
   }
 
-  private async isRateLimited(url: string): Promise<number | false> {
+  private isRateLimited(url: string): number | false {
     const global = this.rateLimits.get('global')
     const rateLimited = this.rateLimits.get(url)
     const now = Date.now()
@@ -308,6 +305,7 @@ export class RESTManager {
     return false
   }
 
+  /** Processes headers of the Response */
   private processHeaders(
     url: string,
     headers: Headers
@@ -361,12 +359,13 @@ export class RESTManager {
     return rateLimited ? bucket : undefined
   }
 
-  private async handleStatusCode(
+  /** Handles status code of response and acts as required */
+  private handleStatusCode(
     response: Response,
     body: any,
     data: { [key: string]: any },
     reject: CallableFunction
-  ): Promise<void> {
+  ): void {
     const status = response.status
 
     // We have hit ratelimit - this should not happen
@@ -555,10 +554,13 @@ export class RESTManager {
     })
   }
 
-  private async handleRateLimits(): Promise<void> {
+  /** Checks for RateLimits times and deletes if already over */
+  private handleRateLimits(): void {
     const now = Date.now()
     this.rateLimits.forEach((value, key) => {
+      // Ratelimit has not ended
       if (value.resetAt > now) return
+      // It ended, so delete
       this.rateLimits.delete(key)
       if (key === 'global') this.globalRateLimit = false
     })
