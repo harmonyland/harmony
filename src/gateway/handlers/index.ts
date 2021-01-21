@@ -62,7 +62,7 @@ import { Interaction } from '../../structures/slash.ts'
 import { CommandContext } from '../../models/command.ts'
 import { RequestMethods } from '../../models/rest.ts'
 import { PartialInvitePayload } from '../../types/invite.ts'
-import { GuildChannel } from '../../managers/guildChannels.ts'
+import { GuildChannels } from '../../types/guild.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -389,7 +389,7 @@ export type ClientEvents = {
   guildRoleUpdateUncached: [role: Role]
   guildMemberUpdateUncached: [member: Member]
   guildMemberRemoveUncached: [member: Member]
-  channelUpdateUncached: [channel: GuildChannel]
+  channelUpdateUncached: [channel: GuildChannels]
 
   commandOwnerOnly: [ctx: CommandContext]
   commandGuildOnly: [ctx: CommandContext]
