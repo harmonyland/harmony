@@ -198,7 +198,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       enabled: options.enableSlash
     })
 
-    if (options.fetchGatewayInfo === true) this.fetchGatewayInfo = true
+    this.fetchGatewayInfo = options.fetchGatewayInfo ?? false
 
     if (this.token === undefined) {
       try {
