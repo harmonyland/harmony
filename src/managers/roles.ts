@@ -80,18 +80,21 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
   }
 
   /** Delete a Guild Role */
-  async delete(role: Role | string): Promise<boolean> {
+  async delete(role: Role | string): Promise<Role | undefined> {
+    const oldRole = await this.get(typeof role === 'object' ? role.id : role)
+
     await this.client.rest.delete(
       GUILD_ROLE(this.guild.id, typeof role === 'object' ? role.id : role)
     )
-    return true
+
+    return oldRole
   }
 
   async edit(role: Role | string, options: RoleModifyPayload): Promise<Role> {
     if (role instanceof Role) {
       role = role.id
     }
-    const resp = await this.client.rest.patch(
+    const resp: RolePayload = await this.client.rest.patch(
       GUILD_ROLE(this.guild.id, role),
       options
     )

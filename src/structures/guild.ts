@@ -11,7 +11,10 @@ import {
   GuildPreview,
   MessageNotification,
   ContentFilter,
-  GuildModifyOptions
+  GuildModifyOptions,
+  GuildGetPruneCountOptions,
+  GuildGetPruneCountPayload,
+  GuildPruneCountPayload
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
@@ -26,7 +29,12 @@ import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 import { Member } from './member.ts'
 import { User } from './user.ts'
 import { Application } from './application.ts'
-import { GUILD_BAN, GUILD_BANS, GUILD_INTEGRATIONS } from '../types/endpoint.ts'
+import {
+  GUILD_BAN,
+  GUILD_BANS,
+  GUILD_INTEGRATIONS,
+  GUILD_PRUNE
+} from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
 import { RequestMembersOptions } from '../gateway/index.ts'
 import { GuildPresencesManager } from '../managers/presences.ts'
@@ -353,6 +361,29 @@ export class Guild extends Base {
     const result = await this.client.guilds.delete(this.id)
 
     return result === undefined ? this : result
+  }
+
+  async getPruneCount(options: GuildGetPruneCountOptions): Promise<number> {
+    const query: GuildGetPruneCountPayload = {
+      days: options.days,
+      include_roles:
+        options.includeRoles !== undefined
+          ? options.includeRoles
+              .map((role) => (role instanceof Role ? role.id : role))
+              .join(',')
+          : undefined
+    }
+
+    const result: GuildPruneCountPayload = await this.client.rest.get(
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      GUILD_PRUNE(this.id) +
+        '?' +
+        Object.entries(query)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&')
+    )
+
+    return result.pruned as number
   }
 }
 

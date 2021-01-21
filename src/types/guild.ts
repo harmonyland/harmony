@@ -280,3 +280,17 @@ export interface GuildModifyOptions {
   publicUpdatesChannelID?: string | null
   preferredLocale?: string | null
 }
+
+export interface GuildPruneCountPayload {
+  pruned: number | null
+}
+
+export interface GuildGetPruneCountPayload {
+  days?: number
+  include_roles?: string
+}
+
+export interface GuildGetPruneCountOptions {
+  days?: number
+  includeRoles?: Array<Role | string>
+}

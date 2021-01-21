@@ -50,6 +50,10 @@ export class Role extends Base {
     this.mentionable = data.mentionable ?? this.mentionable
   }
 
+  async delete(): Promise<Role | undefined> {
+    return this.guild.roles.delete(this)
+  }
+
   async edit(options: RoleModifyPayload): Promise<Role> {
     return this.guild.roles.edit(this, options)
   }
