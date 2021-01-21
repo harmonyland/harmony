@@ -162,6 +162,15 @@ export interface GuildBanPayload {
   user: UserPayload
 }
 
+export interface GuildWidgetPayload {
+  id: string
+  name: string
+  instant_invite: string
+  channels: Array<{ id: string; name: string; position: number }>
+  members: MemberPayload[]
+  presence_count: number
+}
+
 export type GuildChannelPayloads =
   | GuildTextChannelPayload
   | GuildVoiceChannelPayload

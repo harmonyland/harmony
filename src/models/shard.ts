@@ -1,69 +1,75 @@
 import { Collection } from '../utils/collection.ts'
-import { Client, ClientOptions } from './client.ts'
-import {EventEmitter} from '../../deps.ts'
+import { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
-// import { GATEWAY_BOT } from '../types/endpoint.ts'
-// import { GatewayBotPayload } from '../types/gatewayBot.ts'
+import { Gateway } from '../gateway/index.ts'
+import { HarmonyEventEmitter } from '../utils/events.ts'
+import { GatewayEvents } from '../types/gateway.ts'
 
-// TODO(DjDeveloperr)
-// I'm kinda confused; will continue on this later once
-// Deno namespace in Web Worker is stable!
-export interface ShardManagerOptions {
-  client: Client | typeof Client
-  token?: string
-  intents?: number[]
-  options?: ClientOptions
-  shards: number
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type ShardManagerEvents = {
+  launch: [number]
+  shardReady: [number]
+  shardDisconnect: [number, number | undefined, string | undefined]
+  shardError: [number, Error, ErrorEvent]
+  shardResume: [number]
 }
 
-export interface ShardManagerInitOptions {
-  file: string
-  token?: string
-  intents?: number[]
-  options?: ClientOptions
-  shards?: number
-}
-
-export class ShardManager extends EventEmitter {
-  workers: Collection<string, Worker> = new Collection()
-  token: string
-  intents: number[]
-  shardCount: number
-  private readonly __client: Client
+export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
+  list: Collection<string, Gateway> = new Collection()
+  client: Client
+  cachedShardCount?: number
 
   get rest(): RESTManager {
-    return this.__client.rest
+    return this.client.rest
   }
 
-  constructor(options: ShardManagerOptions) {
+  constructor(client: Client) {
     super()
-    this.__client =
-      options.client instanceof Client
-        ? options.client
-        : // eslint-disable-next-line new-cap
-          new options.client(options.options)
-
-    if (this.__client.token === undefined || options.token === undefined)
-      throw new Error('Token should be provided when constructing ShardManager')
-    if (this.__client.intents === undefined || options.intents === undefined)
-      throw new Error(
-        'Intents should be provided when constructing ShardManager'
-      )
-
-    this.token = this.__client.token ?? options.token
-    this.intents = this.__client.intents ?? options.intents
-    this.shardCount = options.shards
+    this.client = client
   }
 
-  // static async init(): Promise<ShardManager> {}
+  async getShardCount(): Promise<number> {
+    let shardCount: number
+    if (this.cachedShardCount !== undefined) shardCount = this.cachedShardCount
+    else {
+      if (this.client.shardCount === 'auto') {
+        const info = await this.client.rest.api.gateway.bot.get()
+        shardCount = info.shards as number
+      } else shardCount = this.client.shardCount ?? 1
+    }
+    this.cachedShardCount = shardCount
+    return this.cachedShardCount
+  }
 
-  // async start(): Promise<ShardManager> {
-  //   const info = ((await this.rest.get(
-  //     GATEWAY_BOT()
-  //   )) as unknown) as GatewayBotPayload
+  /** Launches a new Shard */
+  async launch(id: number): Promise<ShardManager> {
+    if (this.list.has(id.toString()) === true)
+      throw new Error(`Shard ${id} already launched`)
 
-  //   const totalShards = this.__shardCount ?? info.shards
+    const shardCount = await this.getShardCount()
 
-  //   return this
-  // }
+    const gw = new Gateway(this.client, [Number(id), shardCount])
+    this.list.set(id.toString(), gw)
+    gw.initWebsocket()
+    this.emit('launch', id)
+
+    gw.on(GatewayEvents.Ready, () => this.emit('shardReady', id))
+    gw.on('error', (err: Error, evt: ErrorEvent) =>
+      this.emit('shardError', id, err, evt)
+    )
+    gw.on(GatewayEvents.Resumed, () => this.emit('shardResume', id))
+    gw.on('close', (code: number, reason: string) =>
+      this.emit('shardDisconnect', id, code, reason)
+    )
+
+    return gw.waitFor(GatewayEvents.Ready, () => true).then(() => this)
+  }
+
+  async start(): Promise<ShardManager> {
+    const shardCount = await this.getShardCount()
+    for (let i = 0; i <= shardCount; i++) {
+      await this.launch(i)
+    }
+    return this
+  }
 }

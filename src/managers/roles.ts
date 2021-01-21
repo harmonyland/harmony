@@ -101,4 +101,20 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
 
     return new Role(this.client, resp, this.guild)
   }
+
+  /** Modify the positions of a set of role positions for the guild. */
+  async editPositions(
+    ...positions: Array<{ id: string | Role; position: number | null }>
+  ): Promise<RolesManager> {
+    if (positions.length === 0)
+      throw new Error('No role positions to change specified')
+
+    await this.client.rest.api.guilds[this.guild.id].roles.patch(
+      positions.map((e) => ({
+        id: typeof e.id === 'string' ? e.id : e.id.id,
+        position: e.position ?? null
+      }))
+    )
+    return this
+  }
 }

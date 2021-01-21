@@ -7,6 +7,7 @@ export const ready: GatewayEventHandler = async (
   gateway: Gateway,
   d: Ready
 ) => {
+  gateway.client.upSince = new Date()
   await gateway.client.guilds.flush()
 
   await gateway.client.users.set(d.user.id, d.user)

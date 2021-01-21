@@ -1,4 +1,4 @@
-import { unzlib, EventEmitter } from '../../deps.ts'
+import { unzlib } from '../../deps.ts'
 import { Client } from '../models/client.ts'
 import {
   DISCORD_GATEWAY_URL,
@@ -10,14 +10,15 @@ import {
   GatewayIntents,
   GatewayCloseCodes,
   IdentityPayload,
-  StatusUpdatePayload
+  StatusUpdatePayload,
+  GatewayEvents
 } from '../types/gateway.ts'
 import { gatewayHandlers } from './handlers/index.ts'
-import { GATEWAY_BOT } from '../types/endpoint.ts'
 import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
+import { HarmonyEventEmitter } from '../utils/events.ts'
 
 export interface RequestMembersOptions {
   limit?: number
@@ -33,15 +34,31 @@ export interface VoiceStateOptions {
 
 export const RECONNECT_REASON = 'harmony-reconnect'
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type GatewayTypedEvents = {
+  [name in GatewayEvents]: [any]
+} & {
+  connect: []
+  ping: [number]
+  resume: []
+  reconnectRequired: []
+  close: [number, string]
+  error: [Error, ErrorEvent]
+  sentIdentify: []
+  sentResume: []
+  reconnecting: []
+  init: []
+}
+
 /**
  * Handles Discord Gateway connection.
  *
  * You should not use this and rather use Client class.
  */
-export class Gateway extends EventEmitter {
-  websocket: WebSocket
-  token: string
-  intents: GatewayIntents[]
+export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
+  websocket?: WebSocket
+  token?: string
+  intents?: GatewayIntents[]
   connected = false
   initialized = false
   heartbeatInterval = 0
@@ -53,23 +70,13 @@ export class Gateway extends EventEmitter {
   client: Client
   cache: GatewayCache
   private timedIdentify: number | null = null
+  shards?: number[]
 
-  constructor(client: Client, token: string, intents: GatewayIntents[]) {
+  constructor(client: Client, shards?: number[]) {
     super()
-    this.token = token
-    this.intents = intents
     this.client = client
     this.cache = new GatewayCache(client)
-    this.websocket = new WebSocket(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
-      []
-    )
-    this.websocket.binaryType = 'arraybuffer'
-    this.websocket.onopen = this.onopen.bind(this)
-    this.websocket.onmessage = this.onmessage.bind(this)
-    this.websocket.onclose = this.onclose.bind(this)
-    this.websocket.onerror = this.onerror.bind(this)
+    this.shards = shards
   }
 
   private onopen(): void {
@@ -145,7 +152,7 @@ export class Gateway extends EventEmitter {
           await this.cache.set('seq', s)
         }
         if (t !== null && t !== undefined) {
-          this.emit(t, d)
+          this.emit(t as any, d)
           this.client.emit('raw', t, d)
 
           const handler = gatewayHandlers[t]
@@ -236,24 +243,40 @@ export class Gateway extends EventEmitter {
     }
   }
 
-  private onerror(event: Event | ErrorEvent): void {
-    const eventError = event as ErrorEvent
-    this.emit('error', eventError)
+  private async onerror(event: ErrorEvent): Promise<void> {
+    const error = new Error(
+      Deno.inspect({
+        message: event.message,
+        error: event.error,
+        type: event.type,
+        target: event.target
+      })
+    )
+    error.name = 'ErrorEvent'
+    console.log(error)
+    this.emit('error', error, event)
+    await this.reconnect()
   }
 
   private async sendIdentify(forceNewSession?: boolean): Promise<void> {
-    this.debug('Fetching /gateway/bot...')
-    const info = await this.client.rest.get(GATEWAY_BOT())
-    if (info.session_start_limit.remaining === 0)
-      throw new Error(
-        `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
+    if (typeof this.token !== 'string') throw new Error('Token not specified')
+    if (typeof this.intents !== 'object')
+      throw new Error('Intents not specified')
+
+    if (this.client.fetchGatewayInfo === true) {
+      this.debug('Fetching /gateway/bot...')
+      const info = await this.client.rest.api.gateway.bot.get()
+      if (info.session_start_limit.remaining === 0)
+        throw new Error(
+          `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
+        )
+      this.debug(`Recommended Shards: ${info.shards}`)
+      this.debug('=== Session Limit Info ===')
+      this.debug(
+        `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
       )
-    this.debug(`Recommended Shards: ${info.shards}`)
-    this.debug('=== Session Limit Info ===')
-    this.debug(
-      `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
-    )
-    this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
+      this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
+    }
 
     if (forceNewSession === undefined || !forceNewSession) {
       const sessionIDCached = await this.cache.get('session_id')
@@ -272,7 +295,10 @@ export class Gateway extends EventEmitter {
         $device: this.client.clientProperties.device ?? 'harmony'
       },
       compress: true,
-      shard: [0, 1], // TODO: Make sharding possible
+      shard:
+        this.shards === undefined
+          ? [0, 1]
+          : [this.shards[0] ?? 0, this.shards[1] ?? 1],
       intents: this.intents.reduce(
         (previous, current) => previous | current,
         0
@@ -289,6 +315,10 @@ export class Gateway extends EventEmitter {
   }
 
   private async sendResume(): Promise<void> {
+    if (typeof this.token !== 'string') throw new Error('Token not specified')
+    if (typeof this.intents !== 'object')
+      throw new Error('Intents not specified')
+
     if (this.sessionID === undefined) {
       this.sessionID = await this.cache.get('session_id')
       if (this.sessionID === undefined) return await this.sendIdentify()
@@ -380,22 +410,22 @@ export class Gateway extends EventEmitter {
     this.websocket.onopen = this.onopen.bind(this)
     this.websocket.onmessage = this.onmessage.bind(this)
     this.websocket.onclose = this.onclose.bind(this)
-    this.websocket.onerror = this.onerror.bind(this)
+    this.websocket.onerror = this.onerror.bind(this) as any
   }
 
   close(code: number = 1000, reason?: string): void {
-    return this.websocket.close(code, reason)
+    return this.websocket?.close(code, reason)
   }
 
   send(data: GatewayResponse): boolean {
-    if (this.websocket.readyState !== this.websocket.OPEN) return false
+    if (this.websocket?.readyState !== this.websocket?.OPEN) return false
     const packet = JSON.stringify({
       op: data.op,
       d: data.d,
       s: typeof data.s === 'number' ? data.s : null,
       t: data.t === undefined ? null : data.t
     })
-    this.websocket.send(packet)
+    this.websocket?.send(packet)
     return true
   }
 
