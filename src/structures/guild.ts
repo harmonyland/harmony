@@ -393,12 +393,7 @@ export class Guild extends Base {
   ): Promise<null>
   async prune(
     days?: number,
-    computePruneCount?: true,
-    includeRoles?: Array<Role | string>
-  ): Promise<number>
-  async prune(
-    days?: number,
-    computePruneCount?: undefined,
+    computePruneCount?: true | undefined,
     includeRoles?: Array<Role | string>
   ): Promise<number>
   async prune(
