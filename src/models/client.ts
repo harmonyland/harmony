@@ -21,6 +21,10 @@ import { INVITE } from '../types/endpoint.ts'
 import { ClientEvents } from '../gateway/handlers/index.ts'
 import type { Collector } from './collectors.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
+import { VoiceRegion } from '../types/voice.ts'
+import { fetchAuto } from '../../deps.ts'
+import { DMChannel } from '../structures/dmChannel.ts'
+import { Template } from '../structures/template.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -353,6 +357,58 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
     // @ts-ignore
     return super.emit(event, ...args)
+  }
+
+  /** Returns an array of voice region objects that can be used when creating servers. */
+  async fetchVoiceRegions(): Promise<VoiceRegion[]> {
+    return this.rest.api.voice.regions.get()
+  }
+
+  /** Modify current (Client) User. */
+  async editUser(data: {
+    username?: string
+    avatar?: string
+  }): Promise<Client> {
+    if (data.username === undefined && data.avatar === undefined)
+      throw new Error(
+        'Either username or avatar or both must be specified to edit'
+      )
+
+    if (data.avatar?.startsWith('http') === true) {
+      data.avatar = await fetchAuto(data.avatar)
+    }
+
+    await this.rest.api.users['@me'].patch({
+      username: data.username,
+      avatar: data.avatar
+    })
+    return this
+  }
+
+  /** Change Username of the Client User */
+  async setUsername(username: string): Promise<Client> {
+    return await this.editUser({ username })
+  }
+
+  /** Change Avatar of the Client User */
+  async setAvatar(avatar: string): Promise<Client> {
+    return await this.editUser({ avatar })
+  }
+
+  /** Create a DM Channel with a User */
+  async createDM(user: User | string): Promise<DMChannel> {
+    const id = typeof user === 'object' ? user.id : user
+    const dmPayload = await this.rest.api.users['@me'].channels.post({
+      recipient_id: id
+    })
+    await this.channels.set(dmPayload.id, dmPayload)
+    return (this.channels.get<DMChannel>(dmPayload.id) as unknown) as DMChannel
+  }
+
+  /** Returns a template object for the given code. */
+  async fetchTemplate(code: string): Promise<Template> {
+    const payload = await this.rest.api.guilds.templates[code].get()
+    return new Template(this, payload)
   }
 }
 

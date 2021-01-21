@@ -99,4 +99,20 @@ export class GuildChannelsManager extends BaseChildManager<
     const channel = await this.get(res.id)
     return (channel as unknown) as GuildChannel
   }
+
+  /** Modify the positions of a set of channel positions for the guild. */
+  async editPositions(
+    ...positions: Array<{ id: string | GuildChannel; position: number | null }>
+  ): Promise<GuildChannelsManager> {
+    if (positions.length === 0)
+      throw new Error('No channel positions to change specified')
+
+    await this.client.rest.api.guilds[this.guild.id].channels.patch(
+      positions.map((e) => ({
+        id: typeof e.id === 'string' ? e.id : e.id.id,
+        position: e.position ?? null
+      }))
+    )
+    return this
+  }
 }

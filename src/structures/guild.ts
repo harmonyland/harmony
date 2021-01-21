@@ -4,6 +4,7 @@ import {
   GuildFeatures,
   GuildIntegrationPayload,
   GuildPayload,
+  GuildWidgetPayload,
   IntegrationAccountPayload,
   IntegrationExpireBehavior
 } from '../types/guild.ts'
@@ -25,6 +26,8 @@ import { GUILD_BAN, GUILD_BANS, GUILD_INTEGRATIONS } from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
 import { RequestMembersOptions } from '../gateway/index.ts'
 import { GuildPresencesManager } from '../managers/presences.ts'
+import { TemplatePayload } from '../types/template.ts'
+import { Template } from './template.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -325,6 +328,125 @@ export class Guild extends Base {
         reject(Error("Timeout. Guild didn't arrive in time."))
       }, timeout)
     })
+  }
+
+  /** Attach an integration object from the current user to the guild. */
+  async createIntegration(id: string, type: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations.post({ id, type })
+    return this
+  }
+
+  /** Modify the behavior and settings of an integration object for the guild. */
+  async editIntegration(
+    id: string,
+    data: {
+      expireBehavior?: number | null
+      expireGracePeriod?: number | null
+      enableEmoticons?: boolean | null
+    }
+  ): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations[id].patch({
+      expire_behaviour: data.expireBehavior,
+      expire_grace_period: data.expireGracePeriod,
+      enable_emoticons: data.enableEmoticons
+    })
+    return this
+  }
+
+  /** Delete the attached integration object for the guild. Deletes any associated webhooks and kicks the associated bot if there is one. */
+  async deleteIntegration(id: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations[id].delete()
+    return this
+  }
+
+  /** Sync an integration. */
+  async syncIntegration(id: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations[id].sync.post()
+    return this
+  }
+
+  /** Returns the widget for the guild. */
+  async getWidget(): Promise<GuildWidgetPayload> {
+    return this.client.rest.api.guilds[this.id]['widget.json'].get()
+  }
+
+  /** Modify a guild widget object for the guild. */
+  async editWidget(data: {
+    enabled?: boolean
+    channel?: string | GuildChannel
+  }): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].widget.patch({
+      enabled: data.enabled,
+      channel_id:
+        typeof data.channel === 'object' ? data.channel.id : data.channel
+    })
+    return this
+  }
+
+  /** Returns a partial invite object for guilds with that feature enabled. */
+  async getVanity(): Promise<{ code: string | null; uses: number }> {
+    return this.client.rest.api.guilds[this.id]['vanity-url'].get()
+  }
+
+  /** Returns a PNG (URL) image widget for the guild. */
+  getWidgetImageURL(
+    style?: 'shield' | 'banner1' | 'banner2' | 'banner3' | 'banner4'
+  ): string {
+    return `https://discord.com/api/v${this.client.rest.version ?? 8}/guilds/${
+      this.id
+    }/widget.png${style !== undefined ? `?style=${style}` : ''}`
+  }
+
+  /** Leave a Guild. */
+  async leave(): Promise<Client> {
+    await this.client.rest.api.users['@me'].guilds[this.id].delete()
+    return this.client
+  }
+
+  /** Returns an array of template objects. */
+  async getTemplates(): Promise<Template[]> {
+    return this.client.rest.api.guilds[this.id].templates
+      .get()
+      .then((temps: TemplatePayload[]) =>
+        temps.map((temp) => new Template(this.client, temp))
+      )
+  }
+
+  /** Creates a template for the guild. */
+  async createTemplate(
+    name: string,
+    description?: string | null
+  ): Promise<Template> {
+    const payload = await this.client.rest.api.guilds[this.id].templates.post({
+      name,
+      description
+    })
+    return new Template(this.client, payload)
+  }
+
+  /** Syncs the template to the guild's current state. */
+  async syncTemplate(code: string): Promise<Template> {
+    const payload = await this.client.rest.api.guilds[this.id].templates[
+      code
+    ].sync.put()
+    return new Template(this.client, payload)
+  }
+
+  /** Modifies the template's metadata. */
+  async editTemplate(
+    code: string,
+    data: { name?: string; description?: string }
+  ): Promise<Template> {
+    const payload = await this.client.rest.api.guilds[this.id].templates[
+      code
+    ].patch({ name: data.name, description: data.description })
+    return new Template(this.client, payload)
+  }
+
+  /** Deletes the template. Requires the MANAGE_GUILD permission. */
+  async deleteTemplate(code: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].templates[code].delete()
+    return this
   }
 }
 
