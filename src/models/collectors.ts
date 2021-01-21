@@ -142,7 +142,8 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   }
 
   /** Returns a Promise resolved when Collector ends or a timeout occurs */
-  async wait(timeout: number = this.timeout ?? 0): Promise<Collector> {
+  async wait(timeout?: number): Promise<Collector> {
+    if (timeout === undefined) timeout = this.timeout ?? 0
     return await new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (!timeout)
