@@ -12,9 +12,9 @@ import {
   MessageNotification,
   ContentFilter,
   GuildModifyOptions,
-  GuildGetPruneCountOptions,
   GuildGetPruneCountPayload,
-  GuildPruneCountPayload
+  GuildPruneCountPayload,
+  GuildBeginPrunePayload
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
@@ -363,15 +363,15 @@ export class Guild extends Base {
     return result === undefined ? this : result
   }
 
-  async getPruneCount(options: GuildGetPruneCountOptions): Promise<number> {
+  async getPruneCount(
+    days?: number,
+    includeRoles?: Array<Role | string>
+  ): Promise<number> {
     const query: GuildGetPruneCountPayload = {
-      days: options.days,
-      include_roles:
-        options.includeRoles !== undefined
-          ? options.includeRoles
-              .map((role) => (role instanceof Role ? role.id : role))
-              .join(',')
-          : undefined
+      days: days,
+      include_roles: includeRoles
+        ?.map((role) => (role instanceof Role ? role.id : role))
+        .join(',')
     }
 
     const result: GuildPruneCountPayload = await this.client.rest.get(
@@ -384,6 +384,42 @@ export class Guild extends Base {
     )
 
     return result.pruned as number
+  }
+
+  async prune(
+    days?: number,
+    computePruneCount?: false,
+    includeRoles?: Array<Role | string>
+  ): Promise<null>
+  async prune(
+    days?: number,
+    computePruneCount?: true,
+    includeRoles?: Array<Role | string>
+  ): Promise<number>
+  async prune(
+    days?: number,
+    computePruneCount?: undefined,
+    includeRoles?: Array<Role | string>
+  ): Promise<number>
+  async prune(
+    days?: number,
+    computePruneCount?: boolean,
+    includeRoles?: Array<Role | string>
+  ): Promise<number | null> {
+    const body: GuildBeginPrunePayload = {
+      days: days,
+      compute_prune_count: computePruneCount,
+      include_roles: includeRoles?.map((role) =>
+        role instanceof Role ? role.id : role
+      )
+    }
+
+    const result: GuildPruneCountPayload = await this.client.rest.post(
+      GUILD_PRUNE(this.id),
+      body
+    )
+
+    return result.pruned
   }
 }
 

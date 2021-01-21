@@ -290,7 +290,8 @@ export interface GuildGetPruneCountPayload {
   include_roles?: string
 }
 
-export interface GuildGetPruneCountOptions {
+export interface GuildBeginPrunePayload {
   days?: number
-  includeRoles?: Array<Role | string>
+  compute_prune_count?: boolean
+  include_roles?: string[]
 }
