@@ -1,5 +1,16 @@
+import { Emoji } from '../structures/emoji.ts'
+import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import { Role } from '../structures/role.ts'
+import { GuildTextChannel } from '../structures/textChannel.ts'
 import { ApplicationPayload } from './application.ts'
-import { ChannelPayload } from './channel.ts'
+import {
+  ChannelPayload,
+  ChannelTypes,
+  GuildCategoryChannelPayload,
+  GuildTextChannelPayload,
+  GuildVoiceChannelPayload
+} from './channel.ts'
 import { EmojiPayload } from './emoji.ts'
 import { PresenceUpdatePayload } from './gateway.ts'
 import { RolePayload } from './role.ts'
@@ -21,9 +32,9 @@ export interface GuildPayload {
   afk_timeout: number
   widget_enabled?: boolean
   widget_channel_id?: string
-  verification_level: string
-  default_message_notifications: string
-  explicit_content_filter: string
+  verification_level: Verification
+  default_message_notifications: MessageNotification
+  explicit_content_filter: ContentFilter
   roles: RolePayload[]
   emojis: EmojiPayload[]
   features: GuildFeatures[]
@@ -73,7 +84,7 @@ export enum MessageNotification {
 export enum ContentFilter {
   DISABLED = 0,
   MEMBERS_WITHOUT_ROLES = 1,
-  ALL_MEMBERS = 3
+  ALL_MEMBERS = 2
 }
 
 export enum MFA {
@@ -158,4 +169,137 @@ export interface GuildWidgetPayload {
   channels: Array<{ id: string; name: string; position: number }>
   members: MemberPayload[]
   presence_count: number
+  
+export type GuildChannelPayloads =
+  | GuildTextChannelPayload
+  | GuildVoiceChannelPayload
+  | GuildCategoryChannelPayload
+export type GuildChannels = GuildTextChannel | VoiceChannel | CategoryChannel
+
+export interface GuildCreatePayload {
+  name: string
+  region?: string
+  icon?: string
+  verification_level?: number
+  default_message_notifications?: number
+  explicit_content_filter?: number
+  roles?: GuildCreateRolePayload[]
+  channels?: GuildCreateChannelPayload[]
+  afk_channel_id?: string
+  afk_timeout?: number
+  system_channel_id?: string
+}
+
+export interface GuildCreateRolePayload {
+  id?: string
+  name: string
+  color?: number
+  hoist?: boolean
+  position?: number
+  permissions?: string
+  managed?: boolean
+  mentionable?: boolean
+}
+
+export interface GuildCreateChannelPayload {
+  id?: string
+  name: string
+  type: ChannelTypes
+  parent_id?: string
+}
+
+export interface GuildCreateChannelOptions {
+  id?: string
+  name: string
+  type: ChannelTypes
+  parentID?: string
+}
+
+export interface GuildCreateOptions {
+  name: string
+  region?: string
+  icon?: string
+  verificationLevel?: Verification
+  roles?: Array<Role | GuildCreateRolePayload>
+  channels?: Array<GuildChannels | GuildCreateChannelOptions>
+  afkChannelID?: string
+  afkTimeout?: number
+  systemChannelID?: string
+}
+
+export interface GuildPreviewPayload {
+  id: string
+  name: string
+  icon: string | null
+  splash: string | null
+  discovery_splash: string | null
+  emojis: EmojiPayload[]
+  features: GuildFeatures[]
+  approximate_member_count: number
+  approximate_presence_count: number
+  description: string | null
+}
+
+export interface GuildPreview {
+  id: string
+  name: string
+  icon: string | null
+  splash: string | null
+  discoverySplash: string | null
+  emojis: Emoji[]
+  features: GuildFeatures[]
+  approximateMemberCount: number
+  approximatePresenceCount: number
+  description: string | null
+}
+
+export interface GuildModifyPayload {
+  name?: string
+  region?: string | null
+  verification_level?: Verification | null
+  default_message_notifications?: MessageNotification | null
+  explicit_content_filter?: ContentFilter | null
+  afk_channel_id?: string | null
+  afk_timeout?: number
+  icon?: string | null
+  owner_id?: string
+  splash?: string | null
+  banner?: string | null
+  system_channel_id?: string | null
+  rules_channel_id?: string | null
+  public_updates_channel_id?: string | null
+  preferred_locale?: string | null
+}
+
+export interface GuildModifyOptions {
+  name?: string
+  region?: string | null
+  verificationLevel?: Verification | null
+  defaultMessageNotifications?: MessageNotification | null
+  explicitContentFilter?: ContentFilter | null
+  afkChannelID?: string | null
+  afkTimeout?: number
+  icon?: string | null
+  ownerID?: string
+  splash?: string | null
+  banner?: string | null
+  systemChannelID?: string | null
+  rulesChannelID?: string | null
+  publicUpdatesChannelID?: string | null
+  preferredLocale?: string | null
+}
+
+export interface GuildPruneCountPayload {
+  pruned: number | null
+}
+
+export interface GuildGetPruneCountPayload {
+  days?: number
+  include_roles?: string
+}
+
+export interface GuildBeginPrunePayload {
+  days?: number
+  compute_prune_count?: boolean
+  include_roles?: string[]
 }

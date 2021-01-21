@@ -31,7 +31,7 @@ export const messageReactionRemove: GatewayEventHandler = async (
   const reaction = await message.reactions.get(emojiID)
   if (reaction === undefined) return
 
-  reaction.users.delete(d.user_id)
+  reaction.users._delete(d.user_id)
 
   gateway.client.emit('messageReactionRemove', reaction, user)
 }

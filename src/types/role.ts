@@ -18,3 +18,11 @@ export interface RoleTagsPayload {
   /** The id of the integration this role belongs to */
   integration_id?: string
 }
+
+export interface RoleModifyPayload {
+  name?: string | null
+  permissions?: string | null
+  color?: number | null
+  hoist?: boolean | null
+  mentionable?: boolean | null
+}

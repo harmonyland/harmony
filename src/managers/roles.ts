@@ -3,7 +3,7 @@ import { Client } from '../models/client.ts'
 import { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE, GUILD_ROLES } from '../types/endpoint.ts'
-import { RolePayload } from '../types/role.ts'
+import { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { BaseManager } from './base.ts'
 
 export interface CreateGuildRoleOptions {
@@ -33,6 +33,12 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
         })
         .catch((e) => reject(e))
     })
+  }
+
+  async get(key: string): Promise<Role | undefined> {
+    const raw = await this._get(key)
+    if (raw === undefined) return
+    return new Role(this.client, raw, this.guild)
   }
 
   async fromPayload(roles: RolePayload[]): Promise<boolean> {
@@ -74,11 +80,26 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
   }
 
   /** Delete a Guild Role */
-  async delete(role: Role | string): Promise<boolean> {
+  async delete(role: Role | string): Promise<Role | undefined> {
+    const oldRole = await this.get(typeof role === 'object' ? role.id : role)
+
     await this.client.rest.delete(
       GUILD_ROLE(this.guild.id, typeof role === 'object' ? role.id : role)
     )
-    return true
+
+    return oldRole
+  }
+
+  async edit(role: Role | string, options: RoleModifyPayload): Promise<Role> {
+    if (role instanceof Role) {
+      role = role.id
+    }
+    const resp: RolePayload = await this.client.rest.patch(
+      GUILD_ROLE(this.guild.id, role),
+      options
+    )
+
+    return new Role(this.client, resp, this.guild)
   }
 
   /** Modify the positions of a set of role positions for the guild. */

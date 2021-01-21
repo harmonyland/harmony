@@ -1,10 +1,12 @@
 import { Client } from '../models/client.ts'
 import { Base } from './base.ts'
-import { RolePayload } from '../types/role.ts'
+import { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { Permissions } from '../utils/permissions.ts'
+import { Guild } from './guild.ts'
 
 export class Role extends Base {
   id: string
+  guild: Guild
   name: string
   color: number
   hoist: boolean
@@ -14,9 +16,10 @@ export class Role extends Base {
   mentionable: boolean
   tags?: RoleTags
 
-  constructor(client: Client, data: RolePayload) {
+  constructor(client: Client, data: RolePayload, guild: Guild) {
     super(client, data)
     this.id = data.id
+    this.guild = guild
     this.name = data.name
     this.color = data.color
     this.hoist = data.hoist
@@ -45,6 +48,14 @@ export class Role extends Base {
         : this.permissions
     this.managed = data.managed ?? this.managed
     this.mentionable = data.mentionable ?? this.mentionable
+  }
+
+  async delete(): Promise<Role | undefined> {
+    return this.guild.roles.delete(this)
+  }
+
+  async edit(options: RoleModifyPayload): Promise<Role> {
+    return this.guild.roles.edit(this, options)
   }
 }
 

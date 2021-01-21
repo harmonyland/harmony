@@ -42,7 +42,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
   async flush(): Promise<boolean> {
     const arr = await this.array()
     for (const elem of arr) {
-      this.parent.delete(elem.id)
+      this.parent._delete(elem.id)
     }
     return true
   }

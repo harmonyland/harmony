@@ -6,14 +6,22 @@ import {
   GuildPayload,
   GuildWidgetPayload,
   IntegrationAccountPayload,
-  IntegrationExpireBehavior
+  IntegrationExpireBehavior,
+  Verification,
+  GuildChannels,
+  GuildPreview,
+  MessageNotification,
+  ContentFilter,
+  GuildModifyOptions,
+  GuildGetPruneCountPayload,
+  GuildPruneCountPayload,
+  GuildBeginPrunePayload
 } from '../types/guild.ts'
 import { Base } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
 import { InviteManager } from '../managers/invites.ts'
 import {
   CreateChannelOptions,
-  GuildChannel,
   GuildChannelsManager
 } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
@@ -22,7 +30,12 @@ import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 import { Member } from './member.ts'
 import { User } from './user.ts'
 import { Application } from './application.ts'
-import { GUILD_BAN, GUILD_BANS, GUILD_INTEGRATIONS } from '../types/endpoint.ts'
+import {
+  GUILD_BAN,
+  GUILD_BANS,
+  GUILD_INTEGRATIONS,
+  GUILD_PRUNE
+} from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
 import { RequestMembersOptions } from '../gateway/index.ts'
 import { GuildPresencesManager } from '../managers/presences.ts'
@@ -134,9 +147,9 @@ export class Guild extends Base {
   afkTimeout?: number
   widgetEnabled?: boolean
   widgetChannelID?: string
-  verificationLevel?: string
-  defaultMessageNotifications?: string
-  explicitContentFilter?: string
+  verificationLevel?: Verification
+  defaultMessageNotifications?: MessageNotification
+  explicitContentFilter?: ContentFilter
   roles: RolesManager
   emojis: GuildEmojisManager
   invites: InviteManager
@@ -267,7 +280,7 @@ export class Guild extends Base {
   }
 
   /** Create a new Guild Channel */
-  async createChannel(options: CreateChannelOptions): Promise<GuildChannel> {
+  async createChannel(options: CreateChannelOptions): Promise<GuildChannels> {
     return this.channels.create(options)
   }
 
@@ -447,6 +460,82 @@ export class Guild extends Base {
   async deleteTemplate(code: string): Promise<Guild> {
     await this.client.rest.api.guilds[this.id].templates[code].delete()
     return this
+    
+  /** Gets a preview of the guild. Returns GuildPreview. */
+  async preview(): Promise<GuildPreview> {
+    return this.client.guilds.preview(this.id)
+  }
+
+  /**
+   * Edits the guild.
+   * @param options Guild edit options
+   */
+  async edit(options: GuildModifyOptions): Promise<Guild> {
+    const result = await this.client.guilds.edit(this.id, options, true)
+    this.readFromData(result)
+
+    return new Guild(this.client, result)
+  }
+
+  /** Deletes the guild. */
+  async delete(): Promise<Guild> {
+    const result = await this.client.guilds.delete(this.id)
+
+    return result === undefined ? this : result
+  }
+
+  async getPruneCount(options?: {
+    days?: number
+    includeRoles?: Array<Role | string>
+  }): Promise<number> {
+    const query: GuildGetPruneCountPayload = {
+      days: options?.days,
+      include_roles: options?.includeRoles
+        ?.map((role) => (role instanceof Role ? role.id : role))
+        .join(',')
+    }
+
+    const result: GuildPruneCountPayload = await this.client.rest.get(
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      GUILD_PRUNE(this.id) +
+        '?' +
+        Object.entries(query)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&')
+    )
+
+    return result.pruned as number
+  }
+
+  async prune(options?: {
+    days?: number
+    computePruneCount: true | undefined
+    includeRoles?: Array<Role | string>
+  }): Promise<number>
+  async prune(options?: {
+    days?: number
+    computePruneCount: false
+    includeRoles?: Array<Role | string>
+  }): Promise<null>
+  async prune(options?: {
+    days?: number
+    computePruneCount?: boolean | undefined
+    includeRoles?: Array<Role | string>
+  }): Promise<number | null> {
+    const body: GuildBeginPrunePayload = {
+      days: options?.days,
+      compute_prune_count: options?.computePruneCount,
+      include_roles: options?.includeRoles?.map((role) =>
+        role instanceof Role ? role.id : role
+      )
+    }
+
+    const result: GuildPruneCountPayload = await this.client.rest.post(
+      GUILD_PRUNE(this.id),
+      body
+    )
+
+    return result.pruned
   }
 }
 
