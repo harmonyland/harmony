@@ -41,11 +41,6 @@ export class BaseManager<T, T2> {
     return this.client.cache.delete(this.cacheName, key)
   }
 
-  /** Alias to _delete (cache) for compatibility purposes */
-  async delete(key: string): Promise<boolean> {
-    return await this._delete(key)
-  }
-
   /** Gets an Array of values from Cache */
   async array(): Promise<T2[]> {
     let arr = await (this.client.cache.array(this.cacheName) as T[])

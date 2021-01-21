@@ -4,7 +4,7 @@ import {
   Message,
   Member,
   Role,
-  GuildChannel,
+  GuildChannels,
   Embed,
   Guild,
   EveryChannelTypes,
@@ -88,7 +88,7 @@ client.on('messageCreate', async (msg: Message) => {
   } else if (msg.content === '!channels') {
     const col = await msg.guild?.channels.array()
     const data = col
-      ?.map((c: GuildChannel, i: number) => {
+      ?.map((c: GuildChannels, i: number) => {
         return `${i + 1}. ${c.name}`
       })
       .join('\n') as string

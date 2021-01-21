@@ -12,7 +12,7 @@ export const guildMemberRemove: GatewayEventHandler = async (
   if (guild === undefined) return
 
   const member = await guild.members.get(d.user.id)
-  await guild.members.delete(d.user.id)
+  await guild.members._delete(d.user.id)
 
   if (member !== undefined) gateway.client.emit('guildMemberRemove', member)
   else {

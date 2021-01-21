@@ -4,7 +4,7 @@ import {
   Intents,
   CommandContext,
   Extension,
-  GuildChannel
+  GuildChannels
 } from '../../mod.ts'
 import { Invite } from '../structures/invite.ts'
 import { TOKEN } from './config.ts'
@@ -80,7 +80,7 @@ client.on('inviteDeleteUncached', (invite: Invite) => {
 client.on('commandError', console.error)
 
 class ChannelLog extends Extension {
-  onChannelCreate(ext: Extension, channel: GuildChannel): void {
+  onChannelCreate(ext: Extension, channel: GuildChannels): void {
     console.log(`Channel Created: ${channel.name}`)
   }
 
@@ -111,8 +111,8 @@ client.on('messageDeleteBulk', (channel, messages, uncached) => {
 
 client.on('channelUpdate', (before, after) => {
   console.log(
-    `Channel Update: ${(before as GuildChannel).name}, ${
-      (after as GuildChannel).name
+    `Channel Update: ${(before as GuildChannels).name}, ${
+      (after as GuildChannels).name
     }`
   )
 })
