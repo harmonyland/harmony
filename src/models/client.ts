@@ -179,7 +179,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       Object.keys(this._decoratedEvents).length !== 0
     ) {
       Object.entries(this._decoratedEvents).forEach((entry) => {
-        this.on(entry[0] as keyof ClientEvents, entry[1])
+        this.on(entry[0] as keyof ClientEvents, entry[1].bind(this))
       })
       this._decoratedEvents = undefined
     }
@@ -195,12 +195,6 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
     if (options.shard !== undefined) this.shard = options.shard
     if (options.shardCount !== undefined) this.shardCount = options.shardCount
-
-    this.slash = new SlashClient({
-      id: () => this.getEstimatedID(),
-      client: this,
-      enabled: options.enableSlash
-    })
 
     this.fetchGatewayInfo = options.fetchGatewayInfo ?? true
 
@@ -224,6 +218,12 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (options.restOptions !== undefined)
       Object.assign(restOptions, options.restOptions)
     this.rest = new RESTManager(restOptions)
+
+    this.slash = new SlashClient({
+      id: () => this.getEstimatedID(),
+      client: this,
+      enabled: options.enableSlash
+    })
   }
 
   /**
@@ -425,7 +425,7 @@ export function event(name?: keyof ClientEvents) {
   ) {
     const listener = ((client as unknown) as {
       [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
-    })[name ?? ((prop as unknown) as keyof ClientEvents)]
+    })[(prop as unknown) as keyof ClientEvents]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
     if (client._decoratedEvents === undefined) client._decoratedEvents = {}

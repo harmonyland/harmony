@@ -91,7 +91,7 @@ export class Extension {
       Object.keys(this._decoratedEvents).length !== 0
     ) {
       Object.entries(this._decoratedEvents).forEach((entry) => {
-        this.listen(entry[0] as keyof ClientEvents, entry[1])
+        this.listen(entry[0] as keyof ClientEvents, entry[1].bind(this))
       })
       this._decoratedEvents = undefined
     }

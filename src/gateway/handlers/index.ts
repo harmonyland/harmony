@@ -116,11 +116,11 @@ export interface VoiceServerUpdateData {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ClientEvents = {
   /** When Client has successfully connected to Discord */
-  ready: []
+  ready: [shard: number]
   /** When a successful reconnect has been made */
-  reconnect: []
+  reconnect: [shard: number]
   /** When a successful session resume has been done */
-  resumed: []
+  resumed: [shard: number]
   /**
    * When a new Channel is created
    * @param channel New Channel object
