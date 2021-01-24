@@ -12,6 +12,7 @@ import {
   GuildTextChannel
 } from '../../mod.ts'
 import { Collector } from '../models/collectors.ts'
+import { MessageAttachment } from '../structures/message.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -143,6 +144,16 @@ client.on('messageCreate', async (msg: Message) => {
     coll.on('collect', (msg) =>
       msg.channel.send(`[COL] Collect: ${msg.content}`)
     )
+  } else if (msg.content === '!attach') {
+    msg.channel.send({
+      file: await MessageAttachment.load(
+        'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1'
+      )
+    })
+  } else if (msg.content === '!textfile') {
+    msg.channel.send({
+      file: new MessageAttachment('hello.txt', 'hello world')
+    })
   }
 })
 
