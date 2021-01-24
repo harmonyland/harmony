@@ -271,7 +271,8 @@ export class RESTManager {
     if (body?.file !== undefined) {
       const form = new FormData()
       form.append('file', body.file.blob, body.file.name)
-      form.append('payload_json', JSON.stringify({ ...body, file: undefined }))
+      const json = JSON.stringify(body)
+      form.append('payload_json', json)
       body.file = form
     } else if (
       body !== undefined &&

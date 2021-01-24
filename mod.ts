@@ -59,7 +59,7 @@ export { NewsChannel } from './src/structures/guildNewsChannel.ts'
 export { VoiceChannel } from './src/structures/guildVoiceChannel.ts'
 export { Invite } from './src/structures/invite.ts'
 export * from './src/structures/member.ts'
-export { Message } from './src/structures/message.ts'
+export { Message, MessageAttachment } from './src/structures/message.ts'
 export { MessageMentions } from './src/structures/messageMentions.ts'
 export {
   Presence,
@@ -69,6 +69,7 @@ export {
 export { Role } from './src/structures/role.ts'
 export { Snowflake } from './src/utils/snowflake.ts'
 export { TextChannel, GuildTextChannel } from './src/structures/textChannel.ts'
+export type { AllMessageOptions } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
 export { User } from './src/structures/user.ts'
 export { Webhook } from './src/structures/webhook.ts'
@@ -97,7 +98,8 @@ export type {
   GuildChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
-  GroupDMChannelPayload
+  GroupDMChannelPayload,
+  MessageOptions
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export type {

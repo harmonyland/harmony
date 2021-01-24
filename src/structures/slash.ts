@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { MessageOption } from '../types/channel.ts'
+import { MessageOptions } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
   InteractionData,
@@ -16,7 +16,7 @@ import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { Webhook } from './webhook.ts'
 
-interface WebhookMessageOptions extends MessageOption {
+interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
   name?: string
   avatar?: string

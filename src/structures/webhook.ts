@@ -4,7 +4,7 @@ import {
 } from '../consts/urlsAndVersions.ts'
 import { Client } from '../models/client.ts'
 import { RESTManager } from '../models/rest.ts'
-import { MessageOption } from '../types/channel.ts'
+import { MessageOptions } from '../types/channel.ts'
 import { UserPayload } from '../types/user.ts'
 import { WebhookPayload } from '../types/webhook.ts'
 import { Embed } from './embed.ts'
@@ -14,7 +14,7 @@ import { User } from './user.ts'
 import { fetchAuto } from '../../deps.ts'
 import { WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 
-export interface WebhookMessageOptions extends MessageOption {
+export interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
   name?: string
   avatar?: string
