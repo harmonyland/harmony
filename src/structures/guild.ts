@@ -41,6 +41,7 @@ import { RequestMembersOptions } from '../gateway/index.ts'
 import { GuildPresencesManager } from '../managers/presences.ts'
 import { TemplatePayload } from '../types/template.ts'
 import { Template } from './template.ts'
+import { DiscordAPIError } from '../models/rest.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -398,7 +399,22 @@ export class Guild extends Base {
 
   /** Returns a partial invite object for guilds with that feature enabled. */
   async getVanity(): Promise<{ code: string | null; uses: number }> {
-    return this.client.rest.api.guilds[this.id]['vanity-url'].get()
+    try {
+      const value = await this.client.rest.api.guilds[this.id][
+        'vanity-url'
+      ].get()
+      return value
+    } catch (error) {
+      if (error instanceof DiscordAPIError) {
+        if (error.error?.code === 50020) {
+          return {
+            code: null,
+            uses: 0
+          }
+        }
+      }
+      throw error
+    }
   }
 
   /** Returns a PNG (URL) image widget for the guild. */
@@ -441,7 +457,7 @@ export class Guild extends Base {
   async syncTemplate(code: string): Promise<Template> {
     const payload = await this.client.rest.api.guilds[this.id].templates[
       code
-    ].sync.put()
+    ].put()
     return new Template(this.client, payload)
   }
 
@@ -510,7 +526,7 @@ export class Guild extends Base {
 
   async prune(options?: {
     days?: number
-    computePruneCount: true | undefined
+    computePruneCount?: true
     includeRoles?: Array<Role | string>
   }): Promise<number>
   async prune(options?: {
@@ -520,7 +536,7 @@ export class Guild extends Base {
   }): Promise<null>
   async prune(options?: {
     days?: number
-    computePruneCount?: boolean | undefined
+    computePruneCount?: boolean
     includeRoles?: Array<Role | string>
   }): Promise<number | null> {
     const body: GuildBeginPrunePayload = {

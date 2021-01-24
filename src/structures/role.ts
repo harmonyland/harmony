@@ -3,6 +3,8 @@ import { Base } from './base.ts'
 import { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { Guild } from './guild.ts'
+import { Member } from './member.ts'
+import { User } from './user.ts'
 
 export class Role extends Base {
   id: string
@@ -48,6 +50,38 @@ export class Role extends Base {
         : this.permissions
     this.managed = data.managed ?? this.managed
     this.mentionable = data.mentionable ?? this.mentionable
+  }
+
+  async addTo(member: Member | User | string): Promise<boolean> {
+    if (member instanceof User) {
+      member = member.id
+    }
+    if (typeof member === 'string') {
+      const tempMember = await this.guild.members.get(member)
+      if (tempMember === undefined) {
+        throw new Error(`Couldn't find the member ${member}.`)
+      } else {
+        member = tempMember
+      }
+    }
+
+    return member.roles.add(this.id)
+  }
+
+  async removeFrom(member: Member | User | string): Promise<boolean> {
+    if (member instanceof User) {
+      member = member.id
+    }
+    if (typeof member === 'string') {
+      const tempMember = await this.guild.members.get(member)
+      if (tempMember === undefined) {
+        throw new Error(`Couldn't find the member ${member}.`)
+      } else {
+        member = tempMember
+      }
+    }
+
+    return member.roles.remove(this.id)
   }
 
   async delete(): Promise<Role | undefined> {

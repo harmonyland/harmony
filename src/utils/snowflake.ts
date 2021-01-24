@@ -24,4 +24,8 @@ export class Snowflake {
   get increment(): string {
     return (this.snowflake & 0xfffn).toString()
   }
+
+  get toString(): string {
+    return this.id
+  }
 }

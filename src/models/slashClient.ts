@@ -381,9 +381,7 @@ export class SlashClient {
     this.commands = new SlashCommandsManager(this)
     this.publicKey = options.publicKey
 
-    if (options !== undefined) {
-      this.enabled = options.enabled ?? true
-    }
+    this.enabled = options.enabled ?? true
 
     if (this.client?._decoratedSlash !== undefined) {
       this.client._decoratedSlash.forEach((e) => {

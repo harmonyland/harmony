@@ -41,6 +41,12 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
     return new Role(this.client, raw, this.guild)
   }
 
+  async array(): Promise<Role[]> {
+    let arr = await (this.client.cache.array(this.cacheName) as RolePayload[])
+    if (arr === undefined) arr = []
+    return arr.map((e) => new Role(this.client, e, this.guild))
+  }
+
   async fromPayload(roles: RolePayload[]): Promise<boolean> {
     for (const role of roles) {
       await this.set(role.id, role)
