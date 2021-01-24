@@ -14,7 +14,7 @@ import { Extension } from './extensions.ts'
 import { SlashClient } from './slashClient.ts'
 import { Interaction } from '../structures/slash.ts'
 import { SlashModule } from './slashModule.ts'
-import type { ShardManager } from './shard.ts'
+import { ShardManager } from './shard.ts'
 import { Application } from '../structures/application.ts'
 import { Invite } from '../structures/invite.ts'
 import { INVITE } from '../types/endpoint.ts'
@@ -67,7 +67,7 @@ export interface ClientOptions {
   fetchGatewayInfo?: boolean
   /** ADVANCED: Shard ID to launch on */
   shard?: number
-  /** Shard count. Set to 'auto' for automatic sharding */
+  /** ADVACNED: Shard count. */
   shardCount?: number | 'auto'
 }
 
@@ -75,8 +75,6 @@ export interface ClientOptions {
  * Discord Client.
  */
 export class Client extends HarmonyEventEmitter<ClientEvents> {
-  /** Gateway object */
-  gateway: Gateway
   /** REST Manager - used to make all requests */
   rest: RESTManager
   /** User which Client logs in to, undefined until logs in */
@@ -133,11 +131,11 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   _id?: string
 
   /** Shard on which this Client is */
-  shard: number = 0
+  shard?: number
   /** Shard Count */
-  shardCount: number | 'auto' = 1
+  shardCount: number | 'auto' = 'auto'
   /** Shard Manager of this Client if Sharded */
-  shards?: ShardManager
+  shards: ShardManager
   /** Collectors set */
   collectors: Set<Collector> = new Set()
 
@@ -151,11 +149,17 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     }
   }
 
+  get gateway(): Gateway {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return this.shards.list.get('0') as Gateway
+  }
+
   constructor(options: ClientOptions = {}) {
     super()
     this._id = options.id
     this.token = options.token
     this.intents = options.intents
+    this.shards = new ShardManager(this)
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
     if (options.presence !== undefined)
@@ -220,7 +224,6 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (options.restOptions !== undefined)
       Object.assign(restOptions, options.restOptions)
     this.rest = new RESTManager(restOptions)
-    this.gateway = new Gateway(this)
   }
 
   /**
@@ -301,9 +304,11 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     } else throw new Error('No Gateway Intents were provided')
 
     this.rest.token = token
-    this.gateway.token = token
-    this.gateway.intents = intents
-    this.gateway.initWebsocket()
+    if (this.shard !== undefined) {
+      if (typeof this.shardCount === 'number')
+        this.shards.cachedShardCount = this.shardCount
+      await this.shards.launch(this.shard)
+    } else await this.shards.connect()
     return this.waitFor('ready', () => true).then(() => this)
   }
 
