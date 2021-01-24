@@ -111,7 +111,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
         if (!this.initialized) {
           this.initialized = true
-          await this.sendIdentify(this.client.forceNewSession)
+          this.enqueueIdentify(this.client.forceNewSession)
         } else {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.sendResume()
@@ -134,14 +134,14 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         )
         if (d !== true) {
           this.debug(`Session was invalidated, deleting from cache`)
-          await this.cache.delete('session_id')
-          await this.cache.delete('seq')
+          await this.cache.delete(`session_id_${this.shards?.join('-') ?? '0'}`)
+          await this.cache.delete(`seq_${this.shards?.join('-') ?? '0'}`)
           this.sessionID = undefined
           this.sequenceID = undefined
         }
         this.timedIdentify = setTimeout(async () => {
           this.timedIdentify = null
-          await this.sendIdentify(!(d as boolean))
+          this.enqueueIdentify(!(d as boolean))
         }, 5000)
         break
 
@@ -149,7 +149,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         this.heartbeatServerResponded = true
         if (s !== null) {
           this.sequenceID = s
-          await this.cache.set('seq', s)
+          await this.cache.set(`seq_${this.shards?.join('-') ?? '0'}`, s)
         }
         if (t !== null && t !== undefined) {
           this.emit(t as any, d)
@@ -167,8 +167,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         // this.token = d.token
         this.sessionID = d.session_id
         this.sequenceID = d.seq
-        await this.cache.set('seq', d.seq)
-        await this.cache.set('session_id', this.sessionID)
+        await this.cache.set(`seq_${this.shards?.join('-') ?? '0'}`, d.seq)
+        await this.cache.set(
+          `session_id_${this.shards?.join('-') ?? '0'}`,
+          this.sessionID
+        )
         this.emit('resume')
         break
       }
@@ -233,10 +236,12 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         this.debug(
           'Unknown Close code, probably connection error. Reconnecting in 5s.'
         )
+
         if (this.timedIdentify !== null) {
           clearTimeout(this.timedIdentify)
           this.debug('Timed Identify found. Cleared timeout.')
         }
+
         await delay(5000)
         await this.reconnect(true)
         break
@@ -255,7 +260,12 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     error.name = 'ErrorEvent'
     console.log(error)
     this.emit('error', error, event)
-    await this.reconnect()
+  }
+
+  private enqueueIdentify(forceNew?: boolean): void {
+    this.client.shards.enqueueIdentify(
+      async () => await this.sendIdentify(forceNew)
+    )
   }
 
   private async sendIdentify(forceNewSession?: boolean): Promise<void> {
@@ -279,7 +289,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     }
 
     if (forceNewSession === undefined || !forceNewSession) {
-      const sessionIDCached = await this.cache.get('session_id')
+      const sessionIDCached = await this.cache.get(
+        `session_id_${this.shards?.join('-') ?? '0'}`
+      )
       if (sessionIDCached !== undefined) {
         this.debug(`Found Cached SessionID: ${sessionIDCached}`)
         this.sessionID = sessionIDCached
@@ -320,12 +332,16 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       throw new Error('Intents not specified')
 
     if (this.sessionID === undefined) {
-      this.sessionID = await this.cache.get('session_id')
-      if (this.sessionID === undefined) return await this.sendIdentify()
+      this.sessionID = await this.cache.get(
+        `session_id_${this.shards?.join('-') ?? '0'}`
+      )
+      if (this.sessionID === undefined) return this.enqueueIdentify()
     }
     this.debug(`Preparing to resume with Session: ${this.sessionID}`)
     if (this.sequenceID === undefined) {
-      const cached = await this.cache.get('seq')
+      const cached = await this.cache.get(
+        `seq_${this.shards?.join('-') ?? '0'}`
+      )
       if (cached !== undefined)
         this.sequenceID = typeof cached === 'string' ? parseInt(cached) : cached
     }
@@ -389,11 +405,13 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
   async reconnect(forceNew?: boolean): Promise<void> {
     this.emit('reconnecting')
+
     clearInterval(this.heartbeatIntervalID)
     if (forceNew === true) {
-      await this.cache.delete('session_id')
-      await this.cache.delete('seq')
+      await this.cache.delete(`session_id_${this.shards?.join('-') ?? '0'}`)
+      await this.cache.delete(`seq_${this.shards?.join('-') ?? '0'}`)
     }
+
     this.close(1000, RECONNECT_REASON)
     this.initWebsocket()
   }

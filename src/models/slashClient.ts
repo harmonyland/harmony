@@ -201,13 +201,11 @@ export class SlashBuilder {
 
 export class SlashCommandsManager {
   slash: SlashClient
-
-  get rest(): RESTManager {
-    return this.slash.rest
-  }
+  rest: RESTManager
 
   constructor(client: SlashClient) {
     this.slash = client
+    this.rest = client.rest
   }
 
   /** Get all Global Slash Commands */
@@ -378,7 +376,6 @@ export class SlashClient {
     this.id = id
     this.client = options.client
     this.token = options.token
-    this.commands = new SlashCommandsManager(this)
     this.publicKey = options.publicKey
 
     if (options !== undefined) {
@@ -387,12 +384,14 @@ export class SlashClient {
 
     if (this.client?._decoratedSlash !== undefined) {
       this.client._decoratedSlash.forEach((e) => {
+        e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
     }
 
     if (this._decoratedSlash !== undefined) {
       this._decoratedSlash.forEach((e) => {
+        e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
     }
@@ -409,6 +408,8 @@ export class SlashClient {
     this.client?.on('interactionCreate', (interaction) =>
       this._process(interaction)
     )
+
+    this.commands = new SlashCommandsManager(this)
   }
 
   getID(): string {

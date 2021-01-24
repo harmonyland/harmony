@@ -23,7 +23,8 @@ const client = new Client({
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
   //   port: 6379
-  // }) // Defaults to in-memory Caching
+  // }), // Defaults to in-memory Caching
+  // shardCount: 2
 })
 
 client.on('ready', () => {
@@ -154,6 +155,11 @@ client.on('messageCreate', async (msg: Message) => {
     msg.channel.send({
       file: new MessageAttachment('hello.txt', 'hello world')
     })
+  } else if (msg.content === '!join') {
+    if (msg.member === undefined) return
+    const vs = await msg.guild?.voiceStates.get(msg.member.id)
+    if (typeof vs !== 'object') return
+    vs.channel?.join()
   }
 })
 
@@ -166,7 +172,7 @@ client.on('messageReactionRemove', (reaction, user) => {
   }
 })
 
-client.connect(TOKEN, Intents.All)
+client.connect(TOKEN, Intents.None)
 
 // OLD: Was a way to reproduce reconnect infinite loop
 // setTimeout(() => {

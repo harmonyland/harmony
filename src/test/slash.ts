@@ -7,6 +7,7 @@ export class MyClient extends Client {
   @event()
   ready(): void {
     console.log(`Logged in as ${this.user?.tag}!`)
+    this.slash.commands.bulkEdit([{ name: 'send', description: 'idk' }])
   }
 
   @event('debug')

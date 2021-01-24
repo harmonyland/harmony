@@ -57,7 +57,9 @@ export class VoiceChannel extends Channel {
         if (done >= 2) resolve(vcdata)
       }
 
-      this.client.gateway?.updateVoiceState(this.guild.id, this.id, options)
+      this.client.shards
+        .get(this.guild.shardID)
+        ?.updateVoiceState(this.guild.id, this.id, options)
 
       this.client.on('voiceStateAdd', onVoiceStateAdd)
       this.client.on('voiceServerUpdate', onVoiceServerUpdate)
@@ -77,7 +79,9 @@ export class VoiceChannel extends Channel {
   }
 
   leave(): void {
-    this.client.gateway?.updateVoiceState(this.guild.id, undefined)
+    this.client.shards
+      .get(this.guild.shardID)
+      ?.updateVoiceState(this.guild.id, undefined)
   }
 
   readFromData(data: GuildVoiceChannelPayload): void {

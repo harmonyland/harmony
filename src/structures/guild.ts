@@ -181,6 +181,11 @@ export class Guild extends Base {
   approximatePresenceCount?: number
   bans: GuildBans
 
+  /** Get Shard ID of Guild on which it is */
+  get shardID(): number {
+    return Number((BigInt(this.id) << 22n) % BigInt(this.client.shardCount))
+  }
+
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
     this.id = data.id
@@ -301,7 +306,7 @@ export class Guild extends Base {
     timeout: number = 60000
   ): Promise<Guild> {
     return await new Promise((resolve, reject) => {
-      this.client.gateway?.requestMembers(this.id, options)
+      this.client.shards.get(this.shardID)?.requestMembers(this.id, options)
       if (!wait) return resolve(this)
       else {
         let chunked = false

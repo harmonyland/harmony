@@ -32,10 +32,6 @@ client.on('messageUpdate', (before, after) => {
   console.log(`After: ${after.author.tag}: ${after.content}`)
 })
 
-client.on('messageUpdateUncached', (msg) => {
-  console.log(`Message: ${msg.author.tag}: ${msg.content}`)
-})
-
 client.on('guildMemberAdd', (member) => {
   console.log(`Member Join: ${member.user.tag}`)
 })
@@ -73,7 +69,7 @@ client.on('inviteDelete', (invite: Invite) => {
   console.log(`Invite Delete: ${invite.code}`)
 })
 
-client.on('inviteDeleteUncached', (invite: Invite) => {
+client.on('inviteDeleteUncached', (invite) => {
   console.log(invite)
 })
 
