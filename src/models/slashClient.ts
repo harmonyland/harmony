@@ -314,6 +314,23 @@ export class SlashCommandsManager {
 
     return new SlashCommand(this, data)
   }
+
+  /** Bulk Edit Global or Guild Slash Commands */
+  async bulkEdit(
+    cmds: Array<SlashCommandPartial | SlashCommandPayload>,
+    guild?: Guild | string
+  ): Promise<SlashCommandsManager> {
+    const route =
+      guild === undefined
+        ? this.rest.api.applications[this.slash.getID()].commands
+        : this.rest.api.applications[this.slash.getID()].guilds[
+            typeof guild === 'string' ? guild : guild.id
+          ].commands
+
+    await route.put(cmds)
+
+    return this
+  }
 }
 
 export type SlashCommandHandlerCallback = (interaction: Interaction) => any

@@ -139,7 +139,7 @@ Documentation is available for `main` (branch) and `stable` (release).
 
 - [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
-- [Guide](https://harmonyland.github.io)
+- [Guide](https://harmony.mod.land)
 
 ## Found a bug or want support? Join our discord server!
 

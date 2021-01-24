@@ -3,7 +3,7 @@ import { MessagesManager } from '../managers/messages.ts'
 import { Client } from '../models/client.ts'
 import {
   GuildTextChannelPayload,
-  MessageOption,
+  MessageOptions,
   MessagePayload,
   MessageReference,
   ModifyGuildTextChannelOption,
@@ -28,7 +28,7 @@ import { Member } from './member.ts'
 import { Message } from './message.ts'
 import { User } from './user.ts'
 
-export type AllMessageOptions = MessageOption | Embed
+export type AllMessageOptions = MessageOptions | Embed
 
 export class TextChannel extends Channel {
   lastMessageID?: string
@@ -105,7 +105,7 @@ export class TextChannel extends Channel {
   async editMessage(
     message: Message | string,
     text?: string,
-    option?: MessageOption
+    option?: MessageOptions
   ): Promise<Message> {
     if (text === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
@@ -135,6 +135,7 @@ export class TextChannel extends Channel {
     return res
   }
 
+  /** Add a reaction to a Message in this Channel */
   async addReaction(
     message: Message | string,
     emoji: Emoji | string
@@ -153,6 +154,7 @@ export class TextChannel extends Channel {
     )
   }
 
+  /** Remove Reaction from a Message in this Channel */
   async removeReaction(
     message: Message | string,
     emoji: Emoji | string,
