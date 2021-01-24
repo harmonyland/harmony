@@ -70,45 +70,45 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     if (options.icon !== undefined && !options.icon.startsWith('data:')) {
       options.icon = await fetchAuto(options.icon)
     }
+    if (options.roles !== undefined && options.roles[0].name !== '@everyone') {
+      options.roles.unshift({
+        id: Math.floor(Math.random() * 18392375458).toString(),
+        name: '@everyone'
+      })
+    }
 
     const body: GuildCreatePayload = {
       name: options.name,
       region: options.region,
       icon: options.icon,
       verification_level: options.verificationLevel,
-      roles:
-        options.roles !== undefined
-          ? options.roles.map((obj) => {
-              let result: GuildCreateRolePayload
-              if (obj instanceof Role) {
-                result = {
-                  id: obj.id,
-                  name: obj.name,
-                  color: obj.color,
-                  hoist: obj.hoist,
-                  position: obj.position,
-                  permissions: obj.permissions.bitfield.toString(),
-                  managed: obj.managed,
-                  mentionable: obj.mentionable
-                }
-              } else {
-                result = obj
-              }
+      roles: options.roles?.map((obj) => {
+        let result: GuildCreateRolePayload
+        if (obj instanceof Role) {
+          result = {
+            id: obj.id,
+            name: obj.name,
+            color: obj.color,
+            hoist: obj.hoist,
+            position: obj.position,
+            permissions: obj.permissions.bitfield.toString(),
+            managed: obj.managed,
+            mentionable: obj.mentionable
+          }
+        } else {
+          result = obj
+        }
 
-              return result
-            })
-          : undefined,
-      channels:
-        options.channels !== undefined
-          ? options.channels.map(
-              (obj): GuildCreateChannelPayload => ({
-                id: obj.id,
-                name: obj.name,
-                type: obj.type,
-                parent_id: obj.parentID
-              })
-            )
-          : undefined,
+        return result
+      }),
+      channels: options.channels?.map(
+        (obj): GuildCreateChannelPayload => ({
+          id: obj.id,
+          name: obj.name,
+          type: obj.type,
+          parent_id: obj.parentID
+        })
+      ),
       afk_channel_id: options.afkChannelID,
       afk_timeout: options.afkTimeout,
       system_channel_id: options.systemChannelID
