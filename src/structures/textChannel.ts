@@ -232,7 +232,7 @@ export class TextChannel extends Channel {
 
   /** Trigger the typing indicator. NOT recommended to be used by bots unless you really want to. */
   async triggerTyping(): Promise<TextChannel> {
-    await this.client.rest.api.channels[this.id].typing.psot()
+    await this.client.rest.api.channels[this.id].typing.post()
     return this
   }
 }
@@ -294,7 +294,7 @@ export class GuildTextChannel extends TextChannel {
       parent_id: options?.parentID,
       nsfw: options?.nsfw,
       topic: options?.topic,
-      rate_limit_per_user: options?.rateLimitPerUser
+      rate_limit_per_user: options?.slowmode
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
@@ -419,7 +419,7 @@ export class GuildTextChannel extends TextChannel {
 
   /** Edit Slowmode of the channel */
   async setSlowmode(slowmode?: number | null): Promise<GuildTextChannel> {
-    return await this.edit({ rateLimitPerUser: slowmode ?? null })
+    return await this.edit({ slowmode: slowmode ?? null })
   }
 
   /** Edit NSFW property of the channel */

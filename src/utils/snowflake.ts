@@ -11,19 +11,19 @@ export class Snowflake {
   }
 
   get timestamp(): number {
-    return Number(((this.snowflake >> 22n) + 1420070400000n).toString())
+    return Number((this.snowflake >> 22n) + 1420070400000n)
   }
 
   get workerID(): number {
-    return Number(((this.snowflake & 0x3e0000n) >> 17n).toString())
+    return Number((this.snowflake & 0x3e0000n) >> 17n)
   }
 
   get processID(): number {
-    return Number(((this.snowflake & 0x1f00n) >> 12n).toString())
+    return Number((this.snowflake & 0x1f00n) >> 12n)
   }
 
   get increment(): number {
-    return Number((this.snowflake & 0xfffn).toString())
+    return Number(this.snowflake & 0xfffn)
   }
 
   get toString(): string {
