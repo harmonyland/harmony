@@ -30,7 +30,7 @@ export class Message extends SnowflakeBase {
   author: User
   member?: Member
   content: string
-  editedTimestamp?: string
+  editedTimestamp?: Date
   tts: boolean
   mentions: MessageMentions
   attachments: Attachment[]
@@ -62,7 +62,10 @@ export class Message extends SnowflakeBase {
     this.guildID = data.guild_id
     this.author = author
     this.content = data.content
-    this.editedTimestamp = data.edited_timestamp
+    this.editedTimestamp =
+      data.edited_timestamp === undefined
+        ? undefined
+        : new Date(data.edited_timestamp)
     this.tts = data.tts
     this.mentions = new MessageMentions(this.client, this)
     this.attachments = data.attachments
@@ -89,7 +92,10 @@ export class Message extends SnowflakeBase {
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
     this.content = data.content ?? this.content
-    this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp
+    this.editedTimestamp =
+      data.edited_timestamp === undefined
+        ? this.editedTimestamp
+        : new Date(data.edited_timestamp)
     this.tts = data.tts ?? this.tts
     this.attachments = data.attachments ?? this.attachments
     this.embeds = data.embeds.map((v) => new Embed(v)) ?? this.embeds

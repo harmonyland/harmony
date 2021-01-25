@@ -24,6 +24,7 @@ import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
+import { CategoryChannel } from './guildCategoryChannel.ts'
 import { Invite } from './invite.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
@@ -244,7 +245,7 @@ export class GuildTextChannel extends TextChannel {
   permissionOverwrites: Overwrite[]
   nsfw: boolean
   parentID?: string
-  rateLimit: number
+  slowmode: number
   topic?: string
   guild: Guild
 
@@ -266,7 +267,7 @@ export class GuildTextChannel extends TextChannel {
     this.nsfw = data.nsfw
     this.parentID = data.parent_id
     this.topic = data.topic
-    this.rateLimit = data.rate_limit_per_user
+    this.slowmode = data.rate_limit_per_user
   }
 
   readFromData(data: GuildTextChannelPayload): void {
@@ -279,7 +280,7 @@ export class GuildTextChannel extends TextChannel {
     this.nsfw = data.nsfw ?? this.nsfw
     this.parentID = data.parent_id ?? this.parentID
     this.topic = data.topic ?? this.topic
-    this.rateLimit = data.rate_limit_per_user ?? this.rateLimit
+    this.slowmode = data.rate_limit_per_user ?? this.slowmode
   }
 
   /** Edit the Guild Text Channel */
@@ -290,7 +291,10 @@ export class GuildTextChannel extends TextChannel {
       name: options?.name,
       position: options?.position,
       permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID
+      parent_id: options?.parentID,
+      nsfw: options?.nsfw,
+      topic: options?.topic,
+      rate_limit_per_user: options?.rateLimitPerUser
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
@@ -387,5 +391,70 @@ export class GuildTextChannel extends TextChannel {
       .add(roleOWs.length === 0 ? 0 : roleOWs.map((e) => Number(e.allow)))
       .remove(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.deny)))
       .add(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.allow)))
+  }
+
+  /** Edit name of the channel */
+  async setName(name: string): Promise<GuildTextChannel> {
+    return await this.edit({ name })
+  }
+
+  /** Edit topic of the channel */
+  async setTopic(topic: string): Promise<GuildTextChannel> {
+    return await this.edit({ topic })
+  }
+
+  /** Edit topic of the channel */
+  async setCategory(
+    category: CategoryChannel | string
+  ): Promise<GuildTextChannel> {
+    return await this.edit({
+      parentID: typeof category === 'object' ? category.id : category
+    })
+  }
+
+  /** Edit position of the channel */
+  async setPosition(position: number): Promise<GuildTextChannel> {
+    return await this.edit({ position })
+  }
+
+  /** Edit Slowmode of the channel */
+  async setSlowmode(slowmode?: number | null): Promise<GuildTextChannel> {
+    return await this.edit({ rateLimitPerUser: slowmode ?? null })
+  }
+
+  /** Edit NSFW property of the channel */
+  async setNSFW(nsfw: boolean): Promise<GuildTextChannel> {
+    return await this.edit({ nsfw })
+  }
+
+  /** Set Permission Overwrites of the Channel */
+  async setOverwrites(overwrites: Overwrite[]): Promise<GuildTextChannel> {
+    return await this.edit({ permissionOverwrites: overwrites })
+  }
+
+  /** Add a Permission Overwrite */
+  async addOverwrite(overwrite: Overwrite): Promise<GuildTextChannel> {
+    const overwrites = this.permissionOverwrites
+    overwrites.push(overwrite)
+    return await this.edit({ permissionOverwrites: overwrites })
+  }
+
+  /** Remove a Permission Overwrite */
+  async removeOverwrite(id: string): Promise<GuildTextChannel> {
+    if (this.permissionOverwrites.findIndex((e) => e.id === id) < 0)
+      throw new Error('Permission Overwrite not found')
+    const overwrites = this.permissionOverwrites.filter((e) => e.id !== id)
+    return await this.edit({ permissionOverwrites: overwrites })
+  }
+
+  /** Edit a Permission Overwrite */
+  async editOverwrite(overwrite: Overwrite): Promise<GuildTextChannel> {
+    const index = this.permissionOverwrites.findIndex(
+      (e) => e.id === overwrite.id
+    )
+    if (index < 0) throw new Error('Permission Overwrite not found')
+    const overwrites = this.permissionOverwrites
+    overwrites[index] = overwrite
+    return await this.edit({ permissionOverwrites: overwrites })
   }
 }
