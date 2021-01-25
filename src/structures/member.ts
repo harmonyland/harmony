@@ -3,7 +3,7 @@ import { Client } from '../models/client.ts'
 import { GUILD_MEMBER } from '../types/endpoint.ts'
 import { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import { Guild } from './guild.ts'
 import { Role } from './role.ts'
 import { User } from './user.ts'
@@ -15,7 +15,7 @@ export interface MemberData {
   mute?: boolean
 }
 
-export class Member extends Base {
+export class Member extends SnowflakeBase {
   id: string
   user: User
   nick?: string

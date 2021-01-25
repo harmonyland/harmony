@@ -1,10 +1,10 @@
 import { Client } from '../models/client.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { Guild } from './guild.ts'
 
-export class Role extends Base {
+export class Role extends SnowflakeBase {
   id: string
   guild: Guild
   name: string

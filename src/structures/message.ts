@@ -1,4 +1,4 @@
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import {
   Attachment,
   MessageActivity,
@@ -21,7 +21,7 @@ import { Emoji } from './emoji.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 
-export class Message extends Base {
+export class Message extends SnowflakeBase {
   id: string
   channelID: string
   channel: TextChannel
@@ -30,7 +30,6 @@ export class Message extends Base {
   author: User
   member?: Member
   content: string
-  timestamp: string
   editedTimestamp?: string
   tts: boolean
   mentions: MessageMentions
@@ -63,7 +62,6 @@ export class Message extends Base {
     this.guildID = data.guild_id
     this.author = author
     this.content = data.content
-    this.timestamp = data.timestamp
     this.editedTimestamp = data.edited_timestamp
     this.tts = data.tts
     this.mentions = new MessageMentions(this.client, this)
@@ -91,7 +89,6 @@ export class Message extends Base {
     this.channelID = data.channel_id ?? this.channelID
     this.guildID = data.guild_id ?? this.guildID
     this.content = data.content ?? this.content
-    this.timestamp = data.timestamp ?? this.timestamp
     this.editedTimestamp = data.edited_timestamp ?? this.editedTimestamp
     this.tts = data.tts ?? this.tts
     this.attachments = data.attachments ?? this.attachments

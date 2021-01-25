@@ -19,6 +19,7 @@ import {
   MESSAGE_REACTION_USER
 } from '../types/endpoint.ts'
 import { Collection } from '../utils/collection.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
@@ -30,6 +31,7 @@ import { User } from './user.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
+/** Channel object for Text Channel type */
 export class TextChannel extends Channel {
   lastMessageID?: string
   lastPinTimestamp?: string
@@ -226,8 +228,15 @@ export class TextChannel extends Channel {
 
     return res
   }
+
+  /** Trigger the typing indicator. NOT recommended to be used by bots unless you really want to. */
+  async triggerTyping(): Promise<TextChannel> {
+    await this.client.rest.api.channels[this.id].typing.psot()
+    return this
+  }
 }
 
+/** Represents a Text Channel but in a Guild */
 export class GuildTextChannel extends TextChannel {
   guildID: string
   name: string
@@ -273,6 +282,7 @@ export class GuildTextChannel extends TextChannel {
     this.rateLimit = data.rate_limit_per_user ?? this.rateLimit
   }
 
+  /** Edit the Guild Text Channel */
   async edit(
     options?: ModifyGuildTextChannelOption
   ): Promise<GuildTextChannel> {
@@ -327,5 +337,55 @@ export class GuildTextChannel extends TextChannel {
   /** Create an Invite for this Channel */
   async createInvite(options?: CreateInviteOptions): Promise<Invite> {
     return this.guild.invites.create(this.id, options)
+  }
+
+  /** Get Permission Overties for a specific Member */
+  async overwritesFor(member: Member | string): Promise<Overwrite[]> {
+    member = (typeof member === 'string'
+      ? await this.guild.members.get(member)
+      : member) as Member
+    if (member === undefined) throw new Error('Member not found')
+    const roles = await member.roles.array()
+
+    const overwrites: Overwrite[] = []
+
+    for (const overwrite of this.permissionOverwrites) {
+      if (overwrite.id === this.guild.id) {
+        overwrites.push(overwrite)
+      } else if (roles.some((e) => e.id === overwrite.id) === true) {
+        overwrites.push(overwrite)
+      } else if (overwrite.id === member.id) {
+        overwrites.push(overwrite)
+      }
+    }
+
+    return overwrites
+  }
+
+  /** Get Permissions for a Member in this Channel */
+  async permissionsFor(member: Member | string): Promise<Permissions> {
+    const id = typeof member === 'string' ? member : member.id
+    if (id === this.guild.ownerID) return new Permissions(Permissions.ALL)
+
+    member = (typeof member === 'string'
+      ? await this.guild.members.get(member)
+      : member) as Member
+    if (member === undefined) throw new Error('Member not found')
+
+    if (member.permissions.has('ADMINISTRATOR') === true)
+      return new Permissions(Permissions.ALL)
+
+    const overwrites = await this.overwritesFor(member)
+    const everyoneOW = overwrites.find((e) => e.id === this.guild.id)
+    const roleOWs = overwrites.filter((e) => e.type === 0)
+    const memberOWs = overwrites.filter((e) => e.type === 1)
+
+    return member.permissions
+      .remove(everyoneOW !== undefined ? Number(everyoneOW.deny) : 0)
+      .add(everyoneOW !== undefined ? Number(everyoneOW.allow) : 0)
+      .remove(roleOWs.length === 0 ? 0 : roleOWs.map((e) => Number(e.deny)))
+      .add(roleOWs.length === 0 ? 0 : roleOWs.map((e) => Number(e.allow)))
+      .remove(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.deny)))
+      .add(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.allow)))
   }
 }
