@@ -144,7 +144,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (this.upSince === undefined) return 0
     else {
       const dif = Date.now() - this.upSince.getTime()
-      if (dif < 0) return dif
+      if (dif < 0) return 0
       else return dif
     }
   }

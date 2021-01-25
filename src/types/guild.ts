@@ -192,7 +192,7 @@ export interface GuildCreatePayload {
 }
 
 export interface GuildCreateRolePayload {
-  id?: string
+  id: string
   name: string
   color?: number
   hoist?: boolean

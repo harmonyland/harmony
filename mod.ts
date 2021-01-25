@@ -102,12 +102,16 @@ export type {
   MessageOptions
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
+export { Verification } from './src/types/guild.ts'
 export type {
-  GuildBanPayload,
-  GuildFeatures,
   GuildIntegrationPayload,
   GuildPayload,
-  GuildChannels
+  GuildBanPayload,
+  GuildFeatures,
+  GuildChannels,
+  GuildCreateOptions,
+  GuildCreateChannelOptions,
+  GuildCreateRolePayload
 } from './src/types/guild.ts'
 export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
 export { PermissionFlags } from './src/types/permissionFlags.ts'

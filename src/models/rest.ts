@@ -28,8 +28,23 @@ export interface RequestHeaders {
   [name: string]: string
 }
 
+export interface DiscordAPIErrorPayload {
+  url: string
+  status: number
+  method: string
+  code?: number
+  message?: string
+  errors: object
+}
+
 export class DiscordAPIError extends Error {
   name = 'DiscordAPIError'
+  error?: DiscordAPIErrorPayload
+
+  constructor(message?: string, error?: DiscordAPIErrorPayload) {
+    super(message)
+    this.error = error
+  }
 }
 
 export interface QueuedItem {
@@ -399,7 +414,7 @@ export class RESTManager {
       )
 
     // At this point we know it is error
-    const error: { [name: string]: any } = {
+    const error: DiscordAPIErrorPayload = {
       url: response.url,
       status,
       method: data.method,
@@ -443,9 +458,9 @@ export class RESTManager {
         HttpResponseCode.MethodNotAllowed
       ].includes(status)
     ) {
-      reject(new DiscordAPIError(Deno.inspect(error)))
+      reject(new DiscordAPIError(Deno.inspect(error), error))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
-      reject(new DiscordAPIError(Deno.inspect(error)))
+      reject(new DiscordAPIError(Deno.inspect(error), error))
     } else reject(new DiscordAPIError('Request - Unknown Error'))
   }
 
