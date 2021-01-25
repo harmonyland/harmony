@@ -97,7 +97,7 @@ export interface ModifyGuildTextChannelOption extends ModifyChannelOption {
   type?: number
   topic?: string | null
   nsfw?: boolean | null
-  rateLimitPerUser?: number | null
+  slowmode?: number | null
 }
 
 export interface ModifyGuildNewsChannelOption extends ModifyChannelOption {

@@ -17,7 +17,7 @@ import {
   GuildPruneCountPayload,
   GuildBeginPrunePayload
 } from '../types/guild.ts'
-import { Base } from './base.ts'
+import { Base, SnowflakeBase } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
 import { InviteManager } from '../managers/invites.ts'
 import {
@@ -133,7 +133,7 @@ export class GuildBans {
   }
 }
 
-export class Guild extends Base {
+export class Guild extends SnowflakeBase {
   id: string
   name?: string
   icon?: string

@@ -113,11 +113,12 @@ export interface VoiceServerUpdateData {
   guild: Guild
 }
 
+/** All Client Events */
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ClientEvents = {
   /** When Client has successfully connected to Discord */
   ready: [shard: number]
-  /** When a successful reconnect has been made */
+  /** When a reconnect was requested by Discord */
   reconnect: [shard: number]
   /** When a successful session resume has been done */
   resumed: [shard: number]
@@ -178,25 +179,28 @@ export type ClientEvents = {
    * @param guild Guild in which Emoji was added
    * @param emoji The Emoji which was added
    */
-  guildEmojiAdd: [guild: Guild, emoji: Emoji]
+  guildEmojiAdd: [emoji: Emoji]
   /**
    * An Emoji was deleted from Guild
-   * @param guild Guild from which Emoji was deleted
    * @param emoji Emoji which was deleted
    */
-  guildEmojiDelete: [Guild, Emoji]
+  guildEmojiDelete: [emoji: Emoji]
   /**
    * An Emoji in a Guild was updated
-   * @param guild Guild in which Emoji was updated
    * @param before Emoji object before update
    * @param after Emoji object after update
    */
-  guildEmojiUpdate: [guild: Guild, before: Emoji, after: Emoji]
+  guildEmojiUpdate: [before: Emoji, after: Emoji]
   /**
    * Guild's Integrations were updated
    * @param guild The Guild object
    */
   guildIntegrationsUpdate: [guild: Guild]
+  /**
+   * Guild's Emojis were updated
+   * @param guild The Guild object
+   */
+  guildEmojisUpdate: [guild: Guild]
   /**
    * A new Member has joined a Guild
    * @param member The Member object

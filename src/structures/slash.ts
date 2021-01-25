@@ -8,6 +8,7 @@ import {
   InteractionResponsePayload,
   InteractionResponseType
 } from '../types/slash.ts'
+import { SnowflakeBase } from './base.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { Member } from './member.ts'
@@ -39,7 +40,7 @@ export interface InteractionResponse {
   }
 }
 
-export class Interaction {
+export class Interaction extends SnowflakeBase {
   client: Client
   type: number
   token: string
@@ -59,6 +60,7 @@ export class Interaction {
       member: Member
     }
   ) {
+    super(client)
     this.client = client
     this.type = data.type
     this.token = data.token

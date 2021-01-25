@@ -1,9 +1,9 @@
 import { Client } from '../models/client.ts'
 import { ApplicationPayload } from '../types/application.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'
 
-export class Application extends Base {
+export class Application extends SnowflakeBase {
   id: string
   name: string
   icon: string

@@ -1,3 +1,4 @@
+/** Utility class to extract data from a Snowflake (Discord ID) */
 export class Snowflake {
   id: string
 
@@ -9,20 +10,20 @@ export class Snowflake {
     return BigInt.asUintN(64, BigInt(this.id))
   }
 
-  get timestamp(): string {
-    return ((this.snowflake >> 22n) + 1420070400000n).toString()
+  get timestamp(): number {
+    return Number((this.snowflake >> 22n) + 1420070400000n)
   }
 
-  get workerID(): string {
-    return ((this.snowflake & 0x3e0000n) >> 17n).toString()
+  get workerID(): number {
+    return Number((this.snowflake & 0x3e0000n) >> 17n)
   }
 
-  get processID(): string {
-    return ((this.snowflake & 0x1f00n) >> 12n).toString()
+  get processID(): number {
+    return Number((this.snowflake & 0x1f00n) >> 12n)
   }
 
-  get increment(): string {
-    return (this.snowflake & 0xfffn).toString()
+  get increment(): number {
+    return Number(this.snowflake & 0xfffn)
   }
 
   get toString(): string {

@@ -1,12 +1,13 @@
 import { Client } from '../models/client.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { Guild } from './guild.ts'
 import { Member } from './member.ts'
 import { User } from './user.ts'
 
-export class Role extends Base {
+/** Represents a Guild Role */
+export class Role extends SnowflakeBase {
   id: string
   guild: Guild
   name: string
@@ -52,6 +53,17 @@ export class Role extends Base {
     this.mentionable = data.mentionable ?? this.mentionable
   }
 
+  /** Delete the Role */
+  async delete(): Promise<Role | undefined> {
+    return this.guild.roles.delete(this)
+  }
+
+  /** Edit the Role */
+  async edit(options: RoleModifyPayload): Promise<Role> {
+    return this.guild.roles.edit(this, options)
+  }
+
+  /** Add the Role to a Member */
   async addTo(member: Member | User | string): Promise<boolean> {
     if (member instanceof User) {
       member = member.id
@@ -68,6 +80,7 @@ export class Role extends Base {
     return member.roles.add(this.id)
   }
 
+  /** Remove the Role from a Member */
   async removeFrom(member: Member | User | string): Promise<boolean> {
     if (member instanceof User) {
       member = member.id
@@ -82,14 +95,6 @@ export class Role extends Base {
     }
 
     return member.roles.remove(this.id)
-  }
-
-  async delete(): Promise<Role | undefined> {
-    return this.guild.roles.delete(this)
-  }
-
-  async edit(options: RoleModifyPayload): Promise<Role> {
-    return this.guild.roles.edit(this, options)
   }
 }
 

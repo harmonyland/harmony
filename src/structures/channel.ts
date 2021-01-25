@@ -1,8 +1,8 @@
 import { Client } from '../models/client.ts'
 import { ChannelPayload, ChannelTypes } from '../types/channel.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 
-export class Channel extends Base {
+export class Channel extends SnowflakeBase {
   type: ChannelTypes
   id: string
   static cacheName = 'channel'
