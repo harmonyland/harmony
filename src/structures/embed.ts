@@ -81,8 +81,6 @@ export class Embed {
   }
 
   /** Set URL of the Embed */
-  setURL(url: string): Embed
-  setURL(url: URL): Embed
   setURL(url: string | URL): Embed {
     this.url = typeof url === 'object' ? url.toString() : url
     return this
