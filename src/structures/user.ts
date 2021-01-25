@@ -91,7 +91,7 @@ export class User extends Base {
     return this.mention
   }
 
-  async getDMchannel(): Promise<DMChannel> {
+  async createDM(): Promise<DMChannel> {
     return this.client.createDM(this)
   }
 }
