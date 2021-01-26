@@ -11,6 +11,7 @@ import {
   ClientStatus
 } from './presence.ts'
 import { RolePayload } from './role.ts'
+import { SlashCommandPayload } from './slash.ts'
 import { UserPayload } from './user.ts'
 
 /**
@@ -106,7 +107,10 @@ export enum GatewayEvents {
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
   Voice_State_Update = 'VOICE_STATE_UPDATE',
   Webhooks_Update = 'WEBHOOKS_UPDATE',
-  Interaction_Create = 'INTERACTION_CREATE'
+  Interaction_Create = 'INTERACTION_CREATE',
+  Application_Command_Create = 'APPLICATION_COMMAND_CREATE',
+  Application_Command_Update = 'APPLICATION_COMMAND_UPDATE',
+  Application_Command_Delete = 'APPLICATION_COMMAND_DELETE'
 }
 
 export interface IdentityPayload {
@@ -168,6 +172,7 @@ export interface Ready {
   guilds: []
   session_id: string
   shard?: number[]
+  application: { id: string; flags: number }
 }
 
 export interface ChannelPinsUpdatePayload {
@@ -343,4 +348,8 @@ export interface TypingStartPayload {
 export interface TypingStartGuildData {
   guild: Guild
   member: Member
+}
+
+export interface ApplicationCommandPayload extends SlashCommandPayload {
+  guild_id?: string
 }
