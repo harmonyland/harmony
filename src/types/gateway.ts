@@ -212,7 +212,7 @@ export interface GuildMemberUpdatePayload {
   guild_id: string
   roles: string[]
   user: UserPayload
-  nick?: string | undefined
+  nick: string | null
   joined_at: string
   premium_since?: string | undefined
 }
