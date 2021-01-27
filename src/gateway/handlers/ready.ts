@@ -8,6 +8,12 @@ export const ready: GatewayEventHandler = async (
   d: Ready
 ) => {
   gateway.client.upSince = new Date()
+
+  if ('application' in d) {
+    gateway.client.applicationID = d.application.id
+    gateway.client.applicationFlags = d.application.flags
+  }
+
   await gateway.client.guilds.flush()
 
   await gateway.client.users.set(d.user.id, d.user)

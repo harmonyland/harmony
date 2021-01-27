@@ -154,6 +154,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     return this.shards.list.get('0') as Gateway
   }
 
+  applicationID?: string
+  applicationFlags?: number
+
   constructor(options: ClientOptions = {}) {
     super()
     this._id = options.id

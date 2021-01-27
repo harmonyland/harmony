@@ -27,15 +27,21 @@ export class SlashCommand {
   name: string
   description: string
   options: SlashCommandOption[]
+  guild?: Guild
   _guild?: string
 
-  constructor(manager: SlashCommandsManager, data: SlashCommandPayload) {
+  constructor(
+    manager: SlashCommandsManager,
+    data: SlashCommandPayload,
+    guild?: Guild
+  ) {
     this.slash = manager
     this.id = data.id
     this.applicationID = data.application_id
     this.name = data.name
     this.description = data.description
     this.options = data.options ?? []
+    this.guild = guild
   }
 
   async delete(): Promise<void> {
@@ -236,8 +242,13 @@ export class SlashCommandsManager {
     ].commands.get()) as SlashCommandPayload[]
     if (!Array.isArray(res)) return col
 
+    const _guild =
+      typeof guild === 'object'
+        ? guild
+        : await this.slash.client?.guilds.get(guild)
+
     for (const raw of res) {
-      const cmd = new SlashCommand(this, raw)
+      const cmd = new SlashCommand(this, raw, _guild)
       cmd._guild = typeof guild === 'string' ? guild : guild.id
       col.set(raw.id, cmd)
     }
@@ -259,7 +270,14 @@ export class SlashCommandsManager {
 
     const payload = await route.post(data)
 
-    const cmd = new SlashCommand(this, payload)
+    const _guild =
+      typeof guild === 'object'
+        ? guild
+        : guild === undefined
+        ? undefined
+        : await this.slash.client?.guilds.get(guild)
+
+    const cmd = new SlashCommand(this, payload, _guild)
     cmd._guild =
       typeof guild === 'string' || guild === undefined ? guild : guild.id
 
@@ -310,7 +328,14 @@ export class SlashCommandsManager {
 
     const data = await route.get()
 
-    return new SlashCommand(this, data)
+    const _guild =
+      typeof guild === 'object'
+        ? guild
+        : guild === undefined
+        ? undefined
+        : await this.slash.client?.guilds.get(guild)
+
+    return new SlashCommand(this, data, _guild)
   }
 
   /** Bulk Edit Global or Guild Slash Commands */
