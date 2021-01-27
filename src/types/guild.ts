@@ -67,7 +67,7 @@ export interface GuildPayload {
 
 export interface MemberPayload {
   user: UserPayload
-  nick?: string
+  nick: string | null
   roles: string[]
   joined_at: string
   premium_since?: string
