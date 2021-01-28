@@ -159,7 +159,8 @@ export interface MessagePayload {
 export interface MessageOptions {
   tts?: boolean
   embed?: Embed
-  file?: MessageAttachment | string
+  file?: MessageAttachment
+  files?: MessageAttachment[]
   allowedMentions?: {
     parse?: 'everyone' | 'users' | 'roles'
     roles?: string[]

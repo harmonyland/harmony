@@ -79,6 +79,7 @@ export class TextChannel extends Channel {
       content: content,
       embed: option?.embed,
       file: option?.file,
+      files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions
     }

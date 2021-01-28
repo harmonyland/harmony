@@ -152,6 +152,22 @@ client.on('messageCreate', async (msg: Message) => {
         'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1'
       )
     })
+  } else if (msg.content === '!emattach') {
+    msg.channel.send(
+      new Embed()
+        .attach(
+          await MessageAttachment.load(
+            'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1',
+            'file1.png'
+          ),
+          await MessageAttachment.load(
+            'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1',
+            'file2.png'
+          )
+        )
+        .setImage('attachment://file1.png')
+        .setThumbnail('attachment://file2.png')
+    )
   } else if (msg.content === '!textfile') {
     msg.channel.send({
       file: new MessageAttachment('hello.txt', 'hello world')
