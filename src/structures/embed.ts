@@ -10,6 +10,7 @@ import {
   EmbedVideo
 } from '../types/channel.ts'
 import { Colors, ColorUtil } from '../utils/colorutil.ts'
+import { MessageAttachment } from './message.ts'
 
 /** Message Embed Object */
 export class Embed {
@@ -26,6 +27,7 @@ export class Embed {
   provider?: EmbedProvider
   author?: EmbedAuthor
   fields?: EmbedField[]
+  files: MessageAttachment[] = []
 
   constructor(data?: EmbedPayload) {
     this.title = data?.title
@@ -71,6 +73,13 @@ export class Embed {
   /** Set Embed description */
   setDescription(description: string): Embed {
     this.description = description
+    return this
+  }
+
+  attach(...files: MessageAttachment[]): Embed {
+    for (const file of files) {
+      this.files.push(file)
+    }
     return this
   }
 

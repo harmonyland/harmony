@@ -1,4 +1,6 @@
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
+import { Embed } from '../structures/embed.ts'
+import { MessageAttachment } from '../structures/message.ts'
 import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
 
@@ -283,11 +285,46 @@ export class RESTManager {
       headers['X-Audit-Log-Reason'] = encodeURIComponent(body.reason)
     }
 
-    if (body?.file !== undefined) {
+    let _files: undefined | MessageAttachment[]
+    if (body?.embed?.files !== undefined && Array.isArray(body?.embed?.files)) {
+      _files = body?.embed?.files
+    }
+    if (body?.embeds !== undefined && Array.isArray(body?.embeds)) {
+      const files1 = body?.embeds
+        .map((e: Embed) => e.files)
+        .filter((e: MessageAttachment[]) => e !== undefined)
+      for (const files of files1) {
+        for (const file of files) {
+          if (_files === undefined) _files = []
+          _files?.push(file)
+        }
+      }
+    }
+
+    if (
+      body?.file !== undefined ||
+      body?.files !== undefined ||
+      _files !== undefined
+    ) {
+      const files: Array<{ blob: Blob; name: string }> = []
+      if (body?.file !== undefined) files.push(body.file)
+      if (body?.files !== undefined && Array.isArray(body.files)) {
+        for (const file of body.files) {
+          files.push(file)
+        }
+      }
+      if (_files !== undefined) {
+        for (const file of _files) {
+          files.push(file)
+        }
+      }
       const form = new FormData()
-      form.append('file', body.file.blob, body.file.name)
+      for (const file of files) {
+        form.append(file.name, file.blob, file.name)
+      }
       const json = JSON.stringify(body)
       form.append('payload_json', json)
+      if (body === undefined) body = {}
       body.file = form
     } else if (
       body !== undefined &&
