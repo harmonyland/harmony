@@ -319,9 +319,7 @@ export class RESTManager {
         }
       }
       const form = new FormData()
-      for (const file of files) {
-        form.append(file.name, file.blob, file.name)
-      }
+      files.map((file, index) => form.append(`file${index + 1}`, file.blob, file.name))
       const json = JSON.stringify(body)
       form.append('payload_json', json)
       if (body === undefined) body = {}
