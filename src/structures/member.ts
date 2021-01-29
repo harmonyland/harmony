@@ -18,7 +18,7 @@ export interface MemberData {
 export class Member extends SnowflakeBase {
   id: string
   user: User
-  nick?: string
+  nick: string | null
   roles: MemberRolesManager
   joinedAt: string
   premiumSince?: string
@@ -49,7 +49,7 @@ export class Member extends SnowflakeBase {
   }
 
   get displayName(): string {
-    return this.nick !== undefined ? this.nick : this.user.username
+    return this.nick !== null ? this.nick : this.user.username
   }
 
   toString(): string {
@@ -95,7 +95,7 @@ export class Member extends SnowflakeBase {
     )
     if (res.ok === true) {
       if (data.nick !== undefined)
-        this.nick = data.nick === null ? undefined : data.nick
+        this.nick = data.nick === null ? null : data.nick
       if (data.deaf !== undefined) this.deaf = data.deaf
       if (data.mute !== undefined) this.mute = data.mute
     }

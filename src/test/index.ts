@@ -13,6 +13,7 @@ import {
 } from '../../mod.ts'
 import { Collector } from '../models/collectors.ts'
 import { MessageAttachment } from '../structures/message.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -179,6 +180,37 @@ client.on('messageCreate', async (msg: Message) => {
     const vs = await msg.guild?.voiceStates.get(msg.member.id)
     if (typeof vs !== 'object') return
     vs.channel?.join()
+  } else if (msg.content === '!getOverwrites') {
+    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const overwrites = await (msg.channel as GuildTextChannel).overwritesFor(
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      msg.member as Member
+    )
+    msg.channel.send(
+      `Your permission overwrites:\n${overwrites
+        .map(
+          (over) =>
+            `ID: ${over.id}\nAllowed:\n${new Permissions(over.allow)
+              .toArray()
+              .join('\n')}\nDenied:\n${new Permissions(over.deny)
+              .toArray()
+              .join('\n')}`
+        )
+        .join('\n\n')}`
+    )
+  } else if (msg.content === '!getPermissions') {
+    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const permissions = await (msg.channel as GuildTextChannel).permissionsFor(
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      msg.member as Member
+    )
+    msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
   }
 })
 
