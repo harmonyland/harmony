@@ -170,7 +170,10 @@ client.on('messageCreate', async (msg: Message) => {
     )
   } else if (msg.content === '!textfile') {
     msg.channel.send({
-      file: new MessageAttachment('hello.txt', 'hello world')
+      files: [
+        new MessageAttachment('hello.txt', 'world'),
+        new MessageAttachment('world.txt', 'hello')
+      ]
     })
   } else if (msg.content === '!join') {
     if (msg.member === undefined) return
