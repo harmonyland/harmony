@@ -14,11 +14,6 @@ import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
 import { verify as edverify } from 'https://deno.land/x/ed25519/mod.ts'
 import { Buffer } from 'https://deno.land/std@0.80.0/node/buffer.ts'
-import type {
-  Request as ORequest,
-  Response as OResponse
-} from 'https://deno.land/x/opine@1.0.0/src/types.ts'
-import type { Context } from 'https://deno.land/x/oak@v6.4.0/mod.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -528,7 +523,7 @@ export class SlashClient {
     ).catch(() => false)
   }
 
-  async verifyOpineRequest(req: ORequest): Promise<boolean> {
+  async verifyOpineRequest(req: any): Promise<boolean> {
     const signature = req.headers.get('x-signature-ed25519')
     const timestamp = req.headers.get('x-signature-timestamp')
     const contentLength = req.headers.get('content-length')
@@ -547,8 +542,8 @@ export class SlashClient {
 
   /** Middleware to verify request in Opine framework. */
   async verifyOpineMiddleware(
-    req: ORequest,
-    res: OResponse,
+    req: any,
+    res: any,
     next: CallableFunction
   ): Promise<any> {
     const verified = await this.verifyOpineRequest(req)
@@ -560,7 +555,7 @@ export class SlashClient {
 
   // TODO: create verifyOakMiddleware too
   /** Method to verify Request from Oak server "Context". */
-  async verifyOakRequest(ctx: Context): Promise<any> {
+  async verifyOakRequest(ctx: any): Promise<any> {
     const signature = ctx.request.headers.get('x-signature-ed25519')
     const timestamp = ctx.request.headers.get('x-signature-timestamp')
     const contentLength = ctx.request.headers.get('content-length')
@@ -576,7 +571,7 @@ export class SlashClient {
 
     const body = await ctx.request.body().value
 
-    const verified = await this.verifyKey(body as any, signature, timestamp)
+    const verified = await this.verifyKey(body, signature, timestamp)
     if (!verified) return false
     return true
   }
