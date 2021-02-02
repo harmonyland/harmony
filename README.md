@@ -41,7 +41,11 @@ And input your bot's token and Intents.
 Here is a small example of how to use harmony,
 
 ```ts
-import { Client, Message, Intents } from 'https://deno.land/x/harmony/mod.ts'
+import {
+  Client,
+  Message,
+  GatewayIntents
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new Client()
 
@@ -58,8 +62,11 @@ client.on('messageCreate', (msg: Message): void => {
 })
 
 // Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-client.connect('super secret token comes here', Intents.All)
+client.connect('super secret token comes here', [
+  GatewayIntents.DIRECT_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.GUILD_MESSAGES
+])
 ```
 
 Or with CommandClient!
@@ -69,8 +76,7 @@ import {
   CommandClient,
   Command,
   CommandContext,
-  Message,
-  Intents
+  GatewayIntents
 } from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new CommandClient({
@@ -94,19 +100,22 @@ class PingCommand extends Command {
 client.commands.add(PingCommand)
 
 // Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-client.connect('super secret token comes here', Intents.All)
+client.connect('super secret token comes here', [
+  GatewayIntents.DIRECT_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.GUILD_MESSAGES
+])
 ```
 
 Or with Decorators!
 
 ```ts
 import {
-  Client,
   event,
-  Intents,
+  CommandClient,
   command,
-  CommandContext
+  CommandContext,
+  GatewayIntents
 } from 'https://deno.land/x/harmony/mod.ts'
 
 class MyClient extends CommandClient {
@@ -128,9 +137,11 @@ class MyClient extends CommandClient {
   }
 }
 
-// Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-new MyClient().connect('super secret token comes here', Intents.All)
+new MyClient().connect('super secret token comes here', [
+  GatewayIntents.DIRECT_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.GUILD_MESSAGES
+])
 ```
 
 ## Docs
