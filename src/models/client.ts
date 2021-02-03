@@ -291,10 +291,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
    * @param intents Gateway intents in array. This is required if not given in ClientOptions.
    */
   async connect(token?: string, intents?: GatewayIntents[]): Promise<Client> {
-    if (token === undefined && this.token !== undefined) token = this.token
-    else if (this.token === undefined && token !== undefined) {
-      this.token = token
-    } else throw new Error('No Token Provided')
+    token ??= this.token
+    if (token === undefined) throw new Error('No Token Provided')
+    this.token = token
     if (intents !== undefined && this.intents !== undefined) {
       this.debug(
         'client',
