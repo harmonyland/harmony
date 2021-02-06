@@ -93,18 +93,12 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
           if (channel === undefined)
             channel = await this.client.channels.fetch(this.channel.id)
 
-          const author = new User(this.client, (data as MessagePayload).author)
           await this.client.users.set(
-            author.id,
+            data.author.id,
             (data as MessagePayload).author
           )
 
-          const res = new Message(
-            this.client,
-            data as MessagePayload,
-            channel as TextChannel,
-            author
-          )
+          const res = (await this.get(data.id)) as Message
 
           await res.mentions.fromPayload(data)
 

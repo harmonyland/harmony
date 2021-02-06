@@ -13,7 +13,7 @@ import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
-import { TextChannel } from './textChannel.ts'
+import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
@@ -113,6 +113,23 @@ export class Message extends SnowflakeBase {
             (payload) => new MessageSticker(this.client, payload)
           )
         : this.stickers
+  }
+
+  async updateRefs(): Promise<void> {
+    if (this.guildID !== undefined)
+      this.guild = await this.client.guilds.get(this.guildID)
+    const newVal = await this.client.channels.get<TextChannel>(this.channelID)
+    if (newVal !== undefined) this.channel = newVal
+    const newUser = await this.client.users.get(this.author.id)
+    if (newUser !== undefined) this.author = newUser
+    if (this.member !== undefined) {
+      const newMember = await this.guild?.members.get(this.member?.id)
+      if (newMember !== undefined) this.member = newMember
+    }
+    if (((this.channel as unknown) as GuildTextChannel).guild !== undefined)
+      this.guild = ((this.channel as unknown) as GuildTextChannel).guild
+    if (this.guild !== undefined && this.guildID === undefined)
+      this.guildID = this.guild.id
   }
 
   /** Edits this message. */

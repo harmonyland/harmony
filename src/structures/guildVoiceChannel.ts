@@ -12,6 +12,10 @@ import { Channel } from './channel.ts'
 import { Guild } from './guild.ts'
 import { VoiceState } from './voiceState.ts'
 
+export interface VoiceServerData extends VoiceServerUpdateData {
+  sessionID: string
+}
+
 export class VoiceChannel extends Channel {
   bitrate: string
   userLimit: number
@@ -32,13 +36,15 @@ export class VoiceChannel extends Channel {
     this.guild = guild
     this.permissionOverwrites = data.permission_overwrites
     this.parentID = data.parent_id
-    // TODO: Cache in Gateway Event Code
-    // cache.set('guildvoicechannel', this.id, this)
   }
 
-  async join(options?: VoiceStateOptions): Promise<VoiceServerUpdateData> {
+  /** Join the Voice Channel */
+  async join(
+    options?: VoiceStateOptions & { onlyJoin?: boolean }
+  ): Promise<VoiceServerUpdateData> {
     return await new Promise((resolve, reject) => {
-      let vcdata: VoiceServerUpdateData | undefined
+      let vcdata: VoiceServerData
+      let sessionID: string
       let done = 0
 
       const onVoiceStateAdd = (state: VoiceState): void => {
@@ -46,15 +52,24 @@ export class VoiceChannel extends Channel {
         if (state.channel?.id !== this.id) return
         this.client.off('voiceStateAdd', onVoiceStateAdd)
         done++
-        if (done >= 2) resolve((vcdata as unknown) as VoiceServerUpdateData)
+        sessionID = state.sessionID
+        if (done >= 2) {
+          vcdata.sessionID = sessionID
+          if (options?.onlyJoin !== true) {
+          }
+          resolve(vcdata)
+        }
       }
 
       const onVoiceServerUpdate = (data: VoiceServerUpdateData): void => {
         if (data.guild.id !== this.guild.id) return
-        vcdata = data
+        vcdata = (data as unknown) as VoiceServerData
         this.client.off('voiceServerUpdate', onVoiceServerUpdate)
         done++
-        if (done >= 2) resolve(vcdata)
+        if (done >= 2) {
+          vcdata.sessionID = sessionID
+          resolve(vcdata)
+        }
       }
 
       this.client.shards
@@ -78,6 +93,7 @@ export class VoiceChannel extends Channel {
     })
   }
 
+  /** Leave the Voice Channel */
   leave(): void {
     this.client.shards
       .get(this.guild.shardID)
