@@ -23,6 +23,14 @@ export class MessageReactionsManager extends BaseManager<
     this.message = message
   }
 
+  async updateRefs(): Promise<void> {
+    const newVal = await this.message.channel.messages.get(this.message.id)
+    if (newVal !== undefined) {
+      this.message = newVal
+    }
+    await this.message.updateRefs()
+  }
+
   async get(id: string): Promise<MessageReaction | undefined> {
     const raw = await this._get(id)
     if (raw === undefined) return
@@ -32,6 +40,7 @@ export class MessageReactionsManager extends BaseManager<
     let emoji = await this.client.emojis.get(emojiID as string)
     if (emoji === undefined) emoji = new Emoji(this.client, raw.emoji)
 
+    await this.updateRefs()
     const reaction = new MessageReaction(this.client, raw, this.message, emoji)
     return reaction
   }
