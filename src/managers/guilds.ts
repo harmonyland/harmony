@@ -30,7 +30,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
       this.client.rest
         .get(GUILD(id))
         .then(async (data: any) => {
-          this.set(id, data)
+          await this.set(id, data)
 
           const guild = new Guild(this.client, data)
 
@@ -143,6 +143,16 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     }
 
     return result
+  }
+
+  /** Sets a value to Cache */
+  async set(key: string, value: GuildPayload): Promise<any> {
+    if ('roles' in value) value.roles = []
+    if ('emojis' in value) value.emojis = []
+    if ('members' in value) value.members = []
+    if ('presences' in value) value.presences = []
+    if ('voice_states' in value) value.voice_states = []
+    return this.client.cache.set(this.cacheName, key, value)
   }
 
   /**
