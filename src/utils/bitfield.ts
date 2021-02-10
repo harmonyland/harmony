@@ -27,7 +27,8 @@ export class BitField {
 
   has(bit: BitFieldResolvable, ...args: any[]): boolean {
     if (Array.isArray(bit)) return (bit.every as any)((p: any) => this.has(p))
-    return (this.bitfield & BitField.resolve(this.flags, bit)) === bit
+    bit = BitField.resolve(this.flags, bit)
+    return (this.bitfield & bit) === bit
   }
 
   missing(bits: any, ...hasParams: any[]): string[] {
