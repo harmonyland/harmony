@@ -1,22 +1,25 @@
-import { EmbedPayload } from './channel.ts'
+import { AllowedMentionsPayload, EmbedPayload } from './channel.ts'
 import { MemberPayload } from './guild.ts'
+import { UserPayload } from './user.ts'
 
-export interface InteractionOption {
+export interface InteractionApplicationCommandOption {
   /** Option name */
   name: string
+  /** Type of Option */
+  type: SlashCommandOptionType
   /** Value of the option */
   value?: any
   /** Sub options */
-  options?: any[]
+  options?: InteractionApplicationCommandOption[]
 }
 
-export interface InteractionData {
+export interface InteractionApplicationCommandData {
   /** Name of the Slash Command */
   name: string
   /** Unique ID of the Slash Command */
   id: string
   /** Options (arguments) sent with Interaction */
-  options: InteractionOption[]
+  options: InteractionApplicationCommandOption[]
 }
 
 export enum InteractionType {
@@ -26,27 +29,31 @@ export enum InteractionType {
   APPLICATION_COMMAND = 2
 }
 
+export interface InteractionMemberPayload extends MemberPayload {
+  permissions: string
+}
+
 export interface InteractionPayload {
   /** Type of the Interaction */
   type: InteractionType
   /** Token of the Interaction to respond */
   token: string
   /** Member object of user who invoked */
-  member: MemberPayload & {
-    /** Total permissions of the member in the channel, including overrides */
-    permissions: string
-  }
+  member?: InteractionMemberPayload
+  /** User who initiated Interaction (only in DMs) */
+  user?: UserPayload
   /** ID of the Interaction */
   id: string
   /**
    * Data sent with the interaction
-   * **This can be undefined only when Interaction is not a Slash Command**
+   *
+   * This can be undefined only when Interaction is not a Slash Command.
    */
-  data: InteractionData
+  data?: InteractionApplicationCommandData
   /** ID of the Guild in which Interaction was invoked */
-  guild_id: string
+  guild_id?: string
   /** ID of the Channel in which Interaction was invoked */
-  channel_id: string
+  channel_id?: string
 }
 
 export interface SlashCommandChoice {
@@ -68,13 +75,18 @@ export enum SlashCommandOptionType {
 }
 
 export interface SlashCommandOption {
+  /** Name of the option. */
   name: string
-  /** Description not required in Sub-Command or Sub-Command-Group */
+  /** Description of the Option. Not required in Sub-Command-Group */
   description?: string
+  /** Option type */
   type: SlashCommandOptionType
+  /** Whether the option is required or not, false by default */
   required?: boolean
   default?: boolean
+  /** Optional choices out of which User can choose value */
   choices?: SlashCommandChoice[]
+  /** Nested options for Sub-Command or Sub-Command-Groups */
   options?: SlashCommandOption[]
 }
 
@@ -103,19 +115,20 @@ export enum InteractionResponseType {
 }
 
 export interface InteractionResponsePayload {
+  /** Type of the response */
   type: InteractionResponseType
+  /** Data to be sent with response. Optional for types: Pong, Acknowledge, Ack with Source */
   data?: InteractionResponseDataPayload
 }
 
 export interface InteractionResponseDataPayload {
   tts?: boolean
+  /** Text content of the Response (Message) */
   content: string
+  /** Upto 10 Embed Objects to send with Response */
   embeds?: EmbedPayload[]
-  allowed_mentions?: {
-    parse?: 'everyone' | 'users' | 'roles'
-    roles?: string[]
-    users?: string[]
-  }
+  /** Allowed Mentions object */
+  allowed_mentions?: AllowedMentionsPayload
   flags?: number
 }
 

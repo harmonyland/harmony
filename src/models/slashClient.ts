@@ -155,6 +155,7 @@ function buildOptionsArray(
       )
 }
 
+/** Slash Command Builder */
 export class SlashBuilder {
   data: SlashCommandPartial
 
@@ -200,6 +201,7 @@ export class SlashBuilder {
   }
 }
 
+/** Manages Slash Commands, allows fetching/modifying/deleting/creating Slash Commands. */
 export class SlashCommandsManager {
   slash: SlashClient
   rest: RESTManager
@@ -351,7 +353,7 @@ export class SlashCommandsManager {
   }
 }
 
-export type SlashCommandHandlerCallback = (interaction: Interaction) => any
+export type SlashCommandHandlerCallback = (interaction: Interaction) => unknown
 export interface SlashCommandHandler {
   name: string
   guild?: string
@@ -360,6 +362,7 @@ export interface SlashCommandHandler {
   handler: SlashCommandHandlerCallback
 }
 
+/** Options for SlashClient */
 export interface SlashOptions {
   id?: string | (() => string)
   client?: Client
@@ -369,6 +372,7 @@ export interface SlashOptions {
   publicKey?: string
 }
 
+/** Slash Client represents an Interactions Client which can be used without Harmony Client. */
 export class SlashClient {
   id: string | (() => string)
   client?: Client
@@ -469,12 +473,20 @@ export class SlashClient {
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
           ? i.options
-              .find((o) => o.name === e.group)
+              .find(
+                (o) =>
+                  o.name === e.group &&
+                  o.type === SlashCommandOptionType.SUB_COMMAND_GROUP
+              )
               ?.options?.find((o) => o.name === e.name) !== undefined
           : true
       const subMatched =
         e.group === undefined && e.parent !== undefined
-          ? i.options.find((o) => o.name === e.name) !== undefined
+          ? i.options.find(
+              (o) =>
+                o.name === e.name &&
+                o.type === SlashCommandOptionType.SUB_COMMAND
+            ) !== undefined
           : true
       const nameMatched1 = e.name === i.name
       const parentMatched = hasGroupOrParent ? e.parent === i.name : true
@@ -485,11 +497,15 @@ export class SlashClient {
     })
   }
 
-  /** Process an incoming Slash Command (interaction) */
+  /** Process an incoming Interaction */
   private _process(interaction: Interaction): void {
     if (!this.enabled) return
 
-    if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
+    if (
+      interaction.type !== InteractionType.APPLICATION_COMMAND ||
+      interaction.data === undefined
+    )
+      return
 
     const cmd = this._getCommand(interaction)
     if (cmd?.group !== undefined)

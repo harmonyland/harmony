@@ -157,7 +157,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
           const handler = gatewayHandlers[t]
 
-          if (handler !== undefined) {
+          if (handler !== undefined && d !== null) {
             handler(this, d)
           }
         }
