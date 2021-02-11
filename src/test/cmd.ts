@@ -4,7 +4,7 @@ import {
   Intents,
   CommandContext,
   Extension,
-  GuildChannel
+  GuildChannels
 } from '../../mod.ts'
 import { Invite } from '../structures/invite.ts'
 import { TOKEN } from './config.ts'
@@ -30,10 +30,6 @@ client.on('messageUpdate', (before, after) => {
   console.log('Message Update')
   console.log(`Before: ${before.author.tag}: ${before.content}`)
   console.log(`After: ${after.author.tag}: ${after.content}`)
-})
-
-client.on('messageUpdateUncached', (msg) => {
-  console.log(`Message: ${msg.author.tag}: ${msg.content}`)
 })
 
 client.on('guildMemberAdd', (member) => {
@@ -73,14 +69,14 @@ client.on('inviteDelete', (invite: Invite) => {
   console.log(`Invite Delete: ${invite.code}`)
 })
 
-client.on('inviteDeleteUncached', (invite: Invite) => {
+client.on('inviteDeleteUncached', (invite) => {
   console.log(invite)
 })
 
 client.on('commandError', console.error)
 
 class ChannelLog extends Extension {
-  onChannelCreate(ext: Extension, channel: GuildChannel): void {
+  onChannelCreate(ext: Extension, channel: GuildChannels): void {
     console.log(`Channel Created: ${channel.name}`)
   }
 
@@ -111,8 +107,8 @@ client.on('messageDeleteBulk', (channel, messages, uncached) => {
 
 client.on('channelUpdate', (before, after) => {
   console.log(
-    `Channel Update: ${(before as GuildChannel).name}, ${
-      (after as GuildChannel).name
+    `Channel Update: ${(before as GuildChannels).name}, ${
+      (after as GuildChannels).name
     }`
   )
 })

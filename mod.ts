@@ -1,6 +1,7 @@
 export { GatewayIntents } from './src/types/gateway.ts'
 export { Base } from './src/structures/base.ts'
 export { Gateway } from './src/gateway/index.ts'
+export type { GatewayTypedEvents } from './src/gateway/index.ts'
 export type { ClientEvents } from './src/gateway/handlers/index.ts'
 export * from './src/models/client.ts'
 export * from './src/models/slashClient.ts'
@@ -30,8 +31,8 @@ export { ChannelsManager } from './src/managers/channels.ts'
 export { EmojisManager } from './src/managers/emojis.ts'
 export { GatewayCache } from './src/managers/gatewayCache.ts'
 export { GuildChannelsManager } from './src/managers/guildChannels.ts'
-export type { GuildChannel } from './src/managers/guildChannels.ts'
 export { GuildManager } from './src/managers/guilds.ts'
+export * from './src/structures/base.ts'
 export * from './src/structures/slash.ts'
 export * from './src/types/slash.ts'
 export { GuildEmojisManager } from './src/managers/guildEmojis.ts'
@@ -59,7 +60,7 @@ export { NewsChannel } from './src/structures/guildNewsChannel.ts'
 export { VoiceChannel } from './src/structures/guildVoiceChannel.ts'
 export { Invite } from './src/structures/invite.ts'
 export * from './src/structures/member.ts'
-export { Message } from './src/structures/message.ts'
+export { Message, MessageAttachment } from './src/structures/message.ts'
 export { MessageMentions } from './src/structures/messageMentions.ts'
 export {
   Presence,
@@ -69,6 +70,7 @@ export {
 export { Role } from './src/structures/role.ts'
 export { Snowflake } from './src/utils/snowflake.ts'
 export { TextChannel, GuildTextChannel } from './src/structures/textChannel.ts'
+export type { AllMessageOptions } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
 export { User } from './src/structures/user.ts'
 export { Webhook } from './src/structures/webhook.ts'
@@ -77,6 +79,7 @@ export { Intents } from './src/utils/intents.ts'
 // export { getBuildInfo } from './src/utils/buildInfo.ts'
 export * from './src/utils/permissions.ts'
 export { UserFlagsManager } from './src/utils/userFlags.ts'
+export { HarmonyEventEmitter } from './src/utils/events.ts'
 export type { EveryChannelTypes } from './src/utils/getChannelByType.ts'
 export * from './src/utils/bitfield.ts'
 export type {
@@ -97,14 +100,20 @@ export type {
   GuildChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
-  GroupDMChannelPayload
+  GroupDMChannelPayload,
+  MessageOptions
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
+export { Verification } from './src/types/guild.ts'
 export type {
+  GuildIntegrationPayload,
+  GuildPayload,
   GuildBanPayload,
   GuildFeatures,
-  GuildIntegrationPayload,
-  GuildPayload
+  GuildChannels,
+  GuildCreateOptions,
+  GuildCreateChannelOptions,
+  GuildCreateRolePayload
 } from './src/types/guild.ts'
 export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
 export { PermissionFlags } from './src/types/permissionFlags.ts'
@@ -124,3 +133,4 @@ export type { UserPayload } from './src/types/user.ts'
 export { UserFlags } from './src/types/userFlags.ts'
 export type { VoiceStatePayload } from './src/types/voice.ts'
 export type { WebhookPayload } from './src/types/webhook.ts'
+export * from './src/models/collectors.ts'

@@ -1,12 +1,13 @@
 import { Client } from '../models/client.ts'
 import { UserPayload } from '../types/user.ts'
 import { UserFlagsManager } from '../utils/userFlags.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import { ImageURL } from './cdn.ts'
 import { ImageSize, ImageFormats } from '../types/cdn.ts'
 import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
+import { DMChannel } from './dmChannel.ts'
 
-export class User extends Base {
+export class User extends SnowflakeBase {
   id: string
   username: string
   discriminator: string
@@ -88,5 +89,9 @@ export class User extends Base {
 
   toString(): string {
     return this.mention
+  }
+
+  async createDM(): Promise<DMChannel> {
+    return this.client.createDM(this)
   }
 }

@@ -25,7 +25,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
     if (message === undefined) uncached.add(id)
     else {
       messages.set(id, message)
-      await channel.messages.delete(id)
+      await channel.messages._delete(id)
     }
   }
 

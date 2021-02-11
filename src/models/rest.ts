@@ -1,4 +1,6 @@
 import * as baseEndpoints from '../consts/urlsAndVersions.ts'
+import { Embed } from '../structures/embed.ts'
+import { MessageAttachment } from '../structures/message.ts'
 import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
 
@@ -28,8 +30,23 @@ export interface RequestHeaders {
   [name: string]: string
 }
 
+export interface DiscordAPIErrorPayload {
+  url: string
+  status: number
+  method: string
+  code?: number
+  message?: string
+  errors: object
+}
+
 export class DiscordAPIError extends Error {
   name = 'DiscordAPIError'
+  error?: DiscordAPIErrorPayload
+
+  constructor(message?: string, error?: DiscordAPIErrorPayload) {
+    super(message)
+    this.error = error
+  }
 }
 
 export interface QueuedItem {
@@ -173,11 +190,11 @@ export class RESTManager {
     if (options?.userAgent !== undefined) this.userAgent = options.userAgent
     if (options?.canary !== undefined) this.canary = options.canary
     if (options?.client !== undefined) this.client = options.client
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.handleRateLimits()
   }
 
-  private async checkQueues(): Promise<void> {
+  /** Checks the queues of buckets, if empty, delete entry */
+  private checkQueues(): void {
     Object.entries(this.queues).forEach(([key, value]) => {
       if (value.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -186,11 +203,10 @@ export class RESTManager {
     })
   }
 
+  /** Adds a Request to Queue */
   private queue(request: QueuedItem): void {
     const route = request.url.substring(
-      // eslint seriously?
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      baseEndpoints.DISCORD_API_URL.length + 1
+      Number(baseEndpoints.DISCORD_API_URL.length) + 1
     )
     const parts = route.split('/')
     parts.shift()
@@ -243,10 +259,8 @@ export class RESTManager {
     }
 
     if (Object.keys(this.queues).length !== 0) {
-      // await delay(100)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.processQueue()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.checkQueues()
     } else this.processing = false
   }
@@ -271,10 +285,44 @@ export class RESTManager {
       headers['X-Audit-Log-Reason'] = encodeURIComponent(body.reason)
     }
 
-    if (body?.file !== undefined) {
+    let _files: undefined | MessageAttachment[]
+    if (body?.embed?.files !== undefined && Array.isArray(body?.embed?.files)) {
+      _files = body?.embed?.files
+    }
+    if (body?.embeds !== undefined && Array.isArray(body?.embeds)) {
+      const files1 = body?.embeds
+        .map((e: Embed) => e.files)
+        .filter((e: MessageAttachment[]) => e !== undefined)
+      for (const files of files1) {
+        for (const file of files) {
+          if (_files === undefined) _files = []
+          _files?.push(file)
+        }
+      }
+    }
+
+    if (
+      body?.file !== undefined ||
+      body?.files !== undefined ||
+      _files !== undefined
+    ) {
+      const files: Array<{ blob: Blob; name: string }> = []
+      if (body?.file !== undefined) files.push(body.file)
+      if (body?.files !== undefined && Array.isArray(body.files)) {
+        for (const file of body.files) {
+          files.push(file)
+        }
+      }
+      if (_files !== undefined) {
+        for (const file of _files) {
+          files.push(file)
+        }
+      }
       const form = new FormData()
-      form.append('file', body.file.blob, body.file.name)
-      form.append('payload_json', JSON.stringify({ ...body, file: undefined }))
+      files.forEach((file, index) => form.append(`file${index + 1}`, file.blob, file.name))
+      const json = JSON.stringify(body)
+      form.append('payload_json', json)
+      if (body === undefined) body = {}
       body.file = form
     } else if (
       body !== undefined &&
@@ -293,7 +341,7 @@ export class RESTManager {
     return data
   }
 
-  private async isRateLimited(url: string): Promise<number | false> {
+  private isRateLimited(url: string): number | false {
     const global = this.rateLimits.get('global')
     const rateLimited = this.rateLimits.get(url)
     const now = Date.now()
@@ -308,6 +356,7 @@ export class RESTManager {
     return false
   }
 
+  /** Processes headers of the Response */
   private processHeaders(
     url: string,
     headers: Headers
@@ -361,12 +410,13 @@ export class RESTManager {
     return rateLimited ? bucket : undefined
   }
 
-  private async handleStatusCode(
+  /** Handles status code of response and acts as required */
+  private handleStatusCode(
     response: Response,
     body: any,
     data: { [key: string]: any },
     reject: CallableFunction
-  ): Promise<void> {
+  ): void {
     const status = response.status
 
     // We have hit ratelimit - this should not happen
@@ -399,7 +449,7 @@ export class RESTManager {
       )
 
     // At this point we know it is error
-    const error: { [name: string]: any } = {
+    const error: DiscordAPIErrorPayload = {
       url: response.url,
       status,
       method: data.method,
@@ -443,9 +493,9 @@ export class RESTManager {
         HttpResponseCode.MethodNotAllowed
       ].includes(status)
     ) {
-      reject(new DiscordAPIError(Deno.inspect(error)))
+      reject(new DiscordAPIError(Deno.inspect(error), error))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
-      reject(new DiscordAPIError(Deno.inspect(error)))
+      reject(new DiscordAPIError(Deno.inspect(error), error))
     } else reject(new DiscordAPIError('Request - Unknown Error'))
   }
 
@@ -555,10 +605,13 @@ export class RESTManager {
     })
   }
 
-  private async handleRateLimits(): Promise<void> {
+  /** Checks for RateLimits times and deletes if already over */
+  private handleRateLimits(): void {
     const now = Date.now()
     this.rateLimits.forEach((value, key) => {
+      // Ratelimit has not ended
       if (value.resetAt > now) return
+      // It ended, so delete
       this.rateLimits.delete(key)
       if (key === 'global') this.globalRateLimit = false
     })

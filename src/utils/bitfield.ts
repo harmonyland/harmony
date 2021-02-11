@@ -1,5 +1,11 @@
 // Ported from https://github.com/discordjs/discord.js/blob/master/src/util/BitField.js
-export type BitFieldResolvable = number | BitField | string | BitField[]
+export type BitFieldResolvable =
+  | number
+  | number[]
+  | BitField
+  | string
+  | string[]
+  | BitField[]
 
 /** Bit Field utility to work with Bits and Flags */
 export class BitField {
@@ -20,8 +26,9 @@ export class BitField {
   }
 
   has(bit: BitFieldResolvable, ...args: any[]): boolean {
-    if (Array.isArray(bit)) return bit.every((p) => this.has(p))
-    return (this.bitfield & BitField.resolve(this.flags, bit)) === bit
+    if (Array.isArray(bit)) return (bit.every as any)((p: any) => this.has(p))
+    bit = BitField.resolve(this.flags, bit)
+    return (this.bitfield & bit) === bit
   }
 
   missing(bits: any, ...hasParams: any[]): string[] {
@@ -89,9 +96,10 @@ export class BitField {
     if (typeof bit === 'number' && bit >= 0) return bit
     if (bit instanceof BitField) return this.resolve(flags, bit.bitfield)
     if (Array.isArray(bit))
-      return bit
-        .map((p) => this.resolve(flags, p))
-        .reduce((prev, p) => prev | p, 0)
+      return (bit.map as any)((p: any) => this.resolve(flags, p)).reduce(
+        (prev: any, p: any) => prev | p,
+        0
+      )
     if (typeof bit === 'string' && typeof flags[bit] !== 'undefined')
       return flags[bit]
     const error = new RangeError('BITFIELD_INVALID')

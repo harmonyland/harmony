@@ -4,15 +4,24 @@ import {
   GuildFeatures,
   GuildIntegrationPayload,
   GuildPayload,
+  GuildWidgetPayload,
   IntegrationAccountPayload,
-  IntegrationExpireBehavior
+  IntegrationExpireBehavior,
+  Verification,
+  GuildChannels,
+  GuildPreview,
+  MessageNotification,
+  ContentFilter,
+  GuildModifyOptions,
+  GuildGetPruneCountPayload,
+  GuildPruneCountPayload,
+  GuildBeginPrunePayload
 } from '../types/guild.ts'
-import { Base } from './base.ts'
+import { Base, SnowflakeBase } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
 import { InviteManager } from '../managers/invites.ts'
 import {
   CreateChannelOptions,
-  GuildChannel,
   GuildChannelsManager
 } from '../managers/guildChannels.ts'
 import { MembersManager } from '../managers/members.ts'
@@ -21,10 +30,18 @@ import { GuildEmojisManager } from '../managers/guildEmojis.ts'
 import { Member } from './member.ts'
 import { User } from './user.ts'
 import { Application } from './application.ts'
-import { GUILD_BAN, GUILD_BANS, GUILD_INTEGRATIONS } from '../types/endpoint.ts'
+import {
+  GUILD_BAN,
+  GUILD_BANS,
+  GUILD_INTEGRATIONS,
+  GUILD_PRUNE
+} from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
 import { RequestMembersOptions } from '../gateway/index.ts'
 import { GuildPresencesManager } from '../managers/presences.ts'
+import { TemplatePayload } from '../types/template.ts'
+import { Template } from './template.ts'
+import { DiscordAPIError } from '../models/rest.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -116,7 +133,7 @@ export class GuildBans {
   }
 }
 
-export class Guild extends Base {
+export class Guild extends SnowflakeBase {
   id: string
   name?: string
   icon?: string
@@ -131,9 +148,9 @@ export class Guild extends Base {
   afkTimeout?: number
   widgetEnabled?: boolean
   widgetChannelID?: string
-  verificationLevel?: string
-  defaultMessageNotifications?: string
-  explicitContentFilter?: string
+  verificationLevel?: Verification
+  defaultMessageNotifications?: MessageNotification
+  explicitContentFilter?: ContentFilter
   roles: RolesManager
   emojis: GuildEmojisManager
   invites: InviteManager
@@ -164,6 +181,11 @@ export class Guild extends Base {
   approximateNumberCount?: number
   approximatePresenceCount?: number
   bans: GuildBans
+
+  /** Get Shard ID of Guild on which it is */
+  get shardID(): number {
+    return Number((BigInt(this.id) << 22n) % BigInt(this.client.shardCount))
+  }
 
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
@@ -264,7 +286,7 @@ export class Guild extends Base {
   }
 
   /** Create a new Guild Channel */
-  async createChannel(options: CreateChannelOptions): Promise<GuildChannel> {
+  async createChannel(options: CreateChannelOptions): Promise<GuildChannels> {
     return this.channels.create(options)
   }
 
@@ -285,21 +307,21 @@ export class Guild extends Base {
     timeout: number = 60000
   ): Promise<Guild> {
     return await new Promise((resolve, reject) => {
-      this.client.gateway?.requestMembers(this.id, options)
+      this.client.shards.get(this.shardID)?.requestMembers(this.id, options)
       if (!wait) return resolve(this)
       else {
         let chunked = false
         const listener = (guild: Guild): void => {
           if (guild.id === this.id) {
             chunked = true
-            this.client.removeListener('guildMembersChunked', listener)
+            this.client.off('guildMembersChunked', listener)
             resolve(this)
           }
         }
         this.client.on('guildMembersChunked', listener)
         setTimeout(() => {
           if (!chunked) {
-            this.client.removeListener('guildMembersChunked', listener)
+            this.client.off('guildMembersChunked', listener)
           }
         }, timeout)
       }
@@ -312,19 +334,230 @@ export class Guild extends Base {
    */
   async awaitAvailability(timeout: number = 1000): Promise<Guild> {
     return await new Promise((resolve, reject) => {
-      if(!this.unavailable) resolve(this);
+      if (!this.unavailable) resolve(this)
       const listener = (guild: Guild): void => {
         if (guild.id === this.id) {
-          this.client.removeListener('guildLoaded', listener);
-          resolve(this);
+          this.client.off('guildLoaded', listener)
+          resolve(this)
         }
-      };
-      this.client.on('guildLoaded', listener);
+      }
+      this.client.on('guildLoaded', listener)
       setTimeout(() => {
-        this.client.removeListener('guildLoaded', listener);
-        reject(Error("Timeout. Guild didn't arrive in time."));
-      }, timeout);
-    });
+        this.client.off('guildLoaded', listener)
+        reject(Error("Timeout. Guild didn't arrive in time."))
+      }, timeout)
+    })
+  }
+
+  /** Attach an integration object from the current user to the guild. */
+  async createIntegration(id: string, type: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations.post({ id, type })
+    return this
+  }
+
+  /** Modify the behavior and settings of an integration object for the guild. */
+  async editIntegration(
+    id: string,
+    data: {
+      expireBehavior?: number | null
+      expireGracePeriod?: number | null
+      enableEmoticons?: boolean | null
+    }
+  ): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations[id].patch({
+      expire_behaviour: data.expireBehavior,
+      expire_grace_period: data.expireGracePeriod,
+      enable_emoticons: data.enableEmoticons
+    })
+    return this
+  }
+
+  /** Delete the attached integration object for the guild. Deletes any associated webhooks and kicks the associated bot if there is one. */
+  async deleteIntegration(id: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations[id].delete()
+    return this
+  }
+
+  /** Sync an integration. */
+  async syncIntegration(id: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].integrations[id].sync.post()
+    return this
+  }
+
+  /** Returns the widget for the guild. */
+  async getWidget(): Promise<GuildWidgetPayload> {
+    return this.client.rest.api.guilds[this.id]['widget.json'].get()
+  }
+
+  /** Modify a guild widget object for the guild. */
+  async editWidget(data: {
+    enabled?: boolean
+    channel?: string | GuildChannels
+  }): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].widget.patch({
+      enabled: data.enabled,
+      channel_id:
+        typeof data.channel === 'object' ? data.channel.id : data.channel
+    })
+    return this
+  }
+
+  /** Returns a partial invite object for guilds with that feature enabled. */
+  async getVanity(): Promise<{ code: string | null; uses: number }> {
+    try {
+      const value = await this.client.rest.api.guilds[this.id][
+        'vanity-url'
+      ].get()
+      return value
+    } catch (error) {
+      if (error instanceof DiscordAPIError) {
+        if (error.error?.code === 50020) {
+          return {
+            code: null,
+            uses: 0
+          }
+        }
+      }
+      throw error
+    }
+  }
+
+  /** Returns a PNG (URL) image widget for the guild. */
+  getWidgetImageURL(
+    style?: 'shield' | 'banner1' | 'banner2' | 'banner3' | 'banner4'
+  ): string {
+    return `https://discord.com/api/v${this.client.rest.version ?? 8}/guilds/${
+      this.id
+    }/widget.png${style !== undefined ? `?style=${style}` : ''}`
+  }
+
+  /** Leave a Guild. */
+  async leave(): Promise<Client> {
+    await this.client.rest.api.users['@me'].guilds[this.id].delete()
+    return this.client
+  }
+
+  /** Returns an array of template objects. */
+  async getTemplates(): Promise<Template[]> {
+    return this.client.rest.api.guilds[this.id].templates
+      .get()
+      .then((temps: TemplatePayload[]) =>
+        temps.map((temp) => new Template(this.client, temp))
+      )
+  }
+
+  /** Creates a template for the guild. */
+  async createTemplate(
+    name: string,
+    description?: string | null
+  ): Promise<Template> {
+    const payload = await this.client.rest.api.guilds[this.id].templates.post({
+      name,
+      description
+    })
+    return new Template(this.client, payload)
+  }
+
+  /** Syncs the template to the guild's current state. */
+  async syncTemplate(code: string): Promise<Template> {
+    const payload = await this.client.rest.api.guilds[this.id].templates[
+      code
+    ].put()
+    return new Template(this.client, payload)
+  }
+
+  /** Modifies the template's metadata. */
+  async editTemplate(
+    code: string,
+    data: { name?: string; description?: string }
+  ): Promise<Template> {
+    const payload = await this.client.rest.api.guilds[this.id].templates[
+      code
+    ].patch({ name: data.name, description: data.description })
+    return new Template(this.client, payload)
+  }
+
+  /** Deletes the template. Requires the MANAGE_GUILD permission. */
+  async deleteTemplate(code: string): Promise<Guild> {
+    await this.client.rest.api.guilds[this.id].templates[code].delete()
+    return this
+  }
+
+  /** Gets a preview of the guild. Returns GuildPreview. */
+  async preview(): Promise<GuildPreview> {
+    return this.client.guilds.preview(this.id)
+  }
+
+  /**
+   * Edits the guild.
+   * @param options Guild edit options
+   */
+  async edit(options: GuildModifyOptions): Promise<Guild> {
+    const result = await this.client.guilds.edit(this.id, options, true)
+    this.readFromData(result)
+
+    return new Guild(this.client, result)
+  }
+
+  /** Deletes the guild. */
+  async delete(): Promise<Guild> {
+    const result = await this.client.guilds.delete(this.id)
+
+    return result === undefined ? this : result
+  }
+
+  async getPruneCount(options?: {
+    days?: number
+    includeRoles?: Array<Role | string>
+  }): Promise<number> {
+    const query: GuildGetPruneCountPayload = {
+      days: options?.days,
+      include_roles: options?.includeRoles
+        ?.map((role) => (role instanceof Role ? role.id : role))
+        .join(',')
+    }
+
+    const result: GuildPruneCountPayload = await this.client.rest.get(
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      GUILD_PRUNE(this.id) +
+        '?' +
+        Object.entries(query)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&')
+    )
+
+    return result.pruned as number
+  }
+
+  async prune(options?: {
+    days?: number
+    computePruneCount?: true
+    includeRoles?: Array<Role | string>
+  }): Promise<number>
+  async prune(options?: {
+    days?: number
+    computePruneCount: false
+    includeRoles?: Array<Role | string>
+  }): Promise<null>
+  async prune(options?: {
+    days?: number
+    computePruneCount?: boolean
+    includeRoles?: Array<Role | string>
+  }): Promise<number | null> {
+    const body: GuildBeginPrunePayload = {
+      days: options?.days,
+      compute_prune_count: options?.computePruneCount,
+      include_roles: options?.includeRoles?.map((role) =>
+        role instanceof Role ? role.id : role
+      )
+    }
+
+    const result: GuildPruneCountPayload = await this.client.rest.post(
+      GUILD_PRUNE(this.id),
+      body
+    )
+
+    return result.pruned
   }
 }
 

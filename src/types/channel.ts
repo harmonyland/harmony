@@ -1,4 +1,5 @@
 import { Embed } from '../structures/embed.ts'
+import { MessageAttachment } from '../structures/message.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import { UserPayload } from './user.ts'
@@ -96,7 +97,7 @@ export interface ModifyGuildTextChannelOption extends ModifyChannelOption {
   type?: number
   topic?: string | null
   nsfw?: boolean | null
-  rateLimitPerUser?: number | null
+  slowmode?: number | null
 }
 
 export interface ModifyGuildNewsChannelOption extends ModifyChannelOption {
@@ -155,10 +156,11 @@ export interface MessagePayload {
   stickers?: MessageStickerPayload[]
 }
 
-export interface MessageOption {
+export interface MessageOptions {
   tts?: boolean
   embed?: Embed
-  file?: Attachment
+  file?: MessageAttachment
+  files?: MessageAttachment[]
   allowedMentions?: {
     parse?: 'everyone' | 'users' | 'roles'
     roles?: string[]

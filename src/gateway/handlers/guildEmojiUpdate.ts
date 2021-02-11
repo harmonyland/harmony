@@ -44,16 +44,18 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
       }
     }
 
+    gateway.client.emit('guildEmojisUpdate', guild)
+
     for (const emoji of deleted) {
-      gateway.client.emit('guildEmojiDelete', guild, emoji)
+      gateway.client.emit('guildEmojiDelete', emoji)
     }
 
     for (const emoji of added) {
-      gateway.client.emit('guildEmojiAdd', guild, emoji)
+      gateway.client.emit('guildEmojiAdd', emoji)
     }
 
     for (const emoji of updated) {
-      gateway.client.emit('guildEmojiUpdate', guild, emoji.before, emoji.after)
+      gateway.client.emit('guildEmojiUpdate', emoji.before, emoji.after)
     }
   }
 }

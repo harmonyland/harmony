@@ -12,6 +12,10 @@ import { Channel } from './channel.ts'
 import { Guild } from './guild.ts'
 import { VoiceState } from './voiceState.ts'
 
+export interface VoiceServerData extends VoiceServerUpdateData {
+  sessionID: string
+}
+
 export class VoiceChannel extends Channel {
   bitrate: string
   userLimit: number
@@ -32,40 +36,53 @@ export class VoiceChannel extends Channel {
     this.guild = guild
     this.permissionOverwrites = data.permission_overwrites
     this.parentID = data.parent_id
-    // TODO: Cache in Gateway Event Code
-    // cache.set('guildvoicechannel', this.id, this)
   }
 
-  async join(options?: VoiceStateOptions): Promise<VoiceServerUpdateData> {
+  /** Join the Voice Channel */
+  async join(
+    options?: VoiceStateOptions & { onlyJoin?: boolean }
+  ): Promise<VoiceServerUpdateData> {
     return await new Promise((resolve, reject) => {
-      let vcdata: VoiceServerUpdateData | undefined
+      let vcdata: VoiceServerData
+      let sessionID: string
       let done = 0
 
       const onVoiceStateAdd = (state: VoiceState): void => {
         if (state.user.id !== this.client.user?.id) return
         if (state.channel?.id !== this.id) return
-        this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
+        this.client.off('voiceStateAdd', onVoiceStateAdd)
         done++
-        if (done >= 2) resolve((vcdata as unknown) as VoiceServerUpdateData)
+        sessionID = state.sessionID
+        if (done >= 2) {
+          vcdata.sessionID = sessionID
+          if (options?.onlyJoin !== true) {
+          }
+          resolve(vcdata)
+        }
       }
 
       const onVoiceServerUpdate = (data: VoiceServerUpdateData): void => {
         if (data.guild.id !== this.guild.id) return
-        vcdata = data
-        this.client.removeListener('voiceServerUpdate', onVoiceServerUpdate)
+        vcdata = (data as unknown) as VoiceServerData
+        this.client.off('voiceServerUpdate', onVoiceServerUpdate)
         done++
-        if (done >= 2) resolve(vcdata)
+        if (done >= 2) {
+          vcdata.sessionID = sessionID
+          resolve(vcdata)
+        }
       }
 
-      this.client.gateway?.updateVoiceState(this.guild.id, this.id, options)
+      this.client.shards
+        .get(this.guild.shardID)
+        ?.updateVoiceState(this.guild.id, this.id, options)
 
       this.client.on('voiceStateAdd', onVoiceStateAdd)
       this.client.on('voiceServerUpdate', onVoiceServerUpdate)
 
       setTimeout(() => {
         if (done < 2) {
-          this.client.removeListener('voiceServerUpdate', onVoiceServerUpdate)
-          this.client.removeListener('voiceStateAdd', onVoiceStateAdd)
+          this.client.off('voiceServerUpdate', onVoiceServerUpdate)
+          this.client.off('voiceStateAdd', onVoiceStateAdd)
           reject(
             new Error(
               "Connection timed out - couldn't connect to Voice Channel"
@@ -76,8 +93,11 @@ export class VoiceChannel extends Channel {
     })
   }
 
+  /** Leave the Voice Channel */
   leave(): void {
-    this.client.gateway?.updateVoiceState(this.guild.id, undefined)
+    this.client.shards
+      .get(this.guild.shardID)
+      ?.updateVoiceState(this.guild.id, undefined)
   }
 
   readFromData(data: GuildVoiceChannelPayload): void {

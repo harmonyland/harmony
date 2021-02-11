@@ -3,7 +3,7 @@ import { MessagesManager } from '../managers/messages.ts'
 import { Client } from '../models/client.ts'
 import {
   GuildTextChannelPayload,
-  MessageOption,
+  MessageOptions,
   MessagePayload,
   MessageReference,
   ModifyGuildTextChannelOption,
@@ -19,17 +19,20 @@ import {
   MESSAGE_REACTION_USER
 } from '../types/endpoint.ts'
 import { Collection } from '../utils/collection.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
+import { CategoryChannel } from './guildCategoryChannel.ts'
 import { Invite } from './invite.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
 import { User } from './user.ts'
 
-export type AllMessageOptions = MessageOption | Embed
+export type AllMessageOptions = MessageOptions | Embed
 
+/** Channel object for Text Channel type */
 export class TextChannel extends Channel {
   lastMessageID?: string
   lastPinTimestamp?: string
@@ -76,6 +79,7 @@ export class TextChannel extends Channel {
       content: content,
       embed: option?.embed,
       file: option?.file,
+      files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions
     }
@@ -105,7 +109,7 @@ export class TextChannel extends Channel {
   async editMessage(
     message: Message | string,
     text?: string,
-    option?: MessageOption
+    option?: MessageOptions
   ): Promise<Message> {
     if (text === undefined && option === undefined) {
       throw new Error('Either text or option is necessary.')
@@ -135,6 +139,7 @@ export class TextChannel extends Channel {
     return res
   }
 
+  /** Add a reaction to a Message in this Channel */
   async addReaction(
     message: Message | string,
     emoji: Emoji | string
@@ -153,6 +158,7 @@ export class TextChannel extends Channel {
     )
   }
 
+  /** Remove Reaction from a Message in this Channel */
   async removeReaction(
     message: Message | string,
     emoji: Emoji | string,
@@ -224,8 +230,15 @@ export class TextChannel extends Channel {
 
     return res
   }
+
+  /** Trigger the typing indicator. NOT recommended to be used by bots unless you really want to. */
+  async triggerTyping(): Promise<TextChannel> {
+    await this.client.rest.api.channels[this.id].typing.post()
+    return this
+  }
 }
 
+/** Represents a Text Channel but in a Guild */
 export class GuildTextChannel extends TextChannel {
   guildID: string
   name: string
@@ -233,7 +246,7 @@ export class GuildTextChannel extends TextChannel {
   permissionOverwrites: Overwrite[]
   nsfw: boolean
   parentID?: string
-  rateLimit: number
+  slowmode: number
   topic?: string
   guild: Guild
 
@@ -255,7 +268,7 @@ export class GuildTextChannel extends TextChannel {
     this.nsfw = data.nsfw
     this.parentID = data.parent_id
     this.topic = data.topic
-    this.rateLimit = data.rate_limit_per_user
+    this.slowmode = data.rate_limit_per_user
   }
 
   readFromData(data: GuildTextChannelPayload): void {
@@ -268,9 +281,10 @@ export class GuildTextChannel extends TextChannel {
     this.nsfw = data.nsfw ?? this.nsfw
     this.parentID = data.parent_id ?? this.parentID
     this.topic = data.topic ?? this.topic
-    this.rateLimit = data.rate_limit_per_user ?? this.rateLimit
+    this.slowmode = data.rate_limit_per_user ?? this.slowmode
   }
 
+  /** Edit the Guild Text Channel */
   async edit(
     options?: ModifyGuildTextChannelOption
   ): Promise<GuildTextChannel> {
@@ -278,7 +292,10 @@ export class GuildTextChannel extends TextChannel {
       name: options?.name,
       position: options?.position,
       permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID
+      parent_id: options?.parentID,
+      nsfw: options?.nsfw,
+      topic: options?.topic,
+      rate_limit_per_user: options?.slowmode
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
@@ -325,5 +342,120 @@ export class GuildTextChannel extends TextChannel {
   /** Create an Invite for this Channel */
   async createInvite(options?: CreateInviteOptions): Promise<Invite> {
     return this.guild.invites.create(this.id, options)
+  }
+
+  /** Get Permission Overties for a specific Member */
+  async overwritesFor(member: Member | string): Promise<Overwrite[]> {
+    member = (typeof member === 'string'
+      ? await this.guild.members.get(member)
+      : member) as Member
+    if (member === undefined) throw new Error('Member not found')
+    const roles = await member.roles.array()
+
+    const overwrites: Overwrite[] = []
+
+    for (const overwrite of this.permissionOverwrites) {
+      if (overwrite.id === this.guild.id) {
+        overwrites.push(overwrite)
+      } else if (roles.some((e) => e.id === overwrite.id) === true) {
+        overwrites.push(overwrite)
+      } else if (overwrite.id === member.id) {
+        overwrites.push(overwrite)
+      }
+    }
+
+    return overwrites
+  }
+
+  /** Get Permissions for a Member in this Channel */
+  async permissionsFor(member: Member | string): Promise<Permissions> {
+    const id = typeof member === 'string' ? member : member.id
+    if (id === this.guild.ownerID) return new Permissions(Permissions.ALL)
+
+    member = (typeof member === 'string'
+      ? await this.guild.members.get(member)
+      : member) as Member
+    if (member === undefined) throw new Error('Member not found')
+
+    if (member.permissions.has('ADMINISTRATOR') === true)
+      return new Permissions(Permissions.ALL)
+
+    const overwrites = await this.overwritesFor(member)
+    const everyoneOW = overwrites.find((e) => e.id === this.guild.id)
+    const roleOWs = overwrites.filter((e) => e.type === 0)
+    const memberOWs = overwrites.filter((e) => e.type === 1)
+
+    return member.permissions
+      .remove(everyoneOW !== undefined ? Number(everyoneOW.deny) : 0)
+      .add(everyoneOW !== undefined ? Number(everyoneOW.allow) : 0)
+      .remove(roleOWs.length === 0 ? 0 : roleOWs.map((e) => Number(e.deny)))
+      .add(roleOWs.length === 0 ? 0 : roleOWs.map((e) => Number(e.allow)))
+      .remove(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.deny)))
+      .add(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.allow)))
+  }
+
+  /** Edit name of the channel */
+  async setName(name: string): Promise<GuildTextChannel> {
+    return await this.edit({ name })
+  }
+
+  /** Edit topic of the channel */
+  async setTopic(topic: string): Promise<GuildTextChannel> {
+    return await this.edit({ topic })
+  }
+
+  /** Edit topic of the channel */
+  async setCategory(
+    category: CategoryChannel | string
+  ): Promise<GuildTextChannel> {
+    return await this.edit({
+      parentID: typeof category === 'object' ? category.id : category
+    })
+  }
+
+  /** Edit position of the channel */
+  async setPosition(position: number): Promise<GuildTextChannel> {
+    return await this.edit({ position })
+  }
+
+  /** Edit Slowmode of the channel */
+  async setSlowmode(slowmode?: number | null): Promise<GuildTextChannel> {
+    return await this.edit({ slowmode: slowmode ?? null })
+  }
+
+  /** Edit NSFW property of the channel */
+  async setNSFW(nsfw: boolean): Promise<GuildTextChannel> {
+    return await this.edit({ nsfw })
+  }
+
+  /** Set Permission Overwrites of the Channel */
+  async setOverwrites(overwrites: Overwrite[]): Promise<GuildTextChannel> {
+    return await this.edit({ permissionOverwrites: overwrites })
+  }
+
+  /** Add a Permission Overwrite */
+  async addOverwrite(overwrite: Overwrite): Promise<GuildTextChannel> {
+    const overwrites = this.permissionOverwrites
+    overwrites.push(overwrite)
+    return await this.edit({ permissionOverwrites: overwrites })
+  }
+
+  /** Remove a Permission Overwrite */
+  async removeOverwrite(id: string): Promise<GuildTextChannel> {
+    if (this.permissionOverwrites.findIndex((e) => e.id === id) < 0)
+      throw new Error('Permission Overwrite not found')
+    const overwrites = this.permissionOverwrites.filter((e) => e.id !== id)
+    return await this.edit({ permissionOverwrites: overwrites })
+  }
+
+  /** Edit a Permission Overwrite */
+  async editOverwrite(overwrite: Overwrite): Promise<GuildTextChannel> {
+    const index = this.permissionOverwrites.findIndex(
+      (e) => e.id === overwrite.id
+    )
+    if (index < 0) throw new Error('Permission Overwrite not found')
+    const overwrites = this.permissionOverwrites
+    overwrites[index] = overwrite
+    return await this.edit({ permissionOverwrites: overwrites })
   }
 }

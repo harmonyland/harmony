@@ -259,7 +259,7 @@ export class CommandClient extends Client implements CommandClientOptions {
         : category.ownerOnly) === true &&
       !this.owners.includes(msg.author.id)
     )
-      return this.emit('commandOwnerOnly', ctx, command)
+      return this.emit('commandOwnerOnly', ctx)
 
     // Checks if Command is only for Guild
     if (
@@ -268,7 +268,7 @@ export class CommandClient extends Client implements CommandClientOptions {
         : category.guildOnly) === true &&
       msg.guild === undefined
     )
-      return this.emit('commandGuildOnly', ctx, command)
+      return this.emit('commandGuildOnly', ctx)
 
     // Checks if Command is only for DMs
     if (
@@ -277,14 +277,14 @@ export class CommandClient extends Client implements CommandClientOptions {
         : category.dmOnly) === true &&
       msg.guild !== undefined
     )
-      return this.emit('commandDmOnly', ctx, command)
+      return this.emit('commandDmOnly', ctx)
 
     if (
       command.nsfw === true &&
       (msg.guild === undefined ||
         ((msg.channel as unknown) as GuildTextChannel).nsfw !== true)
     )
-      return this.emit('commandNSFW', ctx, command)
+      return this.emit('commandNSFW', ctx)
 
     const allPermissions =
       command.permissions !== undefined
@@ -316,12 +316,7 @@ export class CommandClient extends Client implements CommandClientOptions {
         }
 
         if (missing.length !== 0)
-          return this.emit(
-            'commandBotMissingPermissions',
-            ctx,
-            command,
-            missing
-          )
+          return this.emit('commandBotMissingPermissions', ctx, missing)
       }
     }
 
@@ -349,27 +344,22 @@ export class CommandClient extends Client implements CommandClientOptions {
         }
 
         if (missing.length !== 0)
-          return this.emit(
-            'commandUserMissingPermissions',
-            command,
-            missing,
-            ctx
-          )
+          return this.emit('commandUserMissingPermissions', ctx, missing)
       }
     }
 
     if (command.args !== undefined) {
       if (typeof command.args === 'boolean' && parsed.args.length === 0)
-        return this.emit('commandMissingArgs', ctx, command)
+        return this.emit('commandMissingArgs', ctx)
       else if (
         typeof command.args === 'number' &&
         parsed.args.length < command.args
       )
-        this.emit('commandMissingArgs', ctx, command)
+        this.emit('commandMissingArgs', ctx)
     }
 
     try {
-      this.emit('commandUsed', ctx, command)
+      this.emit('commandUsed', ctx)
 
       const beforeExecute = await awaitSync(command.beforeExecute(ctx))
       if (beforeExecute === false) return
@@ -377,7 +367,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       const result = await awaitSync(command.execute(ctx))
       command.afterExecute(ctx, result)
     } catch (e) {
-      this.emit('commandError', command, ctx, e)
+      this.emit('commandError', ctx, e)
     }
   }
 }

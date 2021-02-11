@@ -3,7 +3,7 @@ import { Client } from '../models/client.ts'
 import { GUILD_MEMBER } from '../types/endpoint.ts'
 import { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 import { Guild } from './guild.ts'
 import { Role } from './role.ts'
 import { User } from './user.ts'
@@ -15,10 +15,10 @@ export interface MemberData {
   mute?: boolean
 }
 
-export class Member extends Base {
+export class Member extends SnowflakeBase {
   id: string
   user: User
-  nick?: string
+  nick: string | null
   roles: MemberRolesManager
   joinedAt: string
   premiumSince?: string
@@ -49,7 +49,7 @@ export class Member extends Base {
   }
 
   get displayName(): string {
-    return this.nick !== undefined ? this.nick : this.user.username
+    return this.nick !== null ? this.nick : this.user.username
   }
 
   toString(): string {
@@ -95,7 +95,7 @@ export class Member extends Base {
     )
     if (res.ok === true) {
       if (data.nick !== undefined)
-        this.nick = data.nick === null ? undefined : data.nick
+        this.nick = data.nick === null ? null : data.nick
       if (data.deaf !== undefined) this.deaf = data.deaf
       if (data.mute !== undefined) this.mute = data.mute
     }

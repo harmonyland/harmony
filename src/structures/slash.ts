@@ -1,5 +1,5 @@
 import { Client } from '../models/client.ts'
-import { MessageOption } from '../types/channel.ts'
+import { MessageOptions } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
   InteractionData,
@@ -8,6 +8,7 @@ import {
   InteractionResponsePayload,
   InteractionResponseType
 } from '../types/slash.ts'
+import { SnowflakeBase } from './base.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { Member } from './member.ts'
@@ -16,7 +17,7 @@ import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { Webhook } from './webhook.ts'
 
-interface WebhookMessageOptions extends MessageOption {
+interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
   name?: string
   avatar?: string
@@ -39,7 +40,7 @@ export interface InteractionResponse {
   }
 }
 
-export class Interaction {
+export class Interaction extends SnowflakeBase {
   client: Client
   type: number
   token: string
@@ -59,6 +60,7 @@ export class Interaction {
       member: Member
     }
   ) {
+    super(client)
     this.client = client
     this.type = data.type
     this.token = data.token

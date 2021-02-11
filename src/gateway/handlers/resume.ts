@@ -8,11 +8,11 @@ export const resume: GatewayEventHandler = async (
   d: Resume
 ) => {
   gateway.debug(`Session Resumed!`)
-  gateway.client.emit('resume')
+  gateway.client.emit('resumed', gateway.shards?.[0] ?? 0)
   if (gateway.client.user === undefined)
     gateway.client.user = new User(
       gateway.client,
       await gateway.client.rest.get(CLIENT_USER())
     )
-  gateway.client.emit('ready')
+  gateway.client.emit('ready', gateway.shards?.[0] ?? 0)
 }

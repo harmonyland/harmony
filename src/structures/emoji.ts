@@ -1,13 +1,24 @@
 import { Client } from '../models/client.ts'
 import { EmojiPayload } from '../types/emoji.ts'
 import { EMOJI } from '../types/endpoint.ts'
+import { Snowflake } from '../utils/snowflake.ts'
 import { Base } from './base.ts'
 import { Guild } from './guild.ts'
 import { Role } from './role.ts'
 import { User } from './user.ts'
 
+/** Guild Emoji Object */
 export class Emoji extends Base {
   id: string | null
+
+  get snowflake(): Snowflake | null {
+    return this.id === null ? null : new Snowflake(this.id)
+  }
+
+  get timestamp(): Date | null {
+    return this.snowflake === null ? null : new Date(this.snowflake.timestamp)
+  }
+
   name: string | null
   roles?: string[]
   user?: User
@@ -48,7 +59,7 @@ export class Emoji extends Base {
     if (this.id === null) throw new Error('Emoji ID is not valid.')
     if (this.guild === undefined) throw new Error('Guild is undefined')
     const roles = Array.isArray(data.roles)
-      ? data.roles.map(role => (role instanceof Role ? role.id : role))
+      ? data.roles.map((role) => (role instanceof Role ? role.id : role))
       : [data.roles instanceof Role ? data.roles.id : data.roles]
     const res = await this.client.rest.patch(EMOJI(this.guild.id, this.id), {
       ...data,
@@ -82,5 +93,5 @@ export interface ModifyGuildEmojiParams {
   /** Name of the emoji */
   name?: string
   /** Roles to which this emoji will be whitelisted */
-  roles?: string | Role | Array<string | Role>;
+  roles?: string | Role | Array<string | Role>
 }

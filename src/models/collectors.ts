@@ -1,6 +1,6 @@
 import { Collection } from '../utils/collection.ts'
-import { EventEmitter } from '../../deps.ts'
 import type { Client } from './client.ts'
+import { HarmonyEventEmitter } from '../utils/events.ts'
 
 export type CollectorFilter = (...args: any[]) => boolean | Promise<boolean>
 
@@ -19,7 +19,14 @@ export interface CollectorOptions {
   timeout?: number
 }
 
-export class Collector extends EventEmitter {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type CollectorEvents = {
+  start: []
+  end: []
+  collect: any
+}
+
+export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   client?: Client
   private _started: boolean = false
   event: string
@@ -135,7 +142,8 @@ export class Collector extends EventEmitter {
   }
 
   /** Returns a Promise resolved when Collector ends or a timeout occurs */
-  async wait(timeout: number = this.timeout ?? 0): Promise<Collector> {
+  async wait(timeout?: number): Promise<Collector> {
+    if (timeout === undefined) timeout = this.timeout ?? 0
     return await new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (!timeout)
@@ -146,14 +154,14 @@ export class Collector extends EventEmitter {
       let done = false
       const onend = (): void => {
         done = true
-        this.removeListener('end', onend)
+        this.off('end', onend)
         resolve(this)
       }
 
       this.on('end', onend)
       setTimeout(() => {
         if (!done) {
-          this.removeListener('end', onend)
+          this.off('end', onend)
           reject(new Error('Timeout'))
         }
       }, timeout)

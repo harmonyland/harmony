@@ -1,5 +1,9 @@
 import { GatewayEventHandler } from '../index.ts'
-import { GatewayEvents, TypingStartGuildData } from '../../types/gateway.ts'
+import {
+  GatewayEvents,
+  MessageDeletePayload,
+  TypingStartGuildData
+} from '../../types/gateway.ts'
 import { channelCreate } from './channelCreate.ts'
 import { channelDelete } from './channelDelete.ts'
 import { channelUpdate } from './channelUpdate.ts'
@@ -55,11 +59,22 @@ import {
 } from '../../utils/getChannelByType.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import { Interaction } from '../../structures/slash.ts'
+import { CommandContext } from '../../models/command.ts'
+import { RequestMethods } from '../../models/rest.ts'
+import { PartialInvitePayload } from '../../types/invite.ts'
+import { GuildChannels } from '../../types/guild.ts'
+import { applicationCommandCreate } from './applicationCommandCreate.ts'
+import { applicationCommandDelete } from './applicationCommandDelete.ts'
+import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
+import { SlashCommand } from '../../models/slashClient.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
 } = {
   READY: ready,
+  APPLICATION_COMMAND_CREATE: applicationCommandCreate,
+  APPLICATION_COMMAND_DELETE: applicationCommandDelete,
+  APPLICATION_COMMAND_UPDATE: applicationCommandUpdate,
   RECONNECT: reconnect,
   RESUMED: resume,
   CHANNEL_CREATE: channelCreate,
@@ -105,13 +120,15 @@ export interface VoiceServerUpdateData {
   guild: Guild
 }
 
-export interface ClientEvents {
+/** All Client Events */
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type ClientEvents = {
   /** When Client has successfully connected to Discord */
-  ready: []
-  /** When a successful reconnect has been made */
-  reconnect: []
+  ready: [shard: number]
+  /** When a reconnect was requested by Discord */
+  reconnect: [shard: number]
   /** When a successful session resume has been done */
-  resumed: []
+  resumed: [shard: number]
   /**
    * When a new Channel is created
    * @param channel New Channel object
@@ -169,25 +186,28 @@ export interface ClientEvents {
    * @param guild Guild in which Emoji was added
    * @param emoji The Emoji which was added
    */
-  guildEmojiAdd: [guild: Guild, emoji: Emoji]
+  guildEmojiAdd: [emoji: Emoji]
   /**
    * An Emoji was deleted from Guild
-   * @param guild Guild from which Emoji was deleted
    * @param emoji Emoji which was deleted
    */
-  guildEmojiDelete: [Guild, Emoji]
+  guildEmojiDelete: [emoji: Emoji]
   /**
    * An Emoji in a Guild was updated
-   * @param guild Guild in which Emoji was updated
    * @param before Emoji object before update
    * @param after Emoji object after update
    */
-  guildEmojiUpdate: [guild: Guild, before: Emoji, after: Emoji]
+  guildEmojiUpdate: [before: Emoji, after: Emoji]
   /**
    * Guild's Integrations were updated
    * @param guild The Guild object
    */
   guildIntegrationsUpdate: [guild: Guild]
+  /**
+   * Guild's Emojis were updated
+   * @param guild The Guild object
+   */
+  guildEmojisUpdate: [guild: Guild]
   /**
    * A new Member has joined a Guild
    * @param member The Member object
@@ -355,4 +375,42 @@ export interface ClientEvents {
    * @param payload Payload JSON of the event
    */
   raw: [evt: string, payload: any]
+
+  /**
+   * An uncached Message was deleted.
+   * @param payload Message Delete Payload
+   */
+  messageDeleteUncached: [payload: MessageDeletePayload]
+
+  guildMembersChunk: [
+    guild: Guild,
+    info: {
+      chunkIndex: number
+      chunkCount: number
+      members: string[]
+      presences: string[] | undefined
+    }
+  ]
+  guildMembersChunked: [guild: Guild, chunks: number]
+  rateLimit: [data: { method: RequestMethods; url: string; body: any }]
+  inviteDeleteUncached: [invite: PartialInvitePayload]
+  voiceStateRemoveUncached: [data: { guild: Guild; member: Member }]
+  userUpdateUncached: [user: User]
+  webhooksUpdateUncached: [guild: Guild, channelID: string]
+  guildRoleUpdateUncached: [role: Role]
+  guildMemberUpdateUncached: [member: Member]
+  guildMemberRemoveUncached: [member: Member]
+  channelUpdateUncached: [channel: GuildChannels]
+  slashCommandCreate: [cmd: SlashCommand]
+  slashCommandUpdate: [cmd: SlashCommand]
+  slashCommandDelete: [cmd: SlashCommand]
+  commandOwnerOnly: [ctx: CommandContext]
+  commandGuildOnly: [ctx: CommandContext]
+  commandDmOnly: [ctx: CommandContext]
+  commandNSFW: [ctx: CommandContext]
+  commandBotMissingPermissions: [ctx: CommandContext, missing: string[]]
+  commandUserMissingPermissions: [ctx: CommandContext, missing: string[]]
+  commandMissingArgs: [ctx: CommandContext]
+  commandUsed: [ctx: CommandContext]
+  commandError: [ctx: CommandContext, err: Error]
 }

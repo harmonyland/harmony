@@ -24,7 +24,7 @@ export const voiceStateUpdate: GatewayEventHandler = async (
       return gateway.client.emit('voiceStateRemoveUncached', { guild, member })
     }
     // No longer in the channel, so delete
-    await guild.voiceStates.delete(d.user_id)
+    await guild.voiceStates._delete(d.user_id)
     gateway.client.emit(
       'voiceStateRemove',
       (voiceState as unknown) as VoiceState

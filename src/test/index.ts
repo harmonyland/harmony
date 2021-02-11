@@ -4,7 +4,7 @@ import {
   Message,
   Member,
   Role,
-  GuildChannel,
+  GuildChannels,
   Embed,
   Guild,
   EveryChannelTypes,
@@ -12,6 +12,8 @@ import {
   GuildTextChannel
 } from '../../mod.ts'
 import { Collector } from '../models/collectors.ts'
+import { MessageAttachment } from '../structures/message.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -22,7 +24,8 @@ const client = new Client({
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
   //   port: 6379
-  // }) // Defaults to in-memory Caching
+  // }), // Defaults to in-memory Caching
+  // shardCount: 2
 })
 
 client.on('ready', () => {
@@ -88,7 +91,7 @@ client.on('messageCreate', async (msg: Message) => {
   } else if (msg.content === '!channels') {
     const col = await msg.guild?.channels.array()
     const data = col
-      ?.map((c: GuildChannel, i: number) => {
+      ?.map((c: GuildChannels, i: number) => {
         return `${i + 1}. ${c.name}`
       })
       .join('\n') as string
@@ -143,6 +146,71 @@ client.on('messageCreate', async (msg: Message) => {
     coll.on('collect', (msg) =>
       msg.channel.send(`[COL] Collect: ${msg.content}`)
     )
+  } else if (msg.content === '!attach') {
+    msg.channel.send({
+      file: await MessageAttachment.load(
+        'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1'
+      )
+    })
+  } else if (msg.content === '!emattach') {
+    msg.channel.send(
+      new Embed()
+        .attach(
+          await MessageAttachment.load(
+            'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1',
+            'file1.png'
+          ),
+          await MessageAttachment.load(
+            'https://cdn.discordapp.com/emojis/626139395623354403.png?v=1',
+            'file2.png'
+          )
+        )
+        .setImage('attachment://file1.png')
+        .setThumbnail('attachment://file2.png')
+    )
+  } else if (msg.content === '!textfile') {
+    msg.channel.send({
+      files: [
+        new MessageAttachment('hello.txt', 'world'),
+        new MessageAttachment('world.txt', 'hello')
+      ]
+    })
+  } else if (msg.content === '!join') {
+    if (msg.member === undefined) return
+    const vs = await msg.guild?.voiceStates.get(msg.member.id)
+    if (typeof vs !== 'object') return
+    vs.channel?.join()
+  } else if (msg.content === '!getOverwrites') {
+    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const overwrites = await (msg.channel as GuildTextChannel).overwritesFor(
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      msg.member as Member
+    )
+    msg.channel.send(
+      `Your permission overwrites:\n${overwrites
+        .map(
+          (over) =>
+            `ID: ${over.id}\nAllowed:\n${new Permissions(over.allow)
+              .toArray()
+              .join('\n')}\nDenied:\n${new Permissions(over.deny)
+              .toArray()
+              .join('\n')}`
+        )
+        .join('\n\n')}`
+    )
+  } else if (msg.content === '!getPermissions') {
+    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const permissions = await (msg.channel as GuildTextChannel).permissionsFor(
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      msg.member as Member
+    )
+    msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
   }
 })
 
@@ -155,7 +223,7 @@ client.on('messageReactionRemove', (reaction, user) => {
   }
 })
 
-client.connect(TOKEN, Intents.All)
+client.connect(TOKEN, Intents.None)
 
 // OLD: Was a way to reproduce reconnect infinite loop
 // setTimeout(() => {
