@@ -1,5 +1,10 @@
-import { AllowedMentionsPayload, EmbedPayload } from './channel.ts'
+import {
+  AllowedMentionsPayload,
+  ChannelTypes,
+  EmbedPayload
+} from './channel.ts'
 import { MemberPayload } from './guild.ts'
+import { RolePayload } from './role.ts'
 import { UserPayload } from './user.ts'
 
 export interface InteractionApplicationCommandOption {
@@ -13,6 +18,24 @@ export interface InteractionApplicationCommandOption {
   options?: InteractionApplicationCommandOption[]
 }
 
+export interface InteractionChannelPayload {
+  id: string
+  name: string
+  permissions: string
+  type: ChannelTypes
+}
+
+export interface Dict<T> {
+  [name: string]: T
+}
+
+export interface InteractionApplicationCommandResolvedPayload {
+  users?: Dict<UserPayload>
+  members?: Dict<MemberPayload>
+  channels?: Dict<InteractionChannelPayload>
+  roles?: Dict<RolePayload>
+}
+
 export interface InteractionApplicationCommandData {
   /** Name of the Slash Command */
   name: string
@@ -20,6 +43,8 @@ export interface InteractionApplicationCommandData {
   id: string
   /** Options (arguments) sent with Interaction */
   options: InteractionApplicationCommandOption[]
+  /** Resolved data for options in Slash Command */
+  resolved?: InteractionApplicationCommandResolvedPayload
 }
 
 export enum InteractionType {

@@ -79,8 +79,6 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     const shardCount = await this.getShardCount()
 
     const gw = new Gateway(this.client, [Number(id), shardCount])
-    gw.token = this.client.token
-    gw.intents = this.client.intents
     this.list.set(id.toString(), gw)
 
     gw.initWebsocket()

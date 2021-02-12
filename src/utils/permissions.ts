@@ -21,14 +21,14 @@ export class Permissions extends BitField {
 
   any(permission: PermissionResolvable, checkAdmin = true): boolean {
     return (
-      (checkAdmin && super.has(this.flags.ADMINISTRATOR)) ||
+      (checkAdmin && super.has(this.flags().ADMINISTRATOR)) ||
       super.any(permission as any)
     )
   }
 
   has(permission: PermissionResolvable, checkAdmin = true): boolean {
     return (
-      (checkAdmin && super.has(this.flags.ADMINISTRATOR)) ||
+      (checkAdmin && super.has(this.flags().ADMINISTRATOR)) ||
       super.has(permission as any)
     )
   }

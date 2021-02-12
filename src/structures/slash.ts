@@ -1,24 +1,31 @@
 import { Client } from '../models/client.ts'
 import {
   AllowedMentionsPayload,
+  ChannelTypes,
   EmbedPayload,
   MessageOptions
 } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
+  Dict,
   InteractionApplicationCommandData,
   InteractionApplicationCommandOption,
+  InteractionChannelPayload,
   InteractionPayload,
   InteractionResponseFlags,
   InteractionResponsePayload,
   InteractionResponseType,
-  InteractionType
+  InteractionType,
+  SlashCommandOptionType
 } from '../types/slash.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
+import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
+import { Role } from './role.ts'
 import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
@@ -54,8 +61,37 @@ export interface InteractionResponse extends InteractionMessageOptions {
   ephemeral?: boolean
 }
 
+/** Represents a Channel Object for an Option in Slash Command */
+export class InteractionChannel extends SnowflakeBase {
+  name: string
+  type: ChannelTypes
+  permissions: Permissions
+
+  constructor(client: Client, data: InteractionChannelPayload) {
+    super(client)
+    this.name = data.name
+    this.type = data.type
+    this.permissions = new Permissions(data.permissions)
+  }
+
+  /** Resolve to actual Channel object if present in Cache */
+  async resolve<T = Channel>(): Promise<T | undefined> {
+    return this.client.channels.get<T>(this.id)
+  }
+}
+
+export interface InteractionApplicationCommandResolved {
+  users: Dict<InteractionUser>
+  members: Dict<Member>
+  channels: Dict<InteractionChannel>
+  roles: Dict<Role>
+}
+
+export class InteractionUser extends User {
+  member?: Member
+}
+
 export class Interaction extends SnowflakeBase {
-  client: Client
   /** Type of Interaction */
   type: InteractionType
   /** Interaction Token */
@@ -72,6 +108,7 @@ export class Interaction extends SnowflakeBase {
   /** User object of who invoked Interaction */
   user: User
   responded: boolean = false
+  resolved: InteractionApplicationCommandResolved
 
   constructor(
     client: Client,
@@ -81,10 +118,10 @@ export class Interaction extends SnowflakeBase {
       guild?: Guild
       member?: Member
       user: User
+      resolved: InteractionApplicationCommandResolved
     }
   ) {
     super(client)
-    this.client = client
     this.type = data.type
     this.token = data.token
     this.member = others.member
@@ -93,6 +130,7 @@ export class Interaction extends SnowflakeBase {
     this.data = data.data
     this.guild = others.guild
     this.channel = others.channel
+    this.resolved = others.resolved
   }
 
   /** Name of the Command Used (may change with future additions to Interactions!) */
@@ -105,8 +143,16 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Get an option by name */
-  option<T = any>(name: string): T {
-    return this.options.find((e) => e.name === name)?.value
+  option<T>(name: string): T {
+    const op = this.options.find((e) => e.name === name)
+    if (op === undefined || op.value === undefined) return undefined as any
+    if (op.type === SlashCommandOptionType.USER)
+      return this.resolved.users[op.value] as any
+    else if (op.type === SlashCommandOptionType.ROLE)
+      return this.resolved.roles[op.value] as any
+    else if (op.type === SlashCommandOptionType.CHANNEL)
+      return this.resolved.channels[op.value] as any
+    else return op.value
   }
 
   /** Respond to an Interaction */
