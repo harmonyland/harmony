@@ -7,7 +7,6 @@ import {
 } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
-  Dict,
   InteractionApplicationCommandData,
   InteractionApplicationCommandOption,
   InteractionChannelPayload,
@@ -18,6 +17,7 @@ import {
   InteractionType,
   SlashCommandOptionType
 } from '../types/slash.ts'
+import { Dict } from '../utils/dict.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
 import { Channel } from './channel.ts'

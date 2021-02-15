@@ -1,3 +1,4 @@
+import { Dict } from '../utils/dict.ts'
 import {
   AllowedMentionsPayload,
   ChannelTypes,
@@ -23,10 +24,6 @@ export interface InteractionChannelPayload {
   name: string
   permissions: string
   type: ChannelTypes
-}
-
-export interface Dict<T> {
-  [name: string]: T
 }
 
 export interface InteractionApplicationCommandResolvedPayload {
