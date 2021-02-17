@@ -201,7 +201,7 @@ client.on('messageCreate', async (msg: Message) => {
         )
         .join('\n\n')}`
     )
-  } else if (msg.content === '!getPermissions') {
+  } else if (msg.content === '!perms') {
     if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
       return msg.channel.send("This isn't a guild text channel!")
     }
@@ -210,7 +210,11 @@ client.on('messageCreate', async (msg: Message) => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       msg.member as Member
     )
-    msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
+    msg.channel.send(
+      Object.entries(permissions.serialize())
+        .map((e) => `${e[0]}: ${e[1] === true ? '`✅`' : '`❌`'}`)
+        .join('\n')
+    )
   }
 })
 

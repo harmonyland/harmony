@@ -6,19 +6,21 @@ export type BitFieldResolvable =
   | string
   | string[]
   | BitField[]
+  | bigint
+  | Array<bigint>
 
 /** Bit Field utility to work with Bits and Flags */
 export class BitField {
-  #flags: { [name: string]: number } = {}
-  bitfield: number
+  #flags: { [name: string]: number | bigint } = {}
+  bitfield: bigint
 
-  constructor(flags: { [name: string]: number }, bits: any) {
+  constructor(flags: { [name: string]: number | bigint }, bits: any) {
     this.#flags = flags
     this.bitfield = BitField.resolve(this.#flags, bits)
   }
 
   any(bit: BitFieldResolvable): boolean {
-    return (this.bitfield & BitField.resolve(this.#flags, bit)) !== 0
+    return (this.bitfield & BitField.resolve(this.#flags, bit)) !== 0n
   }
 
   equals(bit: BitFieldResolvable): boolean {
@@ -42,7 +44,7 @@ export class BitField {
   }
 
   add(...bits: BitFieldResolvable[]): BitField {
-    let total = 0
+    let total = 0n
     for (const bit of bits) {
       total |= BitField.resolve(this.#flags, bit)
     }
@@ -53,7 +55,7 @@ export class BitField {
   }
 
   remove(...bits: BitFieldResolvable[]): BitField {
-    let total = 0
+    let total = 0n
     for (const bit of bits) {
       total |= BitField.resolve(this.#flags, bit)
     }
@@ -63,12 +65,12 @@ export class BitField {
     return this
   }
 
-  flags(): { [name: string]: number } {
+  flags(): { [name: string]: bigint | number } {
     return this.#flags
   }
 
-  serialize(...hasParams: any[]): { [key: string]: any } {
-    const serialized: { [key: string]: any } = {}
+  serialize(...hasParams: any[]): { [key: string]: boolean } {
+    const serialized: { [key: string]: boolean } = {}
     for (const [flag, bit] of Object.entries(this.#flags))
       serialized[flag] = this.has(
         BitField.resolve(this.#flags, bit),
@@ -83,11 +85,11 @@ export class BitField {
     )
   }
 
-  toJSON(): number {
-    return this.bitfield
+  toJSON(): string {
+    return this.bitfield.toString()
   }
 
-  valueOf(): number {
+  valueOf(): bigint {
     return this.bitfield
   }
 
@@ -95,9 +97,10 @@ export class BitField {
     yield* this.toArray()
   }
 
-  static resolve(flags: any, bit: BitFieldResolvable = 0): number {
-    if (typeof bit === 'string' && !isNaN(parseInt(bit))) return parseInt(bit)
-    if (typeof bit === 'number' && bit >= 0) return bit
+  static resolve(flags: any, bit: BitFieldResolvable = 0n): bigint {
+    if (typeof bit === 'bigint') return bit
+    if (typeof bit === 'string' && !isNaN(parseInt(bit))) return BigInt(bit)
+    if (typeof bit === 'number' && bit >= 0) return BigInt(bit)
     if (bit instanceof BitField) return this.resolve(flags, bit.bitfield)
     if (Array.isArray(bit))
       return (bit.map as any)((p: any) => this.resolve(flags, p)).reduce(
