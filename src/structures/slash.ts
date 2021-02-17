@@ -44,26 +44,20 @@ export interface InteractionMessageOptions {
   tts?: boolean
   flags?: number | InteractionResponseFlags[]
   allowedMentions?: AllowedMentionsPayload
-  /** Whether to reply with Source or not. True by default */
-  withSource?: boolean
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
   /** Type of Interaction Response */
   type?: InteractionResponseType
-  /**
-   * DEPRECATED: Use `ephemeral` instead.
-   *
-   * @deprecated
-   */
-  temp?: boolean
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
 }
 
 /** Represents a Channel Object for an Option in Slash Command */
 export class InteractionChannel extends SnowflakeBase {
+  /** Name of the Channel */
   name: string
+  /** Channel Type */
   type: ChannelTypes
   permissions: Permissions
 
@@ -98,17 +92,22 @@ export class Interaction extends SnowflakeBase {
   token: string
   /** Interaction ID */
   id: string
-  /** Data sent with Interaction. Only applies to Application Command, type may change in future. */
+  /** Data sent with Interaction. Only applies to Application Command */
   data?: InteractionApplicationCommandData
   /** Channel in which Interaction was initiated */
   channel?: TextChannel | GuildTextChannel
+  /** Guild in which Interaction was initiated */
   guild?: Guild
   /** Member object of who initiated the Interaction */
   member?: Member
   /** User object of who invoked Interaction */
   user: User
+  /** Whether we have responded to Interaction or not */
   responded: boolean = false
+  /** Resolved data for Snowflakes in Slash Command Arguments */
   resolved: InteractionApplicationCommandResolved
+  /** Whether response was deferred or not */
+  deferred: boolean = false
 
   constructor(
     client: Client,
@@ -159,19 +158,14 @@ export class Interaction extends SnowflakeBase {
   async respond(data: InteractionResponse): Promise<Interaction> {
     if (this.responded) throw new Error('Already responded to Interaction')
     let flags = 0
-    if (data.ephemeral === true || data.temp === true)
-      flags |= InteractionResponseFlags.EPHEMERAL
+    if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
     if (data.flags !== undefined) {
       if (Array.isArray(data.flags))
         flags = data.flags.reduce((p, a) => p | a, flags)
       else if (typeof data.flags === 'number') flags |= data.flags
     }
     const payload: InteractionResponsePayload = {
-      type:
-        data.type ??
-        (data.withSource === false
-          ? InteractionResponseType.CHANNEL_MESSAGE
-          : InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE),
+      type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data:
         data.type === undefined ||
         data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
@@ -195,14 +189,12 @@ export class Interaction extends SnowflakeBase {
     return this
   }
 
-  /** Acknowledge the Interaction */
-  async acknowledge(withSource?: boolean): Promise<Interaction> {
+  /** Defer the Interaction i.e. let the user know bot is processing and will respond later. You only have 15 minutes to edit the response! */
+  async defer(): Promise<Interaction> {
     await this.respond({
-      type:
-        withSource === true
-          ? InteractionResponseType.ACK_WITH_SOURCE
-          : InteractionResponseType.ACKNOWLEDGE
+      type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
     })
+    this.deferred = true
     return this
   }
 
@@ -228,14 +220,19 @@ export class Interaction extends SnowflakeBase {
     if (options === undefined) options = {}
     if (typeof content === 'string') Object.assign(options, { content })
 
-    await this.respond(
-      Object.assign(options, {
-        type:
-          options.withSource === false
-            ? InteractionResponseType.CHANNEL_MESSAGE
-            : InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+    if (this.deferred && this.responded) {
+      await this.editResponse({
+        content: options.content,
+        embeds: options.embeds,
+        flags: options.flags,
+        allowedMentions: options.allowedMentions
       })
-    )
+    } else
+      await this.respond(
+        Object.assign(options, {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+        })
+      )
 
     return this
   }
@@ -243,7 +240,9 @@ export class Interaction extends SnowflakeBase {
   /** Edit the original Interaction response */
   async editResponse(data: {
     content?: string
-    embeds?: Embed[]
+    embeds?: EmbedPayload[]
+    flags?: number | number[]
+    allowedMentions?: AllowedMentionsPayload
   }): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(
       this.client.user?.id as string,
@@ -252,7 +251,12 @@ export class Interaction extends SnowflakeBase {
     )
     await this.client.rest.patch(url, {
       content: data.content ?? '',
-      embeds: data.embeds ?? []
+      embeds: data.embeds ?? [],
+      flags:
+        typeof data.flags === 'object'
+          ? data.flags.reduce((p, a) => p | a, 0)
+          : data.flags,
+      allowed_mentions: data.allowedMentions
     })
     return this
   }

@@ -52,6 +52,7 @@ export enum InteractionType {
 }
 
 export interface InteractionMemberPayload extends MemberPayload {
+  /** Permissions of the Member who initiated Interaction (Guild-only) */
   permissions: string
 }
 
@@ -67,9 +68,7 @@ export interface InteractionPayload {
   /** ID of the Interaction */
   id: string
   /**
-   * Data sent with the interaction
-   *
-   * This can be undefined only when Interaction is not a Slash Command.
+   * Data sent with the interaction. Undefined only when Interaction is not Slash Command.*
    */
   data?: InteractionApplicationCommandData
   /** ID of the Guild in which Interaction was invoked */
@@ -86,7 +85,9 @@ export interface SlashCommandChoice {
 }
 
 export enum SlashCommandOptionType {
+  /** A sub command that is either a part of a root command or Sub Command Group */
   SUB_COMMAND = 1,
+  /** A sub command group that is present in root command's options */
   SUB_COMMAND_GROUP = 2,
   STRING = 3,
   INTEGER = 4,
@@ -112,28 +113,35 @@ export interface SlashCommandOption {
   options?: SlashCommandOption[]
 }
 
+/** Represents the Slash Command (Application Command) payload sent for creating/bulk editing. */
 export interface SlashCommandPartial {
+  /** Name of the Slash Command */
   name: string
+  /** Description of the Slash Command */
   description: string
+  /** Options (arguments, sub commands or group) of the Slash Command */
   options?: SlashCommandOption[]
 }
 
+/** Represents a fully qualified Slash Command (Application Command) payload. */
 export interface SlashCommandPayload extends SlashCommandPartial {
+  /** ID of the Slash Command */
   id: string
+  /** Application ID */
   application_id: string
 }
 
 export enum InteractionResponseType {
   /** Just ack a ping, Http-only. */
   PONG = 1,
-  /** Do nothing, just acknowledge the Interaction */
+  /** @deprecated **DEPRECATED:** Do nothing, just acknowledge the Interaction */
   ACKNOWLEDGE = 2,
-  /** Send a channel message without "<User> used /<Command> with <Bot>" */
+  /** @deprecated **DEPRECATED:** Send a channel message without "<User> used /<Command> with <Bot>" */
   CHANNEL_MESSAGE = 3,
-  /** Send a channel message with "<User> used /<Command> with <Bot>" */
+  /** Send a channel message as response. */
   CHANNEL_MESSAGE_WITH_SOURCE = 4,
-  /** Send nothing further, but send "<User> used /<Command> with <Bot>" */
-  ACK_WITH_SOURCE = 5
+  /** Let the user know bot is processing ("thinking") and you can edit the response later */
+  DEFERRED_CHANNEL_MESSAGE = 5
 }
 
 export interface InteractionResponsePayload {
@@ -155,6 +163,6 @@ export interface InteractionResponseDataPayload {
 }
 
 export enum InteractionResponseFlags {
-  /** A Message which is only visible to Interaction User, and is not saved on backend */
+  /** A Message which is only visible to Interaction User. */
   EPHEMERAL = 1 << 6
 }
