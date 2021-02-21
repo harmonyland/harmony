@@ -7,3 +7,5 @@ export type {
   Redis,
   RedisConnectOptions
 } from 'https://deno.land/x/redis@v0.14.1/mod.ts'
+export { walk } from 'https://deno.land/std@0.86.0/fs/walk.ts'
+export { join } from 'https://deno.land/std@0.86.0/path/mod.ts'
