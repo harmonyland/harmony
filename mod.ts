@@ -14,7 +14,8 @@ export {
   CommandBuilder,
   CommandCategory,
   CommandsManager,
-  CategoriesManager
+  CategoriesManager,
+  CommandsLoader
 } from './src/models/command.ts'
 export type { CommandContext, CommandOptions } from './src/models/command.ts'
 export {
