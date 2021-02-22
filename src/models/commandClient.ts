@@ -1,6 +1,5 @@
 import { Message } from '../structures/message.ts'
 import { GuildTextChannel } from '../structures/textChannel.ts'
-import { awaitSync } from '../utils/mixedPromise.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
   CategoriesManager,
@@ -129,35 +128,29 @@ export class CommandClient extends Client implements CommandClientOptions {
   async processMessage(msg: Message): Promise<any> {
     if (!this.allowBots && msg.author.bot === true) return
 
-    const isUserBlacklisted = await awaitSync(
-      this.isUserBlacklisted(msg.author.id)
-    )
-    if (isUserBlacklisted === true) return
+    const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
+    if (isUserBlacklisted) return
 
-    const isChannelBlacklisted = await awaitSync(
-      this.isChannelBlacklisted(msg.channel.id)
-    )
-    if (isChannelBlacklisted === true) return
+    const isChannelBlacklisted = await this.isChannelBlacklisted(msg.channel.id)
+    if (isChannelBlacklisted) return
 
     if (msg.guild !== undefined) {
-      const isGuildBlacklisted = await awaitSync(
-        this.isGuildBlacklisted(msg.guild.id)
-      )
-      if (isGuildBlacklisted === true) return
+      const isGuildBlacklisted = await this.isGuildBlacklisted(msg.guild.id)
+      if (isGuildBlacklisted) return
     }
 
     let prefix: string | string[] = []
     if (typeof this.prefix === 'string') prefix = [...prefix, this.prefix]
     else prefix = [...prefix, ...this.prefix]
 
-    const userPrefix = await awaitSync(this.getUserPrefix(msg.author.id))
+    const userPrefix = await this.getUserPrefix(msg.author.id)
     if (userPrefix !== undefined) {
       if (typeof userPrefix === 'string') prefix = [...prefix, userPrefix]
       else prefix = [...prefix, ...userPrefix]
     }
 
     if (msg.guild !== undefined) {
-      const guildPrefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
+      const guildPrefix = await this.getGuildPrefix(msg.guild.id)
       if (guildPrefix !== undefined) {
         if (typeof guildPrefix === 'string') prefix = [...prefix, guildPrefix]
         else prefix = [...prefix, ...guildPrefix]
@@ -361,10 +354,10 @@ export class CommandClient extends Client implements CommandClientOptions {
     try {
       this.emit('commandUsed', ctx)
 
-      const beforeExecute = await awaitSync(command.beforeExecute(ctx))
+      const beforeExecute = await command.beforeExecute(ctx)
       if (beforeExecute === false) return
 
-      const result = await awaitSync(command.execute(ctx))
+      const result = await command.execute(ctx)
       command.afterExecute(ctx, result)
     } catch (e) {
       this.emit('commandError', ctx, e)
