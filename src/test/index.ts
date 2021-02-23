@@ -211,6 +211,14 @@ client.on('messageCreate', async (msg: Message) => {
       msg.member as Member
     )
     msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
+  } else if (msg.content === '!addAllRoles') {
+    const roles = await msg.guild?.roles.array()
+    if (roles !== undefined) {
+      roles.forEach(async (role) => {
+        await msg.member?.roles.add(role)
+        console.log(role)
+      })
+    }
   }
 })
 

@@ -104,11 +104,11 @@ export class BitField {
     if (bit instanceof BitField) return this.resolve(flags, bit.bitfield)
     if (Array.isArray(bit))
       return (bit.map as any)((p: any) => this.resolve(flags, p)).reduce(
-        (prev: any, p: any) => prev | p,
+        (prev: bigint, p: bigint) => prev | p,
         0
       )
     if (typeof bit === 'string' && typeof flags[bit] !== 'undefined')
-      return flags[bit]
+      return BigInt(flags[bit])
     const error = new RangeError('BITFIELD_INVALID')
     throw error
   }
