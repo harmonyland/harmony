@@ -66,8 +66,7 @@ export class GuildChannelsManager extends BaseChildManager<
   async create(options: CreateChannelOptions): Promise<GuildChannels> {
     if (options.name === undefined)
       throw new Error('name is required for GuildChannelsManager#create')
-    const res = ((await this.client.rest.post(GUILD_CHANNELS(this.guild.id)),
-    {
+    const res = ((await this.client.rest.post(GUILD_CHANNELS(this.guild.id), {
       name: options.name,
       type: options.type,
       topic: options.topic,
@@ -83,7 +82,7 @@ export class GuildChannelsManager extends BaseChildManager<
           ? options.parent.id
           : options.parent,
       nsfw: options.nsfw
-    }) as unknown) as GuildChannelPayload
+    })) as unknown) as GuildChannelPayload
 
     await this.set(res.id, res)
     const channel = await this.get(res.id)
