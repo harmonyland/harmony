@@ -37,6 +37,7 @@ export interface DiscordAPIErrorPayload {
   code?: number
   message?: string
   errors: object
+  requestData: { [key: string]: any }
 }
 
 export class DiscordAPIError extends Error {
@@ -319,7 +320,9 @@ export class RESTManager {
         }
       }
       const form = new FormData()
-      files.forEach((file, index) => form.append(`file${index + 1}`, file.blob, file.name))
+      files.forEach((file, index) =>
+        form.append(`file${index + 1}`, file.blob, file.name)
+      )
       const json = JSON.stringify(body)
       form.append('payload_json', json)
       if (body === undefined) body = {}
@@ -465,7 +468,8 @@ export class RESTManager {
         ).map((entry) => {
           return [entry[0], entry[1]._errors ?? []]
         })
-      )
+      ),
+      requestData: data
     }
 
     // if (typeof error.errors === 'object') {
