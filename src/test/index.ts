@@ -219,6 +219,14 @@ client.on('messageCreate', async (msg: Message) => {
         console.log(role)
       })
     }
+  } else if (msg.content === '!createAndAddRole') {
+    if (msg.guild !== undefined) {
+      const role = await msg.guild.roles.create({
+        name: 'asdf',
+        permissions: 0
+      })
+      await msg.member?.roles.add(role)
+    }
   }
 })
 

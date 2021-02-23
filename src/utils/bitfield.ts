@@ -14,7 +14,10 @@ export class BitField {
   #flags: { [name: string]: number | bigint } = {}
   bitfield: bigint
 
-  constructor(flags: { [name: string]: number | bigint }, bits: any) {
+  constructor(
+    flags: { [name: string]: number | bigint },
+    bits: BitFieldResolvable
+  ) {
     this.#flags = flags
     this.bitfield = BitField.resolve(this.#flags, bits)
   }
@@ -105,7 +108,7 @@ export class BitField {
     if (Array.isArray(bit))
       return (bit.map as any)((p: any) => this.resolve(flags, p)).reduce(
         (prev: bigint, p: bigint) => prev | p,
-        0
+        0n
       )
     if (typeof bit === 'string' && typeof flags[bit] !== 'undefined')
       return BigInt(flags[bit])
