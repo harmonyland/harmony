@@ -227,6 +227,13 @@ client.on('messageCreate', async (msg: Message) => {
       })
       await msg.member?.roles.add(role)
     }
+  } else if (msg.content === '!roles') {
+    let buf = 'Roles:'
+    if (msg.member === undefined) return
+    for await (const role of msg.member.roles) {
+      buf += `\n${role.name}`
+    }
+    msg.reply(buf)
   }
 })
 
