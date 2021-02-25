@@ -30,6 +30,8 @@
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
+You can also check(not import) the module in https://nest.land/package/harmony (link for importing is in the site).
+
 For a quick example, run this:
 
 ```bash
