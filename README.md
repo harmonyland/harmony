@@ -38,7 +38,7 @@ For a quick example, run this:
 deno run --allow-net https://deno.land/x/harmony/examples/ping.ts
 ```
 
-And input your bot's token and Intents.
+And input your bot's token.
 
 Here is a small example of how to use harmony,
 
