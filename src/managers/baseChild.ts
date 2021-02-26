@@ -39,4 +39,11 @@ export class BaseChildManager<T, T2> {
     }
     return collection
   }
+
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<T2> {
+    const arr = (await this.array()) ?? []
+    const { readable, writable } = new TransformStream()
+    arr.forEach((el: unknown) => writable.getWriter().write(el))
+    yield* readable.getIterator()
+  }
 }
