@@ -19,5 +19,6 @@
   "checkTests": false,
   "checkInstallation": false,
   "check": true,
-  "unlisted": false
+  "unlisted": false,
+  "ignore": []
 }
