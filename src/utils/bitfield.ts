@@ -14,7 +14,10 @@ export class BitField {
   #flags: { [name: string]: number | bigint } = {}
   bitfield: bigint
 
-  constructor(flags: { [name: string]: number | bigint }, bits: any) {
+  constructor(
+    flags: { [name: string]: number | bigint },
+    bits: BitFieldResolvable
+  ) {
     this.#flags = flags
     this.bitfield = BitField.resolve(this.#flags, bits)
   }
@@ -104,11 +107,11 @@ export class BitField {
     if (bit instanceof BitField) return this.resolve(flags, bit.bitfield)
     if (Array.isArray(bit))
       return (bit.map as any)((p: any) => this.resolve(flags, p)).reduce(
-        (prev: any, p: any) => prev | p,
-        0
+        (prev: bigint, p: bigint) => prev | p,
+        0n
       )
     if (typeof bit === 'string' && typeof flags[bit] !== 'undefined')
-      return flags[bit]
+      return BigInt(flags[bit])
     const error = new RangeError('BITFIELD_INVALID')
     throw error
   }

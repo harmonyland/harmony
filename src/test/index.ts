@@ -215,6 +215,30 @@ client.on('messageCreate', async (msg: Message) => {
         .map((e) => `${e[0]}: ${e[1] === true ? '`✅`' : '`❌`'}`)
         .join('\n')
     )
+    msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
+  } else if (msg.content === '!addAllRoles') {
+    const roles = await msg.guild?.roles.array()
+    if (roles !== undefined) {
+      roles.forEach(async (role) => {
+        await msg.member?.roles.add(role)
+        console.log(role)
+      })
+    }
+  } else if (msg.content === '!createAndAddRole') {
+    if (msg.guild !== undefined) {
+      const role = await msg.guild.roles.create({
+        name: 'asdf',
+        permissions: 0
+      })
+      await msg.member?.roles.add(role)
+    }
+  } else if (msg.content === '!roles') {
+    let buf = 'Roles:'
+    if (msg.member === undefined) return
+    for await (const role of msg.member.roles) {
+      buf += `\n${role.name}`
+    }
+    msg.reply(buf)
   }
 })
 

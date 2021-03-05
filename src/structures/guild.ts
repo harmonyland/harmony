@@ -32,9 +32,13 @@ import { User } from './user.ts'
 import { Application } from './application.ts'
 import {
   GUILD_BAN,
+  GUILD_BANNER,
   GUILD_BANS,
+  GUILD_DISCOVERY_SPLASH,
+  GUILD_ICON,
   GUILD_INTEGRATIONS,
-  GUILD_PRUNE
+  GUILD_PRUNE,
+  GUILD_SPLASH
 } from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
 import { RequestMembersOptions } from '../gateway/index.ts'
@@ -42,6 +46,8 @@ import { GuildPresencesManager } from '../managers/presences.ts'
 import { TemplatePayload } from '../types/template.ts'
 import { Template } from './template.ts'
 import { DiscordAPIError } from '../models/rest.ts'
+import { ImageFormats, ImageSize } from '../types/cdn.ts'
+import { ImageURL } from './cdn.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -256,6 +262,58 @@ export class Guild extends SnowflakeBase {
       this.approximatePresenceCount =
         data.approximate_presence_count ?? this.approximatePresenceCount
     }
+  }
+
+  /**
+   * Gets guild icon URL
+   */
+  iconURL(
+    format: ImageFormats = 'png',
+    size: ImageSize = 512
+  ): string | undefined {
+    return this.icon != null
+      ? `${ImageURL(GUILD_ICON(this.id, this.icon), format, size)}`
+      : undefined
+  }
+
+  /**
+   * Gets guild splash URL
+   */
+  splashURL(
+    format: ImageFormats = 'png',
+    size: ImageSize = 512
+  ): string | undefined {
+    return this.splash != null
+      ? `${ImageURL(GUILD_SPLASH(this.id, this.splash), format, size)}`
+      : undefined
+  }
+
+  /**
+   * Gets guild discover splash URL
+   */
+  discoverSplashURL(
+    format: ImageFormats = 'png',
+    size: ImageSize = 512
+  ): string | undefined {
+    return this.discoverySplash != null
+      ? `${ImageURL(
+          GUILD_DISCOVERY_SPLASH(this.id, this.discoverySplash),
+          format,
+          size
+        )}`
+      : undefined
+  }
+
+  /**
+   * Gets guild banner URL
+   */
+  bannerURL(
+    format: ImageFormats = 'png',
+    size: ImageSize = 512
+  ): string | undefined {
+    return this.banner != null
+      ? `${ImageURL(GUILD_BANNER(this.id, this.banner), format, size)}`
+      : undefined
   }
 
   /**

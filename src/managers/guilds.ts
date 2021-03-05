@@ -147,6 +147,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
 
   /** Sets a value to Cache */
   async set(key: string, value: GuildPayload): Promise<any> {
+    value = { ...value }
     if ('roles' in value) value.roles = []
     if ('emojis' in value) value.emojis = []
     if ('members' in value) value.members = []
