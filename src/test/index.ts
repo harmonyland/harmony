@@ -117,7 +117,8 @@ client.on('messageCreate', async (msg: Message) => {
       msg.channel.send('Failed...')
     }
   } else if (msg.content === '!react') {
-    msg.addReaction('🤔')
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    msg.addReaction('😂')
   } else if (msg.content === '!wait_for') {
     msg.channel.send('Send anything!')
     const [receivedMsg] = await client.waitFor(

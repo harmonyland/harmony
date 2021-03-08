@@ -145,12 +145,15 @@ export class TextChannel extends Channel {
     emoji: Emoji | string
   ): Promise<void> {
     if (emoji instanceof Emoji) {
-      emoji = emoji.getEmojiString
+      emoji = `${emoji.name}:${emoji.id}`
+    } else if (emoji.length > 4) {
+      if (!isNaN(Number(emoji))) {
+        const findEmoji = await this.client.emojis.get(emoji)
+        if (findEmoji !== undefined) emoji = `${findEmoji.name}:${findEmoji.id}`
+        else throw new Error(`Emoji not found: ${emoji}`)
+      }
     }
-    if (message instanceof Message) {
-      message = message.id
-    }
-
+    if (message instanceof Message) message = message.id
     const encodedEmoji = encodeURI(emoji)
 
     await this.client.rest.put(
@@ -165,11 +168,15 @@ export class TextChannel extends Channel {
     user?: User | Member | string
   ): Promise<void> {
     if (emoji instanceof Emoji) {
-      emoji = emoji.getEmojiString
+      emoji = `${emoji.name}:${emoji.id}`
+    } else if (emoji.length > 4) {
+      if (!isNaN(Number(emoji))) {
+        const findEmoji = await this.client.emojis.get(emoji)
+        if (findEmoji !== undefined) emoji = `${findEmoji.name}:${findEmoji.id}`
+        else throw new Error(`Emoji not found: ${emoji}`)
+      }
     }
-    if (message instanceof Message) {
-      message = message.id
-    }
+    if (message instanceof Message) message = message.id
     if (user !== undefined) {
       if (typeof user !== 'string') {
         user = user.id
