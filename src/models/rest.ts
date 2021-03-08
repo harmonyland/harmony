@@ -270,7 +270,7 @@ export class RESTManager {
     const headers: RequestHeaders = {
       'User-Agent':
         this.userAgent ??
-        `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
+        `DiscordBot (harmony, https://github.com/harmonyland/harmony)`
     }
 
     if (this.token !== undefined) {
