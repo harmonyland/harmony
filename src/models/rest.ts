@@ -47,33 +47,26 @@ export class DiscordAPIError extends Error {
 
   constructor(error: string | DiscordAPIErrorPayload) {
     super()
-    const err: any = typeof error === 'object' ? { ...error } : {}
-    delete err.url
-    delete err.status
-    delete err.message
-
     const fmt = Object.entries(
       typeof error === 'object' ? simplifyAPIError(error.errors) : {}
     )
     this.message =
       typeof error === 'string'
-        ? error
-        : `\n${error.method} ${error.url.slice(7)} returned ${error.status}\n${
-            error.message
-          }${
+        ? `${error} `
+        : `\n${error.method} ${error.url.slice(7)} returned ${error.status}\n(${
+            error.code ?? 'unknown'
+          }) ${error.message}${
             fmt.length === 0
               ? ''
-              : fmt
+              : `\n${fmt
                   .map(
                     (e) =>
-                      `    at ${e[0]}:\n${e[1]
-                        .map((e) => `      - ${e}`)
+                      `  at ${e[0]}:\n${e[1]
+                        .map((e) => `   - ${e}`)
                         .join('\n')}`
                   )
-                  .join('\n')
-          } ${Deno.inspect(err, {
-            depth: Infinity
-          })}`
+                  .join('\n')}\n`
+          }`
     if (typeof error === 'object') this.error = error
   }
 }
