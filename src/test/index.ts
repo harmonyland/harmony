@@ -117,7 +117,16 @@ client.on('messageCreate', async (msg: Message) => {
       msg.channel.send('Failed...')
     }
   } else if (msg.content === '!react') {
-    msg.addReaction('🤔')
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    msg.addReaction('😂')
+    msg.channel.send('x'.repeat(6969), {
+      embed: new Embed()
+        .setTitle('pepega'.repeat(6969))
+        .setDescription('pepega'.repeat(6969))
+        .addField('uwu', 'uwu'.repeat(6969))
+        .addField('uwu', 'uwu'.repeat(6969))
+        .setFooter('uwu'.repeat(6969))
+    })
   } else if (msg.content === '!wait_for') {
     msg.channel.send('Send anything!')
     const [receivedMsg] = await client.waitFor(
