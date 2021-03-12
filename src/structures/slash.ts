@@ -147,7 +147,9 @@ export class Interaction extends SnowflakeBase {
     const op = this.options.find((e) => e.name === name)
     if (op === undefined || op.value === undefined) return undefined as any
     if (op.type === SlashCommandOptionType.USER)
-      return this.resolved.users[op.value] as any
+      const u: InteractionUser = this.resolved.users[op.value] as any
+      if (this.resolved.members[op.value] !== undefined) u.member = this.resolved.members[op.value] as any
+      return u
     else if (op.type === SlashCommandOptionType.ROLE)
       return this.resolved.roles[op.value] as any
     else if (op.type === SlashCommandOptionType.CHANNEL)
