@@ -63,6 +63,7 @@ export class InteractionChannel extends SnowflakeBase {
 
   constructor(client: Client, data: InteractionChannelPayload) {
     super(client)
+    this.id = data.id
     this.name = data.name
     this.type = data.type
     this.permissions = new Permissions(data.permissions)
