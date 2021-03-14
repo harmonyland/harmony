@@ -7,7 +7,6 @@ import {
 import { GatewayResponse } from '../types/gatewayResponse.ts'
 import {
   GatewayOpcodes,
-  GatewayIntents,
   GatewayCloseCodes,
   IdentityPayload,
   StatusUpdatePayload,
@@ -57,8 +56,6 @@ export type GatewayTypedEvents = {
  */
 export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   websocket?: WebSocket
-  token?: string
-  intents?: GatewayIntents[]
   connected = false
   initialized = false
   heartbeatInterval = 0
@@ -157,7 +154,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
           const handler = gatewayHandlers[t]
 
-          if (handler !== undefined) {
+          if (handler !== undefined && d !== null) {
             handler(this, d)
           }
         }
@@ -269,8 +266,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   private async sendIdentify(forceNewSession?: boolean): Promise<void> {
-    if (typeof this.token !== 'string') throw new Error('Token not specified')
-    if (typeof this.intents !== 'object')
+    if (typeof this.client.token !== 'string')
+      throw new Error('Token not specified')
+    if (typeof this.client.intents !== 'object')
       throw new Error('Intents not specified')
 
     if (this.client.fetchGatewayInfo === true) {
@@ -300,7 +298,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     }
 
     const payload: IdentityPayload = {
-      token: this.token,
+      token: this.client.token,
       properties: {
         $os: this.client.clientProperties.os ?? Deno.build.os,
         $browser: this.client.clientProperties.browser ?? 'harmony',
@@ -311,7 +309,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         this.shards === undefined
           ? [0, 1]
           : [this.shards[0] ?? 0, this.shards[1] ?? 1],
-      intents: this.intents.reduce(
+      intents: this.client.intents.reduce(
         (previous, current) => previous | current,
         0
       ),
@@ -327,9 +325,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   private async sendResume(): Promise<void> {
-    if (typeof this.token !== 'string') throw new Error('Token not specified')
-    if (typeof this.intents !== 'object')
-      throw new Error('Intents not specified')
+    if (typeof this.client.token !== 'string')
+      throw new Error('Token not specified')
 
     if (this.sessionID === undefined) {
       this.sessionID = await this.cache.get(
@@ -348,7 +345,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     const resumePayload = {
       op: GatewayOpcodes.RESUME,
       d: {
-        token: this.token,
+        token: this.client.token,
         session_id: this.sessionID,
         seq: this.sequenceID ?? null
       }

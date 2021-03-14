@@ -201,7 +201,7 @@ client.on('messageCreate', async (msg: Message) => {
         )
         .join('\n\n')}`
     )
-  } else if (msg.content === '!getPermissions') {
+  } else if (msg.content === '!perms') {
     if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
       return msg.channel.send("This isn't a guild text channel!")
     }
@@ -210,30 +210,11 @@ client.on('messageCreate', async (msg: Message) => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       msg.member as Member
     )
-    msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
-  } else if (msg.content === '!addAllRoles') {
-    const roles = await msg.guild?.roles.array()
-    if (roles !== undefined) {
-      roles.forEach(async (role) => {
-        await msg.member?.roles.add(role)
-        console.log(role)
-      })
-    }
-  } else if (msg.content === '!createAndAddRole') {
-    if (msg.guild !== undefined) {
-      const role = await msg.guild.roles.create({
-        name: 'asdf',
-        permissions: 0
-      })
-      await msg.member?.roles.add(role)
-    }
-  } else if (msg.content === '!roles') {
-    let buf = 'Roles:'
-    if (msg.member === undefined) return
-    for await (const role of msg.member.roles) {
-      buf += `\n${role.name}`
-    }
-    msg.reply(buf)
+    msg.channel.send(
+      Object.entries(permissions.serialize())
+        .map((e) => `${e[0]}: ${e[1] === true ? '`✅`' : '`❌`'}`)
+        .join('\n')
+    )
   }
 })
 

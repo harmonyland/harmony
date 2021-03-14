@@ -1,21 +1,33 @@
 import { Client } from '../models/client.ts'
-import { MessageOptions } from '../types/channel.ts'
+import {
+  AllowedMentionsPayload,
+  ChannelTypes,
+  EmbedPayload,
+  MessageOptions
+} from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
-  InteractionData,
-  InteractionOption,
+  InteractionApplicationCommandData,
+  InteractionApplicationCommandOption,
+  InteractionChannelPayload,
   InteractionPayload,
+  InteractionResponseFlags,
   InteractionResponsePayload,
-  InteractionResponseType
+  InteractionResponseType,
+  InteractionType,
+  SlashCommandOptionType
 } from '../types/slash.ts'
+import { Dict } from '../utils/dict.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
+import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
+import { Role } from './role.ts'
 import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
-import { Webhook } from './webhook.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
@@ -25,72 +37,133 @@ interface WebhookMessageOptions extends MessageOptions {
 
 type AllWebhookMessageOptions = string | WebhookMessageOptions
 
-export interface InteractionResponse {
-  type?: InteractionResponseType
+/** Interaction Message related Options */
+export interface InteractionMessageOptions {
   content?: string
-  embeds?: Embed[]
+  embeds?: EmbedPayload[]
   tts?: boolean
-  flags?: number
-  temp?: boolean
-  allowedMentions?: {
-    parse?: string
-    roles?: string[]
-    users?: string[]
-    everyone?: boolean
+  flags?: number | InteractionResponseFlags[]
+  allowedMentions?: AllowedMentionsPayload
+}
+
+export interface InteractionResponse extends InteractionMessageOptions {
+  /** Type of Interaction Response */
+  type?: InteractionResponseType
+  /** Whether the Message Response should be Ephemeral (only visible to User) or not */
+  ephemeral?: boolean
+}
+
+/** Represents a Channel Object for an Option in Slash Command */
+export class InteractionChannel extends SnowflakeBase {
+  /** Name of the Channel */
+  name: string
+  /** Channel Type */
+  type: ChannelTypes
+  permissions: Permissions
+
+  constructor(client: Client, data: InteractionChannelPayload) {
+    super(client)
+    this.name = data.name
+    this.type = data.type
+    this.permissions = new Permissions(data.permissions)
+  }
+
+  /** Resolve to actual Channel object if present in Cache */
+  async resolve<T = Channel>(): Promise<T | undefined> {
+    return this.client.channels.get<T>(this.id)
   }
 }
 
+export interface InteractionApplicationCommandResolved {
+  users: Dict<InteractionUser>
+  members: Dict<Member>
+  channels: Dict<InteractionChannel>
+  roles: Dict<Role>
+}
+
+export class InteractionUser extends User {
+  member?: Member
+}
+
 export class Interaction extends SnowflakeBase {
-  /** This will be `SlashClient` in case of `SlashClient#verifyServerRequest` */
-  client: Client
-  type: number
+  /** Type of Interaction */
+  type: InteractionType
+  /** Interaction Token */
   token: string
+  /** Interaction ID */
   id: string
-  data: InteractionData
-  channel: GuildTextChannel
-  guild: Guild
-  member: Member
-  _savedHook?: Webhook
-  _respond?: (data: InteractionResponsePayload) => unknown
+  /** Data sent with Interaction. Only applies to Application Command */
+  data?: InteractionApplicationCommandData
+  /** Channel in which Interaction was initiated */
+  channel?: TextChannel | GuildTextChannel
+  /** Guild in which Interaction was initiated */
+  guild?: Guild
+  /** Member object of who initiated the Interaction */
+  member?: Member
+  /** User object of who invoked Interaction */
+  user: User
+  /** Whether we have responded to Interaction or not */
+  responded: boolean = false
+  /** Resolved data for Snowflakes in Slash Command Arguments */
+  resolved: InteractionApplicationCommandResolved
+  /** Whether response was deferred or not */
+  deferred: boolean = false
 
   constructor(
     client: Client,
     data: InteractionPayload,
     others: {
-      channel: GuildTextChannel
-      guild: Guild
-      member: Member
+      channel?: TextChannel | GuildTextChannel
+      guild?: Guild
+      member?: Member
+      user: User
+      resolved: InteractionApplicationCommandResolved
     }
   ) {
     super(client)
-    this.client = client
     this.type = data.type
     this.token = data.token
     this.member = others.member
     this.id = data.id
+    this.user = others.user
     this.data = data.data
     this.guild = others.guild
     this.channel = others.channel
+    this.resolved = others.resolved
   }
 
-  get user(): User {
-    return this.member.user
+  /** Name of the Command Used (may change with future additions to Interactions!) */
+  get name(): string | undefined {
+    return this.data?.name
   }
 
-  get name(): string {
-    return this.data.name
+  get options(): InteractionApplicationCommandOption[] {
+    return this.data?.options ?? []
   }
 
-  get options(): InteractionOption[] {
-    return this.data.options ?? []
-  }
-
-  option<T = any>(name: string): T {
-    return this.options.find((e) => e.name === name)?.value
+  /** Get an option by name */
+  option<T>(name: string): T {
+    const op = this.options.find((e) => e.name === name)
+    if (op === undefined || op.value === undefined) return undefined as any
+    if (op.type === SlashCommandOptionType.USER)
+      return this.resolved.users[op.value] as any
+    else if (op.type === SlashCommandOptionType.ROLE)
+      return this.resolved.roles[op.value] as any
+    else if (op.type === SlashCommandOptionType.CHANNEL)
+      return this.resolved.channels[op.value] as any
+    else return op.value
   }
 
   /** Respond to an Interaction */
   async respond(data: InteractionResponse): Promise<Interaction> {
+    if (this.responded) throw new Error('Already responded to Interaction')
+    let flags = 0
+    if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
+    if (data.flags !== undefined) {
+      if (Array.isArray(data.flags))
+        flags = data.flags.reduce((p, a) => p | a, flags)
+      else if (typeof data.flags === 'number') flags |= data.flags
+    }
     const payload: InteractionResponsePayload = {
       type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data:
@@ -101,8 +174,8 @@ export class Interaction extends SnowflakeBase {
               content: data.content ?? '',
               embeds: data.embeds,
               tts: data.tts ?? false,
-              flags: data.temp === true ? 64 : data.flags ?? undefined,
-              allowed_mentions: (data.allowedMentions ?? undefined) as any
+              flags,
+              allowed_mentions: data.allowedMentions ?? undefined
             }
           : undefined
     }
@@ -111,6 +184,55 @@ export class Interaction extends SnowflakeBase {
       INTERACTION_CALLBACK(this.id, this.token),
       payload
     )
+    this.responded = true
+
+    return this
+  }
+
+  /** Defer the Interaction i.e. let the user know bot is processing and will respond later. You only have 15 minutes to edit the response! */
+  async defer(): Promise<Interaction> {
+    await this.respond({
+      type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
+    })
+    this.deferred = true
+    return this
+  }
+
+  /** Reply with a Message to the Interaction */
+  async reply(content: string): Promise<Interaction>
+  async reply(options: InteractionMessageOptions): Promise<Interaction>
+  async reply(
+    content: string,
+    options: InteractionMessageOptions
+  ): Promise<Interaction>
+  async reply(
+    content: string | InteractionMessageOptions,
+    messageOptions?: InteractionMessageOptions
+  ): Promise<Interaction> {
+    let options: InteractionMessageOptions | undefined =
+      typeof content === 'object' ? content : messageOptions
+    if (
+      typeof content === 'object' &&
+      messageOptions !== undefined &&
+      options !== undefined
+    )
+      Object.assign(options, messageOptions)
+    if (options === undefined) options = {}
+    if (typeof content === 'string') Object.assign(options, { content })
+
+    if (this.deferred && this.responded) {
+      await this.editResponse({
+        content: options.content,
+        embeds: options.embeds,
+        flags: options.flags,
+        allowedMentions: options.allowedMentions
+      })
+    } else
+      await this.respond(
+        Object.assign(options, {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+        })
+      )
 
     return this
   }
@@ -118,7 +240,9 @@ export class Interaction extends SnowflakeBase {
   /** Edit the original Interaction response */
   async editResponse(data: {
     content?: string
-    embeds?: Embed[]
+    embeds?: EmbedPayload[]
+    flags?: number | number[]
+    allowedMentions?: AllowedMentionsPayload
   }): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(
       this.client.user?.id as string,
@@ -127,7 +251,12 @@ export class Interaction extends SnowflakeBase {
     )
     await this.client.rest.patch(url, {
       content: data.content ?? '',
-      embeds: data.embeds ?? []
+      embeds: data.embeds ?? [],
+      flags:
+        typeof data.flags === 'object'
+          ? data.flags.reduce((p, a) => p | a, 0)
+          : data.flags,
+      allowed_mentions: data.allowedMentions
     })
     return this
   }
@@ -234,6 +363,7 @@ export class Interaction extends SnowflakeBase {
     return this
   }
 
+  /** Delete a follow-up Message */
   async deleteMessage(msg: Message | string): Promise<Interaction> {
     await this.client.rest.delete(
       WEBHOOK_MESSAGE(
