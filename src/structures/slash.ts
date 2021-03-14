@@ -108,6 +108,8 @@ export class Interaction extends SnowflakeBase {
   resolved: InteractionApplicationCommandResolved
   /** Whether response was deferred or not */
   deferred: boolean = false
+  _httpRespond?: (d: InteractionResponsePayload) => unknown
+  _httpResponded?: boolean
 
   constructor(
     client: Client,
@@ -180,10 +182,14 @@ export class Interaction extends SnowflakeBase {
           : undefined
     }
 
-    await this.client.rest.post(
-      INTERACTION_CALLBACK(this.id, this.token),
-      payload
-    )
+    if (this._httpRespond !== undefined && this._httpResponded !== true) {
+      this._httpResponded = true
+      await this._httpRespond(payload)
+    } else
+      await this.client.rest.post(
+        INTERACTION_CALLBACK(this.id, this.token),
+        payload
+      )
     this.responded = true
 
     return this
