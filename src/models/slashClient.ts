@@ -12,8 +12,7 @@ import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
-import { verify as edverify } from 'https://deno.land/x/ed25519/mod.ts'
-import { Buffer } from 'https://deno.land/std@0.80.0/node/buffer.ts'
+import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -369,6 +368,8 @@ export interface SlashOptions {
   publicKey?: string
 }
 
+const encoder = new TextEncoder()
+
 export class SlashClient {
   id: string | (() => string)
   client?: Client
@@ -503,24 +504,21 @@ export class SlashClient {
   }
 
   async verifyKey(
-    rawBody: string | Uint8Array | Buffer,
-    signature: string,
-    timestamp: string
+    rawBody: string | Uint8Array,
+    signature: string | Uint8Array,
+    timestamp: string | Uint8Array
   ): Promise<boolean> {
     if (this.publicKey === undefined)
       throw new Error('Public Key is not present')
-    return edverify(
-      signature,
-      Buffer.concat([
-        Buffer.from(timestamp, 'utf-8'),
-        Buffer.from(
-          rawBody instanceof Uint8Array
-            ? new TextDecoder().decode(rawBody)
-            : rawBody
-        )
-      ]),
-      this.publicKey
-    ).catch(() => false)
+
+    const fullBody = new Uint8Array([
+      ...(typeof timestamp === 'string'
+        ? encoder.encode(timestamp)
+        : timestamp),
+      ...(typeof rawBody === 'string' ? encoder.encode(rawBody) : rawBody)
+    ])
+
+    return edverify(signature, fullBody, this.publicKey).catch(() => false)
   }
 
   async verifyOpineRequest(req: any): Promise<boolean> {
