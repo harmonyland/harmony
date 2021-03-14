@@ -41,6 +41,7 @@ export interface InteractionResponse {
 }
 
 export class Interaction extends SnowflakeBase {
+  /** This will be `SlashClient` in case of `SlashClient#verifyServerRequest` */
   client: Client
   type: number
   token: string
@@ -50,6 +51,7 @@ export class Interaction extends SnowflakeBase {
   guild: Guild
   member: Member
   _savedHook?: Webhook
+  _respond?: (data: InteractionResponsePayload) => unknown
 
   constructor(
     client: Client,

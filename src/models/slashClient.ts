@@ -1,6 +1,7 @@
 import { Guild } from '../structures/guild.ts'
 import { Interaction } from '../structures/slash.ts'
 import {
+  InteractionPayload,
   InteractionType,
   SlashCommandChoice,
   SlashCommandOption,
@@ -369,6 +370,7 @@ export interface SlashOptions {
 }
 
 const encoder = new TextEncoder()
+const decoder = new TextDecoder('utf-8')
 
 export class SlashClient {
   id: string | (() => string)
@@ -503,6 +505,7 @@ export class SlashClient {
     cmd.handler(interaction)
   }
 
+  /** Verify HTTP based Interaction */
   async verifyKey(
     rawBody: string | Uint8Array,
     signature: string | Uint8Array,
@@ -519,6 +522,35 @@ export class SlashClient {
     ])
 
     return edverify(signature, fullBody, this.publicKey).catch(() => false)
+  }
+
+  /** Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction */
+  async verifyServerRequest(req: {
+    headers: Headers
+    method: string
+    body: Deno.Reader
+    respond: (options: {
+      status?: number
+      body?: string | Uint8Array
+    }) => Promise<void>
+  }): Promise<boolean | Interaction> {
+    if (req.method.toLowerCase() !== 'post') return false
+
+    const signature = req.headers.get('x-signature-ed25519')
+    const timestamp = req.headers.get('x-signature-timestamp')
+    if (signature === null || timestamp === null) return false
+
+    const rawbody = await Deno.readAll(req.body)
+    const verify = await this.verifyKey(rawbody, signature, timestamp)
+    if (!verify) return false
+
+    try {
+      const payload: InteractionPayload = JSON.parse(decoder.decode(rawbody))
+      const res = new Interaction(this as any, payload, {})
+      return res
+    } catch (e) {
+      return false
+    }
   }
 
   async verifyOpineRequest(req: any): Promise<boolean> {
