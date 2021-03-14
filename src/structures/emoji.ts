@@ -1,8 +1,10 @@
 import { Client } from '../models/client.ts'
+import { ImageSize } from '../types/cdn.ts'
 import { EmojiPayload } from '../types/emoji.ts'
-import { EMOJI } from '../types/endpoint.ts'
+import { CUSTOM_EMOJI, EMOJI } from '../types/endpoint.ts'
 import { Snowflake } from '../utils/snowflake.ts'
 import { Base } from './base.ts'
+import { ImageURL } from './cdn.ts'
 import { Guild } from './guild.ts'
 import { Role } from './role.ts'
 import { User } from './user.ts'
@@ -52,6 +54,18 @@ export class Emoji extends Base {
     this.managed = data.managed
     this.animated = data.animated
     this.available = data.available
+  }
+
+  /**
+   * Gets emoji image URL
+   */
+  emojiImageURL(
+    format: 'png' | 'gif' | 'dynamic' = 'png',
+    size: ImageSize = 512
+  ): string | undefined {
+    return this.id != null
+      ? `${ImageURL(CUSTOM_EMOJI(this.id), format, size)}`
+      : undefined
   }
 
   /** Modify the given emoji. Requires the MANAGE_EMOJIS permission. Returns the updated emoji object on success. Fires a Guild Emojis Update Gateway event. */

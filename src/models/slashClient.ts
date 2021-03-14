@@ -1,6 +1,7 @@
 import { Guild } from '../structures/guild.ts'
 import { Interaction } from '../structures/slash.ts'
 import {
+  InteractionPayload,
   InteractionType,
   SlashCommandChoice,
   SlashCommandOption,
@@ -12,8 +13,7 @@ import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
-import { verify as edverify } from 'https://deno.land/x/ed25519/mod.ts'
-import { Buffer } from 'https://deno.land/std@0.80.0/node/buffer.ts'
+import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -372,7 +372,9 @@ export interface SlashOptions {
   publicKey?: string
 }
 
-/** Slash Client represents an Interactions Client which can be used without Harmony Client. */
+const encoder = new TextEncoder()
+const decoder = new TextDecoder('utf-8')
+
 export class SlashClient {
   id: string | (() => string)
   client?: Client
@@ -518,25 +520,52 @@ export class SlashClient {
     cmd.handler(interaction)
   }
 
+  /** Verify HTTP based Interaction */
   async verifyKey(
-    rawBody: string | Uint8Array | Buffer,
-    signature: string,
-    timestamp: string
+    rawBody: string | Uint8Array,
+    signature: string | Uint8Array,
+    timestamp: string | Uint8Array
   ): Promise<boolean> {
     if (this.publicKey === undefined)
       throw new Error('Public Key is not present')
-    return edverify(
-      signature,
-      Buffer.concat([
-        Buffer.from(timestamp, 'utf-8'),
-        Buffer.from(
-          rawBody instanceof Uint8Array
-            ? new TextDecoder().decode(rawBody)
-            : rawBody
-        )
-      ]),
-      this.publicKey
-    ).catch(() => false)
+
+    const fullBody = new Uint8Array([
+      ...(typeof timestamp === 'string'
+        ? encoder.encode(timestamp)
+        : timestamp),
+      ...(typeof rawBody === 'string' ? encoder.encode(rawBody) : rawBody)
+    ])
+
+    return edverify(signature, fullBody, this.publicKey).catch(() => false)
+  }
+
+  /** Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction */
+  async verifyServerRequest(req: {
+    headers: Headers
+    method: string
+    body: Deno.Reader
+    respond: (options: {
+      status?: number
+      body?: string | Uint8Array
+    }) => Promise<void>
+  }): Promise<boolean | Interaction> {
+    if (req.method.toLowerCase() !== 'post') return false
+
+    const signature = req.headers.get('x-signature-ed25519')
+    const timestamp = req.headers.get('x-signature-timestamp')
+    if (signature === null || timestamp === null) return false
+
+    const rawbody = await Deno.readAll(req.body)
+    const verify = await this.verifyKey(rawbody, signature, timestamp)
+    if (!verify) return false
+
+    try {
+      const payload: InteractionPayload = JSON.parse(decoder.decode(rawbody))
+      const res = new Interaction(this as any, payload, {})
+      return res
+    } catch (e) {
+      return false
+    }
   }
 
   async verifyOpineRequest(req: any): Promise<boolean> {

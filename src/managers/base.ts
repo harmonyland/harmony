@@ -60,6 +60,13 @@ export class BaseManager<T, T2> {
     return collection
   }
 
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<T2> {
+    const arr = (await this.array()) ?? []
+    const { readable, writable } = new TransformStream()
+    arr.forEach((el) => writable.getWriter().write(el))
+    yield* readable.getIterator()
+  }
+
   /** Deletes everything from Cache */
   flush(): any {
     return this.client.cache.deleteCache(this.cacheName)

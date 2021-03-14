@@ -14,7 +14,8 @@ export {
   CommandBuilder,
   CommandCategory,
   CommandsManager,
-  CategoriesManager
+  CategoriesManager,
+  CommandsLoader
 } from './src/models/command.ts'
 export type { CommandContext, CommandOptions } from './src/models/command.ts'
 export {
@@ -42,6 +43,7 @@ export { ReactionUsersManager } from './src/managers/reactionUsers.ts'
 export { MessagesManager } from './src/managers/messages.ts'
 export { RolesManager } from './src/managers/roles.ts'
 export { UsersManager } from './src/managers/users.ts'
+export { InviteManager } from './src/managers/invites.ts'
 export { Application } from './src/structures/application.ts'
 // export { ImageURL } from './src/structures/cdn.ts'
 export { Channel } from './src/structures/channel.ts'

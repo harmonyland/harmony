@@ -86,28 +86,18 @@ export class InteractionUser extends User {
 }
 
 export class Interaction extends SnowflakeBase {
-  /** Type of Interaction */
-  type: InteractionType
-  /** Interaction Token */
+  /** This will be `SlashClient` in case of `SlashClient#verifyServerRequest` */
+  client: Client
+  type: number
   token: string
   /** Interaction ID */
   id: string
-  /** Data sent with Interaction. Only applies to Application Command */
-  data?: InteractionApplicationCommandData
-  /** Channel in which Interaction was initiated */
-  channel?: TextChannel | GuildTextChannel
-  /** Guild in which Interaction was initiated */
-  guild?: Guild
-  /** Member object of who initiated the Interaction */
-  member?: Member
-  /** User object of who invoked Interaction */
-  user: User
-  /** Whether we have responded to Interaction or not */
-  responded: boolean = false
-  /** Resolved data for Snowflakes in Slash Command Arguments */
-  resolved: InteractionApplicationCommandResolved
-  /** Whether response was deferred or not */
-  deferred: boolean = false
+  data: InteractionData
+  channel: GuildTextChannel
+  guild: Guild
+  member: Member
+  _savedHook?: Webhook
+  _respond?: (data: InteractionResponsePayload) => unknown
 
   constructor(
     client: Client,
