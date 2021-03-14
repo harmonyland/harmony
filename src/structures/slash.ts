@@ -7,14 +7,12 @@ import {
 } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
-  InteractionApplicationCommandData,
   InteractionApplicationCommandOption,
   InteractionChannelPayload,
   InteractionPayload,
   InteractionResponseFlags,
   InteractionResponsePayload,
   InteractionResponseType,
-  InteractionType,
   SlashCommandOptionType
 } from '../types/slash.ts'
 import { Dict } from '../utils/dict.ts'
@@ -28,6 +26,7 @@ import { Message } from './message.ts'
 import { Role } from './role.ts'
 import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
+import { Webhook } from './webhook.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
@@ -87,15 +86,15 @@ export class InteractionUser extends User {
 
 export class Interaction extends SnowflakeBase {
   /** This will be `SlashClient` in case of `SlashClient#verifyServerRequest` */
-  client: Client
+  client!: Client
   type: number
   token: string
   /** Interaction ID */
   id: string
   data: InteractionData
   channel: GuildTextChannel
-  guild: Guild
-  member: Member
+  guild?: Guild
+  member?: Member
   _savedHook?: Webhook
   _respond?: (data: InteractionResponsePayload) => unknown
 
