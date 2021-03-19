@@ -15,6 +15,7 @@ import {
 } from '../../mod.ts'
 import { Collector } from '../models/collectors.ts'
 import { MessageAttachment } from '../structures/message.ts'
+import { OverrideType } from '../types/channel.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -231,6 +232,23 @@ client.on('messageCreate', async (msg: Message) => {
         id: msg.member,
         allow: Permissions.DEFAULT.toString()
       })
+      msg.channel.send(`Done!`)
+    }
+  } else if (msg.content === '!updateBasicOverwrites') {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    if (msg.member !== undefined) {
+      await msg.channel.editOverwrite(
+        {
+          id: msg.member,
+          allow: Permissions.DEFAULT.toString()
+        },
+        {
+          overriteAllow: OverrideType.REMOVE
+        }
+      )
       msg.channel.send(`Done!`)
     }
   } else if (msg.content === '!addAllRoles') {
