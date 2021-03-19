@@ -260,8 +260,8 @@ export class GuildChannel extends Channel {
       overriteAllow = OverrideType.ADD,
       overriteDeny = OverrideType.ADD
     }: {
-      overriteAllow: OverrideType
-      overriteDeny: OverrideType
+      overriteAllow?: OverrideType
+      overriteDeny?: OverrideType
     }
   ): Promise<GuildChannels> {
     const id = typeof overwrite.id === 'string' ? overwrite.id : overwrite.id.id
