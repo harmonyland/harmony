@@ -59,7 +59,11 @@ export class TextChannel extends Channel {
     option?: AllMessageOptions,
     reply?: Message
   ): Promise<Message> {
-    return this.client.channels.sendMessage(this, content, option, reply)
+    return this.client.channels.sendMessage(
+      this,
+      content,
+      Object.assign(option ?? {}, { reply })
+    )
   }
 
   /**

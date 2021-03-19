@@ -1,5 +1,5 @@
 import { Embed } from '../structures/embed.ts'
-import { MessageAttachment } from '../structures/message.ts'
+import type { Message, MessageAttachment } from '../structures/message.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import { UserPayload } from './user.ts'
@@ -156,16 +156,26 @@ export interface MessagePayload {
   stickers?: MessageStickerPayload[]
 }
 
+export enum AllowedMentionType {
+  Roles = 'roles',
+  Users = 'users',
+  Everyone = 'everyone'
+}
+
+export interface AllowedMentionsPayload {
+  parse?: AllowedMentionType[]
+  users?: string[]
+  roles?: string[]
+  replied_user?: boolean
+}
+
 export interface MessageOptions {
   tts?: boolean
   embed?: Embed
   file?: MessageAttachment
   files?: MessageAttachment[]
-  allowedMentions?: {
-    parse?: 'everyone' | 'users' | 'roles'
-    roles?: string[]
-    users?: string[]
-  }
+  allowedMentions?: AllowedMentionsPayload
+  reply?: Message | MessageReference | string
 }
 
 export interface ChannelMention {

@@ -6,8 +6,7 @@ import { TextChannel } from '../structures/textChannel.ts'
 import {
   ChannelPayload,
   GuildChannelPayload,
-  MessageOptions,
-  MessageReference
+  MessageOptions
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import getChannelByType from '../utils/getChannelByType.ts'
@@ -80,8 +79,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   async sendMessage(
     channel: string | TextChannel,
     content?: string | AllMessageOptions,
-    option?: AllMessageOptions,
-    reply?: Message
+    option?: AllMessageOptions
   ): Promise<Message> {
     const channelID = typeof channel === 'string' ? channel : channel.id
 
@@ -104,16 +102,23 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       file: option?.file,
       files: option?.files,
       tts: option?.tts,
-      allowed_mentions: option?.allowedMentions
-    }
-
-    if (reply !== undefined) {
-      const reference: MessageReference = {
-        message_id: reply.id,
-        channel_id: reply.channel.id,
-        guild_id: reply.guild?.id
-      }
-      payload.message_reference = reference
+      allowed_mentions: option?.allowedMentions,
+      message_reference:
+        option?.reply === undefined
+          ? undefined
+          : typeof option.reply === 'string'
+          ? {
+              message_id: option.reply
+            }
+          : typeof option.reply === 'object'
+          ? option.reply instanceof Message
+            ? {
+                message_id: option.reply.id,
+                channel_id: option.reply.channel.id,
+                guild_id: option.reply.guild?.id
+              }
+            : option.reply
+          : undefined
     }
 
     const resp = await this.client.rest.api.channels[channelID].messages.post(
