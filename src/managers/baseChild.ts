@@ -46,4 +46,18 @@ export class BaseChildManager<T, T2> {
     arr.forEach((el: unknown) => writable.getWriter().write(el))
     yield* readable.getIterator()
   }
+
+  async fetch(...args: unknown[]): Promise<T2 | undefined> {
+    return undefined
+  }
+
+  /** Try to get value from cache, if not found then fetch */
+  async resolve(key: string): Promise<T2 | undefined> {
+    const cacheValue = await this.get(key)
+    if (cacheValue !== undefined) return cacheValue
+    else {
+      const fetchValue = await this.fetch(key).catch(() => undefined)
+      if (fetchValue !== undefined) return fetchValue
+    }
+  }
 }
