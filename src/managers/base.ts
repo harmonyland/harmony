@@ -64,7 +64,7 @@ export class BaseManager<T, T2> {
     const arr = (await this.array()) ?? []
     const { readable, writable } = new TransformStream()
     arr.forEach((el) => writable.getWriter().write(el))
-    yield* readable.getIterator()
+    yield* readable
   }
 
   async fetch(...args: unknown[]): Promise<T2 | undefined> {
