@@ -137,7 +137,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   async editMessage(
     channel: string | TextChannel,
     message: Message | string,
-    text?: string,
+    text?: string | MessageOptions,
     option?: MessageOptions
   ): Promise<Message> {
     const channelID = typeof channel === 'string' ? channel : channel.id
@@ -148,6 +148,12 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
 
     if (this.client.user === undefined) {
       throw new Error('Client user has not initialized.')
+    }
+
+    if (typeof text === 'object') {
+      if (typeof option === 'object') Object.assign(option, text)
+      else option = text
+      text = undefined
     }
 
     const newMsg = await this.client.rest.api.channels[channelID].messages[
