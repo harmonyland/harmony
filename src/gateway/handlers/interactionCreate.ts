@@ -1,6 +1,6 @@
 import { Member } from '../../structures/member.ts'
 import { Interaction } from '../../structures/slash.ts'
-import { GuildTextChannel } from '../../structures/textChannel.ts'
+import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
 import { InteractionPayload } from '../../types/slash.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
 
@@ -17,8 +17,8 @@ export const interactionCreate: GatewayEventHandler = async (
   )) as unknown) as Member
 
   const channel =
-    (await gateway.client.channels.get<GuildTextChannel>(d.channel_id)) ??
-    (await gateway.client.channels.fetch<GuildTextChannel>(d.channel_id))
+    (await gateway.client.channels.get<GuildTextBasedChannel>(d.channel_id)) ??
+    (await gateway.client.channels.fetch<GuildTextBasedChannel>(d.channel_id))
 
   const interaction = new Interaction(gateway.client, d, {
     member,

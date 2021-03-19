@@ -1,13 +1,20 @@
+import { GuildChannel } from '../structures/channel.ts'
 import { Emoji } from '../structures/emoji.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import { NewsChannel } from '../structures/guildNewsChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Role } from '../structures/role.ts'
-import { GuildTextChannel } from '../structures/textChannel.ts'
+import {
+  GuildTextChannel,
+  GuildTextBasedChannel
+} from '../structures/guildTextChannel.ts'
 import { ApplicationPayload } from './application.ts'
 import {
   ChannelPayload,
   ChannelTypes,
   GuildCategoryChannelPayload,
+  GuildNewsChannelPayload,
+  GuildTextBasedChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload
 } from './channel.ts'
@@ -171,11 +178,26 @@ export interface GuildWidgetPayload {
   presence_count: number
 }
 
-export type GuildChannelPayloads =
+export type GuildTextBasedPayloads =
+  | GuildTextBasedChannelPayload
   | GuildTextChannelPayload
+  | GuildNewsChannelPayload
+
+export type GuildChannelPayloads =
+  | GuildTextBasedPayloads
   | GuildVoiceChannelPayload
   | GuildCategoryChannelPayload
-export type GuildChannels = GuildTextChannel | VoiceChannel | CategoryChannel
+
+export type GuildTextBasedChannels =
+  | GuildTextBasedChannel
+  | GuildTextChannel
+  | NewsChannel
+
+export type GuildChannels =
+  | GuildChannel
+  | GuildTextBasedChannels
+  | VoiceChannel
+  | CategoryChannel
 
 export interface GuildCreatePayload {
   name: string

@@ -31,7 +31,8 @@ import { webhooksUpdate } from './webhooksUpdate.ts'
 import { messageDeleteBulk } from './messageDeleteBulk.ts'
 import { userUpdate } from './userUpdate.ts'
 import { typingStart } from './typingStart.ts'
-import { GuildTextChannel, TextChannel } from '../../structures/textChannel.ts'
+import { TextChannel } from '../../structures/textChannel.ts'
+import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
 import { Guild } from '../../structures/guild.ts'
 import { User } from '../../structures/user.ts'
 import { Emoji } from '../../structures/emoji.ts'
@@ -263,7 +264,7 @@ export type ClientEvents = {
    * @param uncached Set of Messages deleted's IDs which were not cached
    */
   messageDeleteBulk: [
-    channel: GuildTextChannel,
+    channel: GuildTextBasedChannel,
     messages: Collection<string, Message>,
     uncached: Set<string>
   ]
@@ -356,7 +357,7 @@ export type ClientEvents = {
    * @param guild Guild in which Webhooks were updated
    * @param channel Channel of which Webhooks were updated
    */
-  webhooksUpdate: [guild: Guild, channel: GuildTextChannel]
+  webhooksUpdate: [guild: Guild, channel: GuildTextBasedChannel]
   /**
    * An Interaction was created
    * @param interaction Created interaction object

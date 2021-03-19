@@ -9,11 +9,12 @@ import {
   Guild,
   EveryChannelTypes,
   ChannelTypes,
-  GuildTextChannel
+  GuildTextChannel,
+  checkGuildTextBasedChannel,
+  Permissions
 } from '../../mod.ts'
 import { Collector } from '../models/collectors.ts'
 import { MessageAttachment } from '../structures/message.ts'
-import { Permissions } from '../utils/permissions.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -190,7 +191,8 @@ client.on('messageCreate', async (msg: Message) => {
     if (typeof vs !== 'object') return
     vs.channel?.join()
   } else if (msg.content === '!getOverwrites') {
-    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -202,16 +204,15 @@ client.on('messageCreate', async (msg: Message) => {
       `Your permission overwrites:\n${overwrites
         .map(
           (over) =>
-            `ID: ${over.id}\nAllowed:\n${new Permissions(over.allow)
+            `ID: ${over.id}\nAllowed:\n${over.allow
               .toArray()
-              .join('\n')}\nDenied:\n${new Permissions(over.deny)
-              .toArray()
-              .join('\n')}`
+              .join('\n')}\nDenied:\n${over.deny.toArray().join('\n')}`
         )
         .join('\n\n')}`
     )
   } else if (msg.content === '!getPermissions') {
-    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -220,6 +221,18 @@ client.on('messageCreate', async (msg: Message) => {
       msg.member as Member
     )
     msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
+  } else if (msg.content === '!addBasicOverwrites') {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    if (msg.member !== undefined) {
+      await msg.channel.addOverwrite({
+        id: msg.member,
+        allow: Permissions.DEFAULT.toString()
+      })
+      msg.channel.send(`Done!`)
+    }
   } else if (msg.content === '!addAllRoles') {
     const roles = await msg.guild?.roles.array()
     if (roles !== undefined) {

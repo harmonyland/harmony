@@ -5,7 +5,7 @@ import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import {
   ChannelTypes,
   GuildChannelPayload,
-  Overwrite
+  OverwritePayload
 } from '../types/channel.ts'
 import { GuildChannels, GuildChannelPayloads } from '../types/guild.ts'
 import { CHANNEL, GUILD_CHANNELS } from '../types/endpoint.ts'
@@ -20,7 +20,7 @@ export interface CreateChannelOptions {
   userLimit?: number
   rateLimitPerUser?: number
   position?: number
-  permissionOverwrites?: Overwrite[]
+  permissionOverwrites?: OverwritePayload[]
   parent?: CategoryChannel | string
   nsfw?: boolean
 }
