@@ -5,7 +5,6 @@ import {
   GuildTextChannelPayload,
   MessageOptions,
   MessagePayload,
-  MessageReference,
   ModifyGuildTextChannelOption,
   ModifyGuildTextChannelPayload,
   Overwrite,
@@ -13,8 +12,6 @@ import {
 } from '../types/channel.ts'
 import {
   CHANNEL,
-  CHANNEL_MESSAGE,
-  CHANNEL_MESSAGES,
   MESSAGE_REACTION_ME,
   MESSAGE_REACTION_USER
 } from '../types/endpoint.ts'
@@ -62,42 +59,7 @@ export class TextChannel extends Channel {
     option?: AllMessageOptions,
     reply?: Message
   ): Promise<Message> {
-    if (typeof content === 'object') {
-      option = content
-      content = undefined
-    }
-    if (content === undefined && option === undefined) {
-      throw new Error('Either text or option is necessary.')
-    }
-    if (option instanceof Embed) {
-      option = {
-        embed: option
-      }
-    }
-
-    const payload: any = {
-      content: content,
-      embed: option?.embed,
-      file: option?.file,
-      files: option?.files,
-      tts: option?.tts,
-      allowed_mentions: option?.allowedMentions
-    }
-
-    if (reply !== undefined) {
-      const reference: MessageReference = {
-        message_id: reply.id,
-        channel_id: reply.channel.id,
-        guild_id: reply.guild?.id
-      }
-      payload.message_reference = reference
-    }
-
-    const resp = await this.client.rest.post(CHANNEL_MESSAGES(this.id), payload)
-
-    const res = new Message(this.client, resp, this, this.client.user as any)
-    await res.mentions.fromPayload(resp)
-    return res
+    return this.client.channels.sendMessage(this, content, option, reply)
   }
 
   /**
@@ -111,32 +73,7 @@ export class TextChannel extends Channel {
     text?: string,
     option?: MessageOptions
   ): Promise<Message> {
-    if (text === undefined && option === undefined) {
-      throw new Error('Either text or option is necessary.')
-    }
-
-    if (this.client.user === undefined) {
-      throw new Error('Client user has not initialized.')
-    }
-
-    const newMsg = await this.client.rest.patch(
-      CHANNEL_MESSAGE(
-        this.id,
-        typeof message === 'string' ? message : message.id
-      ),
-      {
-        content: text,
-        embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
-        // Cannot upload new files with Message
-        // file: option?.file,
-        tts: option?.tts,
-        allowed_mentions: option?.allowedMentions
-      }
-    )
-
-    const res = new Message(this.client, newMsg, this, this.client.user)
-    await res.mentions.fromPayload(newMsg)
-    return res
+    return this.client.channels.editMessage(this, message, text, option)
   }
 
   /** Add a reaction to a Message in this Channel */
