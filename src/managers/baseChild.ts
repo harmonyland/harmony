@@ -48,7 +48,7 @@ export class BaseChildManager<T, T2> {
   }
 
   async fetch(...args: unknown[]): Promise<T2 | undefined> {
-    return undefined
+    return this.parent.fetch(...args)
   }
 
   /** Try to get value from cache, if not found then fetch */
