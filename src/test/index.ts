@@ -243,6 +243,20 @@ client.on('messageCreate', async (msg: Message) => {
       buf += `\n${role.name}`
     }
     msg.reply(buf)
+  } else if (msg.content === '!timer') {
+    msg.channel.send('3...').then((msg) => {
+      setTimeout(() => {
+        msg.edit('2...').then((msg) => {
+          setTimeout(() => {
+            msg.edit('1...').then((msg) => {
+              setTimeout(() => {
+                msg.edit('ok wut')
+              }, 1000)
+            })
+          }, 1000)
+        })
+      }, 1000)
+    })
   }
 })
 

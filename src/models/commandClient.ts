@@ -286,7 +286,8 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     if (
       (command.botPermissions !== undefined ||
-        category?.permissions !== undefined) &&
+        category?.botPermissions !== undefined ||
+        allPermissions !== undefined) &&
       msg.guild !== undefined
     ) {
       // TODO: Check Overwrites too
@@ -315,7 +316,8 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     if (
       (command.userPermissions !== undefined ||
-        category?.userPermissions !== undefined) &&
+        category?.userPermissions !== undefined ||
+        allPermissions !== undefined) &&
       msg.guild !== undefined
     ) {
       let permissions =
@@ -358,8 +360,11 @@ export class CommandClient extends Client implements CommandClientOptions {
       if (beforeExecute === false) return
 
       const result = await command.execute(ctx)
-      command.afterExecute(ctx, result)
+      await command.afterExecute(ctx, result)
     } catch (e) {
+      await command
+        .onError(ctx, e)
+        .catch((e: Error) => this.emit('commandError', ctx, e))
       this.emit('commandError', ctx, e)
     }
   }
@@ -375,7 +380,7 @@ export function command(options?: CommandOptions) {
     })[name]
 
     if (typeof prop !== 'function')
-      throw new Error('@command decorator can only be used on functions')
+      throw new Error('@command decorator can only be used on class methods')
 
     const command = new Command()
 
