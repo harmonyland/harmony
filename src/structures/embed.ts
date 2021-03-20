@@ -58,24 +58,24 @@ export class Embed {
   toJSON(): EmbedPayload {
     let total = 0;
     if (this.title?.length !== undefined && this.title?.length > Embed.MAX_TITLE_LENGTH) {
-      total += this.title.length
+      total += Number(this.title.length)
       throw new Error(`Embed title cannot exceed ${Embed.MAX_TITLE_LENGTH} characters.`)
     }
  
     if (this.description?.length !== undefined && this.description?.length > Embed.MAX_DESCRIPTION_LENGTH) {
-      total += this.description.length
+      total += Number(this.description.length)
       throw new Error(`Embed description cannot exceed ${Embed.MAX_DESCRIPTION_LENGTH} characters.`)
     }
  
     if (this.fields?.length !== undefined) {
       this.fields.forEach((field) => {
         if (field.name.length > Embed.MAX_FIELD_NAME_LENGTH) {
-          total += field.name.length
+          total += Number(field.name.length)
           throw new Error(`Embed field name cannot exceed ${Embed.MAX_FIELD_NAME_LENGTH} characters.`)
         }
  
         if (field.value.length > Embed.MAX_FIELD_VALUE_LENGTH) {
-          total += field.value.length
+          total += Number(field.value.length)
           throw new Error(`Embed field value cannot exceed ${Embed.MAX_FIELD_VALUE_LENGTH} characters.`)
         }
       })
@@ -83,12 +83,12 @@ export class Embed {
     }
  
     if (this.footer?.text?.length !== undefined && this.footer?.text?.length > Embed.MAX_FOOTER_TEXT_LENGTH) {
-      total += this.footer?.text?.length
+      total += Number(this.footer?.text?.length)
       throw new Error(`Embed footer text cannot exceed ${Embed.MAX_FOOTER_TEXT_LENGTH}.`)
     }
  
     if (this.author?.name?.length !== undefined && this.author?.name?.length > Embed.MAX_AUTHOR_NAME_LENGTH) {
-      total += this.author?.name?.length
+      total += Number(this.author?.name?.length)
       throw new Error(`Embed author name cannot exceed ${Embed.MAX_AUTHOR_NAME_LENGTH}.`)
     }
  
