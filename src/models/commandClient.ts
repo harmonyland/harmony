@@ -1,5 +1,5 @@
 import { Message } from '../structures/message.ts'
-import { GuildTextChannel } from '../structures/textChannel.ts'
+import { GuildTextBasedChannel } from '../structures/guildTextChannel.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
   CategoriesManager,
@@ -275,7 +275,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (
       command.nsfw === true &&
       (msg.guild === undefined ||
-        ((msg.channel as unknown) as GuildTextChannel).nsfw !== true)
+        ((msg.channel as unknown) as GuildTextBasedChannel).nsfw !== true)
     )
       return this.emit('commandNSFW', ctx)
 

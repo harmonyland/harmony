@@ -13,7 +13,8 @@ import { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
-import { GuildTextChannel, TextChannel } from './textChannel.ts'
+import { TextChannel } from './textChannel.ts'
+import { GuildTextBasedChannel } from './guildTextChannel.ts'
 import { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
@@ -126,8 +127,10 @@ export class Message extends SnowflakeBase {
       const newMember = await this.guild?.members.get(this.member?.id)
       if (newMember !== undefined) this.member = newMember
     }
-    if (((this.channel as unknown) as GuildTextChannel).guild !== undefined)
-      this.guild = ((this.channel as unknown) as GuildTextChannel).guild
+    if (
+      ((this.channel as unknown) as GuildTextBasedChannel).guild !== undefined
+    )
+      this.guild = ((this.channel as unknown) as GuildTextBasedChannel).guild
     if (this.guild !== undefined && this.guildID === undefined)
       this.guildID = this.guild.id
   }

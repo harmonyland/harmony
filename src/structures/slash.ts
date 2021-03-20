@@ -13,7 +13,8 @@ import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
-import { GuildTextChannel, TextChannel } from './textChannel.ts'
+import { TextChannel } from './textChannel.ts'
+import { GuildTextBasedChannel } from './guildTextChannel.ts'
 import { User } from './user.ts'
 import { Webhook } from './webhook.ts'
 
@@ -46,7 +47,7 @@ export class Interaction extends SnowflakeBase {
   token: string
   id: string
   data: InteractionData
-  channel: GuildTextChannel
+  channel: GuildTextBasedChannel
   guild: Guild
   member: Member
   _savedHook?: Webhook
@@ -55,7 +56,7 @@ export class Interaction extends SnowflakeBase {
     client: Client,
     data: InteractionPayload,
     others: {
-      channel: GuildTextChannel
+      channel: GuildTextBasedChannel
       guild: Guild
       member: Member
     }

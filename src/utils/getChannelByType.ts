@@ -6,6 +6,7 @@ import {
   GroupDMChannelPayload,
   GuildCategoryChannelPayload,
   GuildNewsChannelPayload,
+  GuildTextBasedChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
   TextChannelPayload
@@ -13,16 +14,21 @@ import {
 import { DMChannel } from '../structures/dmChannel.ts'
 import { GroupDMChannel } from '../structures/groupChannel.ts'
 import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import {
+  GuildTextBasedChannel,
+  GuildTextChannel
+} from '../structures/guildTextChannel.ts'
 import { NewsChannel } from '../structures/guildNewsChannel.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
-import { GuildTextChannel, TextChannel } from '../structures/textChannel.ts'
-import { Channel } from '../structures/channel.ts'
+import { TextChannel } from '../structures/textChannel.ts'
+import { Channel, GuildChannel } from '../structures/channel.ts'
 
 export type EveryTextChannelTypes =
   | TextChannel
   | NewsChannel
   | GuildTextChannel
+  | GuildTextBasedChannel
   | DMChannel
   | GroupDMChannel
 
@@ -30,11 +36,13 @@ export type EveryTextChannelPayloadTypes =
   | TextChannelPayload
   | GuildNewsChannelPayload
   | GuildTextChannelPayload
+  | GuildTextBasedChannelPayload
   | DMChannelPayload
   | GroupDMChannelPayload
 
 export type EveryChannelTypes =
   | Channel
+  | GuildChannel
   | CategoryChannel
   | VoiceChannel
   | EveryTextChannelTypes
