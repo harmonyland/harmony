@@ -29,6 +29,15 @@ export class Embed {
   fields?: EmbedField[]
   files: MessageAttachment[] = []
 
+  static MAX_TITLE_LENGTH = 256
+  static MAX_DESCRIPTION_LENGTH = 2048
+  static MAX_FIELD_NAME_LENGTH = 256
+  static MAX_FIELD_VALUE_LENGTH = 1024
+  static MAX_FIELDS_LENGTH = 25
+  static MAX_FOOTER_TEXT_LENGTH = 2048
+  static MAX_AUTHOR_NAME_LENGTH = 256
+  static MAX_EMBED_LENGTH = 6000
+
   constructor(data?: EmbedPayload) {
     this.title = data?.title
     this.type = data?.type
@@ -47,6 +56,44 @@ export class Embed {
 
   /** Convert Embed Object to Embed Payload JSON */
   toJSON(): EmbedPayload {
+    let total = 0;
+    if (this.title?.length !== undefined && this.title?.length > Embed.MAX_TITLE_LENGTH) {
+      total += this.title.length
+      throw new Error(`Embed title cannot exceed ${Embed.MAX_TITLE_LENGTH} characters.`)
+    }
+ 
+    if (this.description?.length !== undefined && this.description?.length > Embed.MAX_DESCRIPTION_LENGTH) {
+      total += this.description.length
+      throw new Error(`Embed description cannot exceed ${Embed.MAX_DESCRIPTION_LENGTH} characters.`)
+    }
+ 
+    if (this.fields?.length !== undefined) {
+      this.fields.forEach((field) => {
+        if (field.name.length > Embed.MAX_FIELD_NAME_LENGTH) {
+          total += field.name.length
+          throw new Error(`Embed field name cannot exceed ${Embed.MAX_FIELD_NAME_LENGTH} characters.`)
+        }
+ 
+        if (field.value.length > Embed.MAX_FIELD_VALUE_LENGTH) {
+          total += field.value.length
+          throw new Error(`Embed field value cannot exceed ${Embed.MAX_FIELD_VALUE_LENGTH} characters.`)
+        }
+      })
+      if (this.fields.length > Embed.MAX_FIELDS_LENGTH) throw new Error('Embed fields cannot exceed 25 field objects.')
+    }
+ 
+    if (this.footer?.text?.length !== undefined && this.footer?.text?.length > Embed.MAX_FOOTER_TEXT_LENGTH) {
+      total += this.footer?.text?.length
+      throw new Error(`Embed footer text cannot exceed ${Embed.MAX_FOOTER_TEXT_LENGTH}.`)
+    }
+ 
+    if (this.author?.name?.length !== undefined && this.author?.name?.length > Embed.MAX_AUTHOR_NAME_LENGTH) {
+      total += this.author?.name?.length
+      throw new Error(`Embed author name cannot exceed ${Embed.MAX_AUTHOR_NAME_LENGTH}.`)
+    }
+ 
+    if (total > Embed.MAX_EMBED_LENGTH) throw new Error(`Embed characters cannot exceed ${Embed.MAX_EMBED_LENGTH} characters in total.`)
+    
     return {
       title: this.title,
       type: this.type,
