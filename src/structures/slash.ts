@@ -62,6 +62,7 @@ export class InteractionChannel extends SnowflakeBase {
 
   constructor(client: Client, data: InteractionChannelPayload) {
     super(client)
+    this.id = data.id
     this.name = data.name
     this.type = data.type
     this.permissions = new Permissions(data.permissions)
@@ -134,9 +135,11 @@ export class Interaction extends SnowflakeBase {
   option<T>(name: string): T {
     const op = this.options.find((e) => e.name === name)
     if (op === undefined || op.value === undefined) return undefined as any
-    if (op.type === SlashCommandOptionType.USER)
-      return this.resolved.users[op.value] as any
-    else if (op.type === SlashCommandOptionType.ROLE)
+    if (op.type === SlashCommandOptionType.USER) {
+      const u: InteractionUser = this.resolved.users[op.value] as any
+      if (this.resolved.members[op.value] !== undefined) u.member = this.resolved.members[op.value]
+      return u as any
+    } else if (op.type === SlashCommandOptionType.ROLE)
       return this.resolved.roles[op.value] as any
     else if (op.type === SlashCommandOptionType.CHANNEL)
       return this.resolved.channels[op.value] as any
