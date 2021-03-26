@@ -3,6 +3,7 @@ import {
   Attachment,
   MessageActivity,
   MessageApplication,
+  MessageInteractionPayload,
   MessageOptions,
   MessagePayload,
   MessageReference
@@ -19,8 +20,24 @@ import { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
 import { Emoji } from './emoji.ts'
+import { InteractionType } from '../types/slash.ts'
 
 type AllMessageOptions = MessageOptions | Embed
+
+export class MessageInteraction extends SnowflakeBase {
+  id: string
+  name: string
+  type: InteractionType
+  user: User
+
+  constructor(client: Client, data: MessageInteractionPayload) {
+    super(client)
+    this.id = data.id
+    this.name = data.name
+    this.type = data.type
+    this.user = new User(this.client, data.user)
+  }
+}
 
 export class Message extends SnowflakeBase {
   id: string
@@ -46,6 +63,7 @@ export class Message extends SnowflakeBase {
   messageReference?: MessageReference
   flags?: number
   stickers?: MessageSticker[]
+  interaction?: MessageInteraction
 
   get createdAt(): Date {
     return new Date(this.timestamp)
@@ -87,6 +105,10 @@ export class Message extends SnowflakeBase {
             (payload) => new MessageSticker(this.client, payload)
           )
         : undefined
+    this.interaction =
+      data.interaction === undefined
+        ? undefined
+        : new MessageInteraction(this.client, data.interaction)
   }
 
   readFromData(data: MessagePayload): void {
