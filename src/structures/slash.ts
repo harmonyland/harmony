@@ -23,10 +23,11 @@ import { SnowflakeBase } from './base.ts'
 import { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
+import { GuildTextChannel } from './guildTextChannel.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
 import { Role } from './role.ts'
-import { GuildTextChannel, TextChannel } from './textChannel.ts'
+import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
 interface WebhookMessageOptions extends MessageOptions {

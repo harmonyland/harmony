@@ -1,17 +1,17 @@
 import { Guild } from '../../structures/guild.ts'
 import { Member } from '../../structures/member.ts'
-import { Role } from '../../structures/role.ts'
 import {
   Interaction,
   InteractionApplicationCommandResolved,
   InteractionChannel
 } from '../../structures/slash.ts'
-import { GuildTextChannel } from '../../structures/textChannel.ts'
-import { User } from '../../structures/user.ts'
+import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
 import { InteractionPayload } from '../../types/slash.ts'
 import { UserPayload } from '../../types/user.ts'
 import { Permissions } from '../../utils/permissions.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
+import { User } from '../../structures/user.ts'
+import { Role } from '../../structures/role.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -42,8 +42,8 @@ export const interactionCreate: GatewayEventHandler = async (
   if (user === undefined) return
 
   const channel =
-    (await gateway.client.channels.get<GuildTextChannel>(d.channel_id)) ??
-    (await gateway.client.channels.fetch<GuildTextChannel>(d.channel_id))
+    (await gateway.client.channels.get<GuildTextBasedChannel>(d.channel_id)) ??
+    (await gateway.client.channels.fetch<GuildTextBasedChannel>(d.channel_id))
 
   const resolved: InteractionApplicationCommandResolved = {
     users: {},

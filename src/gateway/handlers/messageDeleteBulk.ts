@@ -1,5 +1,5 @@
 import { Message } from '../../structures/message.ts'
-import { GuildTextChannel } from '../../structures/textChannel.ts'
+import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
 import { MessageDeleteBulkPayload } from '../../types/gateway.ts'
 import { Collection } from '../../utils/collection.ts'
 import { Gateway, GatewayEventHandler } from '../index.ts'
@@ -8,7 +8,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
   gateway: Gateway,
   d: MessageDeleteBulkPayload
 ) => {
-  let channel = await gateway.client.channels.get<GuildTextChannel>(
+  let channel = await gateway.client.channels.get<GuildTextBasedChannel>(
     d.channel_id
   )
   // Fetch the channel if not cached
@@ -16,7 +16,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     channel = (await gateway.client.channels.fetch(
       d.channel_id
-    )) as GuildTextChannel
+    )) as GuildTextBasedChannel
 
   const messages = new Collection<string, Message>()
   const uncached = new Set<string>()
