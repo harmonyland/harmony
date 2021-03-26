@@ -139,7 +139,7 @@ client.on('messageReactionRemoveAll', (message) => {
 
 // client.on('raw', (evt: string) => console.log(`EVENT: ${evt}`))
 
-const files = Deno.readDirSync('./src/test/cmds')
+const files = Deno.readDirSync('cmds')
 
 for (const file of files) {
   const module = await import(`./cmds/${file.name}`)
