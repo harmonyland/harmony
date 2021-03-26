@@ -1,7 +1,11 @@
 import { Guild } from '../structures/guild.ts'
-import { Interaction } from '../structures/slash.ts'
+import {
+  Interaction,
+  InteractionApplicationCommandResolved
+} from '../structures/slash.ts'
 import {
   InteractionPayload,
+  InteractionResponsePayload,
   InteractionType,
   SlashCommandChoice,
   SlashCommandOption,
@@ -14,6 +18,7 @@ import { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
 import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
+import { User } from '../structures/user.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -375,6 +380,7 @@ export interface SlashOptions {
 const encoder = new TextEncoder()
 const decoder = new TextDecoder('utf-8')
 
+/** Slash Client represents an Interactions Client which can be used without Harmony Client. */
 export class SlashClient {
   id: string | (() => string)
   client?: Client
@@ -539,16 +545,17 @@ export class SlashClient {
     return edverify(signature, fullBody, this.publicKey).catch(() => false)
   }
 
-  /** Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction */
+  /** Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction. **Data present in Interaction returned by this method is very different from actual typings as there is no real `Client` behind the scenes to cache things.** */
   async verifyServerRequest(req: {
     headers: Headers
     method: string
     body: Deno.Reader
     respond: (options: {
       status?: number
+      headers?: Headers
       body?: string | Uint8Array
     }) => Promise<void>
-  }): Promise<boolean | Interaction> {
+  }): Promise<false | Interaction> {
     if (req.method.toLowerCase() !== 'post') return false
 
     const signature = req.headers.get('x-signature-ed25519')
@@ -561,7 +568,31 @@ export class SlashClient {
 
     try {
       const payload: InteractionPayload = JSON.parse(decoder.decode(rawbody))
-      const res = new Interaction(this as any, payload, {})
+
+      // TODO: Maybe fix all this hackery going on here?
+      const res = new Interaction(this as any, payload, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        user: new User(this as any, (payload.member?.user ?? payload.user)!),
+        member: payload.member as any,
+        guild: payload.guild_id as any,
+        channel: payload.channel_id as any,
+        resolved: ((payload.data
+          ?.resolved as unknown) as InteractionApplicationCommandResolved) ?? {
+          users: {},
+          members: {},
+          roles: {},
+          channels: {}
+        }
+      })
+      res._httpRespond = async (d: InteractionResponsePayload) =>
+        await req.respond({
+          status: 200,
+          headers: new Headers({
+            'content-type': 'application/json'
+          }),
+          body: JSON.stringify(d)
+        })
+
       return res
     } catch (e) {
       return false

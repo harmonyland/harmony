@@ -7,12 +7,14 @@ import {
 } from '../types/channel.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
+  InteractionApplicationCommandData,
   InteractionApplicationCommandOption,
   InteractionChannelPayload,
   InteractionPayload,
   InteractionResponseFlags,
   InteractionResponsePayload,
   InteractionResponseType,
+  InteractionType,
   SlashCommandOptionType
 } from '../types/slash.ts'
 import { Dict } from '../utils/dict.ts'
@@ -26,7 +28,6 @@ import { Message } from './message.ts'
 import { Role } from './role.ts'
 import { GuildTextChannel, TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
-import { Webhook } from './webhook.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
@@ -86,18 +87,30 @@ export class InteractionUser extends User {
 }
 
 export class Interaction extends SnowflakeBase {
-  /** This will be `SlashClient` in case of `SlashClient#verifyServerRequest` */
-  client!: Client
-  type: number
+  /** Type of Interaction */
+  type: InteractionType
+  /** Interaction Token */
   token: string
   /** Interaction ID */
   id: string
-  data: InteractionData
-  channel: GuildTextChannel
+  /** Data sent with Interaction. Only applies to Application Command */
+  data?: InteractionApplicationCommandData
+  /** Channel in which Interaction was initiated */
+  channel?: TextChannel | GuildTextChannel
+  /** Guild in which Interaction was initiated */
   guild?: Guild
+  /** Member object of who initiated the Interaction */
   member?: Member
-  _savedHook?: Webhook
-  _respond?: (data: InteractionResponsePayload) => unknown
+  /** User object of who invoked Interaction */
+  user: User
+  /** Whether we have responded to Interaction or not */
+  responded: boolean = false
+  /** Resolved data for Snowflakes in Slash Command Arguments */
+  resolved: InteractionApplicationCommandResolved
+  /** Whether response was deferred or not */
+  deferred: boolean = false
+  _httpRespond?: (d: InteractionResponsePayload) => unknown
+  _httpResponded?: boolean
 
   constructor(
     client: Client,
@@ -137,7 +150,8 @@ export class Interaction extends SnowflakeBase {
     if (op === undefined || op.value === undefined) return undefined as any
     if (op.type === SlashCommandOptionType.USER) {
       const u: InteractionUser = this.resolved.users[op.value] as any
-      if (this.resolved.members[op.value] !== undefined) u.member = this.resolved.members[op.value]
+      if (this.resolved.members[op.value] !== undefined)
+        u.member = this.resolved.members[op.value]
       return u as any
     } else if (op.type === SlashCommandOptionType.ROLE)
       return this.resolved.roles[op.value] as any
@@ -172,19 +186,24 @@ export class Interaction extends SnowflakeBase {
           : undefined
     }
 
-    await this.client.rest.post(
-      INTERACTION_CALLBACK(this.id, this.token),
-      payload
-    )
+    if (this._httpRespond !== undefined && this._httpResponded !== true) {
+      this._httpResponded = true
+      await this._httpRespond(payload)
+    } else
+      await this.client.rest.post(
+        INTERACTION_CALLBACK(this.id, this.token),
+        payload
+      )
     this.responded = true
 
     return this
   }
 
   /** Defer the Interaction i.e. let the user know bot is processing and will respond later. You only have 15 minutes to edit the response! */
-  async defer(): Promise<Interaction> {
+  async defer(ephemeral = false): Promise<Interaction> {
     await this.respond({
-      type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
+      type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE,
+      flags: ephemeral ? 1 << 6 : 0
     })
     this.deferred = true
     return this

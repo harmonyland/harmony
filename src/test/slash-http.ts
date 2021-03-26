@@ -18,27 +18,10 @@ await slash.commands.bulkEdit([
 const options = { port: 8000 }
 console.log('Listen on port: ' + options.port.toString())
 listenAndServe(options, async (req) => {
-  const verify = await slash.verifyServerRequest(req)
-  if (verify === false)
-    return req.respond({ status: 401, body: 'not authorized' })
+  const d = await slash.verifyServerRequest(req)
+  if (d === false) return req.respond({ status: 401, body: 'not authorized' })
 
-  const respond = async (d: any): Promise<void> =>
-    req.respond({
-      status: 200,
-      body: JSON.stringify(d),
-      headers: new Headers({
-        'content-type': 'application/json'
-      })
-    })
-
-  const body = JSON.parse(
-    new TextDecoder('utf-8').decode(await Deno.readAll(req.body))
-  )
-  if (body.type === 1) return await respond({ type: 1 })
-  await respond({
-    type: 4,
-    data: {
-      content: 'Pong!'
-    }
-  })
+  console.log(d)
+  if (d.type === 1) return d.respond({ type: 1 })
+  d.reply('Pong!')
 })
