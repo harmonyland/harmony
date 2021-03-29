@@ -45,13 +45,13 @@ export interface InteractionMessageOptions {
   tts?: boolean
   flags?: number | InteractionResponseFlags[]
   allowedMentions?: AllowedMentionsPayload
+  /** Whether the Message Response should be Ephemeral (only visible to User) or not */
+  ephemeral?: boolean
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
   /** Type of Interaction Response */
   type?: InteractionResponseType
-  /** Whether the Message Response should be Ephemeral (only visible to User) or not */
-  ephemeral?: boolean
 }
 
 /** Represents a Channel Object for an Option in Slash Command */
@@ -239,7 +239,7 @@ export class Interaction extends SnowflakeBase {
         content: options.content,
         embeds: options.embeds,
         flags: options.flags,
-        allowedMentions: options.allowedMentions
+        allowedMentions: options.allowedMentions,
       })
     } else
       await this.respond(
