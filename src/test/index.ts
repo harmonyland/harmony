@@ -74,12 +74,12 @@ client.on('messageCreate', async (msg: Message) => {
     const guilds = await msg.client.guilds.collection()
     msg.channel.send(
       'Guild List:\n' +
-        (guilds
-          .array()
-          .map((c: Guild, i: number) => {
-            return `${i + 1}. ${c.name} - ${c.memberCount} members`
-          })
-          .join('\n') as string)
+      (guilds
+        .array()
+        .map((c: Guild, i: number) => {
+          return `${i + 1}. ${c.name} - ${c.memberCount} members`
+        })
+        .join('\n') as string)
     )
   } else if (msg.content === '!roles') {
     const col = await msg.guild?.roles.collection()
@@ -246,7 +246,7 @@ client.on('messageCreate', async (msg: Message) => {
           allow: Permissions.DEFAULT.toString()
         },
         {
-          overriteAllow: OverrideType.REMOVE
+          allow: OverrideType.REMOVE
         }
       )
       msg.channel.send(`Done!`)
