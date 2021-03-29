@@ -93,8 +93,8 @@ function createSlashOption(
       data.choices === undefined
         ? undefined
         : data.choices.map((e) =>
-            typeof e === 'string' ? { name: e, value: e } : e
-          )
+          typeof e === 'string' ? { name: e, value: e } : e
+        )
   }
 }
 
@@ -138,15 +138,15 @@ export type SlashOptionCallable = (o: typeof SlashOption) => SlashCommandOption
 export type SlashBuilderOptionsData =
   | Array<SlashCommandOption | SlashOptionCallable>
   | {
-      [name: string]:
-        | {
-            description: string
-            type: SlashCommandOptionType
-            options?: SlashCommandOption[]
-            choices?: SlashCommandChoice[]
-          }
-        | SlashOptionCallable
+    [name: string]:
+    | {
+      description: string
+      type: SlashCommandOptionType
+      options?: SlashCommandOption[]
+      choices?: SlashCommandChoice[]
     }
+    | SlashOptionCallable
+  }
 
 function buildOptionsArray(
   options: SlashBuilderOptionsData
@@ -154,10 +154,10 @@ function buildOptionsArray(
   return Array.isArray(options)
     ? options.map((op) => (typeof op === 'function' ? op(SlashOption) : op))
     : Object.entries(options).map((entry) =>
-        typeof entry[1] === 'function'
-          ? entry[1](SlashOption)
-          : Object.assign(entry[1], { name: entry[0] })
-      )
+      typeof entry[1] === 'function'
+        ? entry[1](SlashOption)
+        : Object.assign(entry[1], { name: entry[0] })
+    )
 }
 
 /** Slash Command Builder */
@@ -267,8 +267,8 @@ export class SlashCommandsManager {
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands
         : this.rest.api.applications[this.slash.getID()].guilds[
-            typeof guild === 'string' ? guild : guild.id
-          ].commands
+          typeof guild === 'string' ? guild : guild.id
+        ].commands
 
     const payload = await route.post(data)
 
@@ -276,8 +276,8 @@ export class SlashCommandsManager {
       typeof guild === 'object'
         ? guild
         : guild === undefined
-        ? undefined
-        : await this.slash.client?.guilds.get(guild)
+          ? undefined
+          : await this.slash.client?.guilds.get(guild)
 
     const cmd = new SlashCommand(this, payload, _guild)
     cmd._guild =
@@ -296,8 +296,8 @@ export class SlashCommandsManager {
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
         : this.rest.api.applications[this.slash.getID()].guilds[
-            typeof guild === 'string' ? guild : guild.id
-          ].commands[id]
+          typeof guild === 'string' ? guild : guild.id
+        ].commands[id]
 
     await route.patch(data)
     return this
@@ -312,8 +312,8 @@ export class SlashCommandsManager {
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
         : this.rest.api.applications[this.slash.getID()].guilds[
-            typeof guild === 'string' ? guild : guild.id
-          ].commands[id]
+          typeof guild === 'string' ? guild : guild.id
+        ].commands[id]
 
     await route.delete()
     return this
@@ -325,8 +325,8 @@ export class SlashCommandsManager {
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
         : this.rest.api.applications[this.slash.getID()].guilds[
-            typeof guild === 'string' ? guild : guild.id
-          ].commands[id]
+          typeof guild === 'string' ? guild : guild.id
+        ].commands[id]
 
     const data = await route.get()
 
@@ -334,8 +334,8 @@ export class SlashCommandsManager {
       typeof guild === 'object'
         ? guild
         : guild === undefined
-        ? undefined
-        : await this.slash.client?.guilds.get(guild)
+          ? undefined
+          : await this.slash.client?.guilds.get(guild)
 
     return new SlashCommand(this, data, _guild)
   }
@@ -349,8 +349,8 @@ export class SlashCommandsManager {
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands
         : this.rest.api.applications[this.slash.getID()].guilds[
-            typeof guild === 'string' ? guild : guild.id
-          ].commands
+          typeof guild === 'string' ? guild : guild.id
+        ].commands
 
     await route.put(cmds)
 
@@ -430,8 +430,8 @@ export class SlashClient {
       options.client === undefined
         ? options.rest === undefined
           ? new RESTManager({
-              token: this.token
-            })
+            token: this.token
+          })
           : options.rest
         : options.client.rest
 
@@ -481,20 +481,20 @@ export class SlashClient {
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
           ? i.options
-              .find(
-                (o) =>
-                  o.name === e.group &&
-                  o.type === SlashCommandOptionType.SUB_COMMAND_GROUP
-              )
-              ?.options?.find((o) => o.name === e.name) !== undefined
+            .find(
+              (o) =>
+                o.name === e.group &&
+                o.type === SlashCommandOptionType.SUB_COMMAND_GROUP
+            )
+            ?.options?.find((o) => o.name === e.name) !== undefined
           : true
       const subMatched =
         e.group === undefined && e.parent !== undefined
           ? i.options.find(
-              (o) =>
-                o.name === e.name &&
-                o.type === SlashCommandOptionType.SUB_COMMAND
-            ) !== undefined
+            (o) =>
+              o.name === e.name &&
+              o.type === SlashCommandOptionType.SUB_COMMAND
+          ) !== undefined
           : true
       const nameMatched1 = e.name === i.name
       const parentMatched = hasGroupOrParent ? e.parent === i.name : true
@@ -549,11 +549,11 @@ export class SlashClient {
   async verifyServerRequest(req: {
     headers: Headers
     method: string
-    body: Deno.Reader
+    body: Deno.Reader | Uint8Array,
     respond: (options: {
       status?: number
       headers?: Headers
-      body?: string | Uint8Array
+      body?: string | Uint8Array | FormData
     }) => Promise<void>
   }): Promise<false | Interaction> {
     if (req.method.toLowerCase() !== 'post') return false
@@ -562,7 +562,7 @@ export class SlashClient {
     const timestamp = req.headers.get('x-signature-timestamp')
     if (signature === null || timestamp === null) return false
 
-    const rawbody = await Deno.readAll(req.body)
+    const rawbody = req.body instanceof Uint8Array ? req.body : await Deno.readAll(req.body)
     const verify = await this.verifyKey(rawbody, signature, timestamp)
     if (!verify) return false
 
@@ -584,19 +584,39 @@ export class SlashClient {
           channels: {}
         }
       })
-      res._httpRespond = async (d: InteractionResponsePayload) =>
+      res._httpRespond = async (d: InteractionResponsePayload | FormData) =>
         await req.respond({
           status: 200,
           headers: new Headers({
-            'content-type': 'application/json'
+            'content-type': d instanceof FormData ? 'multipart/form-data' : 'application/json'
           }),
-          body: JSON.stringify(d)
+          body: d instanceof FormData ? d : JSON.stringify(d)
         })
 
       return res
     } catch (e) {
       return false
     }
+  }
+
+  /** Verify FetchEvent (for Service Worker usage) and return Interaction if valid */
+  async verifyFetchEvent({ request: req, respondWith }: { respondWith: CallableFunction, request: Request }): Promise<false | Interaction> {
+    if (req.bodyUsed === true) throw new Error('Request Body already used')
+    if (req.body === null) return false
+    const body = (await req.body.getReader().read()).value
+    if (body === undefined) return false
+
+    return await this.verifyServerRequest({
+      headers: req.headers,
+      body,
+      method: req.method,
+      respond: async (options) => {
+        await respondWith(new Response(options.body, {
+          headers: options.headers,
+          status: options.status,
+        }))
+      },
+    })
   }
 
   async verifyOpineRequest(req: any): Promise<boolean> {
