@@ -274,9 +274,9 @@ export class GuildChannel extends Channel {
 
     if (
       overwrite.allow !== undefined &&
-      overriteAllow !== OverrideType.REPLACE
+      overwriteAllow !== OverrideType.REPLACE
     ) {
-      switch (overriteAllow) {
+      switch (overwriteAllow) {
         case OverrideType.ADD: {
           const originalAllow = new Permissions(overwrites[index].allow)
           const newAllow = new Permissions(overwrite.allow)
@@ -299,8 +299,8 @@ export class GuildChannel extends Channel {
           : overwrite.allow?.toJSON() ?? overwrites[index].allow
     }
 
-    if (overwrite.deny !== undefined && overriteDeny !== OverrideType.REPLACE) {
-      switch (overriteDeny) {
+    if (overwrite.deny !== undefined && overwriteDeny !== OverrideType.REPLACE) {
+      switch (overwriteDeny) {
         case OverrideType.ADD: {
           const originalDeny = new Permissions(overwrites[index].deny)
           const newDeny = new Permissions(overwrite.deny)
