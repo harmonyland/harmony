@@ -112,6 +112,7 @@ export class Interaction extends SnowflakeBase {
   deferred: boolean = false
   _httpRespond?: (d: InteractionResponsePayload) => unknown
   _httpResponded?: boolean
+  applicationID: string
 
   constructor(
     client: Client,
@@ -129,6 +130,7 @@ export class Interaction extends SnowflakeBase {
     this.token = data.token
     this.member = others.member
     this.id = data.id
+    this.applicationID = data.application_id
     this.user = others.user
     this.data = data.data
     this.guild = others.guild
@@ -257,7 +259,7 @@ export class Interaction extends SnowflakeBase {
     allowedMentions?: AllowedMentionsPayload
   }): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(
-      this.client.user?.id as string,
+      this.applicationID,
       this.token,
       '@original'
     )
@@ -276,7 +278,7 @@ export class Interaction extends SnowflakeBase {
   /** Delete the original Interaction Response */
   async deleteResponse(): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(
-      this.client.user?.id as string,
+      this.applicationID,
       this.token,
       '@original'
     )
@@ -285,7 +287,7 @@ export class Interaction extends SnowflakeBase {
   }
 
   get url(): string {
-    return `https://discord.com/api/v8/webhooks/${this.client.user?.id}/${this.token}`
+    return `https://discord.com/api/v8/webhooks/${this.applicationID}/${this.token}`
   }
 
   /** Send a followup message */
@@ -367,7 +369,7 @@ export class Interaction extends SnowflakeBase {
   ): Promise<Interaction> {
     await this.client.rest.patch(
       WEBHOOK_MESSAGE(
-        this.client.user?.id as string,
+        this.applicationID,
         this.token ?? this.client.token,
         typeof msg === 'string' ? msg : msg.id
       ),
@@ -380,7 +382,7 @@ export class Interaction extends SnowflakeBase {
   async deleteMessage(msg: Message | string): Promise<Interaction> {
     await this.client.rest.delete(
       WEBHOOK_MESSAGE(
-        this.client.user?.id as string,
+        this.applicationID,
         this.token ?? this.client.token,
         typeof msg === 'string' ? msg : msg.id
       )

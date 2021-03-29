@@ -75,6 +75,7 @@ export interface InteractionPayload {
   guild_id?: string
   /** ID of the Channel in which Interaction was invoked */
   channel_id?: string
+  application_id: string
 }
 
 export interface SlashCommandChoice {
