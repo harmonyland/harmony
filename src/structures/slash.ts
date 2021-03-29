@@ -175,15 +175,15 @@ export class Interaction extends SnowflakeBase {
       type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data:
         data.type === undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE
+          data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+          data.type === InteractionResponseType.CHANNEL_MESSAGE
           ? {
-              content: data.content ?? '',
-              embeds: data.embeds,
-              tts: data.tts ?? false,
-              flags,
-              allowed_mentions: data.allowedMentions ?? undefined
-            }
+            content: data.content ?? '',
+            embeds: data.embeds,
+            tts: data.tts ?? false,
+            flags,
+            allowed_mentions: data.allowedMentions ?? undefined
+          }
           : undefined
     }
 
@@ -313,9 +313,10 @@ export class Interaction extends SnowflakeBase {
         (option as WebhookMessageOptions)?.embed !== undefined
           ? [(option as WebhookMessageOptions).embed]
           : (option as WebhookMessageOptions)?.embeds !== undefined
-          ? (option as WebhookMessageOptions).embeds
-          : undefined,
+            ? (option as WebhookMessageOptions).embeds
+            : undefined,
       file: (option as WebhookMessageOptions)?.file,
+      files: (option as WebhookMessageOptions)?.files,
       tts: (option as WebhookMessageOptions)?.tts,
       allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions
     }

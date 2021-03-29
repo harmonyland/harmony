@@ -414,4 +414,5 @@ export type ClientEvents = {
   commandMissingArgs: [ctx: CommandContext]
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
+  gatewayError: [err: ErrorEvent, shards: [number, number]]
 }

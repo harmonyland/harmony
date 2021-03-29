@@ -174,8 +174,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       }
       case GatewayOpcodes.RECONNECT: {
         this.emit('reconnectRequired')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.reconnect()
+        this.debug('Received OpCode RECONNECT')
+        await this.reconnect()
         break
       }
       default:
@@ -191,8 +191,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     switch (code) {
       case GatewayCloseCodes.UNKNOWN_ERROR:
         this.debug('API has encountered Unknown Error. Reconnecting...')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.reconnect()
+        await this.reconnect()
         break
       case GatewayCloseCodes.UNKNOWN_OPCODE:
         throw new Error(
@@ -206,20 +205,17 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         throw new Error('Invalid Token provided!')
       case GatewayCloseCodes.INVALID_SEQ:
         this.debug('Invalid Seq was sent. Reconnecting.')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.reconnect()
+        await this.reconnect()
         break
       case GatewayCloseCodes.RATE_LIMITED:
         throw new Error("You're ratelimited. Calm down.")
       case GatewayCloseCodes.SESSION_TIMED_OUT:
         this.debug('Session Timeout. Reconnecting.')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.reconnect(true)
+        await this.reconnect(true)
         break
       case GatewayCloseCodes.INVALID_SHARD:
         this.debug('Invalid Shard was sent. Reconnecting.')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.reconnect()
+        await this.reconnect()
         break
       case GatewayCloseCodes.SHARDING_REQUIRED:
         throw new Error("Couldn't connect. Sharding is required!")
@@ -257,6 +253,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     error.name = 'ErrorEvent'
     console.log(error)
     this.emit('error', error, event)
+    this.client.emit('gatewayError', event, this.shards)
   }
 
   private enqueueIdentify(forceNew?: boolean): void {
@@ -388,8 +385,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           channel === undefined
             ? null
             : typeof channel === 'string'
-            ? channel
-            : channel?.id,
+              ? channel
+              : channel?.id,
         self_mute: voiceOptions.mute === undefined ? false : voiceOptions.mute,
         self_deaf: voiceOptions.deaf === undefined ? false : voiceOptions.deaf
       }
@@ -402,6 +399,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
   async reconnect(forceNew?: boolean): Promise<void> {
     this.emit('reconnecting')
+    this.debug('Reconnecting... (force new: ' + String(forceNew) + ')')
 
     clearInterval(this.heartbeatIntervalID)
     if (forceNew === true) {
@@ -429,6 +427,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   close(code: number = 1000, reason?: string): void {
+    this.debug(`Closing with code ${code}${reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''}`)
     return this.websocket?.close(code, reason)
   }
 
