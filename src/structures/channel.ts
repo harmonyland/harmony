@@ -38,6 +38,13 @@ export class Channel extends SnowflakeBase {
   }
 }
 
+export interface EditOverwriteOptions {
+  /** Allow Override Type */
+  allow?: OverrideType
+  /** Deny Override Type */
+  deny?: OverrideType
+}
+
 export class GuildChannel extends Channel {
   guildID: string
   name: string
@@ -257,12 +264,9 @@ export class GuildChannel extends Channel {
   async editOverwrite(
     overwrite: OverwriteAsArg,
     {
-      overwriteAllow = OverrideType.ADD,
-      overwriteDeny = OverrideType.ADD
-    }: {
-      overwriteAllow?: OverrideType
-      overwriteDeny?: OverrideType
-    }
+      allow: overwriteAllow = OverrideType.ADD,
+      deny: overwriteDeny = OverrideType.ADD
+    }: EditOverwriteOptions
   ): Promise<GuildChannels> {
     const id = typeof overwrite.id === 'string' ? overwrite.id : overwrite.id.id
     const index = this.permissionOverwrites.findIndex((e) => e.id === id)
