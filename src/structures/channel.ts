@@ -74,7 +74,7 @@ export class GuildChannel extends Channel {
     const stringToObject =
       typeof target === 'string'
         ? (await this.guild.members.get(target)) ??
-          (await this.guild.roles.get(target))
+        (await this.guild.roles.get(target))
         : target
 
     if (stringToObject === undefined) {
@@ -121,7 +121,7 @@ export class GuildChannel extends Channel {
     const stringToObject =
       typeof target === 'string'
         ? (await this.guild.members.get(target)) ??
-          (await this.guild.roles.get(target))
+        (await this.guild.roles.get(target))
         : target
 
     if (stringToObject === undefined) {
@@ -193,8 +193,8 @@ export class GuildChannel extends Channel {
           overwrite.id instanceof Role
             ? 0
             : overwrite.id instanceof Member
-            ? 1
-            : overwrite.type
+              ? 1
+              : overwrite.type
         if (type === undefined) {
           throw new Error('Overwrite type is undefined.')
         }
@@ -226,8 +226,8 @@ export class GuildChannel extends Channel {
       overwrite.id instanceof Role
         ? 0
         : overwrite.id instanceof Member
-        ? 1
-        : overwrite.type
+          ? 1
+          : overwrite.type
     if (type === undefined) {
       throw new Error('Overwrite type is undefined.')
     }
@@ -257,11 +257,11 @@ export class GuildChannel extends Channel {
   async editOverwrite(
     overwrite: OverwriteAsArg,
     {
-      overriteAllow = OverrideType.ADD,
-      overriteDeny = OverrideType.ADD
+      overwriteAllow = OverrideType.ADD,
+      overwriteDeny = OverrideType.ADD
     }: {
-      overriteAllow?: OverrideType
-      overriteDeny?: OverrideType
+      overwriteAllow?: OverrideType
+      overwriteDeny?: OverrideType
     }
   ): Promise<GuildChannels> {
     const id = typeof overwrite.id === 'string' ? overwrite.id : overwrite.id.id
@@ -327,8 +327,8 @@ export class GuildChannel extends Channel {
       overwrite.id instanceof Role
         ? 0
         : overwrite.id instanceof Member
-        ? 1
-        : overwrite.type
+          ? 1
+          : overwrite.type
     if (type === undefined) {
       throw new Error('Overwrite type is undefined.')
     }

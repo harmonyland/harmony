@@ -28,7 +28,7 @@ export interface GuildChannelPayload extends ChannelPayload {
 
 export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
-    GuildChannelPayload {
+  GuildChannelPayload {
   topic?: string
 }
 
@@ -36,7 +36,7 @@ export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
   rate_limit_per_user: number
 }
 
-export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
+export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload { }
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -55,7 +55,7 @@ export interface GroupDMChannelPayload extends DMChannelPayload {
 
 export interface GuildCategoryChannelPayload
   extends ChannelPayload,
-    GuildChannelPayload {}
+  GuildChannelPayload { }
 
 export interface ModifyChannelPayload {
   name?: string
@@ -66,7 +66,7 @@ export interface ModifyChannelPayload {
 }
 
 export interface ModifyGuildCategoryChannelPayload
-  extends ModifyChannelPayload {}
+  extends ModifyChannelPayload { }
 
 export interface ModifyGuildTextBasedChannelPayload
   extends ModifyChannelPayload {
@@ -80,7 +80,7 @@ export interface ModifyGuildTextChannelPayload
 }
 
 export interface ModifyGuildNewsChannelPayload
-  extends ModifyGuildTextBasedChannelPayload {}
+  extends ModifyGuildTextBasedChannelPayload { }
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
@@ -95,7 +95,7 @@ export interface ModifyChannelOption {
   nsfw?: boolean | null
 }
 
-export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
+export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption { }
 
 export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
@@ -108,7 +108,7 @@ export interface ModifyGuildTextChannelOption
 }
 
 export interface ModifyGuildNewsChannelOption
-  extends ModifyGuildTextBasedChannelOption {}
+  extends ModifyGuildTextBasedChannelOption { }
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
