@@ -4,11 +4,10 @@ import { Client } from '../models/client.ts'
 import {
   GuildVoiceChannelPayload,
   ModifyVoiceChannelOption,
-  ModifyVoiceChannelPayload,
-  Overwrite
+  ModifyVoiceChannelPayload
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
-import { Channel } from './channel.ts'
+import { GuildChannel } from './channel.ts'
 import { Guild } from './guild.ts'
 import { VoiceState } from './voiceState.ts'
 
@@ -16,26 +15,14 @@ export interface VoiceServerData extends VoiceServerUpdateData {
   sessionID: string
 }
 
-export class VoiceChannel extends Channel {
+export class VoiceChannel extends GuildChannel {
   bitrate: string
   userLimit: number
-  guildID: string
-  name: string
-  guild: Guild
-  position: number
-  permissionOverwrites: Overwrite[]
-  parentID?: string
 
   constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
-    super(client, data)
+    super(client, data, guild)
     this.bitrate = data.bitrate
     this.userLimit = data.user_limit
-    this.guildID = data.guild_id
-    this.name = data.name
-    this.position = data.position
-    this.guild = guild
-    this.permissionOverwrites = data.permission_overwrites
-    this.parentID = data.parent_id
   }
 
   /** Join the Voice Channel */
@@ -104,12 +91,6 @@ export class VoiceChannel extends Channel {
     super.readFromData(data)
     this.bitrate = data.bitrate ?? this.bitrate
     this.userLimit = data.user_limit ?? this.userLimit
-    this.guildID = data.guild_id ?? this.guildID
-    this.name = data.name ?? this.name
-    this.position = data.position ?? this.position
-    this.permissionOverwrites =
-      data.permission_overwrites ?? this.permissionOverwrites
-    this.parentID = data.parent_id ?? this.parentID
   }
 
   async edit(options?: ModifyVoiceChannelOption): Promise<VoiceChannel> {

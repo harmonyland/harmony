@@ -14,7 +14,8 @@ export {
   CommandBuilder,
   CommandCategory,
   CommandsManager,
-  CategoriesManager
+  CategoriesManager,
+  CommandsLoader
 } from './src/models/command.ts'
 export type { CommandContext, CommandOptions } from './src/models/command.ts'
 export {
@@ -42,9 +43,11 @@ export { ReactionUsersManager } from './src/managers/reactionUsers.ts'
 export { MessagesManager } from './src/managers/messages.ts'
 export { RolesManager } from './src/managers/roles.ts'
 export { UsersManager } from './src/managers/users.ts'
+export { InviteManager } from './src/managers/invites.ts'
 export { Application } from './src/structures/application.ts'
 // export { ImageURL } from './src/structures/cdn.ts'
-export { Channel } from './src/structures/channel.ts'
+export { Channel, GuildChannel } from './src/structures/channel.ts'
+export type { EditOverwriteOptions } from './src/structures/channel.ts'
 export { DMChannel } from './src/structures/dmChannel.ts'
 export { Embed } from './src/structures/embed.ts'
 export { Emoji } from './src/structures/emoji.ts'
@@ -69,7 +72,12 @@ export {
 } from './src/structures/presence.ts'
 export { Role } from './src/structures/role.ts'
 export { Snowflake } from './src/utils/snowflake.ts'
-export { TextChannel, GuildTextChannel } from './src/structures/textChannel.ts'
+export { TextChannel } from './src/structures/textChannel.ts'
+export {
+  GuildTextBasedChannel,
+  GuildTextChannel,
+  checkGuildTextBasedChannel
+} from './src/structures/guildTextChannel.ts'
 export type { AllMessageOptions } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
 export { User } from './src/structures/user.ts'
@@ -101,7 +109,10 @@ export type {
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
   GroupDMChannelPayload,
-  MessageOptions
+  MessageOptions,
+  OverwriteAsArg,
+  Overwrite,
+  OverwriteAsOptions
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
@@ -111,6 +122,7 @@ export type {
   GuildBanPayload,
   GuildFeatures,
   GuildChannels,
+  GuildTextBasedChannels,
   GuildCreateOptions,
   GuildCreateChannelOptions,
   GuildCreateRolePayload

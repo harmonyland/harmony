@@ -9,11 +9,13 @@ import {
   Guild,
   EveryChannelTypes,
   ChannelTypes,
-  GuildTextChannel
+  GuildTextChannel,
+  checkGuildTextBasedChannel,
+  Permissions
 } from '../../mod.ts'
 import { Collector } from '../models/collectors.ts'
 import { MessageAttachment } from '../structures/message.ts'
-import { Permissions } from '../utils/permissions.ts'
+import { OverrideType } from '../types/channel.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -72,12 +74,12 @@ client.on('messageCreate', async (msg: Message) => {
     const guilds = await msg.client.guilds.collection()
     msg.channel.send(
       'Guild List:\n' +
-        (guilds
-          .array()
-          .map((c: Guild, i: number) => {
-            return `${i + 1}. ${c.name} - ${c.memberCount} members`
-          })
-          .join('\n') as string)
+      (guilds
+        .array()
+        .map((c: Guild, i: number) => {
+          return `${i + 1}. ${c.name} - ${c.memberCount} members`
+        })
+        .join('\n') as string)
     )
   } else if (msg.content === '!roles') {
     const col = await msg.guild?.roles.collection()
@@ -117,7 +119,16 @@ client.on('messageCreate', async (msg: Message) => {
       msg.channel.send('Failed...')
     }
   } else if (msg.content === '!react') {
-    msg.addReaction('🤔')
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    msg.addReaction('😂')
+    msg.channel.send('x'.repeat(6969), {
+      embed: new Embed()
+        .setTitle('pepega'.repeat(6969))
+        .setDescription('pepega'.repeat(6969))
+        .addField('uwu', 'uwu'.repeat(6969))
+        .addField('uwu', 'uwu'.repeat(6969))
+        .setFooter('uwu'.repeat(6969))
+    })
   } else if (msg.content === '!wait_for') {
     msg.channel.send('Send anything!')
     const [receivedMsg] = await client.waitFor(
@@ -181,7 +192,8 @@ client.on('messageCreate', async (msg: Message) => {
     if (typeof vs !== 'object') return
     vs.channel?.join()
   } else if (msg.content === '!getOverwrites') {
-    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -193,16 +205,15 @@ client.on('messageCreate', async (msg: Message) => {
       `Your permission overwrites:\n${overwrites
         .map(
           (over) =>
-            `ID: ${over.id}\nAllowed:\n${new Permissions(over.allow)
+            `ID: ${over.id}\nAllowed:\n${over.allow
               .toArray()
-              .join('\n')}\nDenied:\n${new Permissions(over.deny)
-              .toArray()
-              .join('\n')}`
+              .join('\n')}\nDenied:\n${over.deny.toArray().join('\n')}`
         )
         .join('\n\n')}`
     )
   } else if (msg.content === '!getPermissions') {
-    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -211,6 +222,72 @@ client.on('messageCreate', async (msg: Message) => {
       msg.member as Member
     )
     msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
+  } else if (msg.content === '!addBasicOverwrites') {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    if (msg.member !== undefined) {
+      await msg.channel.addOverwrite({
+        id: msg.member,
+        allow: Permissions.DEFAULT.toString()
+      })
+      msg.channel.send(`Done!`)
+    }
+  } else if (msg.content === '!updateBasicOverwrites') {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!checkGuildTextBasedChannel(msg.channel)) {
+      return msg.channel.send("This isn't a guild text channel!")
+    }
+    if (msg.member !== undefined) {
+      await msg.channel.editOverwrite(
+        {
+          id: msg.member,
+          allow: Permissions.DEFAULT.toString()
+        },
+        {
+          allow: OverrideType.REMOVE
+        }
+      )
+      msg.channel.send(`Done!`)
+    }
+  } else if (msg.content === '!addAllRoles') {
+    const roles = await msg.guild?.roles.array()
+    if (roles !== undefined) {
+      roles.forEach(async (role) => {
+        await msg.member?.roles.add(role)
+        console.log(role)
+      })
+    }
+  } else if (msg.content === '!createAndAddRole') {
+    if (msg.guild !== undefined) {
+      const role = await msg.guild.roles.create({
+        name: 'asdf',
+        permissions: 0
+      })
+      await msg.member?.roles.add(role)
+    }
+  } else if (msg.content === '!roles') {
+    let buf = 'Roles:'
+    if (msg.member === undefined) return
+    for await (const role of msg.member.roles) {
+      buf += `\n${role.name}`
+    }
+    msg.reply(buf)
+  } else if (msg.content === '!timer') {
+    msg.channel.send('3...').then((msg) => {
+      setTimeout(() => {
+        msg.edit('2...').then((msg) => {
+          setTimeout(() => {
+            msg.edit('1...').then((msg) => {
+              setTimeout(() => {
+                msg.edit('ok wut')
+              }, 1000)
+            })
+          }, 1000)
+        })
+      }, 1000)
+    })
   }
 })
 

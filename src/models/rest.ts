@@ -3,6 +3,7 @@ import { Embed } from '../structures/embed.ts'
 import { MessageAttachment } from '../structures/message.ts'
 import { Collection } from '../utils/collection.ts'
 import { Client } from './client.ts'
+import { simplifyAPIError } from '../utils/err_fmt.ts'
 
 export type RequestMethods =
   | 'get'
@@ -37,15 +38,36 @@ export interface DiscordAPIErrorPayload {
   code?: number
   message?: string
   errors: object
+  requestData: { [key: string]: any }
 }
 
 export class DiscordAPIError extends Error {
   name = 'DiscordAPIError'
   error?: DiscordAPIErrorPayload
 
-  constructor(message?: string, error?: DiscordAPIErrorPayload) {
-    super(message)
-    this.error = error
+  constructor(error: string | DiscordAPIErrorPayload) {
+    super()
+    const fmt = Object.entries(
+      typeof error === 'object' ? simplifyAPIError(error.errors) : {}
+    )
+    this.message =
+      typeof error === 'string'
+        ? `${error} `
+        : `\n${error.method} ${error.url.slice(7)} returned ${error.status}\n(${
+            error.code ?? 'unknown'
+          }) ${error.message}${
+            fmt.length === 0
+              ? ''
+              : `\n${fmt
+                  .map(
+                    (e) =>
+                      `  at ${e[0]}:\n${e[1]
+                        .map((e) => `   - ${e}`)
+                        .join('\n')}`
+                  )
+                  .join('\n')}\n`
+          }`
+    if (typeof error === 'object') this.error = error
   }
 }
 
@@ -269,7 +291,7 @@ export class RESTManager {
     const headers: RequestHeaders = {
       'User-Agent':
         this.userAgent ??
-        `DiscordBot (harmony, https://github.com/harmony-org/harmony)`
+        `DiscordBot (harmony, https://github.com/harmonyland/harmony)`
     }
 
     if (this.token !== undefined) {
@@ -319,7 +341,9 @@ export class RESTManager {
         }
       }
       const form = new FormData()
-      files.forEach((file, index) => form.append(`file${index + 1}`, file.blob, file.name))
+      files.forEach((file, index) =>
+        form.append(`file${index + 1}`, file.blob, file.name)
+      )
       const json = JSON.stringify(body)
       form.append('payload_json', json)
       if (body === undefined) body = {}
@@ -448,42 +472,20 @@ export class RESTManager {
         new DiscordAPIError(`Request was Unauthorized. Invalid Token.\n${text}`)
       )
 
+    const _data = { ...data }
+    if (_data?.headers !== undefined) delete _data.headers
+    if (_data?.method !== undefined) delete _data.method
+
     // At this point we know it is error
     const error: DiscordAPIErrorPayload = {
-      url: response.url,
+      url: new URL(response.url).pathname,
       status,
       method: data.method,
       code: body?.code,
       message: body?.message,
-      errors: Object.fromEntries(
-        Object.entries(
-          (body?.errors as {
-            [name: string]: {
-              _errors: Array<{ code: string; message: string }>
-            }
-          }) ?? {}
-        ).map((entry) => {
-          return [entry[0], entry[1]._errors ?? []]
-        })
-      )
+      errors: body?.errors ?? {},
+      requestData: _data
     }
-
-    // if (typeof error.errors === 'object') {
-    //   const errors = error.errors as {
-    //     [name: string]: { _errors: Array<{ code: string; message: string }> }
-    //   }
-    //   console.log(`%cREST Error:`, 'color: #F14C39;')
-    //   Object.entries(errors).forEach((entry) => {
-    //     console.log(`  %c${entry[0]}:`, 'color: #12BC79;')
-    //     entry[1]._errors.forEach((e) => {
-    //       console.log(
-    //         `    %c${e.code}: %c${e.message}`,
-    //         'color: skyblue;',
-    //         'color: #CECECE;'
-    //       )
-    //     })
-    //   })
-    // }
 
     if (
       [
@@ -493,9 +495,9 @@ export class RESTManager {
         HttpResponseCode.MethodNotAllowed
       ].includes(status)
     ) {
-      reject(new DiscordAPIError(Deno.inspect(error), error))
+      reject(new DiscordAPIError(error))
     } else if (status === HttpResponseCode.GatewayUnavailable) {
-      reject(new DiscordAPIError(Deno.inspect(error), error))
+      reject(new DiscordAPIError(error))
     } else reject(new DiscordAPIError('Request - Unknown Error'))
   }
 

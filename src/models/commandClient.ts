@@ -1,6 +1,5 @@
 import { Message } from '../structures/message.ts'
-import { GuildTextChannel } from '../structures/textChannel.ts'
-import { awaitSync } from '../utils/mixedPromise.ts'
+import { GuildTextBasedChannel } from '../structures/guildTextChannel.ts'
 import { Client, ClientOptions } from './client.ts'
 import {
   CategoriesManager,
@@ -129,35 +128,29 @@ export class CommandClient extends Client implements CommandClientOptions {
   async processMessage(msg: Message): Promise<any> {
     if (!this.allowBots && msg.author.bot === true) return
 
-    const isUserBlacklisted = await awaitSync(
-      this.isUserBlacklisted(msg.author.id)
-    )
-    if (isUserBlacklisted === true) return
+    const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
+    if (isUserBlacklisted) return
 
-    const isChannelBlacklisted = await awaitSync(
-      this.isChannelBlacklisted(msg.channel.id)
-    )
-    if (isChannelBlacklisted === true) return
+    const isChannelBlacklisted = await this.isChannelBlacklisted(msg.channel.id)
+    if (isChannelBlacklisted) return
 
     if (msg.guild !== undefined) {
-      const isGuildBlacklisted = await awaitSync(
-        this.isGuildBlacklisted(msg.guild.id)
-      )
-      if (isGuildBlacklisted === true) return
+      const isGuildBlacklisted = await this.isGuildBlacklisted(msg.guild.id)
+      if (isGuildBlacklisted) return
     }
 
     let prefix: string | string[] = []
     if (typeof this.prefix === 'string') prefix = [...prefix, this.prefix]
     else prefix = [...prefix, ...this.prefix]
 
-    const userPrefix = await awaitSync(this.getUserPrefix(msg.author.id))
+    const userPrefix = await this.getUserPrefix(msg.author.id)
     if (userPrefix !== undefined) {
       if (typeof userPrefix === 'string') prefix = [...prefix, userPrefix]
       else prefix = [...prefix, ...userPrefix]
     }
 
     if (msg.guild !== undefined) {
-      const guildPrefix = await awaitSync(this.getGuildPrefix(msg.guild.id))
+      const guildPrefix = await this.getGuildPrefix(msg.guild.id)
       if (guildPrefix !== undefined) {
         if (typeof guildPrefix === 'string') prefix = [...prefix, guildPrefix]
         else prefix = [...prefix, ...guildPrefix]
@@ -282,7 +275,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (
       command.nsfw === true &&
       (msg.guild === undefined ||
-        ((msg.channel as unknown) as GuildTextChannel).nsfw !== true)
+        ((msg.channel as unknown) as GuildTextBasedChannel).nsfw !== true)
     )
       return this.emit('commandNSFW', ctx)
 
@@ -293,7 +286,8 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     if (
       (command.botPermissions !== undefined ||
-        category?.permissions !== undefined) &&
+        category?.botPermissions !== undefined ||
+        allPermissions !== undefined) &&
       msg.guild !== undefined
     ) {
       // TODO: Check Overwrites too
@@ -322,7 +316,8 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     if (
       (command.userPermissions !== undefined ||
-        category?.userPermissions !== undefined) &&
+        category?.userPermissions !== undefined ||
+        allPermissions !== undefined) &&
       msg.guild !== undefined
     ) {
       let permissions =
@@ -361,12 +356,15 @@ export class CommandClient extends Client implements CommandClientOptions {
     try {
       this.emit('commandUsed', ctx)
 
-      const beforeExecute = await awaitSync(command.beforeExecute(ctx))
+      const beforeExecute = await command.beforeExecute(ctx)
       if (beforeExecute === false) return
 
-      const result = await awaitSync(command.execute(ctx))
-      command.afterExecute(ctx, result)
+      const result = await command.execute(ctx)
+      await command.afterExecute(ctx, result)
     } catch (e) {
+      await command
+        .onError(ctx, e)
+        .catch((e: Error) => this.emit('commandError', ctx, e))
       this.emit('commandError', ctx, e)
     }
   }
@@ -382,7 +380,7 @@ export function command(options?: CommandOptions) {
     })[name]
 
     if (typeof prop !== 'function')
-      throw new Error('@command decorator can only be used on functions')
+      throw new Error('@command decorator can only be used on class methods')
 
     const command = new Command()
 

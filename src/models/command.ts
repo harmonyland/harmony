@@ -5,7 +5,7 @@ import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
 import { Extension } from './extensions.ts'
-import { parse } from '../../deps.ts'
+import { join, walk } from '../../deps.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -91,6 +91,9 @@ export class Command implements CommandOptions {
   guildOnly?: boolean
   dmOnly?: boolean
   ownerOnly?: boolean
+
+  /** Method called when the command errors */
+  onError(ctx: CommandContext, error: Error): any {}
 
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
   beforeExecute(ctx: CommandContext): boolean | Promise<boolean> {
@@ -284,13 +287,103 @@ export class CommandBuilder extends Command {
   }
 }
 
+export class CommandsLoader {
+  client: CommandClient
+  #importSeq: { [name: string]: number } = {}
+
+  constructor(client: CommandClient) {
+    this.client = client
+  }
+
+  /**
+   * Load a Command from file.
+   *
+   * @param filePath Path of Command file.
+   * @param exportName Export name. Default is the "default" export.
+   */
+  async load(
+    filePath: string,
+    exportName: string = 'default',
+    onlyRead?: boolean
+  ): Promise<Command> {
+    const stat = await Deno.stat(filePath).catch(() => undefined)
+    if (stat === undefined || stat.isFile !== true)
+      throw new Error(`File not found on path ${filePath}`)
+
+    let seq: number | undefined
+
+    if (this.#importSeq[filePath] !== undefined) seq = this.#importSeq[filePath]
+    const mod = await import(
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      'file:///' +
+        join(Deno.cwd(), filePath) +
+        (seq === undefined ? '' : `#${seq}`)
+    )
+    if (this.#importSeq[filePath] === undefined) this.#importSeq[filePath] = 0
+    else this.#importSeq[filePath]++
+
+    const Cmd = mod[exportName]
+    if (Cmd === undefined)
+      throw new Error(`Command not exported as ${exportName} from ${filePath}`)
+
+    let cmd: Command
+    try {
+      if (Cmd instanceof Command) cmd = Cmd
+      else cmd = new Cmd()
+      if (!(cmd instanceof Command)) throw new Error('failed')
+    } catch (e) {
+      throw new Error(`Failed to load Command from ${filePath}`)
+    }
+
+    if (onlyRead !== true) this.client.commands.add(cmd)
+    return cmd
+  }
+
+  /**
+   * Load commands from a Directory.
+   *
+   * @param path Path of the directory.
+   * @param options Options to configure loading.
+   */
+  async loadDirectory(
+    path: string,
+    options?: {
+      recursive?: boolean
+      exportName?: string
+      maxDepth?: number
+      exts?: string[]
+      onlyRead?: boolean
+    }
+  ): Promise<Command[]> {
+    const commands: Command[] = []
+
+    for await (const entry of walk(path, {
+      maxDepth: options?.maxDepth,
+      exts: options?.exts,
+      includeDirs: false
+    })) {
+      if (entry.isFile !== true) continue
+      const cmd = await this.load(
+        entry.path,
+        options?.exportName,
+        options?.onlyRead
+      )
+      commands.push(cmd)
+    }
+
+    return commands
+  }
+}
+
 export class CommandsManager {
   client: CommandClient
   list: Collection<string, Command> = new Collection()
   disabled: Set<string> = new Set()
+  loader: CommandsLoader
 
   constructor(client: CommandClient) {
     this.client = client
+    this.loader = new CommandsLoader(client)
   }
 
   /** Number of loaded Commands */
@@ -506,7 +599,7 @@ export const parseCommand = (
 ): ParsedCommand | undefined => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
-  const args = parse(content)._.map((e) => e.toString())
+  const args = content.split(' ')
 
   const name = args.shift()
   if (name === undefined) return

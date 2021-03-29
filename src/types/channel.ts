@@ -1,5 +1,8 @@
 import { Embed } from '../structures/embed.ts'
-import { MessageAttachment } from '../structures/message.ts'
+import { Member } from '../structures/member.ts'
+import { Message, MessageAttachment } from '../structures/message.ts'
+import { Role } from '../structures/role.ts'
+import { Permissions } from '../utils/permissions.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
 import { UserPayload } from './user.ts'
@@ -18,24 +21,22 @@ export interface GuildChannelPayload extends ChannelPayload {
   guild_id: string
   name: string
   position: number
-  permission_overwrites: Overwrite[]
+  permission_overwrites: OverwritePayload[]
+  nsfw: boolean
   parent_id?: string
 }
 
-export interface GuildTextChannelPayload
+export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
-    GuildChannelPayload {
-  nsfw: boolean
-  rate_limit_per_user: number
+  GuildChannelPayload {
   topic?: string
 }
 
-export interface GuildNewsChannelPayload
-  extends TextChannelPayload,
-    GuildChannelPayload {
-  topic?: string
-  nsfw: boolean
+export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
+  rate_limit_per_user: number
 }
+
+export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload { }
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -54,30 +55,32 @@ export interface GroupDMChannelPayload extends DMChannelPayload {
 
 export interface GuildCategoryChannelPayload
   extends ChannelPayload,
-    GuildChannelPayload {}
+  GuildChannelPayload { }
 
 export interface ModifyChannelPayload {
   name?: string
   position?: number | null
-  permission_overwrites?: Overwrite[] | null
+  permission_overwrites?: OverwritePayload[] | null
   parent_id?: string
+  nsfw?: boolean | null
 }
 
 export interface ModifyGuildCategoryChannelPayload
-  extends ModifyChannelPayload {}
+  extends ModifyChannelPayload { }
 
-export interface ModifyGuildTextChannelPayload extends ModifyChannelPayload {
+export interface ModifyGuildTextBasedChannelPayload
+  extends ModifyChannelPayload {
   type?: number
   topic?: string | null
-  nsfw?: boolean | null
+}
+
+export interface ModifyGuildTextChannelPayload
+  extends ModifyGuildTextBasedChannelPayload {
   rate_limit_per_user?: number | null
 }
 
-export interface ModifyGuildNewsChannelPayload extends ModifyChannelPayload {
-  type?: number
-  topic?: string | null
-  nsfw?: boolean | null
-}
+export interface ModifyGuildNewsChannelPayload
+  extends ModifyGuildTextBasedChannelPayload { }
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
@@ -87,35 +90,63 @@ export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
 export interface ModifyChannelOption {
   name?: string
   position?: number | null
-  permissionOverwrites?: Overwrite[] | null
+  permissionOverwrites?: OverwritePayload[] | null
   parentID?: string
+  nsfw?: boolean | null
 }
 
-export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
+export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption { }
 
-export interface ModifyGuildTextChannelOption extends ModifyChannelOption {
+export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
   topic?: string | null
-  nsfw?: boolean | null
+}
+
+export interface ModifyGuildTextChannelOption
+  extends ModifyGuildTextBasedChannelOption {
   slowmode?: number | null
 }
 
-export interface ModifyGuildNewsChannelOption extends ModifyChannelOption {
-  type?: number
-  topic?: string | null
-  nsfw?: boolean | null
-}
+export interface ModifyGuildNewsChannelOption
+  extends ModifyGuildTextBasedChannelOption { }
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
   userLimit?: number | null
 }
 
-export interface Overwrite {
+export enum OverwriteType {
+  ROLE = 0,
+  USER = 1
+}
+
+export interface OverwritePayload {
   id: string
-  type: number
+  type: OverwriteType
   allow: string
   deny: string
+}
+
+export interface Overwrite {
+  id: string | Role | Member
+  type: OverwriteType
+  allow: Permissions
+  deny: Permissions
+}
+
+export interface OverwriteAsOptions {
+  id: string | Role | Member
+  type?: OverwriteType
+  allow?: string | Permissions
+  deny?: string | Permissions
+}
+
+export type OverwriteAsArg = OverwriteAsOptions | OverwritePayload
+
+export enum OverrideType {
+  ADD = 0,
+  REMOVE = 1,
+  REPLACE = 2
 }
 
 export enum ChannelTypes {
@@ -156,16 +187,26 @@ export interface MessagePayload {
   stickers?: MessageStickerPayload[]
 }
 
+export enum AllowedMentionType {
+  Roles = 'roles',
+  Users = 'users',
+  Everyone = 'everyone'
+}
+
+export interface AllowedMentionsPayload {
+  parse?: AllowedMentionType[]
+  users?: string[]
+  roles?: string[]
+  replied_user?: boolean
+}
+
 export interface MessageOptions {
   tts?: boolean
   embed?: Embed
   file?: MessageAttachment
   files?: MessageAttachment[]
-  allowedMentions?: {
-    parse?: 'everyone' | 'users' | 'roles'
-    roles?: string[]
-    users?: string[]
-  }
+  allowedMentions?: AllowedMentionsPayload
+  reply?: Message | MessageReference | string
 }
 
 export interface ChannelMention {
