@@ -246,7 +246,7 @@ client.on('messageCreate', async (msg: Message) => {
           allow: Permissions.DEFAULT.toString()
         },
         {
-          overwriteAllow: OverrideType.REMOVE
+          allow: OverrideType.REMOVE
         }
       )
       msg.channel.send(`Done!`)
