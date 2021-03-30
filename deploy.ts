@@ -43,7 +43,7 @@ export function init(options: DeploySlashInitOptions): void {
       if (d === false) {
         console.log('not authorized')
         await evt.respondWith(
-          new Response(null, {
+          new Response('not authorized', {
             status: 400
           })
         )
