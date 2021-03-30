@@ -79,11 +79,25 @@ export function handle(
     },
   handler: SlashCommandHandlerCallback
 ): void {
-  client.handle({
+  const handle = {
     name: typeof cmd === 'string' ? cmd : cmd.name,
     handler,
     ...(typeof cmd === 'string' ? {} : cmd)
-  })
+  }
+
+  if (typeof handle.name === 'string' && handle.name.includes(' ') && handle.parent === undefined && handle.group === undefined) {
+    const parts = handle.name.split(/ +/).filter(e => e !== '')
+    if (parts.length > 3 || parts.length < 1) throw new Error('Invalid command name')
+    const root = parts.shift() as string
+    const group = parts.length === 3 ? parts.shift() : undefined
+    const sub = parts.shift()
+
+    handle.name = sub ?? root
+    handle.group = group
+    handle.parent = sub === undefined ? undefined : root
+  }
+
+  client.handle(handle)
 }
 
 export { commands, client }
