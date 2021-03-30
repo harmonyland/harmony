@@ -1,4 +1,4 @@
-import { Guild } from '../structures/guild.ts'
+import type { Guild } from '../structures/guild.ts'
 import {
   Interaction,
   InteractionApplicationCommandResolved
@@ -14,11 +14,12 @@ import {
   SlashCommandPayload
 } from '../types/slash.ts'
 import { Collection } from '../utils/collection.ts'
-import { Client } from './client.ts'
+import type { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
 import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
 import { User } from '../structures/user.ts'
+import { HarmonyEventEmitter } from "../utils/events.ts"
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -380,8 +381,14 @@ export interface SlashOptions {
 const encoder = new TextEncoder()
 const decoder = new TextDecoder('utf-8')
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type SlashClientEvents = {
+  interaction: [Interaction]
+  interactionError: [Error]
+}
+
 /** Slash Client represents an Interactions Client which can be used without Harmony Client. */
-export class SlashClient {
+export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   id: string | (() => string)
   client?: Client
   token?: string
@@ -401,6 +408,7 @@ export class SlashClient {
   }>
 
   constructor(options: SlashOptions) {
+    super()
     let id = options.id
     if (options.token !== undefined) id = atob(options.token?.split('.')[0])
     if (id === undefined)
@@ -435,8 +443,8 @@ export class SlashClient {
           : options.rest
         : options.client.rest
 
-    this.client?.on('interactionCreate', (interaction) =>
-      this._process(interaction)
+    this.client?.on('interactionCreate', async (interaction) =>
+      await this._process(interaction)
     )
 
     this.commands = new SlashCommandsManager(this)
@@ -506,7 +514,7 @@ export class SlashClient {
   }
 
   /** Process an incoming Interaction */
-  private _process(interaction: Interaction): void {
+  private async _process(interaction: Interaction): Promise<void> {
     if (!this.enabled) return
 
     if (
@@ -523,7 +531,10 @@ export class SlashClient {
 
     if (cmd === undefined) return
 
-    cmd.handler(interaction)
+    await this.emit('interaction', interaction)
+    try { await cmd.handler(interaction) } catch (e) {
+      await this.emit('interactionError', e)
+    }
   }
 
   /** Verify HTTP based Interaction */
@@ -670,5 +681,61 @@ export class SlashClient {
     const verified = await this.verifyKey(body, signature, timestamp)
     if (!verified) return false
     return true
+  }
+}
+
+/** Decorator to create a Slash Command handler */
+export function slash(name?: string, guild?: string) {
+  return function (client: Client | SlashClient | SlashModule, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@slash decorator requires a function')
+    } else
+      client._decoratedSlash.push({
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+/** Decorator to create a Sub-Slash Command handler */
+export function subslash(parent: string, name?: string, guild?: string) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@subslash decorator requires a function')
+    } else
+      client._decoratedSlash.push({
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+/** Decorator to create a Grouped Slash Command handler */
+export function groupslash(
+  parent: string,
+  group: string,
+  name?: string,
+  guild?: string
+) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@groupslash decorator requires a function')
+    } else
+      client._decoratedSlash.push({
+        group,
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
   }
 }
