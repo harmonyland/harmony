@@ -10,6 +10,7 @@ import { CHANNEL } from '../types/endpoint.ts'
 import { GuildChannel } from './channel.ts'
 import { Guild } from './guild.ts'
 import { VoiceState } from './voiceState.ts'
+import { GuildChannelVoiceStatesManager } from '../managers/guildChannelVoiceStates.ts'
 
 export interface VoiceServerData extends VoiceServerUpdateData {
   sessionID: string
@@ -18,6 +19,11 @@ export interface VoiceServerData extends VoiceServerUpdateData {
 export class VoiceChannel extends GuildChannel {
   bitrate: string
   userLimit: number
+  voiceStates = new GuildChannelVoiceStatesManager(
+    this.client,
+    this.guild.voiceStates,
+    this
+  )
 
   constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
     super(client, data, guild)
