@@ -385,6 +385,7 @@ const decoder = new TextDecoder('utf-8')
 export type SlashClientEvents = {
   interaction: [Interaction]
   interactionError: [Error]
+  ping: []
 }
 
 /** Slash Client represents an Interactions Client which can be used without Harmony Client. */

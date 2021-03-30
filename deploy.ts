@@ -39,7 +39,10 @@ export function init(options: DeploySlashInitOptions): void {
     request: Request
   }): Promise<void> => {
     try {
-      const d = await client.verifyFetchEvent(evt)
+      const d = await client.verifyFetchEvent({
+        respondWith: (...args: any[]) => evt.respondWith(...args),
+        request: evt.request,
+      })
       if (d === false) {
         await evt.respondWith(
           new Response('Not Authorized', {
@@ -51,6 +54,7 @@ export function init(options: DeploySlashInitOptions): void {
 
       if (d.type === InteractionType.PING) {
         await d.respond({ type: InteractionResponseType.PONG })
+        client.emit('ping')
         return
       }
 
