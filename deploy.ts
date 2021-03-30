@@ -89,7 +89,7 @@ export function handle(
     const parts = handle.name.split(/ +/).filter(e => e !== '')
     if (parts.length > 3 || parts.length < 1) throw new Error('Invalid command name')
     const root = parts.shift() as string
-    const group = parts.length === 3 ? parts.shift() : undefined
+    const group = parts.length === 2 ? parts.shift() : undefined
     const sub = parts.shift()
 
     handle.name = sub ?? root
