@@ -41,9 +41,8 @@ export function init(options: DeploySlashInitOptions): void {
     try {
       const d = await client.verifyFetchEvent(evt)
       if (d === false) {
-        console.log('not authorized')
         await evt.respondWith(
-          new Response('not authorized', {
+          new Response('Not Authorized', {
             status: 400
           })
         )
@@ -51,12 +50,10 @@ export function init(options: DeploySlashInitOptions): void {
       }
 
       if (d.type === InteractionType.PING) {
-        console.log('ping pong')
         await d.respond({ type: InteractionResponseType.PONG })
         return
       }
 
-      console.log('slash command', d.name)
       await (client as any)._process(d)
     } catch (e) {
       console.log(e)
