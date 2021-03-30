@@ -88,7 +88,7 @@ export class Member extends SnowflakeBase {
       deaf: data.deaf,
       mute: data.mute,
       channel_id:
-        typeof data.channel === 'string' ? data.channel : data.channel?.id
+        data.channel instanceof VoiceChannel ? data.channel.id : data.channel
     }
 
     const res = await this.client.rest.patch(
