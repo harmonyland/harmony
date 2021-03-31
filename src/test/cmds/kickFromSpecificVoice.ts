@@ -14,15 +14,10 @@ export default class KickFromSpecificVoiceCommand extends Command {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      const voiceStates = await (channel as VoiceChannel).voiceStates.array()
-      if (voiceStates !== undefined) {
-        voiceStates.forEach(async (voiceState) => {
-          const member = await voiceState.disconnect()
-          if (member !== undefined) {
-            ctx.channel.send(`Kicked member ${member.id}`)
-          }
-        })
-      }
+      const members = await (channel as VoiceChannel).disconnectAll()
+      members.forEach((member) => {
+        ctx.channel.send(`Kicked member ${member.id}`)
+      })
     }
   }
 }
