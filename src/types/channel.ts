@@ -156,7 +156,8 @@ export enum ChannelTypes {
   GROUP_DM = 3,
   GUILD_CATEGORY = 4,
   GUILD_NEWS = 5,
-  GUILD_STORE = 6
+  GUILD_STORE = 6,
+  GUILD_STAGE_VOICE = 13,
 }
 
 export interface MessagePayload {
