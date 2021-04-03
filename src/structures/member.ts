@@ -5,6 +5,7 @@ import { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
 import { Guild } from './guild.ts'
+import { VoiceChannel } from './guildVoiceChannel.ts'
 import { Role } from './role.ts'
 import { User } from './user.ts'
 
@@ -13,6 +14,7 @@ export interface MemberData {
   roles?: Array<Role | string>
   deaf?: boolean
   mute?: boolean
+  channel?: string | VoiceChannel | null
 }
 
 export class Member extends SnowflakeBase {
@@ -84,8 +86,11 @@ export class Member extends SnowflakeBase {
       nick: data.nick,
       roles: data.roles?.map((e) => (typeof e === 'string' ? e : e.id)),
       deaf: data.deaf,
-      mute: data.mute
+      mute: data.mute,
+      channel_id:
+        data.channel instanceof VoiceChannel ? data.channel.id : data.channel
     }
+
     const res = await this.client.rest.patch(
       GUILD_MEMBER(this.guild.id, this.id),
       payload,
@@ -125,7 +130,7 @@ export class Member extends SnowflakeBase {
    */
   async setMute(mute?: boolean): Promise<Member> {
     return await this.edit({
-      mute: mute === undefined ? false : mute
+      mute: mute ?? false
     })
   }
 
@@ -135,7 +140,28 @@ export class Member extends SnowflakeBase {
    */
   async setDeaf(deaf?: boolean): Promise<Member> {
     return await this.edit({
-      deaf: deaf === undefined ? false : deaf
+      deaf: deaf ?? false
+    })
+  }
+
+  /**
+   * Moves a Member to another VC
+   * @param channel Channel to move(null or undefined to disconnect)
+   */
+  async moveVoiceChannel(
+    channel?: string | VoiceChannel | null
+  ): Promise<Member> {
+    return await this.edit({
+      channel: channel ?? null
+    })
+  }
+
+  /**
+   * Disconnects a Member from connected VC
+   */
+  async disconnectVoice(): Promise<Member> {
+    return await this.edit({
+      channel: null
     })
   }
 
@@ -144,6 +170,13 @@ export class Member extends SnowflakeBase {
    */
   async unmute(): Promise<Member> {
     return await this.setMute(false)
+  }
+
+  /**
+   * Undeafs the Member from VC.
+   */
+  async undeaf(): Promise<Member> {
+    return await this.setDeaf(false)
   }
 
   /**

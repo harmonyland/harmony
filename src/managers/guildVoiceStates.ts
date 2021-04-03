@@ -30,7 +30,7 @@ export class GuildVoiceStatesManager extends BaseManager<
 
     const guild =
       raw.guild_id === undefined
-        ? undefined
+        ? this.guild
         : await this.client.guilds.get(raw.guild_id)
 
     return new VoiceState(this.client, raw, {
@@ -57,7 +57,7 @@ export class GuildVoiceStatesManager extends BaseManager<
       arr.map(async (raw) => {
         const guild =
           raw.guild_id === undefined
-            ? undefined
+            ? this.guild
             : await this.client.guilds.get(raw.guild_id)
 
         return new VoiceState(this.client, raw, {
