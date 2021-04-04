@@ -49,7 +49,7 @@ export { RolesManager } from './src/managers/roles.ts'
 export { UsersManager } from './src/managers/users.ts'
 export { InviteManager } from './src/managers/invites.ts'
 export { Application } from './src/structures/application.ts'
-// export { ImageURL } from './src/structures/cdn.ts'
+export { ImageURL } from './src/structures/cdn.ts'
 export { Channel, GuildChannel } from './src/structures/channel.ts'
 export type { EditOverwriteOptions } from './src/structures/channel.ts'
 export { DMChannel } from './src/structures/dmChannel.ts'
@@ -177,3 +177,17 @@ export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
 export { StoreChannel } from './src/structures/guildStoreChannel.ts'
 export { StageVoiceChannel } from './src/structures/guildStageVoiceChannel.ts'
+export {
+  isCategoryChannel,
+  isDMChannel,
+  isGroupDMChannel,
+  isGuildBasedTextChannel,
+  isGuildChannel,
+  isGuildTextChannel,
+  isNewsChannel,
+  isStageVoiceChannel,
+  isStoreChannel,
+  isTextChannel,
+  isVoiceChannel,
+  default as getChannelByType
+} from './src/utils/channel.ts'
