@@ -31,7 +31,7 @@ import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
-  embeds?: Embed[]
+  embeds?: Array<Embed | EmbedPayload>
   name?: string
   avatar?: string
 }
@@ -41,7 +41,7 @@ type AllWebhookMessageOptions = string | WebhookMessageOptions
 /** Interaction Message related Options */
 export interface InteractionMessageOptions {
   content?: string
-  embeds?: EmbedPayload[]
+  embeds?: Array<Embed | EmbedPayload>
   tts?: boolean
   flags?: number | InteractionResponseFlags[]
   allowedMentions?: AllowedMentionsPayload
@@ -254,7 +254,7 @@ export class Interaction extends SnowflakeBase {
   /** Edit the original Interaction response */
   async editResponse(data: {
     content?: string
-    embeds?: EmbedPayload[]
+    embeds?: Array<Embed | EmbedPayload>
     flags?: number | number[]
     allowedMentions?: AllowedMentionsPayload
   }): Promise<Interaction> {
