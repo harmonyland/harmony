@@ -3,7 +3,6 @@ import {
   Intents,
   Message,
   Member,
-  Role,
   GuildChannels,
   Embed,
   Guild,
@@ -81,15 +80,6 @@ client.on('messageCreate', async (msg: Message) => {
           })
           .join('\n') as string)
     )
-  } else if (msg.content === '!roles') {
-    const col = await msg.guild?.roles.collection()
-    const data = col
-      ?.array()
-      .map((c: Role, i: number) => {
-        return `${i + 1}. ${c.name}`
-      })
-      .join('\n') as string
-    msg.channel.send('Roles List:\n' + data)
   } else if (msg.content === '!channels') {
     const col = await msg.guild?.channels.array()
     const data = col
