@@ -5,7 +5,7 @@ import type { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
 import type { Guild } from './guild.ts'
-import { VoiceChannel } from './guildVoiceChannel.ts'
+import type { VoiceChannel } from './guildVoiceChannel.ts'
 import type { Role } from './role.ts'
 import type { User } from './user.ts'
 
@@ -88,7 +88,7 @@ export class Member extends SnowflakeBase {
       deaf: data.deaf,
       mute: data.mute,
       channel_id:
-        data.channel instanceof VoiceChannel ? data.channel.id : data.channel
+        typeof data.channel === 'string' ? data.channel : data.channel?.id
     }
 
     const res = await this.client.rest.patch(
