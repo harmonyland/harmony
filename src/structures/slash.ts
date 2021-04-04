@@ -177,15 +177,15 @@ export class Interaction extends SnowflakeBase {
       type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data:
         data.type === undefined ||
-          data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-          data.type === InteractionResponseType.CHANNEL_MESSAGE
+        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+        data.type === InteractionResponseType.CHANNEL_MESSAGE
           ? {
-            content: data.content ?? '',
-            embeds: data.embeds,
-            tts: data.tts ?? false,
-            flags,
-            allowed_mentions: data.allowedMentions ?? undefined
-          }
+              content: data.content ?? '',
+              embeds: data.embeds,
+              tts: data.tts ?? false,
+              flags,
+              allowed_mentions: data.allowedMentions ?? undefined
+            }
           : undefined
     }
 
@@ -239,7 +239,7 @@ export class Interaction extends SnowflakeBase {
         content: options.content,
         embeds: options.embeds,
         flags: options.flags,
-        allowedMentions: options.allowedMentions,
+        allowedMentions: options.allowedMentions
       })
     } else
       await this.respond(
@@ -258,11 +258,7 @@ export class Interaction extends SnowflakeBase {
     flags?: number | number[]
     allowedMentions?: AllowedMentionsPayload
   }): Promise<Interaction> {
-    const url = WEBHOOK_MESSAGE(
-      this.applicationID,
-      this.token,
-      '@original'
-    )
+    const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
       content: data.content ?? '',
       embeds: data.embeds ?? [],
@@ -277,11 +273,7 @@ export class Interaction extends SnowflakeBase {
 
   /** Delete the original Interaction Response */
   async deleteResponse(): Promise<Interaction> {
-    const url = WEBHOOK_MESSAGE(
-      this.applicationID,
-      this.token,
-      '@original'
-    )
+    const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.delete(url)
     return this
   }
@@ -315,8 +307,8 @@ export class Interaction extends SnowflakeBase {
         (option as WebhookMessageOptions)?.embed !== undefined
           ? [(option as WebhookMessageOptions).embed]
           : (option as WebhookMessageOptions)?.embeds !== undefined
-            ? (option as WebhookMessageOptions).embeds
-            : undefined,
+          ? (option as WebhookMessageOptions).embeds
+          : undefined,
       file: (option as WebhookMessageOptions)?.file,
       files: (option as WebhookMessageOptions)?.files,
       tts: (option as WebhookMessageOptions)?.tts,
@@ -357,7 +349,7 @@ export class Interaction extends SnowflakeBase {
     msg: Message | string,
     data: {
       content?: string
-      embeds?: Embed[]
+      embeds?: Array<Embed | EmbedPayload>
       file?: any
       allowed_mentions?: {
         parse?: string
