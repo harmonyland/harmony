@@ -57,7 +57,7 @@ import type { Presence } from '../../structures/presence.ts'
 import type {
   EveryChannelTypes,
   EveryTextChannelTypes
-} from '../../utils/getChannelByType.ts'
+} from '../../utils/channel.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import type { Interaction } from '../../structures/slash.ts'
 import type { CommandContext } from '../../commands/command.ts'

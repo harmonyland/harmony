@@ -32,5 +32,7 @@ export const PermissionFlags: { [key: string]: bigint } = {
   MANAGE_ROLES: 1n << 28n,
   MANAGE_WEBHOOKS: 1n << 29n,
   MANAGE_EMOJIS: 1n << 30n,
-  USE_SLASH_COMMANDS: 1n << 31n
+  USE_SLASH_COMMANDS: 1n << 31n,
+  // Might be removed (as PR says)
+  REQUEST_TO_SPEAK: 0x100000000n
 }

@@ -11,7 +11,7 @@ import type {
 import { OverrideType } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import type { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
-import getChannelByType from '../utils/getChannelByType.ts'
+import getChannelByType from '../utils/channel.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
 import type { Guild } from './guild.ts'

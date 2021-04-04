@@ -9,7 +9,7 @@ import type {
   MessageOptions
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
-import getChannelByType from '../utils/getChannelByType.ts'
+import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
 
 export type AllMessageOptions = MessageOptions | Embed

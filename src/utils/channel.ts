@@ -23,6 +23,8 @@ import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 import { Channel, GuildChannel } from '../structures/channel.ts'
+import { StoreChannel } from '../structures/guildStoreChannel.ts'
+import { StageVoiceChannel } from '../structures/guildStageVoiceChannel.ts'
 
 export type EveryTextChannelTypes =
   | TextChannel
@@ -80,10 +82,22 @@ const getChannelByType = (
         data as GuildTextChannelPayload,
         guild
       )
+    case ChannelTypes.GUILD_STORE:
+      if (guild === undefined)
+        throw new Error('No Guild was provided to construct Channel')
+      return new StoreChannel(client, data as GuildTextChannelPayload, guild)
     case ChannelTypes.GUILD_VOICE:
       if (guild === undefined)
         throw new Error('No Guild was provided to construct Channel')
       return new VoiceChannel(client, data as GuildVoiceChannelPayload, guild)
+    case ChannelTypes.GUILD_STAGE_VOICE:
+      if (guild === undefined)
+        throw new Error('No Guild was provided to construct Channel')
+      return new StageVoiceChannel(
+        client,
+        data as GuildVoiceChannelPayload,
+        guild
+      )
     case ChannelTypes.DM:
       return new DMChannel(client, data as DMChannelPayload)
     case ChannelTypes.GROUP_DM:
@@ -92,3 +106,70 @@ const getChannelByType = (
 }
 
 export default getChannelByType
+
+export function isTextChannel(channel: Channel): channel is TextChannel {
+  return (
+    channel.type === ChannelTypes.DM ||
+    channel.type === ChannelTypes.GROUP_DM ||
+    channel.type === ChannelTypes.GUILD_TEXT ||
+    channel.type === ChannelTypes.GUILD_NEWS
+  )
+}
+
+export function isDMChannel(channel: Channel): channel is DMChannel {
+  return channel.type === ChannelTypes.DM
+}
+
+export function isGroupDMChannel(channel: Channel): channel is GroupDMChannel {
+  return channel.type === ChannelTypes.GROUP_DM
+}
+
+export function isGuildTextChannel(
+  channel: Channel
+): channel is GuildTextChannel {
+  return channel.type === ChannelTypes.GUILD_TEXT
+}
+
+export function isGuildBasedTextChannel(
+  channel: Channel
+): channel is GuildTextBasedChannel {
+  return (
+    channel.type === ChannelTypes.GUILD_TEXT ||
+    channel.type === ChannelTypes.GUILD_NEWS
+  )
+}
+
+export function isCategoryChannel(
+  channel: Channel
+): channel is CategoryChannel {
+  return channel.type === ChannelTypes.GUILD_CATEGORY
+}
+
+export function isNewsChannel(channel: Channel): channel is NewsChannel {
+  return channel.type === ChannelTypes.GUILD_NEWS
+}
+
+export function isVoiceChannel(channel: Channel): channel is VoiceChannel {
+  return channel.type === ChannelTypes.GUILD_VOICE
+}
+
+export function isStageVoiceChannel(
+  channel: Channel
+): channel is StageVoiceChannel {
+  return channel.type === ChannelTypes.GUILD_STAGE_VOICE
+}
+
+export function isStoreChannel(channel: Channel): channel is StoreChannel {
+  return channel.type === ChannelTypes.GUILD_STORE
+}
+
+export function isGuildChannel(channel: Channel): channel is GuildChannel {
+  return (
+    channel.type === ChannelTypes.GUILD_CATEGORY ||
+    channel.type === ChannelTypes.GUILD_NEWS ||
+    channel.type === ChannelTypes.GUILD_STORE ||
+    channel.type === ChannelTypes.GUILD_TEXT ||
+    channel.type === ChannelTypes.GUILD_VOICE ||
+    channel.type === ChannelTypes.GUILD_STAGE_VOICE
+  )
+}

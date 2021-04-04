@@ -1,5 +1,5 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import getChannelByType from '../../utils/getChannelByType.ts'
+import getChannelByType from '../../utils/channel.ts'
 import type {
   ChannelPayload,
   GuildChannelPayload
