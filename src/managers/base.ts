@@ -63,7 +63,9 @@ export class BaseManager<T, T2> {
   async *[Symbol.asyncIterator](): AsyncIterableIterator<T2> {
     const arr = (await this.array()) ?? []
     const { readable, writable } = new TransformStream()
-    arr.forEach((el) => writable.getWriter().write(el))
+    const writer = writable.getWriter()
+    arr.forEach((el: unknown) => writer.write(el))
+    writer.close()
     yield* readable
   }
 

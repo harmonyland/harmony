@@ -251,7 +251,7 @@ client.on('messageCreate', async (msg: Message) => {
     let buf = 'Roles:'
     if (msg.member === undefined) return
     for await (const role of msg.member.roles) {
-      buf += `\n${role.name}`
+      buf += `\n${role.name === '@everyone' ? 'everyone' : role.name}`
     }
     msg.reply(buf)
   } else if (msg.content === '!timer') {
