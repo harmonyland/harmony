@@ -1,4 +1,5 @@
 import { ICacheAdapter } from './adapter.ts'
+// Not in deps.ts to allow optional dep loading
 import {
   connect,
   Redis,
