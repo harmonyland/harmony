@@ -61,7 +61,6 @@ export function init(options: DeploySlashInitOptions): void {
 
       await (client as any)._process(d)
     } catch (e) {
-      console.log(e)
       await client.emit('interactionError', e)
     }
   }
