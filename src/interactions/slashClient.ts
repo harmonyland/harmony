@@ -112,8 +112,38 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Adds a new Slash Command Handler */
-  handle(handler: SlashCommandHandler): SlashClient {
-    this.handlers.push(handler)
+  handle(
+    cmd: string | SlashCommandHandler,
+    handler?: SlashCommandHandlerCallback
+  ): SlashClient {
+    const handle = {
+      name: typeof cmd === 'string' ? cmd : cmd.name,
+      ...(handler !== undefined ? { handler } : {}),
+      ...(typeof cmd === 'string' ? {} : cmd)
+    }
+
+    if (handle.handler === undefined)
+      throw new Error('Invalid usage. Handler function not provided')
+
+    if (
+      typeof handle.name === 'string' &&
+      handle.name.includes(' ') &&
+      handle.parent === undefined &&
+      handle.group === undefined
+    ) {
+      const parts = handle.name.split(/ +/).filter((e) => e !== '')
+      if (parts.length > 3 || parts.length < 1)
+        throw new Error('Invalid command name')
+      const root = parts.shift() as string
+      const group = parts.length === 2 ? parts.shift() : undefined
+      const sub = parts.shift()
+
+      handle.name = sub ?? root
+      handle.group = group
+      handle.parent = sub === undefined ? undefined : root
+    }
+
+    this.handlers.push(handle as any)
     return this
   }
 
@@ -180,7 +210,9 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     )
       return
 
-    const cmd = this._getCommand(interaction)
+    const cmd =
+      this._getCommand(interaction) ??
+      this.getHandlers().find((e) => e.name === '*')
     if (cmd?.group !== undefined)
       interaction.data.options = interaction.data.options[0].options ?? []
     if (cmd?.parent !== undefined)

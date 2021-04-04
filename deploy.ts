@@ -1,7 +1,8 @@
 import {
   SlashCommandsManager,
   SlashClient,
-  SlashCommandHandlerCallback
+  SlashCommandHandlerCallback,
+  SlashCommandHandler
 } from './src/interactions/mod.ts'
 import { InteractionResponseType, InteractionType } from './src/types/slash.ts'
 
@@ -69,41 +70,10 @@ export function init(options: DeploySlashInitOptions): void {
 }
 
 export function handle(
-  cmd:
-    | string
-    | {
-        name: string
-        parent?: string
-        group?: string
-        guild?: string
-      },
-  handler: SlashCommandHandlerCallback
+  cmd: string | SlashCommandHandler,
+  handler?: SlashCommandHandlerCallback
 ): void {
-  const handle = {
-    name: typeof cmd === 'string' ? cmd : cmd.name,
-    handler,
-    ...(typeof cmd === 'string' ? {} : cmd)
-  }
-
-  if (
-    typeof handle.name === 'string' &&
-    handle.name.includes(' ') &&
-    handle.parent === undefined &&
-    handle.group === undefined
-  ) {
-    const parts = handle.name.split(/ +/).filter((e) => e !== '')
-    if (parts.length > 3 || parts.length < 1)
-      throw new Error('Invalid command name')
-    const root = parts.shift() as string
-    const group = parts.length === 2 ? parts.shift() : undefined
-    const sub = parts.shift()
-
-    handle.name = sub ?? root
-    handle.group = group
-    handle.parent = sub === undefined ? undefined : root
-  }
-
-  client.handle(handle)
+  client.handle(cmd, handler)
 }
 
 export { commands, client }
