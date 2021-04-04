@@ -5,7 +5,7 @@ import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import { CommandClient } from './commandClient.ts'
 import { Extension } from './extensions.ts'
-import { join, parse, walk } from '../../deps.ts'
+import { join, walk } from '../../deps.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -599,7 +599,7 @@ export const parseCommand = (
 ): ParsedCommand | undefined => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
-  const args = parse(content)._.map((e) => e.toString())
+  const args = content.split(' ')
 
   const name = args.shift()
   if (name === undefined) return

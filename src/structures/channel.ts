@@ -38,6 +38,13 @@ export class Channel extends SnowflakeBase {
   }
 }
 
+export interface EditOverwriteOptions {
+  /** Allow Override Type */
+  allow?: OverrideType
+  /** Deny Override Type */
+  deny?: OverrideType
+}
+
 export class GuildChannel extends Channel {
   guildID: string
   name: string
@@ -74,7 +81,7 @@ export class GuildChannel extends Channel {
     const stringToObject =
       typeof target === 'string'
         ? (await this.guild.members.get(target)) ??
-          (await this.guild.roles.get(target))
+        (await this.guild.roles.get(target))
         : target
 
     if (stringToObject === undefined) {
@@ -121,7 +128,7 @@ export class GuildChannel extends Channel {
     const stringToObject =
       typeof target === 'string'
         ? (await this.guild.members.get(target)) ??
-          (await this.guild.roles.get(target))
+        (await this.guild.roles.get(target))
         : target
 
     if (stringToObject === undefined) {
@@ -193,8 +200,8 @@ export class GuildChannel extends Channel {
           overwrite.id instanceof Role
             ? 0
             : overwrite.id instanceof Member
-            ? 1
-            : overwrite.type
+              ? 1
+              : overwrite.type
         if (type === undefined) {
           throw new Error('Overwrite type is undefined.')
         }
@@ -226,8 +233,8 @@ export class GuildChannel extends Channel {
       overwrite.id instanceof Role
         ? 0
         : overwrite.id instanceof Member
-        ? 1
-        : overwrite.type
+          ? 1
+          : overwrite.type
     if (type === undefined) {
       throw new Error('Overwrite type is undefined.')
     }
@@ -257,12 +264,9 @@ export class GuildChannel extends Channel {
   async editOverwrite(
     overwrite: OverwriteAsArg,
     {
-      overriteAllow = OverrideType.ADD,
-      overriteDeny = OverrideType.ADD
-    }: {
-      overriteAllow?: OverrideType
-      overriteDeny?: OverrideType
-    }
+      allow: overwriteAllow = OverrideType.ADD,
+      deny: overwriteDeny = OverrideType.ADD
+    }: EditOverwriteOptions
   ): Promise<GuildChannels> {
     const id = typeof overwrite.id === 'string' ? overwrite.id : overwrite.id.id
     const index = this.permissionOverwrites.findIndex((e) => e.id === id)
@@ -274,9 +278,9 @@ export class GuildChannel extends Channel {
 
     if (
       overwrite.allow !== undefined &&
-      overriteAllow !== OverrideType.REPLACE
+      overwriteAllow !== OverrideType.REPLACE
     ) {
-      switch (overriteAllow) {
+      switch (overwriteAllow) {
         case OverrideType.ADD: {
           const originalAllow = new Permissions(overwrites[index].allow)
           const newAllow = new Permissions(overwrite.allow)
@@ -299,8 +303,8 @@ export class GuildChannel extends Channel {
           : overwrite.allow?.toJSON() ?? overwrites[index].allow
     }
 
-    if (overwrite.deny !== undefined && overriteDeny !== OverrideType.REPLACE) {
-      switch (overriteDeny) {
+    if (overwrite.deny !== undefined && overwriteDeny !== OverrideType.REPLACE) {
+      switch (overwriteDeny) {
         case OverrideType.ADD: {
           const originalDeny = new Permissions(overwrites[index].deny)
           const newDeny = new Permissions(overwrite.deny)
@@ -327,8 +331,8 @@ export class GuildChannel extends Channel {
       overwrite.id instanceof Role
         ? 0
         : overwrite.id instanceof Member
-        ? 1
-        : overwrite.type
+          ? 1
+          : overwrite.type
     if (type === undefined) {
       throw new Error('Overwrite type is undefined.')
     }
