@@ -23,6 +23,7 @@ import { PresenceUpdatePayload } from './gateway.ts'
 import { RolePayload } from './role.ts'
 import { UserPayload } from './user.ts'
 import { VoiceStatePayload } from './voice.ts'
+import { WebhookPayload } from './webhook.ts'
 
 export interface GuildPayload {
   id: string
@@ -325,4 +326,100 @@ export interface GuildBeginPrunePayload {
   days?: number
   compute_prune_count?: boolean
   include_roles?: string[]
+}
+
+export enum AuditLogEvents {
+  GuildUpdate = 1,
+  ChannelCreate = 10,
+  ChannelUpdate = 11,
+  ChannelDelete = 12,
+  ChannelOverwriteCreate = 13,
+  ChannelOverwriteUpdate = 14,
+  ChannelOverwriteDelete = 15,
+  MemberKick = 20,
+  MemberPrune = 21,
+  MemberBanAdd = 22,
+  MemberBanRemove = 23,
+  MemberUpdate = 24,
+  MemberRoleUpdate = 25,
+  MemberMove = 26,
+  MemberDisconnect = 27,
+  BotAdd = 28,
+  RoleCreate = 30,
+  RoleUpdate = 31,
+  RoleDelete = 32,
+  InviteCreate = 40,
+  InviteUpdate = 41,
+  InviteDelete = 42,
+  WebhookCreate = 50,
+  WebhookUpdate = 51,
+  WebhookDelete = 52,
+  EmojiCreate = 60,
+  EmojiUpdate = 61,
+  EmojiDelete = 62,
+  MessageDelete = 72,
+  MessageBulkDelete = 73,
+  MessagePin = 74,
+  MessageUnpin = 75,
+  IntegrationCreate = 80,
+  IntegrationUpdate = 81,
+  IntegrationDelete = 82
+}
+
+export interface AuditLogPayload {
+  /** list of webhooks found in the audit log */
+  webhooks: WebhookPayload[]
+  /** list of users found in the audit log */
+  users: UserPayload[]
+  /** list of audit log entries */
+  audit_log_entries: AuditLogEntryPayload[]
+  /** list of partial integration objects */
+  integrations: GuildIntegrationPayload[]
+}
+
+export interface AuditLogEntryPayload {
+  /** id of the affected entity (webhook, user, role, etc.) */
+  target_id: string | null
+  /** changes made to the target_id */
+  changes?: AuditLogChangePayload[]
+  /** the user who made the changes */
+  user_id: string
+  /** id of the entry */
+  id: string
+  /** type of action that occurred */
+  action_type: AuditLogEvents
+  /** additional info for certain action types */
+  options?: OptionalAuditEntryInfoPayload
+  /** the reason for the change (0-512 characters) */
+  reason?: string
+}
+
+export interface OptionalAuditEntryInfoPayload {
+  /** number of days after which inactive members were kicked */
+  delete_member_days: string
+  /** number of members removed by the prune */
+  members_removed: string
+  /** channel in which the entities were targeted */
+  channel_id: string
+  /** id of the message that was targeted */
+  message_id: string
+  /** number of entities that were targeted */
+  count: string
+  /** id of the overwritten entity */
+  id: string
+  /** type of overwritten entity - "0" for "role" or "1" for "member" */
+  type: string
+  /** name of the role if type is "0" (not present if type is "1") */
+  role_name: string
+}
+
+/** > info
+> If `new_value` is not present in the change object, while `old_value` is, that means the property that was changed has been reset, or set to `null` */
+export interface AuditLogChangePayload {
+  /** new value of the key */
+  new_value?: any
+  /** old value of the key */
+  old_value?: any
+  /** name of audit log [change key](#DOCS_RESOURCES_AUDIT_LOG/audit-log-change-object-audit-log-change-key) */
+  key: string
 }

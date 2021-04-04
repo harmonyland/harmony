@@ -11,6 +11,7 @@ import {
   METHODS
 } from './types.ts'
 import { Constants } from '../types/constants.ts'
+import { RESTEndpoints } from './endpoints.ts'
 
 export class DiscordAPIError extends Error {
   name = 'DiscordAPIError'
@@ -171,6 +172,7 @@ export class RESTManager {
   canary?: boolean
   /** Optional Harmony Client object */
   client?: Client
+  endpoints: RESTEndpoints
 
   constructor(options?: RESTOptions) {
     this.api = builder(this)
@@ -181,6 +183,7 @@ export class RESTManager {
     if (options?.userAgent !== undefined) this.userAgent = options.userAgent
     if (options?.canary !== undefined) this.canary = options.canary
     if (options?.client !== undefined) this.client = options.client
+    this.endpoints = new RESTEndpoints(this)
     this.handleRateLimits()
   }
 

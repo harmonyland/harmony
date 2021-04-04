@@ -10,3 +10,9 @@ export interface EmojiPayload {
   animated?: boolean
   available?: boolean
 }
+
+export interface CreateEmojiPayload {
+  name: string
+  image: string
+  roles?: string[]
+}

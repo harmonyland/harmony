@@ -29,7 +29,7 @@ export interface GuildChannelPayload extends ChannelPayload {
 
 export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
-  GuildChannelPayload {
+    GuildChannelPayload {
   topic?: string
 }
 
@@ -37,7 +37,7 @@ export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
   rate_limit_per_user: number
 }
 
-export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload { }
+export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -56,7 +56,7 @@ export interface GroupDMChannelPayload extends DMChannelPayload {
 
 export interface GuildCategoryChannelPayload
   extends ChannelPayload,
-  GuildChannelPayload { }
+    GuildChannelPayload {}
 
 export interface ModifyChannelPayload {
   name?: string
@@ -67,7 +67,7 @@ export interface ModifyChannelPayload {
 }
 
 export interface ModifyGuildCategoryChannelPayload
-  extends ModifyChannelPayload { }
+  extends ModifyChannelPayload {}
 
 export interface ModifyGuildTextBasedChannelPayload
   extends ModifyChannelPayload {
@@ -81,7 +81,7 @@ export interface ModifyGuildTextChannelPayload
 }
 
 export interface ModifyGuildNewsChannelPayload
-  extends ModifyGuildTextBasedChannelPayload { }
+  extends ModifyGuildTextBasedChannelPayload {}
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
@@ -96,7 +96,7 @@ export interface ModifyChannelOption {
   nsfw?: boolean | null
 }
 
-export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption { }
+export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
 
 export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
@@ -109,7 +109,7 @@ export interface ModifyGuildTextChannelOption
 }
 
 export interface ModifyGuildNewsChannelOption
-  extends ModifyGuildTextBasedChannelOption { }
+  extends ModifyGuildTextBasedChannelOption {}
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
@@ -381,4 +381,33 @@ export interface MessageInteractionPayload {
   type: InteractionType
   name: string
   user: UserPayload
+}
+
+export interface EditMessagePayload {
+  content?: string
+  embed?: EmbedPayload
+  allowed_mentions?: AllowedMentionsPayload
+  flags?: number
+}
+
+export interface CreateMessagePayload extends EditMessagePayload {
+  nonce?: string
+  tts?: boolean
+  message_reference?: MessageReference
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+}
+
+export interface CreateWebhookMessageBasePayload {
+  content?: string
+  embeds?: EmbedPayload[]
+  tts?: boolean
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+  allowed_mentions?: AllowedMentionsPayload
+}
+
+export interface CreateWebhookMessagePayload extends CreateMessagePayload {
+  username?: string
+  avatar_url?: string
 }
