@@ -5,7 +5,13 @@ export type { GatewayTypedEvents } from './src/gateway/index.ts'
 export type { ClientEvents } from './src/gateway/handlers/index.ts'
 export * from './src/models/client.ts'
 export * from './src/models/slashClient.ts'
-export { RESTManager, TokenType, HttpResponseCode } from './src/models/rest.ts'
+export {
+  RESTManager,
+  TokenType,
+  HttpResponseCode,
+  DiscordAPIError
+} from './src/models/rest.ts'
+export type { APIMap, DiscordAPIErrorPayload } from './src/models/rest.ts'
 export type { RequestHeaders } from './src/models/rest.ts'
 export type { RESTOptions } from './src/models/rest.ts'
 export * from './src/models/cacheAdapter.ts'
@@ -63,7 +69,11 @@ export { NewsChannel } from './src/structures/guildNewsChannel.ts'
 export { VoiceChannel } from './src/structures/guildVoiceChannel.ts'
 export { Invite } from './src/structures/invite.ts'
 export * from './src/structures/member.ts'
-export { Message, MessageAttachment } from './src/structures/message.ts'
+export {
+  Message,
+  MessageAttachment,
+  MessageInteraction
+} from './src/structures/message.ts'
 export { MessageMentions } from './src/structures/messageMentions.ts'
 export {
   Presence,
@@ -110,6 +120,16 @@ export type {
   GuildVoiceChannelPayload,
   GroupDMChannelPayload,
   MessageOptions,
+  MessagePayload,
+  MessageInteractionPayload,
+  MessageReference,
+  MessageActivity,
+  MessageActivityTypes,
+  MessageApplication,
+  MessageFlags,
+  MessageStickerFormatTypes,
+  MessageStickerPayload,
+  MessageTypes,
   OverwriteAsArg,
   Overwrite,
   OverwriteAsOptions
@@ -146,5 +166,7 @@ export { UserFlags } from './src/types/userFlags.ts'
 export type { VoiceStatePayload } from './src/types/voice.ts'
 export type { WebhookPayload } from './src/types/webhook.ts'
 export * from './src/models/collectors.ts'
+export type { Dict } from './src/utils/dict.ts'
+export * from './src/models/redisCache.ts'
 export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'

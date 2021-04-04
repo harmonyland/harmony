@@ -5,6 +5,7 @@ import { Role } from '../structures/role.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { EmojiPayload } from './emoji.ts'
 import { MemberPayload } from './guild.ts'
+import { InteractionType } from './slash.ts'
 import { UserPayload } from './user.ts'
 
 export interface ChannelPayload {
@@ -185,6 +186,7 @@ export interface MessagePayload {
   message_reference?: MessageReference
   flags?: number
   stickers?: MessageStickerPayload[]
+  interaction?: MessageInteractionPayload
 }
 
 export enum AllowedMentionType {
@@ -372,4 +374,11 @@ export interface MessageStickerPayload {
   asset: string
   preview_asset: string | null
   format_type: MessageStickerFormatTypes
+}
+
+export interface MessageInteractionPayload {
+  id: string
+  type: InteractionType
+  name: string
+  user: UserPayload
 }

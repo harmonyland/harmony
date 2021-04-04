@@ -1,6 +1,11 @@
-import { Guild } from '../structures/guild.ts'
-import { Interaction } from '../structures/slash.ts'
+import type { Guild } from '../structures/guild.ts'
 import {
+  Interaction,
+  InteractionApplicationCommandResolved
+} from '../structures/slash.ts'
+import {
+  InteractionPayload,
+  InteractionResponsePayload,
   InteractionType,
   SlashCommandChoice,
   SlashCommandOption,
@@ -9,11 +14,13 @@ import {
   SlashCommandPayload
 } from '../types/slash.ts'
 import { Collection } from '../utils/collection.ts'
-import { Client } from './client.ts'
+import type { Client } from './client.ts'
 import { RESTManager } from './rest.ts'
 import { SlashModule } from './slashModule.ts'
-import { verify as edverify } from 'https://deno.land/x/ed25519/mod.ts'
-import { Buffer } from 'https://deno.land/std@0.80.0/node/buffer.ts'
+import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
+import { User } from '../structures/user.ts'
+import { HarmonyEventEmitter } from '../utils/events.ts'
+import { encodeText, decodeText } from '../utils/encoding.ts'
 
 export class SlashCommand {
   slash: SlashCommandsManager
@@ -155,6 +162,7 @@ function buildOptionsArray(
       )
 }
 
+/** Slash Command Builder */
 export class SlashBuilder {
   data: SlashCommandPartial
 
@@ -200,6 +208,7 @@ export class SlashBuilder {
   }
 }
 
+/** Manages Slash Commands, allows fetching/modifying/deleting/creating Slash Commands. */
 export class SlashCommandsManager {
   slash: SlashClient
   rest: RESTManager
@@ -351,7 +360,7 @@ export class SlashCommandsManager {
   }
 }
 
-export type SlashCommandHandlerCallback = (interaction: Interaction) => any
+export type SlashCommandHandlerCallback = (interaction: Interaction) => unknown
 export interface SlashCommandHandler {
   name: string
   guild?: string
@@ -360,6 +369,7 @@ export interface SlashCommandHandler {
   handler: SlashCommandHandlerCallback
 }
 
+/** Options for SlashClient */
 export interface SlashOptions {
   id?: string | (() => string)
   client?: Client
@@ -369,7 +379,15 @@ export interface SlashOptions {
   publicKey?: string
 }
 
-export class SlashClient {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export type SlashClientEvents = {
+  interaction: [Interaction]
+  interactionError: [Error]
+  ping: []
+}
+
+/** Slash Client represents an Interactions Client which can be used without Harmony Client. */
+export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   id: string | (() => string)
   client?: Client
   token?: string
@@ -389,6 +407,7 @@ export class SlashClient {
   }>
 
   constructor(options: SlashOptions) {
+    super()
     let id = options.id
     if (options.token !== undefined) id = atob(options.token?.split('.')[0])
     if (id === undefined)
@@ -423,8 +442,9 @@ export class SlashClient {
           : options.rest
         : options.client.rest
 
-    this.client?.on('interactionCreate', (interaction) =>
-      this._process(interaction)
+    this.client?.on(
+      'interactionCreate',
+      async (interaction) => await this._process(interaction)
     )
 
     this.commands = new SlashCommandsManager(this)
@@ -469,12 +489,20 @@ export class SlashClient {
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
           ? i.options
-              .find((o) => o.name === e.group)
+              .find(
+                (o) =>
+                  o.name === e.group &&
+                  o.type === SlashCommandOptionType.SUB_COMMAND_GROUP
+              )
               ?.options?.find((o) => o.name === e.name) !== undefined
           : true
       const subMatched =
         e.group === undefined && e.parent !== undefined
-          ? i.options.find((o) => o.name === e.name) !== undefined
+          ? i.options.find(
+              (o) =>
+                o.name === e.name &&
+                o.type === SlashCommandOptionType.SUB_COMMAND
+            ) !== undefined
           : true
       const nameMatched1 = e.name === i.name
       const parentMatched = hasGroupOrParent ? e.parent === i.name : true
@@ -485,11 +513,15 @@ export class SlashClient {
     })
   }
 
-  /** Process an incoming Slash Command (interaction) */
-  private _process(interaction: Interaction): void {
+  /** Process an incoming Interaction */
+  private async _process(interaction: Interaction): Promise<void> {
     if (!this.enabled) return
 
-    if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
+    if (
+      interaction.type !== InteractionType.APPLICATION_COMMAND ||
+      interaction.data === undefined
+    )
+      return
 
     const cmd = this._getCommand(interaction)
     if (cmd?.group !== undefined)
@@ -499,28 +531,113 @@ export class SlashClient {
 
     if (cmd === undefined) return
 
-    cmd.handler(interaction)
+    await this.emit('interaction', interaction)
+    try {
+      await cmd.handler(interaction)
+    } catch (e) {
+      await this.emit('interactionError', e)
+    }
   }
 
+  /** Verify HTTP based Interaction */
   async verifyKey(
-    rawBody: string | Uint8Array | Buffer,
-    signature: string,
-    timestamp: string
+    rawBody: string | Uint8Array,
+    signature: string | Uint8Array,
+    timestamp: string | Uint8Array
   ): Promise<boolean> {
     if (this.publicKey === undefined)
       throw new Error('Public Key is not present')
-    return edverify(
-      signature,
-      Buffer.concat([
-        Buffer.from(timestamp, 'utf-8'),
-        Buffer.from(
-          rawBody instanceof Uint8Array
-            ? new TextDecoder().decode(rawBody)
-            : rawBody
+
+    const fullBody = new Uint8Array([
+      ...(typeof timestamp === 'string' ? encodeText(timestamp) : timestamp),
+      ...(typeof rawBody === 'string' ? encodeText(rawBody) : rawBody)
+    ])
+
+    return edverify(signature, fullBody, this.publicKey).catch(() => false)
+  }
+
+  /** Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction. **Data present in Interaction returned by this method is very different from actual typings as there is no real `Client` behind the scenes to cache things.** */
+  async verifyServerRequest(req: {
+    headers: Headers
+    method: string
+    body: Deno.Reader | Uint8Array
+    respond: (options: {
+      status?: number
+      headers?: Headers
+      body?: string | Uint8Array | FormData
+    }) => Promise<void>
+  }): Promise<false | Interaction> {
+    if (req.method.toLowerCase() !== 'post') return false
+
+    const signature = req.headers.get('x-signature-ed25519')
+    const timestamp = req.headers.get('x-signature-timestamp')
+    if (signature === null || timestamp === null) return false
+
+    const rawbody =
+      req.body instanceof Uint8Array ? req.body : await Deno.readAll(req.body)
+    const verify = await this.verifyKey(rawbody, signature, timestamp)
+    if (!verify) return false
+
+    try {
+      const payload: InteractionPayload = JSON.parse(decodeText(rawbody))
+
+      // TODO: Maybe fix all this hackery going on here?
+      const res = new Interaction(this as any, payload, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        user: new User(this as any, (payload.member?.user ?? payload.user)!),
+        member: payload.member as any,
+        guild: payload.guild_id as any,
+        channel: payload.channel_id as any,
+        resolved: ((payload.data
+          ?.resolved as unknown) as InteractionApplicationCommandResolved) ?? {
+          users: {},
+          members: {},
+          roles: {},
+          channels: {}
+        }
+      })
+      res._httpRespond = async (d: InteractionResponsePayload | FormData) =>
+        await req.respond({
+          status: 200,
+          headers: new Headers({
+            'content-type':
+              d instanceof FormData ? 'multipart/form-data' : 'application/json'
+          }),
+          body: d instanceof FormData ? d : JSON.stringify(d)
+        })
+
+      return res
+    } catch (e) {
+      return false
+    }
+  }
+
+  /** Verify FetchEvent (for Service Worker usage) and return Interaction if valid */
+  async verifyFetchEvent({
+    request: req,
+    respondWith
+  }: {
+    respondWith: CallableFunction
+    request: Request
+  }): Promise<false | Interaction> {
+    if (req.bodyUsed === true) throw new Error('Request Body already used')
+    if (req.body === null) return false
+    const body = (await req.body.getReader().read()).value
+    if (body === undefined) return false
+
+    return await this.verifyServerRequest({
+      headers: req.headers,
+      body,
+      method: req.method,
+      respond: async (options) => {
+        await respondWith(
+          new Response(options.body, {
+            headers: options.headers,
+            status: options.status
+          })
         )
-      ]),
-      this.publicKey
-    ).catch(() => false)
+      }
+    })
   }
 
   async verifyOpineRequest(req: any): Promise<boolean> {
@@ -574,5 +691,61 @@ export class SlashClient {
     const verified = await this.verifyKey(body, signature, timestamp)
     if (!verified) return false
     return true
+  }
+}
+
+/** Decorator to create a Slash Command handler */
+export function slash(name?: string, guild?: string) {
+  return function (client: Client | SlashClient | SlashModule, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@slash decorator requires a function')
+    } else
+      client._decoratedSlash.push({
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+/** Decorator to create a Sub-Slash Command handler */
+export function subslash(parent: string, name?: string, guild?: string) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@subslash decorator requires a function')
+    } else
+      client._decoratedSlash.push({
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
+  }
+}
+
+/** Decorator to create a Grouped Slash Command handler */
+export function groupslash(
+  parent: string,
+  group: string,
+  name?: string,
+  guild?: string
+) {
+  return function (client: Client | SlashModule | SlashClient, prop: string) {
+    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@groupslash decorator requires a function')
+    } else
+      client._decoratedSlash.push({
+        group,
+        parent,
+        name: name ?? prop,
+        guild,
+        handler: item
+      })
   }
 }

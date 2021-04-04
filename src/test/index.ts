@@ -119,16 +119,7 @@ client.on('messageCreate', async (msg: Message) => {
       msg.channel.send('Failed...')
     }
   } else if (msg.content === '!react') {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    msg.addReaction('😂')
-    msg.channel.send('x'.repeat(6969), {
-      embed: new Embed()
-        .setTitle('pepega'.repeat(6969))
-        .setDescription('pepega'.repeat(6969))
-        .addField('uwu', 'uwu'.repeat(6969))
-        .addField('uwu', 'uwu'.repeat(6969))
-        .setFooter('uwu'.repeat(6969))
-    })
+    msg.addReaction('a:programming:785013658257195008')
   } else if (msg.content === '!wait_for') {
     msg.channel.send('Send anything!')
     const [receivedMsg] = await client.waitFor(
@@ -211,13 +202,12 @@ client.on('messageCreate', async (msg: Message) => {
         )
         .join('\n\n')}`
     )
-  } else if (msg.content === '!getPermissions') {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!checkGuildTextBasedChannel(msg.channel)) {
+  } else if (msg.content === '!perms') {
+    if (msg.channel.type !== ChannelTypes.GUILD_TEXT) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const permissions = await (msg.channel as GuildTextChannel).permissionsFor(
+    const permissions = await ((msg.channel as unknown) as GuildTextChannel).permissionsFor(
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       msg.member as Member
     )
