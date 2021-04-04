@@ -80,3 +80,4 @@ export { commands, client }
 export * from './src/types/slash.ts'
 export * from './src/structures/slash.ts'
 export * from './src/interactions/mod.ts'
+export * from './src/types/channel.ts'
