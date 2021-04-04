@@ -18,6 +18,7 @@ import { delay } from '../utils/delay.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
+import { decodeText } from '../utils/encoding.ts'
 
 export interface RequestMembersOptions {
   limit?: number
@@ -89,7 +90,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     }
     if (data instanceof Uint8Array) {
       data = unzlib(data)
-      data = new TextDecoder('utf-8').decode(data)
+      data = decodeText(data)
     }
 
     const { op, d, s, t }: GatewayResponse = JSON.parse(data)
@@ -385,8 +386,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           channel === undefined
             ? null
             : typeof channel === 'string'
-              ? channel
-              : channel?.id,
+            ? channel
+            : channel?.id,
         self_mute: voiceOptions.mute === undefined ? false : voiceOptions.mute,
         self_deaf: voiceOptions.deaf === undefined ? false : voiceOptions.deaf
       }
@@ -427,7 +428,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   close(code: number = 1000, reason?: string): void {
-    this.debug(`Closing with code ${code}${reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''}`)
+    this.debug(
+      `Closing with code ${code}${
+        reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''
+      }`
+    )
     return this.websocket?.close(code, reason)
   }
 

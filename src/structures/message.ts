@@ -21,6 +21,7 @@ import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
 import { Emoji } from './emoji.ts'
 import { InteractionType } from '../types/slash.ts'
+import { encodeText } from '../utils/encoding.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 
@@ -217,8 +218,6 @@ export class Message extends SnowflakeBase {
   }
 }
 
-const encoder = new TextEncoder()
-
 /** Message Attachment that can be sent while Creating Message */
 export class MessageAttachment {
   name: string
@@ -228,7 +227,7 @@ export class MessageAttachment {
     this.name = name
     this.blob =
       typeof blob === 'string'
-        ? new Blob([encoder.encode(blob)])
+        ? new Blob([encodeText(blob)])
         : blob instanceof Uint8Array
         ? new Blob([blob])
         : blob
