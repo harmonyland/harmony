@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { ImageSize } from '../types/cdn.ts'
 import { EmojiPayload } from '../types/emoji.ts'
 import { CUSTOM_EMOJI, EMOJI } from '../types/endpoint.ts'

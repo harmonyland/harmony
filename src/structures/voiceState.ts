@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { ChannelTypes } from '../types/channel.ts'
 import { VoiceStatePayload } from '../types/voice.ts'
 import { Base } from './base.ts'

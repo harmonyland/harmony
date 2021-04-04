@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { DMChannelPayload } from '../types/channel.ts'
 import { UserPayload } from '../types/user.ts'
 import { TextChannel } from './textChannel.ts'

@@ -1,5 +1,5 @@
 import { MessagesManager } from '../managers/messages.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import {
   MessageOptions,
   MessagePayload,

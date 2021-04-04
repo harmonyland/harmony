@@ -1,5 +1,5 @@
 import { ReactionUsersManager } from '../managers/reactionUsers.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Reaction } from '../types/channel.ts'
 import { Base } from './base.ts'
 import { Emoji } from './emoji.ts'

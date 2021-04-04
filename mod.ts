@@ -1,20 +1,18 @@
 export { GatewayIntents } from './src/types/gateway.ts'
 export { Base } from './src/structures/base.ts'
-export { Gateway } from './src/gateway/index.ts'
-export type { GatewayTypedEvents } from './src/gateway/index.ts'
-export type { ClientEvents } from './src/gateway/handlers/index.ts'
-export * from './src/models/client.ts'
-export * from './src/models/slashClient.ts'
+export { Gateway } from './src/gateway/mod.ts'
+export type { GatewayTypedEvents } from './src/gateway/mod.ts'
+export type { ClientEvents } from './src/gateway/handlers/mod.ts'
+export * from './src/client/mod.ts'
+export * from './src/interactions/mod.ts'
 export {
   RESTManager,
   TokenType,
   HttpResponseCode,
   DiscordAPIError
-} from './src/models/rest.ts'
-export type { APIMap, DiscordAPIErrorPayload } from './src/models/rest.ts'
-export type { RequestHeaders } from './src/models/rest.ts'
-export type { RESTOptions } from './src/models/rest.ts'
-export * from './src/models/cacheAdapter.ts'
+} from './src/rest/mod.ts'
+export * from './src/rest/mod.ts'
+export * from './src/cache/adapter.ts'
 export {
   Command,
   CommandBuilder,
@@ -22,16 +20,16 @@ export {
   CommandsManager,
   CategoriesManager,
   CommandsLoader
-} from './src/models/command.ts'
-export type { CommandContext, CommandOptions } from './src/models/command.ts'
+} from './src/commands/command.ts'
+export type { CommandContext, CommandOptions } from './src/commands/command.ts'
 export {
   Extension,
   ExtensionCommands,
   ExtensionsManager
-} from './src/models/extensions.ts'
-export { SlashModule } from './src/models/slashModule.ts'
-export { CommandClient, command } from './src/models/commandClient.ts'
-export type { CommandClientOptions } from './src/models/commandClient.ts'
+} from './src/commands/extension.ts'
+export { SlashModule } from './src/interactions/slashModule.ts'
+export { CommandClient, command } from './src/commands/client.ts'
+export type { CommandClientOptions } from './src/commands/client.ts'
 export { BaseManager } from './src/managers/base.ts'
 export { BaseChildManager } from './src/managers/baseChild.ts'
 export { ChannelsManager } from './src/managers/channels.ts'
@@ -165,8 +163,8 @@ export type { UserPayload } from './src/types/user.ts'
 export { UserFlags } from './src/types/userFlags.ts'
 export type { VoiceStatePayload } from './src/types/voice.ts'
 export type { WebhookPayload } from './src/types/webhook.ts'
-export * from './src/models/collectors.ts'
+export * from './src/client/collectors.ts'
 export type { Dict } from './src/utils/dict.ts'
-export * from './src/models/redisCache.ts'
+export * from './src/cache/redis.ts'
 export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'

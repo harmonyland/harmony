@@ -1,4 +1,4 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { MessageReactionAddPayload } from '../../types/gateway.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
 import { MessageReaction } from '../../structures/messageReaction.ts'

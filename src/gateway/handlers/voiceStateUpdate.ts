@@ -2,7 +2,7 @@ import { Guild } from '../../structures/guild.ts'
 import { VoiceState } from '../../structures/voiceState.ts'
 import { MemberPayload } from '../../types/guild.ts'
 import { VoiceStatePayload } from '../../types/voice.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const voiceStateUpdate: GatewayEventHandler = async (
   gateway: Gateway,

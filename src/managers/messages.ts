@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Message } from '../structures/message.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'

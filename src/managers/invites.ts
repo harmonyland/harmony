@@ -1,5 +1,5 @@
 import { GuildTextChannel, User } from '../../mod.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
 import { Invite } from '../structures/invite.ts'
 import { CHANNEL_INVITES, GUILD_INVITES, INVITE } from '../types/endpoint.ts'

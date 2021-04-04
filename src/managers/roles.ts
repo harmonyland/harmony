@@ -1,5 +1,5 @@
 import { Permissions } from '../../mod.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE, GUILD_ROLES } from '../types/endpoint.ts'

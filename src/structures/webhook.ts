@@ -1,9 +1,5 @@
-import {
-  DISCORD_API_URL,
-  DISCORD_API_VERSION
-} from '../consts/urlsAndVersions.ts'
-import { Client } from '../models/client.ts'
-import { RESTManager } from '../models/rest.ts'
+import { Client } from '../client/mod.ts'
+import { RESTManager } from '../rest/mod.ts'
 import { MessageOptions } from '../types/channel.ts'
 import { UserPayload } from '../types/user.ts'
 import { WebhookPayload } from '../types/webhook.ts'
@@ -13,6 +9,7 @@ import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { fetchAuto } from '../../deps.ts'
 import { WEBHOOK_MESSAGE } from '../types/endpoint.ts'
+import { Constants } from '../types/constants.ts'
 
 export interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
@@ -47,8 +44,8 @@ export class Webhook {
   rest: RESTManager
 
   get url(): string {
-    return `${DISCORD_API_URL}/v${
-      this.rest.version ?? DISCORD_API_VERSION
+    return `${Constants.DISCORD_API_URL}/v${
+      this.rest.version ?? Constants.DISCORD_API_VERSION
     }/webhooks/${this.id}/${this.token}`
   }
 

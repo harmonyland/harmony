@@ -3,8 +3,8 @@ import { Message } from '../structures/message.ts'
 import { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
-import { CommandClient } from './commandClient.ts'
-import { Extension } from './extensions.ts'
+import type { CommandClient } from './client.ts'
+import type { Extension } from './extension.ts'
 import { join, walk } from '../../deps.ts'
 
 export interface CommandContext {

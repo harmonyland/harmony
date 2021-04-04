@@ -1,4 +1,4 @@
-import { GatewayEventHandler } from '../index.ts'
+import type { GatewayEventHandler } from '../mod.ts'
 import {
   GatewayEvents,
   MessageDeletePayload,
@@ -60,14 +60,14 @@ import {
 } from '../../utils/getChannelByType.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import { Interaction } from '../../structures/slash.ts'
-import { CommandContext } from '../../models/command.ts'
-import { RequestMethods } from '../../models/rest.ts'
+import { CommandContext } from '../../commands/command.ts'
+import { RequestMethods } from '../../rest/types.ts'
 import { PartialInvitePayload } from '../../types/invite.ts'
 import { GuildChannels } from '../../types/guild.ts'
 import { applicationCommandCreate } from './applicationCommandCreate.ts'
 import { applicationCommandDelete } from './applicationCommandDelete.ts'
 import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
-import { SlashCommand } from '../../models/slashClient.ts'
+import { SlashCommand } from '../../interactions/slashCommand.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined

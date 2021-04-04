@@ -1,9 +1,5 @@
 import { unzlib } from '../../deps.ts'
-import { Client } from '../models/client.ts'
-import {
-  DISCORD_GATEWAY_URL,
-  DISCORD_API_VERSION
-} from '../consts/urlsAndVersions.ts'
+import { Client } from '../client/mod.ts'
 import { GatewayResponse } from '../types/gatewayResponse.ts'
 import {
   GatewayOpcodes,
@@ -12,13 +8,14 @@ import {
   StatusUpdatePayload,
   GatewayEvents
 } from '../types/gateway.ts'
-import { gatewayHandlers } from './handlers/index.ts'
+import { gatewayHandlers } from './handlers/mod.ts'
 import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
 import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import { Guild } from '../structures/guild.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { decodeText } from '../utils/encoding.ts'
+import { Constants } from '../types/constants.ts'
 
 export interface RequestMembersOptions {
   limit?: number
@@ -417,7 +414,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.debug('Initializing WebSocket...')
     this.websocket = new WebSocket(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `${DISCORD_GATEWAY_URL}/?v=${DISCORD_API_VERSION}&encoding=json`,
+      `${Constants.DISCORD_GATEWAY_URL}/?v=${Constants.DISCORD_API_VERSION}&encoding=json`,
       []
     )
     this.websocket.binaryType = 'arraybuffer'

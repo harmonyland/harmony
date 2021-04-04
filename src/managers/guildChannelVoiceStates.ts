@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { VoiceStatePayload } from '../types/voice.ts'
 import { VoiceState } from '../structures/voiceState.ts'

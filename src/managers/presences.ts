@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
 import { Presence } from '../structures/presence.ts'
 import { User } from '../structures/user.ts'

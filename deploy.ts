@@ -2,7 +2,7 @@ import {
   SlashCommandsManager,
   SlashClient,
   SlashCommandHandlerCallback
-} from './src/models/slashClient.ts'
+} from './src/interactions/mod.ts'
 import { InteractionResponseType, InteractionType } from './src/types/slash.ts'
 
 export interface DeploySlashInitOptions {
@@ -41,7 +41,7 @@ export function init(options: DeploySlashInitOptions): void {
     try {
       const d = await client.verifyFetchEvent({
         respondWith: (...args: any[]) => evt.respondWith(...args),
-        request: evt.request,
+        request: evt.request
       })
       if (d === false) {
         await evt.respondWith(
@@ -72,11 +72,11 @@ export function handle(
   cmd:
     | string
     | {
-      name: string
-      parent?: string
-      group?: string
-      guild?: string
-    },
+        name: string
+        parent?: string
+        group?: string
+        guild?: string
+      },
   handler: SlashCommandHandlerCallback
 ): void {
   const handle = {
@@ -85,9 +85,15 @@ export function handle(
     ...(typeof cmd === 'string' ? {} : cmd)
   }
 
-  if (typeof handle.name === 'string' && handle.name.includes(' ') && handle.parent === undefined && handle.group === undefined) {
-    const parts = handle.name.split(/ +/).filter(e => e !== '')
-    if (parts.length > 3 || parts.length < 1) throw new Error('Invalid command name')
+  if (
+    typeof handle.name === 'string' &&
+    handle.name.includes(' ') &&
+    handle.parent === undefined &&
+    handle.group === undefined
+  ) {
+    const parts = handle.name.split(/ +/).filter((e) => e !== '')
+    if (parts.length > 3 || parts.length < 1)
+      throw new Error('Invalid command name')
     const root = parts.shift() as string
     const group = parts.length === 2 ? parts.shift() : undefined
     const sub = parts.shift()
@@ -103,4 +109,4 @@ export function handle(
 export { commands, client }
 export * from './src/types/slash.ts'
 export * from './src/structures/slash.ts'
-export * from './src/models/slashClient.ts'
+export * from './src/interactions/mod.ts'

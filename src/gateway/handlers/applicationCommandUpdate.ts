@@ -1,6 +1,6 @@
-import { SlashCommand } from '../../models/slashClient.ts'
+import { SlashCommand } from '../../interactions/slashCommand.ts'
 import { ApplicationCommandPayload } from '../../types/gateway.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const applicationCommandUpdate: GatewayEventHandler = async (
   gateway: Gateway,

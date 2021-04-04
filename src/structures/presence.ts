@@ -9,7 +9,7 @@ import { PresenceUpdatePayload, StatusUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
 import { Guild } from './guild.ts'
 import { User } from './user.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 
 export enum ActivityTypes {
   PLAYING = 0,

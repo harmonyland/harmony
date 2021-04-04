@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { MessagePayload } from '../types/channel.ts'
 import { Collection } from '../utils/collection.ts'
 import { GuildTextBasedChannel } from './guildTextChannel.ts'

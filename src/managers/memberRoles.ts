@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { RolePayload } from '../types/role.ts'
 import { Role } from '../structures/role.ts'

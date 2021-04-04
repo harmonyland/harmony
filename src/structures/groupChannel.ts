@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { GroupDMChannelPayload } from '../types/channel.ts'
 import { Channel } from './channel.ts'
 

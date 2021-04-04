@@ -1,6 +1,6 @@
 import { User } from '../../structures/user.ts'
 import { UserPayload } from '../../types/user.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const userUpdate: GatewayEventHandler = async (
   gateway: Gateway,

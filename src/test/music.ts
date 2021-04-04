@@ -13,7 +13,7 @@ import {
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import { Manager, Player } from 'https://deno.land/x/lavadeno/mod.ts'
 import { Interaction } from '../structures/slash.ts'
-import { slash } from '../models/client.ts'
+import { slash } from '../client/mod.ts'
 // import { SlashCommandOptionType } from '../types/slash.ts'
 
 export const nodes = [

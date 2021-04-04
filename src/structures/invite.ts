@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { ChannelPayload } from '../types/channel.ts'
 import { INVITE } from '../types/endpoint.ts'
 import { GuildPayload } from '../types/guild.ts'

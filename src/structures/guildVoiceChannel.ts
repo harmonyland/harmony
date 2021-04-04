@@ -1,6 +1,6 @@
-import { VoiceServerUpdateData } from '../gateway/handlers/index.ts'
-import { VoiceStateOptions } from '../gateway/index.ts'
-import { Client } from '../models/client.ts'
+import { VoiceServerUpdateData } from '../gateway/handlers/mod.ts'
+import { VoiceStateOptions } from '../gateway/mod.ts'
+import { Client } from '../client/mod.ts'
 import {
   GuildVoiceChannelPayload,
   ModifyVoiceChannelOption,

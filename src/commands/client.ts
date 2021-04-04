@@ -1,6 +1,6 @@
 import { Message } from '../structures/message.ts'
 import { GuildTextBasedChannel } from '../structures/guildTextChannel.ts'
-import { Client, ClientOptions } from './client.ts'
+import { Client, ClientOptions } from '../client/mod.ts'
 import {
   CategoriesManager,
   Command,
@@ -9,7 +9,7 @@ import {
   CommandsManager,
   parseCommand
 } from './command.ts'
-import { Extension, ExtensionsManager } from './extensions.ts'
+import { Extension, ExtensionsManager } from './extension.ts'
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
 

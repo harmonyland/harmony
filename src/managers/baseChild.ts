@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Collection } from '../utils/collection.ts'
 import { BaseManager } from './base.ts'
 

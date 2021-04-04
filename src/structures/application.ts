@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { ApplicationPayload } from '../types/application.ts'
 import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'

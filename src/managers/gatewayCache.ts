@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 
 /**
  * Cache Manager used for Caching values related to Gateway connection

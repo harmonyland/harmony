@@ -1,5 +1,5 @@
 import { User } from '../structures/user.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
 import { Member } from '../structures/member.ts'
 import { GUILD_MEMBER } from '../types/endpoint.ts'

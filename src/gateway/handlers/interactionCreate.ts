@@ -9,7 +9,7 @@ import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
 import { InteractionPayload } from '../../types/slash.ts'
 import { UserPayload } from '../../types/user.ts'
 import { Permissions } from '../../utils/permissions.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { User } from '../../structures/user.ts'
 import { Role } from '../../structures/role.ts'
 

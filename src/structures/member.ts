@@ -1,5 +1,5 @@
 import { MemberRolesManager } from '../managers/memberRoles.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { GUILD_MEMBER } from '../types/endpoint.ts'
 import { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'

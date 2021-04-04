@@ -1,7 +1,7 @@
 import { Mixin } from '../../deps.ts'
 import { TextChannel } from './textChannel.ts'
 import { GuildChannel } from './channel.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import {
   ChannelTypes,
   GuildTextBasedChannelPayload,

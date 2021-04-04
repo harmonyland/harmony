@@ -1,5 +1,5 @@
 import { fetchAuto } from '../../deps.ts'
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
 import { Template } from '../structures/template.ts'
 import { Role } from '../structures/role.ts'
