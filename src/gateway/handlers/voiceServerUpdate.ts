@@ -1,5 +1,5 @@
-import { Guild } from '../../structures/guild.ts'
-import { VoiceServerUpdatePayload } from '../../types/gateway.ts'
+import type { Guild } from '../../structures/guild.ts'
+import type { VoiceServerUpdatePayload } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const voiceServerUpdate: GatewayEventHandler = async (

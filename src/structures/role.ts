@@ -1,9 +1,9 @@
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { SnowflakeBase } from './base.ts'
-import { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { Permissions } from '../utils/permissions.ts'
-import { Guild } from './guild.ts'
-import { Member } from './member.ts'
+import type { Guild } from './guild.ts'
+import type { Member } from './member.ts'
 import { User } from './user.ts'
 
 /** Represents a Guild Role */

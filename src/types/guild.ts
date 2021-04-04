@@ -1,15 +1,15 @@
-import { GuildChannel } from '../structures/channel.ts'
-import { Emoji } from '../structures/emoji.ts'
-import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
-import { NewsChannel } from '../structures/guildNewsChannel.ts'
-import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
-import { Role } from '../structures/role.ts'
-import {
+import type { GuildChannel } from '../structures/channel.ts'
+import type { Emoji } from '../structures/emoji.ts'
+import type { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import type { NewsChannel } from '../structures/guildNewsChannel.ts'
+import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import type { Role } from '../structures/role.ts'
+import type {
   GuildTextChannel,
   GuildTextBasedChannel
 } from '../structures/guildTextChannel.ts'
-import { ApplicationPayload } from './application.ts'
-import {
+import type { ApplicationPayload } from './application.ts'
+import type {
   ChannelPayload,
   ChannelTypes,
   GuildCategoryChannelPayload,
@@ -18,12 +18,12 @@ import {
   GuildTextChannelPayload,
   GuildVoiceChannelPayload
 } from './channel.ts'
-import { EmojiPayload } from './emoji.ts'
-import { PresenceUpdatePayload } from './gateway.ts'
-import { RolePayload } from './role.ts'
-import { UserPayload } from './user.ts'
-import { VoiceStatePayload } from './voice.ts'
-import { WebhookPayload } from './webhook.ts'
+import type { EmojiPayload } from './emoji.ts'
+import type { PresenceUpdatePayload } from './gateway.ts'
+import type { RolePayload } from './role.ts'
+import type { UserPayload } from './user.ts'
+import type { VoiceStatePayload } from './voice.ts'
+import type { WebhookPayload } from './webhook.ts'
 
 export interface GuildPayload {
   id: string

@@ -1,7 +1,10 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import getChannelByType from '../../utils/getChannelByType.ts'
-import { ChannelPayload, GuildChannelPayload } from '../../types/channel.ts'
-import { Guild } from '../../structures/guild.ts'
+import type {
+  ChannelPayload,
+  GuildChannelPayload
+} from '../../types/channel.ts'
+import type { Guild } from '../../structures/guild.ts'
 
 export const channelCreate: GatewayEventHandler = async (
   gateway: Gateway,

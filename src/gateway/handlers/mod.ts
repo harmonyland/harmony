@@ -1,5 +1,5 @@
 import type { GatewayEventHandler } from '../mod.ts'
-import {
+import type {
   GatewayEvents,
   MessageDeletePayload,
   TypingStartGuildData
@@ -31,18 +31,18 @@ import { webhooksUpdate } from './webhooksUpdate.ts'
 import { messageDeleteBulk } from './messageDeleteBulk.ts'
 import { userUpdate } from './userUpdate.ts'
 import { typingStart } from './typingStart.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
 import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
-import { Guild } from '../../structures/guild.ts'
-import { User } from '../../structures/user.ts'
-import { Emoji } from '../../structures/emoji.ts'
-import { Member } from '../../structures/member.ts'
-import { Role } from '../../structures/role.ts'
-import { Message } from '../../structures/message.ts'
-import { Collection } from '../../utils/collection.ts'
+import type { Guild } from '../../structures/guild.ts'
+import type { User } from '../../structures/user.ts'
+import type { Emoji } from '../../structures/emoji.ts'
+import type { Member } from '../../structures/member.ts'
+import type { Role } from '../../structures/role.ts'
+import type { Message } from '../../structures/message.ts'
+import type { Collection } from '../../utils/collection.ts'
 import { voiceServerUpdate } from './voiceServerUpdate.ts'
 import { voiceStateUpdate } from './voiceStateUpdate.ts'
-import { VoiceState } from '../../structures/voiceState.ts'
+import type { VoiceState } from '../../structures/voiceState.ts'
 import { messageReactionAdd } from './messageReactionAdd.ts'
 import { messageReactionRemove } from './messageReactionRemove.ts'
 import { messageReactionRemoveAll } from './messageReactionRemoveAll.ts'
@@ -51,23 +51,23 @@ import { guildMembersChunk } from './guildMembersChunk.ts'
 import { presenceUpdate } from './presenceUpdate.ts'
 import { inviteCreate } from './inviteCreate.ts'
 import { inviteDelete } from './inviteDelete.ts'
-import { MessageReaction } from '../../structures/messageReaction.ts'
-import { Invite } from '../../structures/invite.ts'
-import { Presence } from '../../structures/presence.ts'
-import {
+import type { MessageReaction } from '../../structures/messageReaction.ts'
+import type { Invite } from '../../structures/invite.ts'
+import type { Presence } from '../../structures/presence.ts'
+import type {
   EveryChannelTypes,
   EveryTextChannelTypes
 } from '../../utils/getChannelByType.ts'
 import { interactionCreate } from './interactionCreate.ts'
-import { Interaction } from '../../structures/slash.ts'
-import { CommandContext } from '../../commands/command.ts'
-import { RequestMethods } from '../../rest/types.ts'
-import { PartialInvitePayload } from '../../types/invite.ts'
-import { GuildChannels } from '../../types/guild.ts'
+import type { Interaction } from '../../structures/slash.ts'
+import type { CommandContext } from '../../commands/command.ts'
+import type { RequestMethods } from '../../rest/types.ts'
+import type { PartialInvitePayload } from '../../types/invite.ts'
+import type { GuildChannels } from '../../types/guild.ts'
 import { applicationCommandCreate } from './applicationCommandCreate.ts'
 import { applicationCommandDelete } from './applicationCommandDelete.ts'
 import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
-import { SlashCommand } from '../../interactions/slashCommand.ts'
+import type { SlashCommand } from '../../interactions/slashCommand.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined

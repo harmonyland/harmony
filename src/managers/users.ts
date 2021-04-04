@@ -1,7 +1,7 @@
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { User } from '../structures/user.ts'
 import { USER } from '../types/endpoint.ts'
-import { UserPayload } from '../types/user.ts'
+import type { UserPayload } from '../types/user.ts'
 import { BaseManager } from './base.ts'
 
 export class UsersManager extends BaseManager<UserPayload, User> {

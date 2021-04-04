@@ -1,5 +1,5 @@
-import { Channel } from '../../structures/channel.ts'
-import { ChannelPayload } from '../../types/channel.ts'
+import type { Channel } from '../../structures/channel.ts'
+import type { ChannelPayload } from '../../types/channel.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const channelUpdate: GatewayEventHandler = async (

@@ -1,20 +1,20 @@
-import { Client } from '../client/mod.ts'
-import {
+import type { Client } from '../client/mod.ts'
+import type {
   ChannelPayload,
   ChannelTypes,
   ModifyChannelOption,
   ModifyChannelPayload,
   Overwrite,
   OverwritePayload,
-  OverwriteAsArg,
-  OverrideType
+  OverwriteAsArg
 } from '../types/channel.ts'
+import { OverrideType } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
-import { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
+import type { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
 import getChannelByType from '../utils/getChannelByType.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
-import { Guild } from './guild.ts'
+import type { Guild } from './guild.ts'
 import { Member } from './member.ts'
 import { Role } from './role.ts'
 

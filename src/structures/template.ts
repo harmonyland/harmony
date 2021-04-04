@@ -1,6 +1,6 @@
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { TEMPLATE } from '../types/endpoint.ts'
-import { TemplatePayload } from '../types/template.ts'
+import type { TemplatePayload } from '../types/template.ts'
 import { Base } from './base.ts'
 import { Guild } from './guild.ts'
 import { User } from './user.ts'

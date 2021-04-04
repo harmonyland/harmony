@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/method-signature-style */
-import { User } from '../structures/user.ts'
+import type { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/mod.ts'
 import { RESTManager, RESTOptions, TokenType } from '../rest/mod.ts'
@@ -22,7 +22,7 @@ import type { Collector } from './collectors.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import type { VoiceRegion } from '../types/voice.ts'
 import { fetchAuto } from '../../deps.ts'
-import { DMChannel } from '../structures/dmChannel.ts'
+import type { DMChannel } from '../structures/dmChannel.ts'
 import { Template } from '../structures/template.ts'
 
 /** OS related properties sent with Gateway Identify */

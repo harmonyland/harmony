@@ -1,9 +1,9 @@
 import { Permissions } from '../../mod.ts'
-import { Client } from '../client/mod.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Client } from '../client/mod.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE, GUILD_ROLES } from '../types/endpoint.ts'
-import { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { BaseManager } from './base.ts'
 
 export interface CreateGuildRoleOptions {

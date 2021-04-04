@@ -1,6 +1,6 @@
 import { Member } from '../../structures/member.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
-import { TypingStartPayload } from '../../types/gateway.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
+import type { TypingStartPayload } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 // TODO: Do we need to add uncached events here?

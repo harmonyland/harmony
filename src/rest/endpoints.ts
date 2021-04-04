@@ -1,4 +1,4 @@
-import { ApplicationPayload } from '../types/application.ts'
+import type { ApplicationPayload } from '../types/application.ts'
 import type {
   ChannelPayload,
   CreateMessagePayload,
@@ -9,9 +9,9 @@ import type {
   MessagePayload,
   OverwritePayload
 } from '../types/channel.ts'
-import { CreateEmojiPayload, EmojiPayload } from '../types/emoji.ts'
-import { GuildBanAddPayload } from '../types/gateway.ts'
-import { GatewayBotPayload } from '../types/gatewayBot.ts'
+import type { CreateEmojiPayload, EmojiPayload } from '../types/emoji.ts'
+import type { GuildBanAddPayload } from '../types/gateway.ts'
+import type { GatewayBotPayload } from '../types/gatewayBot.ts'
 import type {
   AuditLogPayload,
   GuildBanPayload,
@@ -25,18 +25,21 @@ import type {
   GuildWidgetPayload,
   MemberPayload
 } from '../types/guild.ts'
-import { InvitePayload, InviteWithMetadataPayload } from '../types/invite.ts'
-import { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type {
+  InvitePayload,
+  InviteWithMetadataPayload
+} from '../types/invite.ts'
+import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import type {
   InteractionResponsePayload,
   SlashCommandPartial,
   SlashCommandPayload
 } from '../types/slash.ts'
-import { TemplatePayload } from '../types/template.ts'
+import type { TemplatePayload } from '../types/template.ts'
 import type { UserPayload } from '../types/user.ts'
-import { VoiceRegion } from '../types/voice.ts'
-import { WebhookPayload } from '../types/webhook.ts'
-import { Dict } from '../utils/dict.ts'
+import type { VoiceRegion } from '../types/voice.ts'
+import type { WebhookPayload } from '../types/webhook.ts'
+import type { Dict } from '../utils/dict.ts'
 import type { RESTManager } from './manager.ts'
 
 export class RESTEndpoints {

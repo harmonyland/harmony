@@ -1,6 +1,6 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import { MessageReactionRemoveAllPayload } from '../../types/gateway.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
+import type { MessageReactionRemoveAllPayload } from '../../types/gateway.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
 
 export const messageReactionRemoveAll: GatewayEventHandler = async (
   gateway: Gateway,

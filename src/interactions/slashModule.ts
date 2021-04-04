@@ -1,4 +1,4 @@
-import { SlashCommandHandler } from './slashClient.ts'
+import type { SlashCommandHandler } from './slashClient.ts'
 
 export class SlashModule {
   name: string = ''

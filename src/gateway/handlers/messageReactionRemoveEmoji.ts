@@ -1,6 +1,6 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import { MessageReactionRemoveEmojiPayload } from '../../types/gateway.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
+import type { MessageReactionRemoveEmojiPayload } from '../../types/gateway.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
 
 export const messageReactionRemoveEmoji: GatewayEventHandler = async (
   gateway: Gateway,

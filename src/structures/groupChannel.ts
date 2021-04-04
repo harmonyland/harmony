@@ -1,5 +1,5 @@
-import { Client } from '../client/mod.ts'
-import { GroupDMChannelPayload } from '../types/channel.ts'
+import type { Client } from '../client/mod.ts'
+import type { GroupDMChannelPayload } from '../types/channel.ts'
 import { Channel } from './channel.ts'
 
 export class GroupDMChannel extends Channel {

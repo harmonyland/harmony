@@ -1,6 +1,6 @@
 import { MessagesManager } from '../managers/messages.ts'
-import { Client } from '../client/mod.ts'
-import {
+import type { Client } from '../client/mod.ts'
+import type {
   MessageOptions,
   MessagePayload,
   TextChannelPayload
@@ -11,11 +11,11 @@ import {
 } from '../types/endpoint.ts'
 import { Collection } from '../utils/collection.ts'
 import { Channel } from './channel.ts'
-import { Embed } from './embed.ts'
+import type { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
-import { Member } from './member.ts'
+import type { Member } from './member.ts'
 import { Message } from './message.ts'
-import { User } from './user.ts'
+import type { User } from './user.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 

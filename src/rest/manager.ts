@@ -1,7 +1,7 @@
 import { Embed } from '../structures/embed.ts'
 import { MessageAttachment } from '../structures/message.ts'
 import { Collection } from '../utils/collection.ts'
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { simplifyAPIError } from '../utils/err_fmt.ts'
 import {
   DiscordAPIErrorPayload,

@@ -1,13 +1,13 @@
 import { MemberRolesManager } from '../managers/memberRoles.ts'
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { GUILD_MEMBER } from '../types/endpoint.ts'
-import { MemberPayload } from '../types/guild.ts'
+import type { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
-import { Guild } from './guild.ts'
+import type { Guild } from './guild.ts'
 import { VoiceChannel } from './guildVoiceChannel.ts'
-import { Role } from './role.ts'
-import { User } from './user.ts'
+import type { Role } from './role.ts'
+import type { User } from './user.ts'
 
 export interface MemberData {
   nick?: string | null

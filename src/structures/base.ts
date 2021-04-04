@@ -1,4 +1,4 @@
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { Snowflake } from '../utils/snowflake.ts'
 
 export class Base {

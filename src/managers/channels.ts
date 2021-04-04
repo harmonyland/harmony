@@ -2,8 +2,8 @@ import { Client } from '../client/mod.ts'
 import { Channel } from '../structures/channel.ts'
 import { Embed } from '../structures/embed.ts'
 import { Message } from '../structures/message.ts'
-import { TextChannel } from '../structures/textChannel.ts'
-import {
+import type { TextChannel } from '../structures/textChannel.ts'
+import type {
   ChannelPayload,
   GuildChannelPayload,
   MessageOptions

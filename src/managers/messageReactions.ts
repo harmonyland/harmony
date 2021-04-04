@@ -1,10 +1,9 @@
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { Emoji } from '../structures/emoji.ts'
-import { Guild } from '../structures/guild.ts'
-import { Message } from '../structures/message.ts'
+import type { Message } from '../structures/message.ts'
 import { MessageReaction } from '../structures/messageReaction.ts'
-import { User } from '../structures/user.ts'
-import { Reaction } from '../types/channel.ts'
+import type { User } from '../structures/user.ts'
+import type { Reaction } from '../types/channel.ts'
 import {
   MESSAGE_REACTION,
   MESSAGE_REACTIONS,
@@ -19,7 +18,7 @@ export class MessageReactionsManager extends BaseManager<
   message: Message
 
   constructor(client: Client, message: Message) {
-    super(client, `reactions:${message.id}`, Guild)
+    super(client, `reactions:${message.id}`, MessageReaction)
     this.message = message
   }
 

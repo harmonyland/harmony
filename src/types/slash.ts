@@ -1,12 +1,12 @@
-import { Dict } from '../utils/dict.ts'
-import {
+import type { Dict } from '../utils/dict.ts'
+import type {
   AllowedMentionsPayload,
   ChannelTypes,
   EmbedPayload
 } from './channel.ts'
-import { MemberPayload } from './guild.ts'
-import { RolePayload } from './role.ts'
-import { UserPayload } from './user.ts'
+import type { MemberPayload } from './guild.ts'
+import type { RolePayload } from './role.ts'
+import type { UserPayload } from './user.ts'
 
 export interface InteractionApplicationCommandOption {
   /** Option name */

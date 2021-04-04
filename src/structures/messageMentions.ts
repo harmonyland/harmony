@@ -1,9 +1,9 @@
-import { Client } from '../client/mod.ts'
-import { MessagePayload } from '../types/channel.ts'
+import type { Client } from '../client/mod.ts'
+import type { MessagePayload } from '../types/channel.ts'
 import { Collection } from '../utils/collection.ts'
 import { GuildTextBasedChannel } from './guildTextChannel.ts'
-import { Message } from './message.ts'
-import { Role } from './role.ts'
+import type { Message } from './message.ts'
+import type { Role } from './role.ts'
 import { User } from './user.ts'
 
 export class MessageMentions {

@@ -1,6 +1,6 @@
-import { Client } from '../client/mod.ts'
-import { DMChannelPayload } from '../types/channel.ts'
-import { UserPayload } from '../types/user.ts'
+import type { Client } from '../client/mod.ts'
+import type { DMChannelPayload } from '../types/channel.ts'
+import type { UserPayload } from '../types/user.ts'
 import { TextChannel } from './textChannel.ts'
 
 export class DMChannel extends TextChannel {

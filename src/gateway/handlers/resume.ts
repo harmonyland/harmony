@@ -1,6 +1,6 @@
 import { User } from '../../structures/user.ts'
 import { CLIENT_USER } from '../../types/endpoint.ts'
-import { Resume } from '../../types/gateway.ts'
+import type { Resume } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const resume: GatewayEventHandler = async (

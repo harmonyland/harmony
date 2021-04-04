@@ -1,12 +1,12 @@
-import { Embed } from '../structures/embed.ts'
-import { Member } from '../structures/member.ts'
-import { Message, MessageAttachment } from '../structures/message.ts'
-import { Role } from '../structures/role.ts'
-import { Permissions } from '../utils/permissions.ts'
-import { EmojiPayload } from './emoji.ts'
-import { MemberPayload } from './guild.ts'
-import { InteractionType } from './slash.ts'
-import { UserPayload } from './user.ts'
+import type { Embed } from '../structures/embed.ts'
+import type { Member } from '../structures/member.ts'
+import type { Message, MessageAttachment } from '../structures/message.ts'
+import type { Role } from '../structures/role.ts'
+import type { Permissions } from '../utils/permissions.ts'
+import type { EmojiPayload } from './emoji.ts'
+import type { MemberPayload } from './guild.ts'
+import type { InteractionType } from './slash.ts'
+import type { UserPayload } from './user.ts'
 
 export interface ChannelPayload {
   id: string

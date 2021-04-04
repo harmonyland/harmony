@@ -1,7 +1,7 @@
 import { Message } from '../../structures/message.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
 import { User } from '../../structures/user.ts'
-import { MessagePayload } from '../../types/channel.ts'
+import type { MessagePayload } from '../../types/channel.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const messageCreate: GatewayEventHandler = async (

@@ -8,19 +8,19 @@ import {
   MessagePayload,
   MessageReference
 } from '../types/channel.ts'
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { User } from './user.ts'
-import { Member } from './member.ts'
+import type { Member } from './member.ts'
 import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
-import { TextChannel } from './textChannel.ts'
-import { GuildTextBasedChannel } from './guildTextChannel.ts'
-import { Guild } from './guild.ts'
+import type { TextChannel } from './textChannel.ts'
+import type { GuildTextBasedChannel } from './guildTextChannel.ts'
+import type { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
-import { Emoji } from './emoji.ts'
-import { InteractionType } from '../types/slash.ts'
+import type { Emoji } from './emoji.ts'
+import type { InteractionType } from '../types/slash.ts'
 import { encodeText } from '../utils/encoding.ts'
 
 type AllMessageOptions = MessageOptions | Embed

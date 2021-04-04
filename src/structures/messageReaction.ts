@@ -1,9 +1,9 @@
 import { ReactionUsersManager } from '../managers/reactionUsers.ts'
-import { Client } from '../client/mod.ts'
-import { Reaction } from '../types/channel.ts'
+import type { Client } from '../client/mod.ts'
+import type { Reaction } from '../types/channel.ts'
 import { Base } from './base.ts'
-import { Emoji } from './emoji.ts'
-import { Message } from './message.ts'
+import type { Emoji } from './emoji.ts'
+import type { Message } from './message.ts'
 
 export class MessageReaction extends Base {
   message: Message

@@ -1,5 +1,5 @@
-import { Client } from '../client/mod.ts'
-import { ApplicationPayload } from '../types/application.ts'
+import type { Client } from '../client/mod.ts'
+import type { ApplicationPayload } from '../types/application.ts'
 import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'
 

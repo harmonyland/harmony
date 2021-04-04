@@ -1,7 +1,7 @@
 import { Collection } from '../utils/collection.ts'
 import { Command } from './command.ts'
 import { CommandClient } from './client.ts'
-import { ClientEvents } from '../gateway/handlers/mod.ts'
+import type { ClientEvents } from '../gateway/handlers/mod.ts'
 
 export type ExtensionEventCallback = (ext: Extension, ...args: any[]) => any
 

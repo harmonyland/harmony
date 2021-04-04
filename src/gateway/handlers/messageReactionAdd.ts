@@ -1,8 +1,8 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import { MessageReactionAddPayload } from '../../types/gateway.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
-import { MessageReaction } from '../../structures/messageReaction.ts'
-import { UserPayload } from '../../types/user.ts'
+import type { MessageReactionAddPayload } from '../../types/gateway.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
+import type { MessageReaction } from '../../structures/messageReaction.ts'
+import type { UserPayload } from '../../types/user.ts'
 
 export const messageReactionAdd: GatewayEventHandler = async (
   gateway: Gateway,

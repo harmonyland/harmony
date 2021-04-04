@@ -1,5 +1,5 @@
-import { Message } from '../structures/message.ts'
-import { GuildTextBasedChannel } from '../structures/guildTextChannel.ts'
+import type { Message } from '../structures/message.ts'
+import type { GuildTextBasedChannel } from '../structures/guildTextChannel.ts'
 import { Client, ClientOptions } from '../client/mod.ts'
 import {
   CategoriesManager,

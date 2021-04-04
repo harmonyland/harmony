@@ -1,5 +1,5 @@
 import { unzlib } from '../../deps.ts'
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { GatewayResponse } from '../types/gatewayResponse.ts'
 import {
   GatewayOpcodes,
@@ -11,8 +11,8 @@ import {
 import { gatewayHandlers } from './handlers/mod.ts'
 import { GatewayCache } from '../managers/gatewayCache.ts'
 import { delay } from '../utils/delay.ts'
-import { VoiceChannel } from '../structures/guildVoiceChannel.ts'
-import { Guild } from '../structures/guild.ts'
+import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
+import type { Guild } from '../structures/guild.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { decodeText } from '../utils/encoding.ts'
 import { Constants } from '../types/constants.ts'

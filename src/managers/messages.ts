@@ -1,8 +1,8 @@
-import { Client } from '../client/mod.ts'
+import type { Client } from '../client/mod.ts'
 import { Message } from '../structures/message.ts'
-import { TextChannel } from '../structures/textChannel.ts'
+import type { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'
-import { MessagePayload } from '../types/channel.ts'
+import type { MessagePayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { BaseManager } from './base.ts'
 

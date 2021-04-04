@@ -1,5 +1,5 @@
 import { RESTManager } from '../rest/manager.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Guild } from '../structures/guild.ts'
 import {
   SlashCommandChoice,
   SlashCommandOption,

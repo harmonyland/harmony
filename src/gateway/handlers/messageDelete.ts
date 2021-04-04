@@ -1,5 +1,5 @@
-import { TextChannel } from '../../structures/textChannel.ts'
-import { MessageDeletePayload } from '../../types/gateway.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
+import type { MessageDeletePayload } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const messageDelete: GatewayEventHandler = async (

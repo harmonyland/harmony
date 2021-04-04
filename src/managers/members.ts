@@ -1,9 +1,9 @@
 import { User } from '../structures/user.ts'
-import { Client } from '../client/mod.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Client } from '../client/mod.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Member } from '../structures/member.ts'
 import { GUILD_MEMBER } from '../types/endpoint.ts'
-import { MemberPayload } from '../types/guild.ts'
+import type { MemberPayload } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { Permissions } from '../utils/permissions.ts'
 

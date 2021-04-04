@@ -1,5 +1,5 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import { ChannelPayload } from '../../types/channel.ts'
+import type { ChannelPayload } from '../../types/channel.ts'
 
 export const channelDelete: GatewayEventHandler = async (
   gateway: Gateway,
