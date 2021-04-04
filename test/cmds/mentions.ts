@@ -1,5 +1,4 @@
-import { Command, Embed } from '../../../mod.ts'
-import { CommandContext } from '../../models/command.ts'
+import { Command, CommandContext, Embed } from '../../mod.ts'
 
 export default class PingCommand extends Command {
   name = 'mentions'

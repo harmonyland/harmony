@@ -6,7 +6,7 @@ import {
   CommandContext,
   Extension,
   CommandBuilder
-} from '../../mod.ts'
+} from '../mod.ts'
 import { TOKEN } from './config.ts'
 
 class MyClient extends CommandClient {

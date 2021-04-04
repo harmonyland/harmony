@@ -1,6 +1,9 @@
-import { Command, VoiceChannel } from '../../../mod.ts'
-import { CommandContext } from '../../models/command.ts'
-import { ChannelTypes } from '../../types/channel.ts'
+import {
+  Command,
+  CommandContext,
+  ChannelTypes,
+  VoiceChannel
+} from '../../mod.ts'
 
 export default class KickFromSpecificVoiceCommand extends Command {
   name = 'kickFromSpecificVoice'

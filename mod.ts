@@ -104,7 +104,15 @@ export type {
   ClientStatus,
   StatusType
 } from './src/types/presence.ts'
-export { ChannelTypes } from './src/types/channel.ts'
+export {
+  ChannelTypes,
+  OverwriteType,
+  OverrideType
+} from './src/types/channel.ts'
+export type {
+  OverwriteAsOptions,
+  OverwritePayload
+} from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
@@ -129,8 +137,7 @@ export type {
   MessageStickerPayload,
   MessageTypes,
   OverwriteAsArg,
-  Overwrite,
-  OverwriteAsOptions
+  Overwrite
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'

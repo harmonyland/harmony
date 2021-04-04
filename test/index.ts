@@ -11,11 +11,11 @@ import {
   ChannelTypes,
   GuildTextChannel,
   checkGuildTextBasedChannel,
-  Permissions
-} from '../../mod.ts'
-import { Collector } from '../models/collectors.ts'
-import { MessageAttachment } from '../structures/message.ts'
-import { OverrideType } from '../types/channel.ts'
+  Permissions,
+  Collector,
+  MessageAttachment,
+  OverrideType
+} from '../mod.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client({
@@ -74,12 +74,12 @@ client.on('messageCreate', async (msg: Message) => {
     const guilds = await msg.client.guilds.collection()
     msg.channel.send(
       'Guild List:\n' +
-      (guilds
-        .array()
-        .map((c: Guild, i: number) => {
-          return `${i + 1}. ${c.name} - ${c.memberCount} members`
-        })
-        .join('\n') as string)
+        (guilds
+          .array()
+          .map((c: Guild, i: number) => {
+            return `${i + 1}. ${c.name} - ${c.memberCount} members`
+          })
+          .join('\n') as string)
     )
   } else if (msg.content === '!roles') {
     const col = await msg.guild?.roles.collection()
