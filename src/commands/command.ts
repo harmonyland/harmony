@@ -72,6 +72,8 @@ export interface CommandOptions {
 }
 
 export class Command implements CommandOptions {
+  static meta?: CommandOptions
+
   name: string = ''
   description?: string
   category?: string
@@ -486,12 +488,16 @@ export class CommandsManager {
 
   /** Add a Command */
   add(cmd: Command | typeof Command): boolean {
-    // eslint-disable-next-line new-cap
-    if (!(cmd instanceof Command)) cmd = new cmd()
+    if (!(cmd instanceof Command)) {
+      const CmdClass = cmd
+      cmd = new CmdClass()
+      Object.assign(cmd, CmdClass.meta ?? {})
+    }
     if (this.exists(cmd, cmd.extension?.subPrefix))
       throw new Error(
         `Failed to add Command '${cmd.toString()}' with name/alias already exists.`
       )
+    if (cmd.name === '') throw new Error('Command has no name')
     this.list.set(
       `${cmd.name}-${
         this.list.filter((e) =>

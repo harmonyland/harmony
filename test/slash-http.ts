@@ -1,4 +1,4 @@
-import { SlashClient } from '../../mod.ts'
+import { SlashClient } from '../mod.ts'
 import { SLASH_ID, SLASH_PUB_KEY, SLASH_TOKEN } from './config.ts'
 import { listenAndServe } from 'https://deno.land/std@0.90.0/http/server.ts'
 

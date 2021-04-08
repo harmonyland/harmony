@@ -253,7 +253,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     respond: (options: {
       status?: number
       headers?: Headers
-      body?: string | Uint8Array | FormData
+      body?: any
     }) => Promise<void>
   }): Promise<false | Interaction> {
     if (req.method.toLowerCase() !== 'post') return false
