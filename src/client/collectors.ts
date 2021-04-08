@@ -1,5 +1,5 @@
 import { Collection } from '../utils/collection.ts'
-import type { Client } from '../client/mod.ts'
+import type { Client } from '../client/client.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 
 export type CollectorFilter = (...args: any[]) => boolean | Promise<boolean>
