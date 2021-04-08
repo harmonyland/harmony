@@ -266,21 +266,6 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     if (typeof this.client.intents !== 'object')
       throw new Error('Intents not specified')
 
-    if (this.client.fetchGatewayInfo === true) {
-      this.debug('Fetching /gateway/bot...')
-      const info = await this.client.rest.api.gateway.bot.get()
-      if (info.session_start_limit.remaining === 0)
-        throw new Error(
-          `Session Limit Reached. Retry After ${info.session_start_limit.reset_after}ms`
-        )
-      this.debug(`Recommended Shards: ${info.shards}`)
-      this.debug('=== Session Limit Info ===')
-      this.debug(
-        `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
-      )
-      this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
-    }
-
     if (forceNewSession === undefined || !forceNewSession) {
       const sessionIDCached = await this.cache.get(
         `session_id_${this.shards?.join('-') ?? '0'}`

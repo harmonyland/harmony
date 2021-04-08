@@ -61,10 +61,24 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     let shardCount: number
     if (this.cachedShardCount !== undefined) shardCount = this.cachedShardCount
     else {
-      if (this.client.shardCount === 'auto') {
+      if (
+        this.client.shardCount === 'auto' &&
+        this.client.fetchGatewayInfo !== false
+      ) {
+        this.debug('Fetch /gateway/bot...')
         const info = await this.client.rest.api.gateway.bot.get()
+        this.debug(`Recommended Shards: ${info.shards}`)
+        this.debug('=== Session Limit Info ===')
+        this.debug(
+          `Remaining: ${info.session_start_limit.remaining}/${info.session_start_limit.total}`
+        )
+        this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
         shardCount = info.shards as number
-      } else shardCount = this.client.shardCount ?? 1
+      } else
+        shardCount =
+          typeof this.client.shardCount === 'string'
+            ? 1
+            : this.client.shardCount ?? 1
     }
     this.cachedShardCount = shardCount
     return this.cachedShardCount

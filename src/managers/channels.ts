@@ -121,6 +121,10 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
           : undefined
     }
 
+    if (payload.content === undefined && payload.embed === undefined) {
+      payload.content = ''
+    }
+
     const resp = await this.client.rest.api.channels[channelID].messages.post(
       payload
     )

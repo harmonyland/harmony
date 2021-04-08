@@ -17,7 +17,9 @@ export function simplifyAPIError(errors: any): SimplifiedError {
     }
   }
   Object.entries(errors).forEach((obj: [string, any]) => {
-    fmt(obj[1], obj[0])
+    if (obj[0] === '_errors') {
+      fmt({ _errors: obj[1] }, 'Request')
+    } else fmt(obj[1], obj[0])
   })
   return res
 }
