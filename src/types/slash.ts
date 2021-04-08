@@ -1,12 +1,12 @@
-import { Dict } from '../utils/dict.ts'
-import {
+import type { Dict } from '../utils/dict.ts'
+import type {
   AllowedMentionsPayload,
   ChannelTypes,
   EmbedPayload
 } from './channel.ts'
-import { MemberPayload } from './guild.ts'
-import { RolePayload } from './role.ts'
-import { UserPayload } from './user.ts'
+import type { MemberPayload } from './guild.ts'
+import type { RolePayload } from './role.ts'
+import type { UserPayload } from './user.ts'
 
 export interface InteractionApplicationCommandOption {
   /** Option name */
@@ -135,10 +135,6 @@ export interface SlashCommandPayload extends SlashCommandPartial {
 export enum InteractionResponseType {
   /** Just ack a ping, Http-only. */
   PONG = 1,
-  /** @deprecated **DEPRECATED:** Do nothing, just acknowledge the Interaction */
-  ACKNOWLEDGE = 2,
-  /** @deprecated **DEPRECATED:** Send a channel message without "<User> used /<Command> with <Bot>" */
-  CHANNEL_MESSAGE = 3,
   /** Send a channel message as response. */
   CHANNEL_MESSAGE_WITH_SOURCE = 4,
   /** Let the user know bot is processing ("thinking") and you can edit the response later */

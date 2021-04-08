@@ -1,10 +1,10 @@
 import { fetchAuto } from '../../deps.ts'
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
-import { Template } from '../structures/template.ts'
+import type { Template } from '../structures/template.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD, GUILDS, GUILD_PREVIEW } from '../types/endpoint.ts'
-import {
+import type {
   GuildPayload,
   MemberPayload,
   GuildCreateRolePayload,

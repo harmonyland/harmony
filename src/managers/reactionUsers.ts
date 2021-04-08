@@ -1,6 +1,6 @@
-import { Client } from '../models/client.ts'
-import { MessageReaction } from '../structures/messageReaction.ts'
-import { User } from '../structures/user.ts'
+import type { Client } from '../client/mod.ts'
+import type { MessageReaction } from '../structures/messageReaction.ts'
+import type { User } from '../structures/user.ts'
 import { UsersManager } from './users.ts'
 
 export class ReactionUsersManager extends UsersManager {

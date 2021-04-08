@@ -1,4 +1,4 @@
-import { MemberPayload } from './guild.ts'
+import type { MemberPayload } from './guild.ts'
 
 export enum VoiceOpcodes {
   IDENTIFY = 0,
@@ -41,6 +41,7 @@ export interface VoiceStatePayload {
   self_stream?: boolean
   self_video: boolean
   suppress: boolean
+  request_to_speak_timestamp: string | null
 }
 
 /** Voice Region Structure */

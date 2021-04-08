@@ -1,18 +1,18 @@
-import { VoiceServerUpdateData } from '../gateway/handlers/index.ts'
-import { VoiceStateOptions } from '../gateway/index.ts'
-import { Client } from '../models/client.ts'
-import {
+import type { VoiceServerUpdateData } from '../gateway/handlers/mod.ts'
+import type { VoiceStateOptions } from '../gateway/mod.ts'
+import type { Client } from '../client/mod.ts'
+import type {
   GuildVoiceChannelPayload,
   ModifyVoiceChannelOption,
   ModifyVoiceChannelPayload
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import { GuildChannel } from './channel.ts'
-import { Guild } from './guild.ts'
-import { VoiceState } from './voiceState.ts'
+import type { Guild } from './guild.ts'
+import type { VoiceState } from './voiceState.ts'
 import { GuildChannelVoiceStatesManager } from '../managers/guildChannelVoiceStates.ts'
-import { User } from './user.ts'
-import { Member } from './member.ts'
+import type { User } from './user.ts'
+import type { Member } from './member.ts'
 
 export interface VoiceServerData extends VoiceServerUpdateData {
   sessionID: string

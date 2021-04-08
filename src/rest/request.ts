@@ -1,0 +1,132 @@
+import type { Embed } from '../structures/embed.ts'
+import type { MessageAttachment } from '../structures/message.ts'
+import type { RESTManager } from './manager.ts'
+import type { RequestMethods } from './types.ts'
+
+export interface RequestOptions {
+  headers?: { [name: string]: string }
+  query?: { [name: string]: string }
+  files?: MessageAttachment[]
+  data?: any
+  reason?: string
+  rawResponse?: boolean
+  route?: string
+}
+
+export class APIRequest {
+  retries = 0
+  route: string
+
+  constructor(
+    public rest: RESTManager,
+    public method: RequestMethods,
+    public path: string,
+    public options: RequestOptions
+  ) {
+    this.route = options.route ?? path
+    if (typeof options.query === 'object') {
+      const entries = Object.entries(options.query)
+      if (entries.length > 0) {
+        this.path += '?'
+        entries.forEach((entry, i) => {
+          this.path += `${i === 0 ? '' : '&'}${encodeURIComponent(
+            entry[0]
+          )}=${encodeURIComponent(entry[1])}`
+        })
+      }
+    }
+
+    let _files: undefined | MessageAttachment[]
+    if (
+      options.data?.embed?.files !== undefined &&
+      Array.isArray(options.data?.embed?.files)
+    ) {
+      _files = [...options.data?.embed?.files]
+    }
+    if (
+      options.data?.embeds !== undefined &&
+      Array.isArray(options.data?.embeds)
+    ) {
+      const files1 = options.data?.embeds
+        .map((e: Embed) => e.files)
+        .filter((e: MessageAttachment[]) => e !== undefined)
+      for (const files of files1) {
+        for (const file of files) {
+          if (_files === undefined) _files = []
+          _files?.push(file)
+        }
+      }
+    }
+
+    if (options.data?.file !== undefined) {
+      if (_files === undefined) _files = []
+      _files.push(options.data?.file)
+    }
+
+    if (
+      options.data?.files !== undefined &&
+      Array.isArray(options.data?.files)
+    ) {
+      if (_files === undefined) _files = []
+      options.data?.files.forEach((file: any) => {
+        _files!.push(file)
+      })
+    }
+
+    if (_files !== undefined && _files.length > 0) {
+      if (options.files === undefined) options.files = _files
+      else options.files = [...options.files, ..._files]
+    }
+  }
+
+  async execute(): Promise<Response> {
+    let contentType: string | undefined
+    let body: any = this.options.data
+    if (this.options.files !== undefined && this.options.files.length > 0) {
+      contentType = undefined
+      const form = new FormData()
+      this.options.files.forEach((file, i) =>
+        form.append(`file${i === 0 ? '' : i}`, file.blob, file.name)
+      )
+      form.append('payload_json', JSON.stringify(body))
+      body = form
+    } else {
+      contentType = 'application/json'
+      body = JSON.stringify(body)
+    }
+
+    const controller = new AbortController()
+    const timer = setTimeout(() => {
+      controller.abort()
+    }, this.rest.requestTimeout)
+    this.rest.timers.add(timer)
+
+    const url = this.path.startsWith('http')
+      ? this.path
+      : `${this.rest.apiURL}/v${this.rest.version}${this.path}`
+
+    const headers: any = {
+      'User-Agent':
+        this.rest.userAgent ??
+        `DiscordBot (harmony, https://github.com/harmonyland/harmony)`,
+      Authorization:
+        this.rest.token === undefined
+          ? undefined
+          : `${this.rest.tokenType} ${this.rest.token}`.trim()
+    }
+
+    if (contentType !== undefined) headers['Content-Type'] = contentType
+
+    const init: RequestInit = {
+      method: this.method.toUpperCase(),
+      signal: controller.signal,
+      headers: Object.assign(headers, this.rest.headers, this.options.headers),
+      body
+    }
+
+    return fetch(url, init).finally(() => {
+      clearTimeout(timer)
+      this.rest.timers.delete(timer)
+    })
+  }
+}

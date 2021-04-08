@@ -1,11 +1,11 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { ChannelTypes } from '../types/channel.ts'
-import { VoiceStatePayload } from '../types/voice.ts'
+import type { VoiceStatePayload } from '../types/voice.ts'
 import { Base } from './base.ts'
-import { Guild } from './guild.ts'
-import { VoiceChannel } from './guildVoiceChannel.ts'
-import { Member } from './member.ts'
-import { User } from './user.ts'
+import type { Guild } from './guild.ts'
+import type { VoiceChannel } from './guildVoiceChannel.ts'
+import type { Member } from './member.ts'
+import type { User } from './user.ts'
 
 export class VoiceState extends Base {
   guild?: Guild

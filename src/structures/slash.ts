@@ -1,5 +1,5 @@
-import { Client } from '../models/client.ts'
-import {
+import type { Client } from '../client/mod.ts'
+import type {
   AllowedMentionsPayload,
   ChannelTypes,
   EmbedPayload,
@@ -17,17 +17,17 @@ import {
   InteractionType,
   SlashCommandOptionType
 } from '../types/slash.ts'
-import { Dict } from '../utils/dict.ts'
+import type { Dict } from '../utils/dict.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
-import { Channel } from './channel.ts'
+import type { Channel } from './channel.ts'
 import { Embed } from './embed.ts'
-import { Guild } from './guild.ts'
-import { GuildTextChannel } from './guildTextChannel.ts'
-import { Member } from './member.ts'
+import type { Guild } from './guild.ts'
+import type { GuildTextChannel } from './guildTextChannel.ts'
+import type { Member } from './member.ts'
 import { Message } from './message.ts'
-import { Role } from './role.ts'
-import { TextChannel } from './textChannel.ts'
+import type { Role } from './role.ts'
+import type { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
@@ -177,8 +177,7 @@ export class Interaction extends SnowflakeBase {
       type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data:
         data.type === undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE
+        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
           ? {
               content: data.content ?? '',
               embeds: data.embeds,

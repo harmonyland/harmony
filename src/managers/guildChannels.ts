@@ -1,16 +1,16 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { Channel } from '../structures/channel.ts'
 import { Guild } from '../structures/guild.ts'
-import { CategoryChannel } from '../structures/guildCategoryChannel.ts'
+import type { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import {
   ChannelTypes,
   GuildChannelPayload,
   OverwritePayload
 } from '../types/channel.ts'
-import { GuildChannels, GuildChannelPayloads } from '../types/guild.ts'
+import type { GuildChannels, GuildChannelPayloads } from '../types/guild.ts'
 import { CHANNEL, GUILD_CHANNELS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
-import { ChannelsManager } from './channels.ts'
+import type { ChannelsManager } from './channels.ts'
 
 export interface CreateChannelOptions {
   name: string
