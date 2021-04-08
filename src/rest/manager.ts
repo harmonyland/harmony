@@ -10,7 +10,8 @@ export type MethodFunction = (
   body?: unknown,
   maxRetries?: number,
   bucket?: string | null,
-  rawResponse?: boolean
+  rawResponse?: boolean,
+  options?: RequestOptions
 ) => Promise<any>
 
 export interface APIMap extends MethodFunction {
