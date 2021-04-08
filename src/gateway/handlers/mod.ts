@@ -393,7 +393,15 @@ export type ClientEvents = {
     }
   ]
   guildMembersChunked: [guild: Guild, chunks: number]
-  rateLimit: [data: { method: RequestMethods; url: string; body: any }]
+  rateLimit: [
+    data: {
+      method: RequestMethods
+      path: string
+      global: boolean
+      timeout: number
+      limit: number
+    }
+  ]
   inviteDeleteUncached: [invite: PartialInvitePayload]
   voiceStateRemoveUncached: [data: { guild: Guild; member: Member }]
   userUpdateUncached: [user: User]
