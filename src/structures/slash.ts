@@ -177,8 +177,7 @@ export class Interaction extends SnowflakeBase {
       type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data:
         data.type === undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE
+        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
           ? {
               content: data.content ?? '',
               embeds: data.embeds,
