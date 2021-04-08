@@ -2,6 +2,7 @@
 // adapted to work with harmony rest manager
 
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+
 import { delay } from '../utils/delay.ts'
 import { DiscordAPIError, HTTPError } from './error.ts'
 import type { RESTManager } from './manager.ts'
@@ -183,9 +184,8 @@ export class BucketHandler {
       if (res.status === 429) {
         this.manager.client?.emit(
           'debug',
-          `Rate-limited on route ${request.path}${
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            sublimitTimeout ? ' for sublimit' : ''
+          `Rate-Limited on route ${request.path}${
+            sublimitTimeout !== undefined ? ' for sublimit' : ''
           }`
         )
 
