@@ -1,15 +1,18 @@
-import { VoiceServerUpdateData } from '../gateway/handlers/index.ts'
-import { VoiceStateOptions } from '../gateway/index.ts'
-import { Client } from '../models/client.ts'
-import {
+import type { VoiceServerUpdateData } from '../gateway/handlers/mod.ts'
+import type { VoiceStateOptions } from '../gateway/mod.ts'
+import type { Client } from '../client/mod.ts'
+import type {
   GuildVoiceChannelPayload,
   ModifyVoiceChannelOption,
   ModifyVoiceChannelPayload
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import { GuildChannel } from './channel.ts'
-import { Guild } from './guild.ts'
-import { VoiceState } from './voiceState.ts'
+import type { Guild } from './guild.ts'
+import type { VoiceState } from './voiceState.ts'
+import { GuildChannelVoiceStatesManager } from '../managers/guildChannelVoiceStates.ts'
+import type { User } from './user.ts'
+import type { Member } from './member.ts'
 
 export interface VoiceServerData extends VoiceServerUpdateData {
   sessionID: string
@@ -18,6 +21,11 @@ export interface VoiceServerData extends VoiceServerUpdateData {
 export class VoiceChannel extends GuildChannel {
   bitrate: string
   userLimit: number
+  voiceStates = new GuildChannelVoiceStatesManager(
+    this.client,
+    this.guild.voiceStates,
+    this
+  )
 
   constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
     super(client, data, guild)
@@ -106,5 +114,26 @@ export class VoiceChannel extends GuildChannel {
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
 
     return new VoiceChannel(this.client, resp, this.guild)
+  }
+
+  async disconnectMember(
+    member: User | Member | string
+  ): Promise<Member | undefined> {
+    const memberID = typeof member === 'string' ? member : member.id
+    const memberVoiceState = await this.voiceStates.get(memberID)
+
+    return memberVoiceState?.disconnect()
+  }
+
+  async disconnectAll(): Promise<Member[]> {
+    const members: Member[] = []
+    for await (const memberVoiceState of this.voiceStates) {
+      const member = await memberVoiceState.disconnect()
+      if (member !== undefined) {
+        members.push(member)
+      }
+    }
+
+    return members
   }
 }

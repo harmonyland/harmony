@@ -1,4 +1,4 @@
-import { UserPayload } from './user.ts'
+import type { UserPayload } from './user.ts'
 
 export interface EmojiPayload {
   id: string | null
@@ -9,4 +9,10 @@ export interface EmojiPayload {
   managed?: boolean
   animated?: boolean
   available?: boolean
+}
+
+export interface CreateEmojiPayload {
+  name: string
+  image: string
+  roles?: string[]
 }

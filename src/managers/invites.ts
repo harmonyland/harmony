@@ -1,9 +1,9 @@
-import { GuildTextChannel, User } from '../../mod.ts'
-import { Client } from '../models/client.ts'
-import { Guild } from '../structures/guild.ts'
+import type { GuildTextChannel, User } from '../../mod.ts'
+import type { Client } from '../client/mod.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Invite } from '../structures/invite.ts'
 import { CHANNEL_INVITES, GUILD_INVITES, INVITE } from '../types/endpoint.ts'
-import { InvitePayload } from '../types/invite.ts'
+import type { InvitePayload } from '../types/invite.ts'
 import { BaseManager } from './base.ts'
 
 export enum InviteTargetUserType {

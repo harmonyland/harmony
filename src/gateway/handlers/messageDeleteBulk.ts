@@ -1,8 +1,8 @@
-import { Message } from '../../structures/message.ts'
-import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
-import { MessageDeleteBulkPayload } from '../../types/gateway.ts'
+import type { Message } from '../../structures/message.ts'
+import type { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
+import type { MessageDeleteBulkPayload } from '../../types/gateway.ts'
 import { Collection } from '../../utils/collection.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const messageDeleteBulk: GatewayEventHandler = async (
   gateway: Gateway,

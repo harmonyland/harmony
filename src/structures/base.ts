@@ -1,11 +1,11 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { Snowflake } from '../utils/snowflake.ts'
 
 export class Base {
-  client: Client
+  client!: Client
 
   constructor(client: Client, _data?: any) {
-    this.client = client
+    Object.defineProperty(this, 'client', { value: client, enumerable: false })
   }
 }
 

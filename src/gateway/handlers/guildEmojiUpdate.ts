@@ -2,7 +2,7 @@ import { Emoji } from '../../structures/emoji.ts'
 import { Guild } from '../../structures/guild.ts'
 import { EmojiPayload } from '../../types/emoji.ts'
 import { GuildEmojiUpdatePayload } from '../../types/gateway.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const guildEmojiUpdate: GatewayEventHandler = async (
   gateway: Gateway,
