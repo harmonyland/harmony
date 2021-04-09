@@ -75,6 +75,8 @@ export function handle(
   client.handle(cmd, handler)
 }
 
+// Hacky workaround. Timers don't exist in Deploy runtime, what a shame!
+
 if (typeof (window as any).setTimeout !== 'function') {
   Object.defineProperty(window, 'setTimeout', {
     value: (fn: CallableFunction, _ms: number, ...args: any[]) => {
