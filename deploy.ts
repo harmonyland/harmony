@@ -75,6 +75,23 @@ export function handle(
   client.handle(cmd, handler)
 }
 
+// Hacky workaround. Timers don't exist in Deploy runtime :(
+
+if (typeof (window as any).setTimeout !== 'function') {
+  Object.defineProperty(window, 'setTimeout', {
+    value: (fn: CallableFunction, _ms: number, ...args: any[]) => {
+      fn(...args)
+      return 0
+    }
+  })
+}
+
+if (typeof (window as any).clearTimeout !== 'function') {
+  Object.defineProperty(window, 'clearTimeout', {
+    value: (_id: number) => {}
+  })
+}
+
 export { commands, client }
 export * from './src/types/slash.ts'
 export * from './src/structures/slash.ts'
