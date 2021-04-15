@@ -36,7 +36,7 @@ export class VoiceChannel extends GuildChannel {
   /** Join the Voice Channel */
   async join(
     options?: VoiceStateOptions & { onlyJoin?: boolean }
-  ): Promise<VoiceServerUpdateData> {
+  ): Promise<VoiceServerData> {
     return await new Promise((resolve, reject) => {
       let vcdata: VoiceServerData
       let sessionID: string
