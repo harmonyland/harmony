@@ -10,25 +10,46 @@ export interface DeploySlashInitOptions {
   env?: boolean
   publicKey?: string
   token?: string
-  id?: string
 }
 
+/** Current Slash Client being used to handle commands */
 let client: SlashClient
+/** Manage Slash Commands right in Deploy */
 let commands: SlashCommandsManager
 
+/**
+ * Initialize Slash Commands Handler for [Deno Deploy](https://deno.com/deploy).
+ * Easily create Serverless Slash Commands on the fly.
+ *
+ * **Examples**
+ *
+ * ```ts
+ * init({
+ *   publicKey: "my public key",
+ *   token: "my bot's token", // only required if you want to manage slash commands in code
+ * })
+ * ```
+ *
+ * ```ts
+ * // takes up `PUBLIC_KEY` and `TOKEN` from ENV
+ * init({ env: true })
+ * ```
+ *
+ * @param options Initialization options
+ */
+export function init(options: { env: boolean }): void
+export function init(options: { publicKey: string; token?: string }): void
 export function init(options: DeploySlashInitOptions): void {
   if (client !== undefined) throw new Error('Already initialized')
   if (options.env === true) {
     options.publicKey = Deno.env.get('PUBLIC_KEY')
     options.token = Deno.env.get('TOKEN')
-    options.id = Deno.env.get('ID')
   }
 
   if (options.publicKey === undefined)
     throw new Error('Public Key not provided')
 
   client = new SlashClient({
-    id: options.id,
     token: options.token,
     publicKey: options.publicKey
   })
@@ -40,6 +61,7 @@ export function init(options: DeploySlashInitOptions): void {
     request: Request
   }): Promise<void> => {
     try {
+      // we have to wrap because there are some weird scope errors
       const d = await client.verifyFetchEvent({
         respondWith: (...args: any[]) => evt.respondWith(...args),
         request: evt.request
@@ -68,10 +90,26 @@ export function init(options: DeploySlashInitOptions): void {
   addEventListener('fetch', cb as any)
 }
 
+/**
+ * Register Slash Command handler.
+ *
+ * Example:
+ *
+ * ```ts
+ * handle("ping", (interaction) => {
+ *   interaction.reply("Pong!")
+ * })
+ * ```
+ *
+ * @param cmd Command to handle. Either Handler object or command name followed by handler function in next parameter.
+ * @param handler Handler function (required if previous argument was command name)
+ */
 export function handle(
   cmd: string | SlashCommandHandler,
   handler?: SlashCommandHandlerCallback
 ): void {
+  if (client === undefined)
+    throw new Error('Slash Client not initialized. Call `init` first')
   client.handle(cmd, handler)
 }
 
