@@ -370,8 +370,18 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
             : typeof channel === 'string'
             ? channel
             : channel?.id,
-        self_mute: voiceOptions.mute === undefined ? false : voiceOptions.mute,
-        self_deaf: voiceOptions.deaf === undefined ? false : voiceOptions.deaf
+        self_mute:
+          channel === undefined
+            ? undefined
+            : voiceOptions.mute === undefined
+            ? false
+            : voiceOptions.mute,
+        self_deaf:
+          channel === undefined
+            ? undefined
+            : voiceOptions.deaf === undefined
+            ? false
+            : voiceOptions.deaf
       }
     })
   }
