@@ -101,6 +101,17 @@ export function init(options: DeploySlashInitOptions): void {
  * })
  * ```
  *
+ * Also supports Sub Command and Group handling out of the box!
+ * ```ts
+ * handle("command-name group-name sub-command", (i) => {
+ *   // ...
+ * })
+ *
+ * handle("command-name sub-command", (i) => {
+ *   // ...
+ * })
+ * ```
+ *
  * @param cmd Command to handle. Either Handler object or command name followed by handler function in next parameter.
  * @param handler Handler function (required if previous argument was command name)
  */
