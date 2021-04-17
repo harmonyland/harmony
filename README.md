@@ -59,7 +59,7 @@ client.on('ready', () => {
 // Listen for event whenever a Message is sent
 client.on('messageCreate', (msg: Message): void => {
   if (msg.content === '!ping') {
-    msg.channel.send(`Pong! WS Ping: ${client.ping}`)
+    msg.channel.send(`Pong! WS Ping: ${client.gateway.ping}`)
   }
 })
 
@@ -95,7 +95,7 @@ class PingCommand extends Command {
   name = 'ping'
 
   execute(ctx: CommandContext) {
-    ctx.message.reply(`pong! Ping: ${ctx.client.ping}ms`)
+    ctx.message.reply(`pong! Ping: ${ctx.client.gateway.ping}ms`)
   }
 }
 

@@ -300,6 +300,8 @@ export class CommandsLoader {
   /**
    * Load a Command from file.
    *
+   * NOTE: Relative paths resolve from cwd
+   *
    * @param filePath Path of Command file.
    * @param exportName Export name. Default is the "default" export.
    */
@@ -343,6 +345,8 @@ export class CommandsLoader {
 
   /**
    * Load commands from a Directory.
+   *
+   * NOTE: Relative paths resolve from cwd
    *
    * @param path Path of the directory.
    * @param options Options to configure loading.

@@ -22,14 +22,17 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
     this.guild = guild
   }
 
-  /** Fetch a Guild Role (from API) */
-  async fetch(id: string): Promise<Role> {
+  /** Fetch All Guild Roles */
+  async fetchAll(): Promise<Role[]> {
     return await new Promise((resolve, reject) => {
-      this.client.rest
-        .get(GUILD_ROLE(this.guild.id, id))
-        .then(async (data) => {
-          await this.set(id, data as RolePayload)
-          resolve(((await this.get(id)) as unknown) as Role)
+      this.client.rest.api.guilds[this.guild.id].roles.get
+        .then(async (data: RolePayload[]) => {
+          const roles: Role[] = []
+          for (const raw of data) {
+            await this.set(raw.id, raw)
+            roles.push(new Role(this.client, raw, this.guild))
+          }
+          resolve(roles)
         })
         .catch((e) => reject(e))
     })
