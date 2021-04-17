@@ -43,6 +43,11 @@ export interface CommandClientOptions extends ClientOptions {
   caseSensitive?: boolean
 }
 
+/**
+ * Harmony Client with extended functionality for Message based Commands parsing and handling.
+ *
+ * See SlashClient (`Client#slash`) for more info about Slash Commands.
+ */
 export class CommandClient extends Client implements CommandClientOptions {
   prefix: string | string[]
   mentionPrefix: boolean
@@ -362,15 +367,19 @@ export class CommandClient extends Client implements CommandClientOptions {
       const result = await command.execute(ctx)
       await command.afterExecute(ctx, result)
     } catch (e) {
-      await command
-        .onError(ctx, e)
-        .catch((e: Error) => this.emit('commandError', ctx, e))
+      try {
+        await command.onError(ctx, e)
+      } catch (e) {
+        this.emit('commandError', ctx, e)
+      }
       this.emit('commandError', ctx, e)
     }
   }
 }
 
-/** Command decorator */
+/**
+ * Command decorator. Decorates the function with optional metadata as a Command registered upon constructing class.
+ */
 export function command(options?: CommandOptions) {
   return function (target: CommandClient | Extension, name: string) {
     if (target._decoratedCommands === undefined) target._decoratedCommands = {}

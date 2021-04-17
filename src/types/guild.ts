@@ -71,6 +71,7 @@ export interface GuildPayload {
   max_video_channel_users?: number
   approximate_number_count?: number
   approximate_presence_count?: number
+  nsfw: boolean
 }
 
 export interface MemberPayload {

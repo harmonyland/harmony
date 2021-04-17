@@ -59,7 +59,7 @@ client.on('ready', () => {
 // Listen for event whenever a Message is sent
 client.on('messageCreate', (msg: Message): void => {
   if (msg.content === '!ping') {
-    msg.channel.send(`Pong! WS Ping: ${client.ping}`)
+    msg.channel.send(`Pong! WS Ping: ${client.gateway.ping}`)
   }
 })
 
@@ -95,7 +95,7 @@ class PingCommand extends Command {
   name = 'ping'
 
   execute(ctx: CommandContext) {
-    ctx.message.reply(`pong! Ping: ${ctx.client.ping}ms`)
+    ctx.message.reply(`pong! Ping: ${ctx.client.gateway.ping}ms`)
   }
 }
 
@@ -156,7 +156,7 @@ Documentation is available for `main` (branch) and `stable` (release).
 
 ## Found a bug or want support? Join our discord server!
 
-[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/WVN2JF2FRv)
+[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmonyland)
 
 ## Maintainer
 

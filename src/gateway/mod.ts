@@ -66,6 +66,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   cache: GatewayCache
   private timedIdentify: number | null = null
   shards?: number[]
+  ping: number = 0
 
   constructor(client: Client, shards?: number[]) {
     super()
@@ -115,11 +116,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
       case GatewayOpcodes.HEARTBEAT_ACK:
         this.heartbeatServerResponded = true
-        this.client.ping = Date.now() - this.lastPingTimestamp
-        this.emit('ping', this.client.ping)
-        this.debug(
-          `Received Heartbeat Ack. Ping Recognized: ${this.client.ping}ms`
-        )
+        this.ping = Date.now() - this.lastPingTimestamp
+        this.emit('ping', this.ping)
+        this.debug(`Received Heartbeat Ack. Ping Recognized: ${this.ping}ms`)
         break
 
       case GatewayOpcodes.INVALID_SESSION:
@@ -370,8 +369,18 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
             : typeof channel === 'string'
             ? channel
             : channel?.id,
-        self_mute: voiceOptions.mute === undefined ? false : voiceOptions.mute,
-        self_deaf: voiceOptions.deaf === undefined ? false : voiceOptions.deaf
+        self_mute:
+          channel === undefined
+            ? undefined
+            : voiceOptions.mute === undefined
+            ? false
+            : voiceOptions.mute,
+        self_deaf:
+          channel === undefined
+            ? undefined
+            : voiceOptions.deaf === undefined
+            ? false
+            : voiceOptions.deaf
       }
     })
   }

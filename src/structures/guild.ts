@@ -187,6 +187,7 @@ export class Guild extends SnowflakeBase {
   approximateNumberCount?: number
   approximatePresenceCount?: number
   bans: GuildBans
+  nsfw?: boolean
 
   /** Get Shard ID of Guild on which it is */
   get shardID(): number {
@@ -261,6 +262,7 @@ export class Guild extends SnowflakeBase {
         data.approximate_number_count ?? this.approximateNumberCount
       this.approximatePresenceCount =
         data.approximate_presence_count ?? this.approximatePresenceCount
+      this.nsfw = data.nsfw ?? this.nsfw
     }
   }
 
