@@ -362,9 +362,11 @@ export class CommandClient extends Client implements CommandClientOptions {
       const result = await command.execute(ctx)
       await command.afterExecute(ctx, result)
     } catch (e) {
-      await command
-        .onError(ctx, e)
-        .catch((e: Error) => this.emit('commandError', ctx, e))
+      try {
+        await command.onError(ctx, e)
+      } catch (e) {
+        this.emit('commandError', ctx, e)
+      }
       this.emit('commandError', ctx, e)
     }
   }
