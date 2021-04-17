@@ -71,7 +71,7 @@ export interface ClientOptions {
 }
 
 /**
- * Discord Client.
+ * Harmony Client. Provides high-level interface over the REST and WebSocket API.
  */
 export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** REST Manager - used to make all requests */
@@ -148,9 +148,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     }
   }
 
+  /** Get Shard 0's Gateway */
   get gateway(): Gateway {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    return this.shards.list.get('0') as Gateway
+    return this.shards.list.get('0')!
   }
 
   applicationID?: string
@@ -289,7 +289,10 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
    * @param token Your token. This is required if not given in ClientOptions.
    * @param intents Gateway intents in array. This is required if not given in ClientOptions.
    */
-  async connect(token?: string, intents?: GatewayIntents[]): Promise<Client> {
+  async connect(
+    token?: string,
+    intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
+  ): Promise<Client> {
     token ??= this.token
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token
@@ -301,7 +304,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     } else if (intents === undefined && this.intents !== undefined) {
       intents = this.intents
     } else if (intents !== undefined && this.intents === undefined) {
-      this.intents = intents
+      this.intents = intents.map((e) =>
+        typeof e === 'string' ? GatewayIntents[e] : e
+      )
     } else throw new Error('No Gateway Intents were provided')
 
     this.rest.token = token
