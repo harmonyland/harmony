@@ -78,8 +78,6 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   rest: RESTManager
   /** User which Client logs in to, undefined until logs in */
   user?: User
-  /** WebSocket ping of Client */
-  ping = 0
   /** Token of the Bot/User */
   token?: string
   /** Cache Adapter */

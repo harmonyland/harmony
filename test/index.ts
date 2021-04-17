@@ -60,7 +60,7 @@ client.on('messageCreate', async (msg: Message) => {
     console.log(`${msg.author.tag}: ${msg.content}`)
   }
   if (msg.content === '!ping') {
-    msg.reply(`Pong! Ping: ${client.ping}ms`)
+    msg.reply(`Pong! Ping: ${client.gateway.ping}ms`)
   } else if (msg.content === '!members') {
     const col = await msg.guild?.members.array()
     const data = col
