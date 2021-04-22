@@ -100,6 +100,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       content: content,
       embed: option?.embed,
       file: option?.file,
+      components: option?.components,
       files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions,

@@ -1,12 +1,18 @@
 import { Guild } from '../../structures/guild.ts'
 import { Member } from '../../structures/member.ts'
 import {
-  Interaction,
   InteractionApplicationCommandResolved,
-  InteractionChannel
+  SlashCommandInteraction
 } from '../../structures/slash.ts'
+import {
+  Interaction,
+  InteractionChannel
+} from '../../structures/interactions.ts'
 import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
-import { InteractionPayload } from '../../types/slash.ts'
+import {
+  InteractionPayload,
+  InteractionType
+} from '../../types/interactions.ts'
 import { UserPayload } from '../../types/user.ts'
 import { Permissions } from '../../utils/permissions.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
@@ -99,12 +105,23 @@ export const interactionCreate: GatewayEventHandler = async (
     }
   }
 
-  const interaction = new Interaction(gateway.client, d, {
-    member,
-    guild,
-    channel,
-    user,
-    resolved
-  })
+  let interaction
+  if (d.type === InteractionType.APPLICATION_COMMAND) {
+    interaction = new SlashCommandInteraction(gateway.client, d, {
+      member,
+      guild,
+      channel,
+      user,
+      resolved
+    })
+  } else {
+    interaction = new Interaction(gateway.client, d, {
+      member,
+      guild,
+      channel,
+      user
+    })
+  }
+
   gateway.client.emit('interactionCreate', interaction)
 }

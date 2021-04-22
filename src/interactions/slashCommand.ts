@@ -6,7 +6,7 @@ import {
   SlashCommandOptionType,
   SlashCommandPartial,
   SlashCommandPayload
-} from '../types/slash.ts'
+} from '../types/slashCommands.ts'
 import { Collection } from '../utils/collection.ts'
 import type { SlashClient, SlashCommandHandlerCallback } from './slashClient.ts'
 

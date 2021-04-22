@@ -1,13 +1,14 @@
 import {
-  Interaction,
+  SlashCommandInteraction,
   InteractionApplicationCommandResolved
 } from '../structures/slash.ts'
+import { Interaction } from '../structures/interactions.ts'
 import {
   InteractionPayload,
   InteractionResponsePayload,
-  InteractionType,
-  SlashCommandOptionType
-} from '../types/slash.ts'
+  InteractionType
+} from '../types/interactions.ts'
+import { SlashCommandOptionType } from '../types/slashCommands.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { SlashModule } from './slashModule.ts'
@@ -170,7 +171,9 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Get Handler for an Interaction. Supports nested sub commands and sub command groups. */
-  private _getCommand(i: Interaction): SlashCommandHandler | undefined {
+  private _getCommand(
+    i: SlashCommandInteraction
+  ): SlashCommandHandler | undefined {
     return this.getHandlers().find((e) => {
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
       const groupMatched =
@@ -201,22 +204,22 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Process an incoming Interaction */
-  private async _process(interaction: Interaction): Promise<void> {
+  private async _process(
+    interaction: Interaction | SlashCommandInteraction
+  ): Promise<void> {
     if (!this.enabled) return
 
-    if (
-      interaction.type !== InteractionType.APPLICATION_COMMAND ||
-      interaction.data === undefined
-    )
-      return
+    if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
     const cmd =
-      this._getCommand(interaction) ??
+      this._getCommand(interaction as SlashCommandInteraction) ??
       this.getHandlers().find((e) => e.name === '*')
     if (cmd?.group !== undefined)
-      interaction.data.options = interaction.data.options[0].options ?? []
+      (interaction as SlashCommandInteraction).data.options =
+        (interaction as SlashCommandInteraction).data.options[0].options ?? []
     if (cmd?.parent !== undefined)
-      interaction.data.options = interaction.data.options[0].options ?? []
+      (interaction as SlashCommandInteraction).data.options =
+        (interaction as SlashCommandInteraction).data.options[0].options ?? []
 
     if (cmd === undefined) return
 
@@ -271,20 +274,31 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       const payload: InteractionPayload = JSON.parse(decodeText(rawbody))
 
       // TODO: Maybe fix all this hackery going on here?
-      const res = new Interaction(this as any, payload, {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        user: new User(this as any, (payload.member?.user ?? payload.user)!),
-        member: payload.member as any,
-        guild: payload.guild_id as any,
-        channel: payload.channel_id as any,
-        resolved: ((payload.data
-          ?.resolved as unknown) as InteractionApplicationCommandResolved) ?? {
-          users: {},
-          members: {},
-          roles: {},
-          channels: {}
-        }
-      })
+      let res
+      if (payload.type === InteractionType.APPLICATION_COMMAND) {
+        res = new SlashCommandInteraction(this as any, payload, {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          user: new User(this as any, (payload.member?.user ?? payload.user)!),
+          member: payload.member as any,
+          guild: payload.guild_id as any,
+          channel: payload.channel_id as any,
+          resolved: ((payload.data
+            ?.resolved as unknown) as InteractionApplicationCommandResolved) ?? {
+            users: {},
+            members: {},
+            roles: {},
+            channels: {}
+          }
+        })
+      } else {
+        res = new Interaction(this as any, payload, {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          user: new User(this as any, (payload.member?.user ?? payload.user)!),
+          member: payload.member as any,
+          guild: payload.guild_id as any,
+          channel: payload.channel_id as any
+        })
+      }
       res._httpRespond = async (d: InteractionResponsePayload | FormData) =>
         await req.respond({
           status: 200,

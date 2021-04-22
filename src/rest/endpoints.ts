@@ -30,11 +30,11 @@ import type {
   InviteWithMetadataPayload
 } from '../types/invite.ts'
 import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type { InteractionResponsePayload } from '../types/interactions.ts'
 import type {
-  InteractionResponsePayload,
   SlashCommandPartial,
   SlashCommandPayload
-} from '../types/slash.ts'
+} from '../types/slashCommands.ts'
 import type { TemplatePayload } from '../types/template.ts'
 import type { UserPayload } from '../types/user.ts'
 import type { VoiceRegion } from '../types/voice.ts'
