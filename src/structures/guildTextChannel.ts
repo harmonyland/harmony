@@ -1,9 +1,8 @@
 import { Mixin } from '../../deps.ts'
 import { TextChannel } from './textChannel.ts'
 import { GuildChannel } from './channel.ts'
-import { Client } from '../models/client.ts'
-import {
-  ChannelTypes,
+import type { Client } from '../client/mod.ts'
+import type {
   GuildTextBasedChannelPayload,
   GuildTextChannelPayload,
   ModifyGuildTextBasedChannelOption,
@@ -11,12 +10,13 @@ import {
   ModifyGuildTextChannelOption,
   ModifyGuildTextChannelPayload
 } from '../types/channel.ts'
-import { Guild } from './guild.ts'
+import { ChannelTypes } from '../types/channel.ts'
+import type { Guild } from './guild.ts'
 import { CHANNEL } from '../types/endpoint.ts'
-import { Message } from './message.ts'
-import { CreateInviteOptions } from '../managers/invites.ts'
-import { Invite } from './invite.ts'
-import { CategoryChannel } from './guildCategoryChannel.ts'
+import type { Message } from './message.ts'
+import type { CreateInviteOptions } from '../managers/invites.ts'
+import type { Invite } from './invite.ts'
+import type { CategoryChannel } from './guildCategoryChannel.ts'
 
 const GUILD_TEXT_BASED_CHANNEL_TYPES: ChannelTypes[] = [
   ChannelTypes.GUILD_TEXT,

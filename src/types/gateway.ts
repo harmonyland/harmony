@@ -1,18 +1,18 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { Guild } from '../structures/guild.ts'
-import { Member } from '../structures/member.ts'
-import { EmojiPayload } from './emoji.ts'
-import { MemberPayload } from './guild.ts'
-import {
+import type { Guild } from '../structures/guild.ts'
+import type { Member } from '../structures/member.ts'
+import type { EmojiPayload } from './emoji.ts'
+import type { MemberPayload } from './guild.ts'
+import type {
   ActivityGame,
   ActivityPayload,
   StatusType,
   ClientStatus
 } from './presence.ts'
-import { RolePayload } from './role.ts'
-import { SlashCommandPayload } from './slash.ts'
-import { UserPayload } from './user.ts'
+import type { RolePayload } from './role.ts'
+import type { SlashCommandPayload } from './slash.ts'
+import type { UserPayload } from './user.ts'
 
 /**
  * Gateway OPcodes from Discord docs.

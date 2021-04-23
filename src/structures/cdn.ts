@@ -1,4 +1,4 @@
-import { ImageFormats, ImageSize } from '../types/cdn.ts'
+import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 
 /** Function to get Image URL from a resource on Discord CDN */
 export const ImageURL = (

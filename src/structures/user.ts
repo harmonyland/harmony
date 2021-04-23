@@ -1,11 +1,11 @@
-import { Client } from '../models/client.ts'
-import { UserPayload } from '../types/user.ts'
+import type { Client } from '../client/mod.ts'
+import type { UserPayload } from '../types/user.ts'
 import { UserFlagsManager } from '../utils/userFlags.ts'
 import { SnowflakeBase } from './base.ts'
 import { ImageURL } from './cdn.ts'
-import { ImageSize, ImageFormats } from '../types/cdn.ts'
+import type { ImageSize, ImageFormats } from '../types/cdn.ts'
 import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
-import { DMChannel } from './dmChannel.ts'
+import type { DMChannel } from './dmChannel.ts'
 
 export class User extends SnowflakeBase {
   id: string

@@ -1,10 +1,10 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { BaseChildManager } from './baseChild.ts'
-import { RolePayload } from '../types/role.ts'
+import type { RolePayload } from '../types/role.ts'
 import { Role } from '../structures/role.ts'
-import { Member } from '../structures/member.ts'
-import { RolesManager } from './roles.ts'
-import { MemberPayload } from '../types/guild.ts'
+import type { Member } from '../structures/member.ts'
+import type { RolesManager } from './roles.ts'
+import type { MemberPayload } from '../types/guild.ts'
 import { GUILD_MEMBER_ROLE } from '../types/endpoint.ts'
 
 export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {

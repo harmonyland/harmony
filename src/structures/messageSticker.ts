@@ -1,5 +1,5 @@
-import { Client } from '../models/client.ts'
-import {
+import type { Client } from '../client/mod.ts'
+import type {
   MessageStickerFormatTypes,
   MessageStickerPayload
 } from '../types/channel.ts'

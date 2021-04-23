@@ -1,5 +1,5 @@
 import { GuildChannel } from './channel.ts'
-import {
+import type {
   GuildCategoryChannelPayload,
   ModifyGuildCategoryChannelOption,
   ModifyGuildCategoryChannelPayload

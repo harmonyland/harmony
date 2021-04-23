@@ -1,20 +1,20 @@
-import { Client } from '../models/client.ts'
-import {
+import type { Client } from '../client/mod.ts'
+import type {
   ChannelPayload,
   ChannelTypes,
   ModifyChannelOption,
   ModifyChannelPayload,
   Overwrite,
   OverwritePayload,
-  OverwriteAsArg,
-  OverrideType
+  OverwriteAsArg
 } from '../types/channel.ts'
+import { OverrideType } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
-import { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
-import getChannelByType from '../utils/getChannelByType.ts'
+import type { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
+import getChannelByType from '../utils/channel.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
-import { Guild } from './guild.ts'
+import type { Guild } from './guild.ts'
 import { Member } from './member.ts'
 import { Role } from './role.ts'
 
@@ -81,7 +81,7 @@ export class GuildChannel extends Channel {
     const stringToObject =
       typeof target === 'string'
         ? (await this.guild.members.get(target)) ??
-        (await this.guild.roles.get(target))
+          (await this.guild.roles.get(target))
         : target
 
     if (stringToObject === undefined) {
@@ -128,7 +128,7 @@ export class GuildChannel extends Channel {
     const stringToObject =
       typeof target === 'string'
         ? (await this.guild.members.get(target)) ??
-        (await this.guild.roles.get(target))
+          (await this.guild.roles.get(target))
         : target
 
     if (stringToObject === undefined) {
@@ -200,8 +200,8 @@ export class GuildChannel extends Channel {
           overwrite.id instanceof Role
             ? 0
             : overwrite.id instanceof Member
-              ? 1
-              : overwrite.type
+            ? 1
+            : overwrite.type
         if (type === undefined) {
           throw new Error('Overwrite type is undefined.')
         }
@@ -233,8 +233,8 @@ export class GuildChannel extends Channel {
       overwrite.id instanceof Role
         ? 0
         : overwrite.id instanceof Member
-          ? 1
-          : overwrite.type
+        ? 1
+        : overwrite.type
     if (type === undefined) {
       throw new Error('Overwrite type is undefined.')
     }
@@ -303,7 +303,10 @@ export class GuildChannel extends Channel {
           : overwrite.allow?.toJSON() ?? overwrites[index].allow
     }
 
-    if (overwrite.deny !== undefined && overwriteDeny !== OverrideType.REPLACE) {
+    if (
+      overwrite.deny !== undefined &&
+      overwriteDeny !== OverrideType.REPLACE
+    ) {
       switch (overwriteDeny) {
         case OverrideType.ADD: {
           const originalDeny = new Permissions(overwrites[index].deny)
@@ -331,8 +334,8 @@ export class GuildChannel extends Channel {
       overwrite.id instanceof Role
         ? 0
         : overwrite.id instanceof Member
-          ? 1
-          : overwrite.type
+        ? 1
+        : overwrite.type
     if (type === undefined) {
       throw new Error('Overwrite type is undefined.')
     }

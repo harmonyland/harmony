@@ -1,15 +1,15 @@
-import { Client } from '../models/client.ts'
+import { Client } from '../client/mod.ts'
 import { Channel } from '../structures/channel.ts'
 import { Embed } from '../structures/embed.ts'
 import { Message } from '../structures/message.ts'
-import { TextChannel } from '../structures/textChannel.ts'
-import {
+import type { TextChannel } from '../structures/textChannel.ts'
+import type {
   ChannelPayload,
   GuildChannelPayload,
   MessageOptions
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
-import getChannelByType from '../utils/getChannelByType.ts'
+import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
@@ -119,6 +119,10 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
               }
             : option.reply
           : undefined
+    }
+
+    if (payload.content === undefined && payload.embed === undefined) {
+      payload.content = ''
     }
 
     const resp = await this.client.rest.api.channels[channelID].messages.post(

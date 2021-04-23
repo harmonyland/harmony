@@ -1,11 +1,12 @@
-import { Embed } from '../structures/embed.ts'
-import { Member } from '../structures/member.ts'
-import { Message, MessageAttachment } from '../structures/message.ts'
-import { Role } from '../structures/role.ts'
-import { Permissions } from '../utils/permissions.ts'
-import { EmojiPayload } from './emoji.ts'
-import { MemberPayload } from './guild.ts'
-import { UserPayload } from './user.ts'
+import type { Embed } from '../structures/embed.ts'
+import type { Member } from '../structures/member.ts'
+import type { Message, MessageAttachment } from '../structures/message.ts'
+import type { Role } from '../structures/role.ts'
+import type { Permissions } from '../utils/permissions.ts'
+import type { EmojiPayload } from './emoji.ts'
+import type { MemberPayload } from './guild.ts'
+import type { InteractionType } from './slash.ts'
+import type { UserPayload } from './user.ts'
 
 export interface ChannelPayload {
   id: string
@@ -28,7 +29,7 @@ export interface GuildChannelPayload extends ChannelPayload {
 
 export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
-  GuildChannelPayload {
+    GuildChannelPayload {
   topic?: string
 }
 
@@ -36,7 +37,7 @@ export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
   rate_limit_per_user: number
 }
 
-export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload { }
+export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -55,7 +56,7 @@ export interface GroupDMChannelPayload extends DMChannelPayload {
 
 export interface GuildCategoryChannelPayload
   extends ChannelPayload,
-  GuildChannelPayload { }
+    GuildChannelPayload {}
 
 export interface ModifyChannelPayload {
   name?: string
@@ -66,7 +67,7 @@ export interface ModifyChannelPayload {
 }
 
 export interface ModifyGuildCategoryChannelPayload
-  extends ModifyChannelPayload { }
+  extends ModifyChannelPayload {}
 
 export interface ModifyGuildTextBasedChannelPayload
   extends ModifyChannelPayload {
@@ -80,7 +81,7 @@ export interface ModifyGuildTextChannelPayload
 }
 
 export interface ModifyGuildNewsChannelPayload
-  extends ModifyGuildTextBasedChannelPayload { }
+  extends ModifyGuildTextBasedChannelPayload {}
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
@@ -95,7 +96,7 @@ export interface ModifyChannelOption {
   nsfw?: boolean | null
 }
 
-export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption { }
+export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
 
 export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
@@ -108,7 +109,7 @@ export interface ModifyGuildTextChannelOption
 }
 
 export interface ModifyGuildNewsChannelOption
-  extends ModifyGuildTextBasedChannelOption { }
+  extends ModifyGuildTextBasedChannelOption {}
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
@@ -157,7 +158,11 @@ export enum ChannelTypes {
   GUILD_CATEGORY = 4,
   GUILD_NEWS = 5,
   GUILD_STORE = 6,
+<<<<<<< HEAD
   GUILD_STAGE_VOICE = 13,
+=======
+  GUILD_STAGE_VOICE = 13
+>>>>>>> origin/main
 }
 
 export interface MessagePayload {
@@ -186,6 +191,7 @@ export interface MessagePayload {
   message_reference?: MessageReference
   flags?: number
   stickers?: MessageStickerPayload[]
+  interaction?: MessageInteractionPayload
 }
 
 export enum AllowedMentionType {
@@ -339,7 +345,11 @@ export enum MessageTypes {
   GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING = 16,
   GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING = 17,
   REPLY = 19,
+<<<<<<< HEAD
   APPLICATION_COMMAND = 20,
+=======
+  APPLICATION_COMMAND = 20
+>>>>>>> origin/main
 }
 
 export enum MessageActivityTypes {
@@ -377,4 +387,40 @@ export interface MessageStickerPayload {
   asset: string
   preview_asset: string | null
   format_type: MessageStickerFormatTypes
+}
+
+export interface MessageInteractionPayload {
+  id: string
+  type: InteractionType
+  name: string
+  user: UserPayload
+}
+
+export interface EditMessagePayload {
+  content?: string
+  embed?: EmbedPayload
+  allowed_mentions?: AllowedMentionsPayload
+  flags?: number
+}
+
+export interface CreateMessagePayload extends EditMessagePayload {
+  nonce?: string
+  tts?: boolean
+  message_reference?: MessageReference
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+}
+
+export interface CreateWebhookMessageBasePayload {
+  content?: string
+  embeds?: EmbedPayload[]
+  tts?: boolean
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+  allowed_mentions?: AllowedMentionsPayload
+}
+
+export interface CreateWebhookMessagePayload extends CreateMessagePayload {
+  username?: string
+  avatar_url?: string
 }

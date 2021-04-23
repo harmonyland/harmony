@@ -1,7 +1,7 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
-import { Guild } from '../../structures/guild.ts'
-import { WebhooksUpdatePayload } from '../../types/gateway.ts'
-import { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
+import type { Guild } from '../../structures/guild.ts'
+import type { WebhooksUpdatePayload } from '../../types/gateway.ts'
+import type { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
 
 export const webhooksUpdate: GatewayEventHandler = async (
   gateway: Gateway,

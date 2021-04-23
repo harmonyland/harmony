@@ -1,9 +1,9 @@
 import { Permissions } from '../../mod.ts'
-import { Client } from '../models/client.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Client } from '../client/mod.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE, GUILD_ROLES } from '../types/endpoint.ts'
-import { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { BaseManager } from './base.ts'
 
 export interface CreateGuildRoleOptions {
@@ -22,14 +22,17 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
     this.guild = guild
   }
 
-  /** Fetch a Guild Role (from API) */
-  async fetch(id: string): Promise<Role> {
+  /** Fetch All Guild Roles */
+  async fetchAll(): Promise<Role[]> {
     return await new Promise((resolve, reject) => {
-      this.client.rest
-        .get(GUILD_ROLE(this.guild.id, id))
-        .then(async (data) => {
-          await this.set(id, data as RolePayload)
-          resolve(((await this.get(id)) as unknown) as Role)
+      this.client.rest.api.guilds[this.guild.id].roles.get
+        .then(async (data: RolePayload[]) => {
+          const roles: Role[] = []
+          for (const raw of data) {
+            await this.set(raw.id, raw)
+            roles.push(new Role(this.client, raw, this.guild))
+          }
+          resolve(roles)
         })
         .catch((e) => reject(e))
     })

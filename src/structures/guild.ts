@@ -1,4 +1,4 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import {
   GuildBanPayload,
   GuildFeatures,
@@ -41,12 +41,12 @@ import {
   GUILD_SPLASH
 } from '../types/endpoint.ts'
 import { GuildVoiceStatesManager } from '../managers/guildVoiceStates.ts'
-import { RequestMembersOptions } from '../gateway/index.ts'
+import type { RequestMembersOptions } from '../gateway/mod.ts'
 import { GuildPresencesManager } from '../managers/presences.ts'
-import { TemplatePayload } from '../types/template.ts'
+import type { TemplatePayload } from '../types/template.ts'
 import { Template } from './template.ts'
-import { DiscordAPIError } from '../models/rest.ts'
-import { ImageFormats, ImageSize } from '../types/cdn.ts'
+import { DiscordAPIError } from '../rest/mod.ts'
+import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
 
 export class GuildBan extends Base {
@@ -187,6 +187,7 @@ export class Guild extends SnowflakeBase {
   approximateNumberCount?: number
   approximatePresenceCount?: number
   bans: GuildBans
+  nsfw?: boolean
 
   /** Get Shard ID of Guild on which it is */
   get shardID(): number {
@@ -261,6 +262,7 @@ export class Guild extends SnowflakeBase {
         data.approximate_number_count ?? this.approximateNumberCount
       this.approximatePresenceCount =
         data.approximate_presence_count ?? this.approximatePresenceCount
+      this.nsfw = data.nsfw ?? this.nsfw
     }
   }
 

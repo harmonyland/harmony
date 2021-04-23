@@ -1,4 +1,4 @@
-import { MemberPayload } from './guild.ts'
+import type { MemberPayload } from './guild.ts'
 
 export enum VoiceOpcodes {
   IDENTIFY = 0,
