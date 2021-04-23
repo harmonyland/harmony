@@ -11,6 +11,8 @@ import type {
 import { CHANNEL } from '../types/endpoint.ts'
 import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
+// Deno is bugged
+import {} from './_util.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 

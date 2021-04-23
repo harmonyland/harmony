@@ -158,11 +158,7 @@ export enum ChannelTypes {
   GUILD_CATEGORY = 4,
   GUILD_NEWS = 5,
   GUILD_STORE = 6,
-<<<<<<< HEAD
-  GUILD_STAGE_VOICE = 13,
-=======
   GUILD_STAGE_VOICE = 13
->>>>>>> origin/main
 }
 
 export interface MessagePayload {
@@ -345,11 +341,7 @@ export enum MessageTypes {
   GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING = 16,
   GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING = 17,
   REPLY = 19,
-<<<<<<< HEAD
-  APPLICATION_COMMAND = 20,
-=======
   APPLICATION_COMMAND = 20
->>>>>>> origin/main
 }
 
 export enum MessageActivityTypes {

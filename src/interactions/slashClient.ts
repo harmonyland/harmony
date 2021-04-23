@@ -55,14 +55,6 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   modules: SlashModule[] = []
   publicKey?: string
 
-  _decoratedSlash?: Array<{
-    name: string
-    guild?: string
-    parent?: string
-    group?: string
-    handler: (interaction: Interaction) => any
-  }>
-
   constructor(options: SlashOptions) {
     super()
     let id = options.id
@@ -76,17 +68,20 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
     this.enabled = options.enabled ?? true
 
-    if (this.client?._decoratedSlash !== undefined) {
-      this.client._decoratedSlash.forEach((e) => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const client = this.client as any
+    if (client?._decoratedSlash !== undefined) {
+      client._decoratedSlash.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
     }
 
-    if (this._decoratedSlash !== undefined) {
-      this._decoratedSlash.forEach((e) => {
+    const self = this as any
+    if (self._decoratedSlash !== undefined) {
+      self._decoratedSlash.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
-        this.handlers.push(e)
+        self.handlers.push(e)
       })
     }
 
@@ -386,12 +381,14 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 /** Decorator to create a Slash Command handler */
 export function slash(name?: string, guild?: string) {
   return function (client: Client | SlashClient | SlashModule, prop: string) {
-    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = client as any
+    if (c._decoratedSlash === undefined) c._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
       throw new Error('@slash decorator requires a function')
     } else
-      client._decoratedSlash.push({
+      c._decoratedSlash.push({
         name: name ?? prop,
         guild,
         handler: item
@@ -402,12 +399,14 @@ export function slash(name?: string, guild?: string) {
 /** Decorator to create a Sub-Slash Command handler */
 export function subslash(parent: string, name?: string, guild?: string) {
   return function (client: Client | SlashModule | SlashClient, prop: string) {
-    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = client as any
+    if (c._decoratedSlash === undefined) c._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
       throw new Error('@subslash decorator requires a function')
     } else
-      client._decoratedSlash.push({
+      c._decoratedSlash.push({
         parent,
         name: name ?? prop,
         guild,
@@ -424,12 +423,14 @@ export function groupslash(
   guild?: string
 ) {
   return function (client: Client | SlashModule | SlashClient, prop: string) {
-    if (client._decoratedSlash === undefined) client._decoratedSlash = []
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = client as any
+    if (c._decoratedSlash === undefined) c._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
       throw new Error('@groupslash decorator requires a function')
     } else
-      client._decoratedSlash.push({
+      c._decoratedSlash.push({
         group,
         parent,
         name: name ?? prop,
