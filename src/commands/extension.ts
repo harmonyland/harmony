@@ -73,27 +73,25 @@ export class Extension {
   /** Events registered by this Extension */
   events: { [name: string]: (...args: any[]) => {} } = {}
 
-  _decoratedCommands?: { [name: string]: Command }
-  _decoratedEvents?: { [name: string]: (...args: any[]) => any }
-
   constructor(client: CommandClient) {
     this.client = client
-    if (this._decoratedCommands !== undefined) {
-      Object.entries(this._decoratedCommands).forEach((entry) => {
+    const self = this as any
+    if (self._decoratedCommands !== undefined) {
+      Object.entries(self._decoratedCommands).forEach((entry: any) => {
         entry[1].extension = this
         this.commands.add(entry[1])
       })
-      this._decoratedCommands = undefined
+      self._decoratedCommands = undefined
     }
 
     if (
-      this._decoratedEvents !== undefined &&
-      Object.keys(this._decoratedEvents).length !== 0
+      self._decoratedEvents !== undefined &&
+      Object.keys(self._decoratedEvents).length !== 0
     ) {
-      Object.entries(this._decoratedEvents).forEach((entry) => {
+      Object.entries(self._decoratedEvents).forEach((entry: any) => {
         this.listen(entry[0] as keyof ClientEvents, entry[1].bind(this))
       })
-      this._decoratedEvents = undefined
+      self._decoratedEvents = undefined
     }
   }
 

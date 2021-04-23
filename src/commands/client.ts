@@ -70,8 +70,6 @@ export class CommandClient extends Client implements CommandClientOptions {
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
 
-  _decoratedCommands?: { [name: string]: Command }
-
   constructor(options: CommandClientOptions) {
     super(options)
     this.prefix = options.prefix
@@ -116,11 +114,12 @@ export class CommandClient extends Client implements CommandClientOptions {
     this.caseSensitive =
       options.caseSensitive === undefined ? false : options.caseSensitive
 
-    if (this._decoratedCommands !== undefined) {
-      Object.values(this._decoratedCommands).forEach((entry) => {
+    const self = this as any
+    if (self._decoratedCommands !== undefined) {
+      Object.values(self._decoratedCommands).forEach((entry: any) => {
         this.commands.add(entry)
       })
-      this._decoratedCommands = undefined
+      self._decoratedCommands = undefined
     }
 
     this.on(
@@ -382,11 +381,11 @@ export class CommandClient extends Client implements CommandClientOptions {
  */
 export function command(options?: CommandOptions) {
   return function (target: CommandClient | Extension, name: string) {
-    if (target._decoratedCommands === undefined) target._decoratedCommands = {}
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = target as any
+    if (c._decoratedCommands === undefined) c._decoratedCommands = {}
 
-    const prop = ((target as unknown) as {
-      [name: string]: (ctx: CommandContext) => any
-    })[name]
+    const prop = c[name]
 
     if (typeof prop !== 'function')
       throw new Error('@command decorator can only be used on class methods')
@@ -400,6 +399,6 @@ export function command(options?: CommandOptions) {
 
     if (target instanceof Extension) command.extension = target
 
-    target._decoratedCommands[command.name] = command
+    c._decoratedCommands[command.name] = command
   }
 }

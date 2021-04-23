@@ -176,7 +176,7 @@ export * from './src/cache/redis.ts'
 export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
 export { StoreChannel } from './src/structures/guildStoreChannel.ts'
-export { StageVoiceChannel } from './src/structures/guildStageVoiceChannel.ts'
+export { StageVoiceChannel } from './src/structures/guildVoiceStageChannel.ts'
 export {
   isCategoryChannel,
   isDMChannel,
