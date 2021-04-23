@@ -175,4 +175,19 @@ export type { Dict } from './src/utils/dict.ts'
 export * from './src/cache/redis.ts'
 export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
+export { StoreChannel } from './src/structures/guildStoreChannel.ts'
 export { StageVoiceChannel } from './src/structures/guildVoiceStageChannel.ts'
+export {
+  isCategoryChannel,
+  isDMChannel,
+  isGroupDMChannel,
+  isGuildBasedTextChannel,
+  isGuildChannel,
+  isGuildTextChannel,
+  isNewsChannel,
+  isStageVoiceChannel,
+  isStoreChannel,
+  isTextChannel,
+  isVoiceChannel,
+  default as getChannelByType
+} from './src/utils/channel.ts'
