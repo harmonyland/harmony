@@ -1,48 +1,42 @@
-import {
-  Client,
-  Intents,
-  event,
-  slash,
-  SlashCommandOptionType as Type
-} from '../../mod.ts'
-import { Interaction } from '../structures/slash.ts'
+import { Client, Intents, event, slash } from '../mod.ts'
+import { Interaction } from '../src/structures/slash.ts'
 import { TOKEN } from './config.ts'
 
 export class MyClient extends Client {
   @event() ready(): void {
     console.log(`Logged in as ${this.user?.tag}!`)
-    this.slash.commands.bulkEdit(
-      [
-        {
-          name: 'test',
-          description: 'Test command.',
-          options: [
-            {
-              name: 'user',
-              type: Type.USER,
-              description: 'User'
-            },
-            {
-              name: 'role',
-              type: Type.ROLE,
-              description: 'Role'
-            },
-            {
-              name: 'channel',
-              type: Type.CHANNEL,
-              description: 'Channel'
-            },
-            {
-              name: 'string',
-              type: Type.STRING,
-              description: 'String'
-            }
-          ]
-        }
-      ],
-      '807935370556866560'
-    )
-    this.slash.commands.bulkEdit([])
+    // this.slash.commands.bulkEdit(
+    //   [
+    //     {
+    //       name: 'test',
+    //       description: 'Test command.',
+    //       options: [
+    //         {
+    //           name: 'user',
+    //           type: Type.USER,
+    //           description: 'User'
+    //         },
+    //         {
+    //           name: 'role',
+    //           type: Type.ROLE,
+    //           description: 'Role'
+    //         },
+    //         {
+    //           name: 'channel',
+    //           type: Type.CHANNEL,
+    //           description: 'Channel'
+    //         },
+    //         {
+    //           name: 'string',
+    //           type: Type.STRING,
+    //           description: 'String'
+    //         }
+    //       ]
+    //     }
+    //   ],
+    //   '807935370556866560'
+    // )
+    // this.slash.commands.bulkEdit([])
   }
 
   @slash() test(d: Interaction): void {

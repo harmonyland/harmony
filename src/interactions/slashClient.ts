@@ -57,14 +57,6 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   modules: SlashModule[] = []
   publicKey?: string
 
-  _decoratedSlash?: Array<{
-    name: string
-    guild?: string
-    parent?: string
-    group?: string
-    handler: (interaction: Interaction) => any
-  }>
-
   constructor(options: SlashOptions) {
     super()
     let id = options.id
@@ -87,10 +79,11 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       })
     }
 
-    if (this._decoratedSlash !== undefined) {
-      this._decoratedSlash.forEach((e) => {
+    const self = this as any
+    if (self._decoratedSlash !== undefined) {
+      self._decoratedSlash.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
-        this.handlers.push(e)
+        self.handlers.push(e)
       })
     }
 
