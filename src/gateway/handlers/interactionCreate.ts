@@ -18,6 +18,11 @@ import { Permissions } from '../../utils/permissions.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { User } from '../../structures/user.ts'
 import { Role } from '../../structures/role.ts'
+import { RolePayload } from '../../types/role.ts'
+import { InteractionChannelPayload } from '../../types/slashCommands.ts'
+import { Message } from '../../structures/message.ts'
+import { TextChannel } from '../../structures/textChannel.ts'
+import { MessageComponentInteraction } from '../../structures/messageComponents.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -32,13 +37,22 @@ export const interactionCreate: GatewayEventHandler = async (
   const guild =
     d.guild_id === undefined
       ? undefined
-      : await gateway.client.guilds.get(d.guild_id)
+      : (await gateway.client.guilds.get(d.guild_id)) ??
+        new Guild(gateway.client, { unavailable: true, id: d.guild_id } as any)
 
   if (d.member !== undefined)
     await guild?.members.set(d.member.user.id, d.member)
   const member =
     d.member !== undefined
-      ? (((await guild?.members.get(d.member.user.id)) as unknown) as Member)
+      ? (await guild?.members.get(d.member.user.id))! ??
+        new Member(
+          gateway.client,
+          d.member!,
+          new User(gateway.client, d.member.user),
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          guild!,
+          new Permissions(d.member.permissions)
+        )
       : undefined
   if (d.user !== undefined) await gateway.client.users.set(d.user.id, d.user)
   const dmUser =
@@ -47,9 +61,9 @@ export const interactionCreate: GatewayEventHandler = async (
   const user = member !== undefined ? member.user : dmUser
   if (user === undefined) return
 
-  const channel =
-    (await gateway.client.channels.get<GuildTextBasedChannel>(d.channel_id)) ??
-    (await gateway.client.channels.fetch<GuildTextBasedChannel>(d.channel_id))
+  const channel = await gateway.client.channels.get<GuildTextBasedChannel>(
+    d.channel_id
+  )
 
   const resolved: InteractionApplicationCommandResolved = {
     users: {},
@@ -58,9 +72,11 @@ export const interactionCreate: GatewayEventHandler = async (
     roles: {}
   }
 
-  if (d.data?.resolved !== undefined) {
-    for (const [id, data] of Object.entries(d.data.resolved.users ?? {})) {
-      await gateway.client.users.set(id, data)
+  if ((d.data as any)?.resolved !== undefined) {
+    for (const [id, data] of Object.entries(
+      (d.data as any)?.resolved.users ?? {}
+    )) {
+      await gateway.client.users.set(id, data as UserPayload)
       resolved.users[id] = ((await gateway.client.users.get(
         id
       )) as unknown) as User
@@ -68,41 +84,67 @@ export const interactionCreate: GatewayEventHandler = async (
         resolved.users[id].member = resolved.members[id]
     }
 
-    for (const [id, data] of Object.entries(d.data.resolved.members ?? {})) {
+    for (const [id, data] of Object.entries(
+      (d.data as any)?.resolved.members ?? {}
+    )) {
       const roles = await guild?.roles.array()
       let permissions = new Permissions(Permissions.DEFAULT)
       if (roles !== undefined) {
         const mRoles = roles.filter(
-          (r) => (data?.roles?.includes(r.id) as boolean) || r.id === guild?.id
+          (r) =>
+            ((data as any)?.roles?.includes(r.id) as boolean) ||
+            r.id === guild?.id
         )
         permissions = new Permissions(mRoles.map((r) => r.permissions))
       }
-      data.user = (d.data.resolved.users?.[id] as unknown) as UserPayload
+      ;(data as any).user = ((d.data as any).resolved.users?.[
+        id
+      ] as unknown) as UserPayload
       resolved.members[id] = new Member(
         gateway.client,
-        data,
+        data as any,
         resolved.users[id],
         guild as Guild,
         permissions
       )
     }
 
-    for (const [id, data] of Object.entries(d.data.resolved.roles ?? {})) {
+    for (const [id, data] of Object.entries(
+      (d.data as any).resolved.roles ?? {}
+    )) {
       if (guild !== undefined) {
-        await guild.roles.set(id, data)
+        await guild.roles.set(id, data as RolePayload)
         resolved.roles[id] = ((await guild.roles.get(id)) as unknown) as Role
       } else {
         resolved.roles[id] = new Role(
           gateway.client,
-          data,
+          data as any,
           (guild as unknown) as Guild
         )
       }
     }
 
-    for (const [id, data] of Object.entries(d.data.resolved.channels ?? {})) {
-      resolved.channels[id] = new InteractionChannel(gateway.client, data)
+    for (const [id, data] of Object.entries(
+      (d.data as any).resolved.channels ?? {}
+    )) {
+      resolved.channels[id] = new InteractionChannel(
+        gateway.client,
+        data as InteractionChannelPayload
+      )
     }
+  }
+
+  let message: Message | undefined
+  if (d.message !== undefined) {
+    const channel = (await gateway.client.channels.get<TextChannel>(
+      d.message.channel_id
+    ))!
+    message = new Message(
+      gateway.client,
+      d.message,
+      channel,
+      new User(gateway.client, d.message.author)
+    )
   }
 
   let interaction
@@ -114,12 +156,21 @@ export const interactionCreate: GatewayEventHandler = async (
       user,
       resolved
     })
+  } else if (d.type === InteractionType.MESSAGE_COMPONENT) {
+    interaction = new MessageComponentInteraction(gateway.client, d, {
+      member,
+      guild,
+      channel,
+      user,
+      message
+    })
   } else {
     interaction = new Interaction(gateway.client, d, {
       member,
       guild,
       channel,
-      user
+      user,
+      message
     })
   }
 

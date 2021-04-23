@@ -12,7 +12,6 @@ import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import type { Extension } from '../commands/extension.ts'
 import { SlashClient } from '../interactions/slashClient.ts'
-import type { Interaction } from '../structures/slash.ts'
 import { ShardManager } from './shard.ts'
 import { Application } from '../structures/application.ts'
 import { Invite } from '../structures/invite.ts'
@@ -113,17 +112,6 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Client's presence. Startup one if set before connecting */
   presence: ClientPresence = new ClientPresence()
-  _decoratedEvents?: {
-    [name: string]: (...args: any[]) => void
-  }
-
-  _decoratedSlash?: Array<{
-    name: string
-    guild?: string
-    parent?: string
-    group?: string
-    handler: (interaction: Interaction) => any
-  }>
 
   _id?: string
 
@@ -175,13 +163,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       this.fetchUncachedReactions = true
 
     if (
-      this._decoratedEvents !== undefined &&
-      Object.keys(this._decoratedEvents).length !== 0
+      (this as any)._decoratedEvents !== undefined &&
+      Object.keys((this as any)._decoratedEvents).length !== 0
     ) {
-      Object.entries(this._decoratedEvents).forEach((entry) => {
-        this.on(entry[0] as keyof ClientEvents, entry[1].bind(this))
+      Object.entries((this as any)._decoratedEvents).forEach((entry) => {
+        this.on(entry[0] as keyof ClientEvents, (entry as any)[1].bind(this))
       })
-      this._decoratedEvents = undefined
+      ;(this as any)._decoratedEvents = undefined
     }
 
     this.clientProperties =
@@ -422,19 +410,23 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 }
 
 /** Event decorator to create an Event handler from function */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function event(name?: keyof ClientEvents) {
   return function (
     client: Client | Extension,
     prop: keyof ClientEvents | string
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = client as any
     const listener = ((client as unknown) as {
       [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
     })[(prop as unknown) as keyof ClientEvents]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
-    if (client._decoratedEvents === undefined) client._decoratedEvents = {}
+
+    if (c._decoratedEvents === undefined) c._decoratedEvents = {}
     const key = name === undefined ? prop : name
 
-    client._decoratedEvents[key] = listener
+    c._decoratedEvents[key] = listener
   }
 }

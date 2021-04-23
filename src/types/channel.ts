@@ -7,7 +7,10 @@ import type { EmojiPayload } from './emoji.ts'
 import type { MemberPayload } from './guild.ts'
 import type { InteractionType } from './interactions.ts'
 import type { UserPayload } from './user.ts'
-import type { MessageComponentPayload } from './messageComponents.ts'
+import type {
+  MessageComponentData,
+  MessageComponentPayload
+} from './messageComponents.ts'
 
 export interface ChannelPayload {
   id: string
@@ -189,6 +192,7 @@ export interface MessagePayload {
   flags?: number
   stickers?: MessageStickerPayload[]
   interaction?: MessageInteractionPayload
+  components?: MessageComponentPayload[]
 }
 
 export enum AllowedMentionType {
@@ -211,7 +215,7 @@ export interface MessageOptions {
   files?: MessageAttachment[]
   allowedMentions?: AllowedMentionsPayload
   reply?: Message | MessageReference | string
-  components?: MessageComponentPayload[]
+  components?: MessageComponentData[]
 }
 
 export interface ChannelMention {
@@ -395,6 +399,7 @@ export interface EditMessagePayload {
   embed?: EmbedPayload
   allowed_mentions?: AllowedMentionsPayload
   flags?: number
+  components?: MessageComponentPayload[]
 }
 
 export interface CreateMessagePayload extends EditMessagePayload {

@@ -17,4 +17,19 @@ export interface MessageComponentPayload {
   label?: string
   style?: ButtonStyle
   url?: string
+  custom_id?: string
+}
+
+export interface MessageComponentData {
+  type: MessageComponentType
+  components?: MessageComponentData[]
+  label?: string
+  style?: ButtonStyle
+  url?: string
+  customID?: string
+}
+
+export interface InteractionMessageComponentData {
+  custom_id: string
+  component_type: MessageComponentType
 }

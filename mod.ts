@@ -39,8 +39,11 @@ export { GuildChannelsManager } from './src/managers/guildChannels.ts'
 export { GuildManager } from './src/managers/guilds.ts'
 export * from './src/structures/base.ts'
 export * from './src/structures/slash.ts'
+export * from './src/structures/interactions.ts'
+export * from './src/structures/messageComponents.ts'
 export * from './src/types/slashCommands.ts'
 export * from './src/types/interactions.ts'
+export * from './src/types/messageComponents.ts'
 export { GuildEmojisManager } from './src/managers/guildEmojis.ts'
 export { MembersManager } from './src/managers/members.ts'
 export { MessageReactionsManager } from './src/managers/messageReactions.ts'
@@ -192,3 +195,4 @@ export {
   isVoiceChannel,
   default as getChannelByType
 } from './src/utils/channel.ts'
+export * from './src/utils/interactions.ts'

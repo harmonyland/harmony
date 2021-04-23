@@ -1,4 +1,5 @@
 import type { Client } from '../client/client.ts'
+import { transformComponent } from '../managers/_util.ts'
 import {
   AllowedMentionsPayload,
   ChannelTypes,
@@ -14,10 +15,13 @@ import {
   InteractionType
 } from '../types/interactions.ts'
 import {
+  InteractionMessageComponentData,
+  MessageComponentData
+} from '../types/messageComponents.ts'
+import {
   InteractionApplicationCommandData,
   InteractionChannelPayload
 } from '../types/slashCommands.ts'
-import { Dict } from '../utils/dict.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
 import { Channel } from './channel.ts'
@@ -26,7 +30,6 @@ import { Guild } from './guild.ts'
 import { GuildTextChannel } from './guildTextChannel.ts'
 import { Member } from './member.ts'
 import { Message } from './message.ts'
-import { Role } from './role.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
@@ -47,6 +50,7 @@ export interface InteractionMessageOptions {
   allowedMentions?: AllowedMentionsPayload
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
+  components?: MessageComponentData[]
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
@@ -76,13 +80,6 @@ export class InteractionChannel extends SnowflakeBase {
   }
 }
 
-export interface InteractionApplicationCommandResolved {
-  users: Dict<InteractionUser>
-  members: Dict<Member>
-  channels: Dict<InteractionChannel>
-  roles: Dict<Role>
-}
-
 export class InteractionUser extends User {
   member?: Member
 }
@@ -110,7 +107,8 @@ export class Interaction extends SnowflakeBase {
   _httpResponded?: boolean
   applicationID: string
   /** Data sent with Interaction. Only applies to Application Command */
-  data?: InteractionApplicationCommandData
+  data?: InteractionApplicationCommandData | InteractionMessageComponentData
+  message?: Message
 
   constructor(
     client: Client,
@@ -120,6 +118,7 @@ export class Interaction extends SnowflakeBase {
       guild?: Guild
       member?: Member
       user: User
+      message?: Message
     }
   ) {
     super(client)
@@ -132,6 +131,7 @@ export class Interaction extends SnowflakeBase {
     this.data = data.data
     this.guild = others.guild
     this.channel = others.channel
+    this.message = others.message
   }
 
   /** Respond to an Interaction */
@@ -154,7 +154,11 @@ export class Interaction extends SnowflakeBase {
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
-              allowed_mentions: data.allowedMentions ?? undefined
+              allowed_mentions: data.allowedMentions ?? undefined,
+              components:
+                data.components === undefined
+                  ? undefined
+                  : transformComponent(data.components)
             }
           : undefined
     }
@@ -227,6 +231,7 @@ export class Interaction extends SnowflakeBase {
     embeds?: Array<Embed | EmbedPayload>
     flags?: number | number[]
     allowedMentions?: AllowedMentionsPayload
+    components?: MessageComponentData[]
   }): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
@@ -236,7 +241,11 @@ export class Interaction extends SnowflakeBase {
         typeof data.flags === 'object'
           ? data.flags.reduce((p, a) => p | a, 0)
           : data.flags,
-      allowed_mentions: data.allowedMentions
+      allowed_mentions: data.allowedMentions,
+      components:
+        data.components === undefined
+          ? undefined
+          : transformComponent(data.components)
     })
     return this
   }
