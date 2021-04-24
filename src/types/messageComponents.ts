@@ -25,6 +25,7 @@ export interface MessageComponentPayload {
   url?: string
   custom_id?: string
   emoji?: MessageComponentEmoji
+  disabled?: boolean
 }
 
 export interface MessageComponentData {
@@ -35,6 +36,7 @@ export interface MessageComponentData {
   url?: string
   customID?: string
   emoji?: MessageComponentEmoji
+  disabled?: boolean
 }
 
 export interface InteractionMessageComponentData {
