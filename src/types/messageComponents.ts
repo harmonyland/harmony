@@ -11,6 +11,12 @@ export enum ButtonStyle {
   Link = 5
 }
 
+export interface MessageComponentEmoji {
+  id?: string
+  name?: string
+  animated?: boolean
+}
+
 export interface MessageComponentPayload {
   type: MessageComponentType
   components?: MessageComponentPayload[]
@@ -18,6 +24,7 @@ export interface MessageComponentPayload {
   style?: ButtonStyle
   url?: string
   custom_id?: string
+  emoji?: MessageComponentEmoji
 }
 
 export interface MessageComponentData {
@@ -27,6 +34,7 @@ export interface MessageComponentData {
   style?: ButtonStyle
   url?: string
   customID?: string
+  emoji?: MessageComponentEmoji
 }
 
 export interface InteractionMessageComponentData {
