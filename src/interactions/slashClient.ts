@@ -226,7 +226,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
     await this.emit('interaction', interaction)
     try {
-      await cmd.handler(interaction)
+      await cmd.handler(interaction as SlashCommandInteraction)
     } catch (e) {
       await this.emit('interactionError', e)
     }
