@@ -1,10 +1,14 @@
+import { Interaction } from './mod.ts'
 import {
   SlashCommandsManager,
   SlashClient,
   SlashCommandHandlerCallback,
   SlashCommandHandler
 } from './src/interactions/mod.ts'
-import { InteractionResponseType, InteractionType } from './src/types/slash.ts'
+import {
+  InteractionResponseType,
+  InteractionType
+} from './src/types/interactions.ts'
 
 export interface DeploySlashInitOptions {
   env?: boolean
@@ -124,8 +128,18 @@ export function handle(
   client.handle(cmd, handler)
 }
 
+export function interactions(cb: (i: Interaction) => any): void {
+  client.on('interaction', cb)
+}
+
 export { commands, client }
-export * from './src/types/slash.ts'
+export * from './src/types/slashCommands.ts'
+export * from './src/types/interactions.ts'
 export * from './src/structures/slash.ts'
 export * from './src/interactions/mod.ts'
 export * from './src/types/channel.ts'
+export * from './src/types/messageComponents.ts'
+export * from './src/structures/interactions.ts'
+export * from './src/structures/messageComponents.ts'
+export * from './src/structures/message.ts'
+export * from './src/structures/embed.ts'
