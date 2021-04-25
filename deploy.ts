@@ -42,8 +42,12 @@ let commands: SlashCommandsManager
  *
  * @param options Initialization options
  */
-export function init(options: { env: boolean }): void
-export function init(options: { publicKey: string; token?: string }): void
+export function init(options: { env: boolean; path?: string }): void
+export function init(options: {
+  publicKey: string
+  token?: string
+  path?: string
+}): void
 export function init(options: DeploySlashInitOptions): void {
   if (client !== undefined) throw new Error('Already initialized')
   if (options.env === true) {
