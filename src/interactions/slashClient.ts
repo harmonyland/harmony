@@ -19,7 +19,9 @@ import { encodeText, decodeText } from '../utils/encoding.ts'
 import { SlashCommandsManager } from './slashCommand.ts'
 import { MessageComponentInteraction } from '../structures/messageComponents.ts'
 
-export type SlashCommandHandlerCallback = (interaction: Interaction) => unknown
+export type SlashCommandHandlerCallback = (
+  interaction: SlashCommandInteraction
+) => unknown
 export interface SlashCommandHandler {
   name: string
   guild?: string
