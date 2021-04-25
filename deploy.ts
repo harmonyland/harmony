@@ -14,6 +14,7 @@ export interface DeploySlashInitOptions {
   env?: boolean
   publicKey?: string
   token?: string
+  path?: string
 }
 
 /** Current Slash Client being used to handle commands */
@@ -64,6 +65,9 @@ export function init(options: DeploySlashInitOptions): void {
     respondWith: CallableFunction
     request: Request
   }): Promise<void> => {
+    if (options.path !== undefined) {
+      if (new URL(evt.request.url).pathname !== options.path) return
+    }
     try {
       // we have to wrap because there are some weird scope errors
       const d = await client.verifyFetchEvent({
