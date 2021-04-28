@@ -1,12 +1,10 @@
 import { MessageMentions } from '../structures/messageMentions.ts'
 export type CommandArgumentMatchTypes = 'flag' | 'mention' | 'content' | 'rest'
 
-export interface Args {
+export interface Args<T = unknown> {
   name: string
   match: CommandArgumentMatchTypes
-  // Still needs to be implemented
-  // type?: unknown
-  defaultValue?: unknown
+  defaultValue?: T
   flag?: string
 }
 
