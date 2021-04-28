@@ -1,14 +1,15 @@
+import { MessageMentions } from "../structures/messageMentions.ts";
 export type CommandArgumentMatchTypes = 'flag' | 'mention' | 'content' | 'rest'
 
 export interface Args {
   name: string
   match: CommandArgumentMatchTypes
-  type?: unknown // Still needs to be implemented
-  defaultValue?: unknown // Still needs to be implemented
+  // Still needs to be implemented
+  // type?: unknown
+  defaultValue?: string;
   flag?: string
 }
 
-const mentionRegex = /([0-9]{18})/g
 
 export function parseArgs(
   commandArgs: Args[] | undefined,
@@ -56,7 +57,7 @@ function parseMention(
   argsNullable: Array<string | null>
 ): void {
   const index = argsNullable.findIndex((x) => typeof x === 'string')
-  const mention = mentionRegex.exec(argsNullable[index]!)![0]
+  const mention = MessageMentions.USER_MENTION.exec(argsNullable[index]!)![0]
   argsNullable[index] = null
   args[entry.name] = mention
 }
