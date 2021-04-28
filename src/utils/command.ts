@@ -6,7 +6,7 @@ export interface Args {
   match: CommandArgumentMatchTypes
   // Still needs to be implemented
   // type?: unknown
-  defaultValue?: string
+  defaultValue?: unknown
   flag?: string
 }
 
@@ -15,8 +15,10 @@ export function parseArgs(
   messageArgs: string[]
 ): Record<string, unknown> | null {
   if (commandArgs === undefined) return null
+  
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, unknown> = {}
+
   for (const entry of commandArgs) {
     switch (entry.match) {
       case 'flag':
