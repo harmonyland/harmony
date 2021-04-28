@@ -15,7 +15,7 @@ export function parseArgs(
   messageArgs: string[]
 ): Record<string, unknown> | null {
   if (commandArgs === undefined) return null
-  
+
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, unknown> = {}
 
@@ -48,7 +48,7 @@ function parseFlags(
       argsNullable[i] = null
       args[entry.name] = true
       break
-    } else args[entry.name] = entry.defaultValue ?? false;
+    } else args[entry.name] = entry.defaultValue ?? false
   }
 }
 
@@ -81,5 +81,5 @@ function parseRest(
   argsNullable: Array<string | null>
 ): void {
   const restValues = argsNullable.filter((x) => typeof x === 'string')
-  args[entry.name] = restValues !== null ? restValues : entry.defaultValue;
+  args[entry.name] = restValues !== null ? restValues : entry.defaultValue
 }
