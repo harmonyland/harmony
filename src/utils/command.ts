@@ -45,10 +45,10 @@ function parseFlags(
 ): void {
   for (let i = 0; i < argsNullable.length; i++) {
     if (entry.flag === argsNullable[i]) {
+      argsNullable[i] = null
       args[entry.name] = true
       break
     } else args[entry.name] = entry.defaultValue ?? false;
-    argsNullable[i] = null
   }
 }
 
@@ -72,7 +72,7 @@ function parseContent(
   argsNonNullable: Array<string | null>
 ): void {
   args[entry.name] =
-    argsNonNullable.length !== 0 ? argsNonNullable : entry.defaultValue
+    argsNonNullable.length > 0 ? argsNonNullable : entry.defaultValue
 }
 
 function parseRest(
