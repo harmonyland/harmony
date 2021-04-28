@@ -1,4 +1,4 @@
-import { MessageMentions } from "../structures/messageMentions.ts";
+import { MessageMentions } from '../structures/messageMentions.ts'
 export type CommandArgumentMatchTypes = 'flag' | 'mention' | 'content' | 'rest'
 
 export interface Args {
@@ -6,10 +6,9 @@ export interface Args {
   match: CommandArgumentMatchTypes
   // Still needs to be implemented
   // type?: unknown
-  defaultValue?: string;
+  defaultValue?: string
   flag?: string
 }
-
 
 export function parseArgs(
   commandArgs: Args[] | undefined,
@@ -57,9 +56,12 @@ function parseMention(
   argsNullable: Array<string | null>
 ): void {
   const index = argsNullable.findIndex((x) => typeof x === 'string')
-  const mention = MessageMentions.USER_MENTION.exec(argsNullable[index]!)![0]
+  const regexMatches = MessageMentions.USER_MENTION.exec(argsNullable[index]!)
+  args[entry.name] =
+    regexMatches !== null
+      ? regexMatches[0].replace(MessageMentions.USER_MENTION, '$1')
+      : null
   argsNullable[index] = null
-  args[entry.name] = mention
 }
 
 function parseContent(
