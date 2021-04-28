@@ -14,12 +14,12 @@ export function parseArgs(
   commandArgs: Args[] | undefined,
   messageArgs: string[]
 ): Record<string, unknown> | null {
-  if (!commandArgs) return null
+  if (commandArgs === undefined) return null
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, unknown> = {}
   for (const entry of commandArgs) {
     switch (entry.match) {
-      case "flag":
+      case 'flag':
         parseFlags(args, entry, messageArgsNullableCopy)
         break
       case 'mention':
@@ -48,7 +48,6 @@ function parseFlags(
       break
     } else args[entry.name] = entry.defaultValue
   }
-  return
 }
 
 function parseMention(
@@ -60,7 +59,6 @@ function parseMention(
   const mention = mentionRegex.exec(argsNullable[index]!)![0]
   argsNullable[index] = null
   args[entry.name] = mention
-  return
 }
 
 function parseContent(
@@ -70,7 +68,6 @@ function parseContent(
 ): void {
   args[entry.name] =
     argsNonNullable.length !== 0 ? argsNonNullable : entry.defaultValue
-  return
 }
 
 function parseRest(
