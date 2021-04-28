@@ -1,13 +1,8 @@
-export enum MatchTypes {
-  'flag',
-  'mention',
-  'content',
-  'rest'
-}
+export type CommandArgumentMatchTypes = 'flag' | 'mention' | 'content' | 'rest'
 
 export interface Args {
   name: string
-  match: MatchTypes
+  match: CommandArgumentMatchTypes
   type?: unknown // Still needs to be implemented
   defaultValue?: unknown // Still needs to be implemented
   flag?: string
@@ -24,16 +19,16 @@ export function parseArgs(
   const args: Record<string, unknown> = {}
   for (const entry of commandArgs) {
     switch (entry.match) {
-      case MatchTypes.flag:
+      case "flag":
         parseFlags(args, entry, messageArgsNullableCopy)
         break
-      case MatchTypes.mention:
+      case 'mention':
         parseMention(args, entry, messageArgsNullableCopy)
         break
-      case MatchTypes.content:
+      case 'content':
         parseContent(args, entry, messageArgs)
         break
-      case MatchTypes.rest:
+      case 'rest':
         parseRest(args, entry, messageArgsNullableCopy)
         break
     }
