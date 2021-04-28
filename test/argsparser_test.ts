@@ -7,6 +7,10 @@ import {
 // debugger
 const commandArgs: Args[] = [
   {
+    name: 'originalMessage',
+    match: 'content'
+  },
+  {
     name: 'permaban',
     match: 'flag',
     flag: '--permanent',
@@ -31,12 +35,20 @@ const messageArgs1: string[] = [
   'Skyler'
 ]
 const expectedResult1 = {
+  originalMessage: [
+    '<@!708544768342229012>',
+    '--permanent',
+    'bye',
+    'bye',
+    'Skyler'
+  ],
   permaban: true,
   user: '708544768342229012',
   reason: ['bye', 'bye', 'Skyler']
 }
 
 Deno.test({
+  only: false,
   name: 'parse command arguments 1 (assertEquals)',
   fn: () => {
     const result = parseArgs(commandArgs, messageArgs1)
@@ -54,6 +66,7 @@ const messageArgs2: string[] = [
   'Skyler'
 ]
 const expectedResult2 = {
+  originalMessage: ['<@!708544768342229012>', 'bye', 'bye', 'Skyler'],
   permaban: true,
   user: '708544768342229012',
   reason: ['bye', 'bye', 'Skyler']
