@@ -43,10 +43,10 @@ function parseFlags(
 ): void {
   for (let i = 0; i < argsNullable.length; i++) {
     if (entry.flag === argsNullable[i]) {
-      argsNullable[i] = null
       args[entry.name] = true
       break
-    } else args[entry.name] = entry.defaultValue
+    } else args[entry.name] = entry.defaultValue ?? false;
+    argsNullable[i] = null
   }
 }
 
@@ -60,7 +60,7 @@ function parseMention(
   args[entry.name] =
     regexMatches !== null
       ? regexMatches[0].replace(MessageMentions.USER_MENTION, '$1')
-      : null
+      : entry.defaultValue
   argsNullable[index] = null
 }
 
@@ -78,5 +78,6 @@ function parseRest(
   entry: Args,
   argsNullable: Array<string | null>
 ): void {
-  args[entry.name] = argsNullable.filter((x) => typeof x === 'string')
+  const restValues = argsNullable.filter((x) => typeof x === 'string')
+  args[entry.name] = restValues !== null ? restValues : entry.defaultValue;
 }
