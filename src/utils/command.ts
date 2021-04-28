@@ -15,10 +15,11 @@ export interface Args {
 
 const mentionRegex = /([0-9]{18})/g
 
-export function parseArgs2(
-  commandArgs: Args[],
+export function parseArgs(
+  commandArgs: Args[] | undefined,
   messageArgs: string[]
-): Record<string, unknown> {
+): Record<string, unknown> | null {
+  if (!commandArgs) return null
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, unknown> = {}
   for (const entry of commandArgs) {
