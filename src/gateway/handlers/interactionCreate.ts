@@ -22,7 +22,6 @@ import { RolePayload } from '../../types/role.ts'
 import { InteractionChannelPayload } from '../../types/slashCommands.ts'
 import { Message } from '../../structures/message.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
-import { MessageComponentInteraction } from '../../structures/messageComponents.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -155,14 +154,6 @@ export const interactionCreate: GatewayEventHandler = async (
       channel,
       user,
       resolved
-    })
-  } else if (d.type === InteractionType.MESSAGE_COMPONENT) {
-    interaction = new MessageComponentInteraction(gateway.client, d, {
-      member,
-      guild,
-      channel,
-      user,
-      message
     })
   } else {
     interaction = new Interaction(gateway.client, d, {

@@ -11,7 +11,6 @@ import type {
 import { CHANNEL } from '../types/endpoint.ts'
 import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
-import { transformComponent } from './_util.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
@@ -101,10 +100,6 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       content: content,
       embed: option?.embed,
       file: option?.file,
-      components:
-        option?.components !== undefined
-          ? transformComponent(option.components)
-          : undefined,
       files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions,
@@ -172,10 +167,6 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
       // Cannot upload new files with Message
       // file: option?.file,
-      components:
-        option?.components !== undefined
-          ? transformComponent(option.components)
-          : undefined,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions
     })

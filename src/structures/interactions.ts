@@ -1,5 +1,4 @@
 import type { Client } from '../client/client.ts'
-import { transformComponent } from '../managers/_util.ts'
 import {
   AllowedMentionsPayload,
   ChannelTypes,
@@ -14,10 +13,6 @@ import {
   InteractionResponseType,
   InteractionType
 } from '../types/interactions.ts'
-import {
-  InteractionMessageComponentData,
-  MessageComponentData
-} from '../types/messageComponents.ts'
 import {
   InteractionApplicationCommandData,
   InteractionChannelPayload
@@ -50,7 +45,6 @@ export interface InteractionMessageOptions {
   allowedMentions?: AllowedMentionsPayload
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
-  components?: MessageComponentData[]
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
@@ -107,7 +101,7 @@ export class Interaction extends SnowflakeBase {
   _httpResponded?: boolean
   applicationID: string
   /** Data sent with Interaction. Only applies to Application Command */
-  data?: InteractionApplicationCommandData | InteractionMessageComponentData
+  data?: InteractionApplicationCommandData
   message?: Message
 
   constructor(
@@ -154,11 +148,7 @@ export class Interaction extends SnowflakeBase {
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
-              allowed_mentions: data.allowedMentions ?? undefined,
-              components:
-                data.components === undefined
-                  ? undefined
-                  : transformComponent(data.components)
+              allowed_mentions: data.allowedMentions ?? undefined
             }
           : undefined
     }
@@ -231,7 +221,6 @@ export class Interaction extends SnowflakeBase {
     embeds?: Array<Embed | EmbedPayload>
     flags?: number | number[]
     allowedMentions?: AllowedMentionsPayload
-    components?: MessageComponentData[]
   }): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
@@ -241,11 +230,7 @@ export class Interaction extends SnowflakeBase {
         typeof data.flags === 'object'
           ? data.flags.reduce((p, a) => p | a, 0)
           : data.flags,
-      allowed_mentions: data.allowedMentions,
-      components:
-        data.components === undefined
-          ? undefined
-          : transformComponent(data.components)
+      allowed_mentions: data.allowedMentions
     })
     return this
   }
