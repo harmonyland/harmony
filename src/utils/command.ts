@@ -1,5 +1,23 @@
-import { MessageMentions } from '../structures/messageMentions.ts'
-export type CommandArgumentMatchTypes = 'flag' | 'mention' | 'content' | 'rest'
+interface MentionToRegex {
+  [key: string]: RegExp
+  mentionUser: RegExp
+  mentionRole: RegExp
+  mentionChannel: RegExp
+}
+
+const mentionToRegex: MentionToRegex = {
+  mentionUser: /<@!?(\d{17,19})>/g,
+  mentionRole: /<@&(\d{17,19})>/g,
+  mentionChannel: /<#(\d{17,19})>/g
+}
+
+export type CommandArgumentMatchTypes =
+  | 'flag'
+  | 'mentionUser'
+  | 'mentionRole'
+  | 'mentionChannel'
+  | 'content'
+  | 'rest'
 
 export interface Args<T = unknown> {
   name: string
@@ -22,7 +40,9 @@ export function parseArgs(
       case 'flag':
         parseFlags(args, entry, messageArgsNullableCopy)
         break
-      case 'mention':
+      case 'mentionUser':
+      case 'mentionRole':
+      case 'mentionChannel':
         parseMention(args, entry, messageArgsNullableCopy)
         break
       case 'content':
@@ -55,13 +75,14 @@ function parseMention(
   entry: Args,
   argsNullable: Array<string | null>
 ): void {
+  const regex = mentionToRegex[entry.match]
   const index = argsNullable.findIndex(
-    (x) => typeof x === 'string' && x.includes('<@!')
+    (x) => typeof x === 'string' && regex.test(x)
   )
-  const regexMatches = MessageMentions.USER_MENTION.exec(argsNullable[index]!)
+  const regexMatches = regex.exec(argsNullable[index]!)
   args[entry.name] =
     regexMatches !== null
-      ? regexMatches[0].replace(MessageMentions.USER_MENTION, '$1')
+      ? regexMatches[0].replace(regex, '$1')
       : entry.defaultValue
   argsNullable[index] = null
 }
