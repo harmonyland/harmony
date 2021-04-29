@@ -95,10 +95,57 @@ const expectedResult3 = {
 }
 
 Deno.test({
-  name: 'parse command arguments 3 (assertNotEquals)',
+  name: 'parse command arguments default value (assertNotEquals)',
   fn: () => {
     const result = parseArgs(commandArgs, messageArgs3)
     assertNotEquals(result, expectedResult3)
+  },
+  sanitizeOps: true,
+  sanitizeResources: true,
+  sanitizeExit: true
+})
+
+
+
+const commandArgs2: Args[] = [
+    {
+    name: 'user',
+    match: 'mentionUser'
+  },
+  {
+    name: 'channel',
+    match: 'mentionChannel'
+  },
+  {
+    name: 'role',
+    match: 'mentionRole',
+  },
+  {
+    name: 'reason',
+    match: 'rest',
+    defaultValue: 'ree'
+  }
+
+]
+
+const messageArgs4: string[] = [
+  '<@!708544768342229012>',
+  'bye',
+  '<#783319033730564098>',
+  '<@&836715188690092032>'
+]
+const expectedResult4 = {
+  channel: "783319033730564098",
+  role: "836715188690092032",
+  user: "708544768342229012",
+  reason: ["bye"]
+}
+
+Deno.test({
+  name: 'parse command arguments mentions (assertEquals)',
+  fn: () => {
+    const result = parseArgs(commandArgs2, messageArgs4)
+    assertEquals(result, expectedResult4)
   },
   sanitizeOps: true,
   sanitizeResources: true,
