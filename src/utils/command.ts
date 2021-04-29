@@ -55,7 +55,9 @@ function parseMention(
   entry: Args,
   argsNullable: Array<string | null>
 ): void {
-  const index = argsNullable.findIndex((x) => typeof x === 'string')
+  const index = argsNullable.findIndex(
+    (x) => typeof x === 'string' && x.includes('<@!')
+  )
   const regexMatches = MessageMentions.USER_MENTION.exec(argsNullable[index]!)
   args[entry.name] =
     regexMatches !== null
