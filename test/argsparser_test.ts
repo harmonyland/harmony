@@ -1,10 +1,9 @@
-import { parseArgs, Args } from '../src/utils/command.ts'
+import { Args, parseArgs } from '../src/utils/command.ts'
 import {
   assertEquals,
   assertNotEquals
 } from 'https://deno.land/std@0.95.0/testing/asserts.ts'
 
-// debugger
 const commandArgs: Args[] = [
   {
     name: 'originalMessage',
@@ -18,7 +17,7 @@ const commandArgs: Args[] = [
   },
   {
     name: 'user',
-    match: 'mention'
+    match: 'mentionUser'
   },
   {
     name: 'reason',
