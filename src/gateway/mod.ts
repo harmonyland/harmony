@@ -399,7 +399,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       await this.cache.delete(`seq_${this.shards?.join('-') ?? '0'}`)
     }
 
-    this.close(1000, RECONNECT_REASON)
+    this.closeGateway(1000, RECONNECT_REASON)
     this.initWebsocket()
   }
 
@@ -418,7 +418,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.websocket.onerror = this.onerror.bind(this) as any
   }
 
-  close(code: number = 1000, reason?: string): void {
+  closeGateway(code: number = 1000, reason?: string): void {
     this.debug(
       `Closing with code ${code}${
         reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''
