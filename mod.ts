@@ -109,13 +109,14 @@ export {
   OverwriteType,
   OverrideType
 } from './src/types/channel.ts'
-export type {
-  OverwriteAsOptions,
-  OverwritePayload
-} from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
+  OverwriteAsOptions,
+  OverwritePayload,
+  Attachment,
+  AllowedMentionType,
+  AllowedMentionsPayload,
   ChannelMention,
   ChannelPayload,
   FollowedChannel,
@@ -137,7 +138,17 @@ export type {
   MessageStickerPayload,
   MessageTypes,
   OverwriteAsArg,
-  Overwrite
+  Overwrite,
+  EmbedVideo,
+  EditMessagePayload,
+  EmbedAuthor,
+  EmbedField,
+  EmbedFooter,
+  EmbedImage,
+  EmbedPayload,
+  EmbedProvider,
+  EmbedThumbnail,
+  EmbedTypes
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
@@ -177,17 +188,7 @@ export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
 export { StoreChannel } from './src/structures/guildStoreChannel.ts'
 export { StageVoiceChannel } from './src/structures/guildVoiceStageChannel.ts'
-export {
-  isCategoryChannel,
-  isDMChannel,
-  isGroupDMChannel,
-  isGuildBasedTextChannel,
-  isGuildChannel,
-  isGuildTextChannel,
-  isNewsChannel,
-  isStageVoiceChannel,
-  isStoreChannel,
-  isTextChannel,
-  isVoiceChannel,
-  default as getChannelByType
-} from './src/utils/channel.ts'
+export { default as getChannelByType } from './src/utils/channel.ts'
+export * from './src/structures/threadChannel.ts'
+export * from './src/structures/resolvable.ts'
+export * from './src/utils/channelTypes.ts'

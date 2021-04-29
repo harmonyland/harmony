@@ -6,6 +6,7 @@ import { ImageURL } from './cdn.ts'
 import type { ImageSize, ImageFormats } from '../types/cdn.ts'
 import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
 import type { DMChannel } from './dmChannel.ts'
+import { IResolvable } from './resolvable.ts'
 
 export class User extends SnowflakeBase {
   id: string
@@ -93,5 +94,23 @@ export class User extends SnowflakeBase {
 
   async createDM(): Promise<DMChannel> {
     return this.client.createDM(this)
+  }
+}
+
+export class UserResolvable extends SnowflakeBase implements IResolvable<User> {
+  constructor(client: Client, public id: string) {
+    super(client)
+  }
+
+  async get(): Promise<User | undefined> {
+    return this.client.users.get(this.id)
+  }
+
+  async fetch(): Promise<User> {
+    return this.client.users.fetch(this.id)
+  }
+
+  async resolve(): Promise<User | undefined> {
+    return this.client.users.resolve(this.id)
   }
 }
