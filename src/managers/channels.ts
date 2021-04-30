@@ -3,6 +3,7 @@ import { Channel } from '../structures/channel.ts'
 import { Embed } from '../structures/embed.ts'
 import { Message } from '../structures/message.ts'
 import type { TextChannel } from '../structures/textChannel.ts'
+import type { User } from '../structures/user.ts'
 import type {
   ChannelPayload,
   GuildChannelPayload,
@@ -19,6 +20,21 @@ export type AllMessageOptions = MessageOptions | Embed
 export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   constructor(client: Client) {
     super(client, 'channels', Channel)
+  }
+
+  async getUserDM(user: User | string): Promise<string | undefined> {
+    return this.client.cache.get(
+      'user_dms',
+      typeof user === 'string' ? user : user.id
+    )
+  }
+
+  async setUserDM(user: User | string, id: string): Promise<void> {
+    await this.client.cache.set(
+      'user_dms',
+      typeof user === 'string' ? user : user.id,
+      id
+    )
   }
 
   // Override get method as Generic
@@ -99,7 +115,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     }
 
     const payload: any = {
-      content: content,
+      content: content ?? option?.content,
       embed: option?.embed,
       file: option?.file,
       files: option?.files,
@@ -165,7 +181,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     const newMsg = await this.client.rest.api.channels[channelID].messages[
       typeof message === 'string' ? message : message.id
     ].patch({
-      content: text,
+      content: text ?? option?.content,
       embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
       // Cannot upload new files with Message
       // file: option?.file,
