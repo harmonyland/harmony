@@ -62,7 +62,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   lastPingTimestamp = 0
   sessionID?: string
   private heartbeatServerResponded = false
-  client: Client
+  client!: Client
   cache: GatewayCache
   private timedIdentify: number | null = null
   shards?: number[]
@@ -70,7 +70,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
   constructor(client: Client, shards?: number[]) {
     super()
-    this.client = client
+    Object.defineProperty(this, 'client', { value: client, enumerable: false })
     this.cache = new GatewayCache(client)
     this.shards = shards
   }

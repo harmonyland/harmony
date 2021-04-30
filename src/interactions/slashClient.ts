@@ -47,11 +47,21 @@ export type SlashClientEvents = {
 export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   id: string | (() => string)
   client?: Client
-  token?: string
+
+  #token?: string
+
+  get token(): string | undefined {
+    return this.#token
+  }
+
+  set token(val: string | undefined) {
+    this.#token = val
+  }
+
   enabled: boolean = true
   commands: SlashCommandsManager
   handlers: SlashCommandHandler[] = []
-  rest: RESTManager
+  readonly rest!: RESTManager
   modules: SlashModule[] = []
   publicKey?: string
 
@@ -62,7 +72,14 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     if (id === undefined)
       throw new Error('ID could not be found. Pass at least client or token')
     this.id = id
-    this.client = options.client
+
+    if (options.client !== undefined) {
+      Object.defineProperty(this, 'client', {
+        value: options.client,
+        enumerable: false
+      })
+    }
+
     this.token = options.token
     this.publicKey = options.publicKey
 
@@ -85,14 +102,17 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       })
     }
 
-    this.rest =
-      options.client === undefined
-        ? options.rest === undefined
-          ? new RESTManager({
-              token: this.token
-            })
-          : options.rest
-        : options.client.rest
+    Object.defineProperty(this, 'rest', {
+      value:
+        options.client === undefined
+          ? options.rest === undefined
+            ? new RESTManager({
+                token: this.token
+              })
+            : options.rest
+          : options.client.rest,
+      enumerable: false
+    })
 
     this.client?.on(
       'interactionCreate',

@@ -38,7 +38,7 @@ export interface ClientOptions {
   /** Token of the Bot/User */
   token?: string
   /** Gateway Intents */
-  intents?: GatewayIntents[]
+  intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   /** Cache Adapter to use, defaults to Collections one */
   cache?: ICacheAdapter
   /** Force New Session and don't use cached Session (by persistent caching) */
@@ -77,10 +77,29 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   rest: RESTManager
   /** User which Client logs in to, undefined until logs in */
   user?: User
+
+  #token?: string
+
   /** Token of the Bot/User */
-  token?: string
+  get token(): string | undefined {
+    return this.#token
+  }
+
+  set token(val: string | undefined) {
+    this.#token = val
+  }
+
   /** Cache Adapter */
-  cache: ICacheAdapter = new DefaultCacheAdapter()
+  get cache(): ICacheAdapter {
+    return this.#cache
+  }
+
+  set cache(val: ICacheAdapter) {
+    this.#cache = val
+  }
+
+  #cache: ICacheAdapter = new DefaultCacheAdapter()
+
   /** Gateway Intents */
   intents?: GatewayIntents[]
   /** Whether to force new session or not */
@@ -91,21 +110,23 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   reactionCacheLifetime: number = 3600000
   /** Whether to fetch Uncached Message of Reaction or not? */
   fetchUncachedReactions: boolean = false
+
   /** Client Properties */
-  clientProperties: ClientProperties
+  readonly clientProperties!: ClientProperties
+
   /** Slash-Commands Management client */
   slash: SlashClient
   /** Whether to fetch Gateway info or not */
   fetchGatewayInfo: boolean = true
 
   /** Users Manager, containing all Users cached */
-  users: UsersManager = new UsersManager(this)
+  readonly users: UsersManager = new UsersManager(this)
   /** Guilds Manager, providing cache & API interface to Guilds */
-  guilds: GuildManager = new GuildManager(this)
+  readonly guilds: GuildManager = new GuildManager(this)
   /** Channels Manager, providing cache interface to Channels */
-  channels: ChannelsManager = new ChannelsManager(this)
+  readonly channels: ChannelsManager = new ChannelsManager(this)
   /** Channels Manager, providing cache interface to Channels */
-  emojis: EmojisManager = new EmojisManager(this)
+  readonly emojis: EmojisManager = new EmojisManager(this)
 
   /** Last READY timestamp */
   upSince?: Date
@@ -146,7 +167,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     super()
     this._id = options.id
     this.token = options.token
-    this.intents = options.intents
+    this.intents = options.intents?.map((e) =>
+      typeof e === 'string' ? GatewayIntents[e] : e
+    )
     this.shards = new ShardManager(this)
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
@@ -172,14 +195,17 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       ;(this as any)._decoratedEvents = undefined
     }
 
-    this.clientProperties =
-      options.clientProperties === undefined
-        ? {
-            os: Deno.build.os,
-            browser: 'harmony',
-            device: 'harmony'
-          }
-        : options.clientProperties
+    Object.defineProperty(this, 'clientProperties', {
+      value:
+        options.clientProperties === undefined
+          ? {
+              os: Deno.build.os,
+              browser: 'harmony',
+              device: 'harmony'
+            }
+          : options.clientProperties,
+      enumerable: false
+    })
 
     if (options.shard !== undefined) this.shard = options.shard
     if (options.shardCount !== undefined) this.shardCount = options.shardCount

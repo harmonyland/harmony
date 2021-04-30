@@ -8,12 +8,12 @@ import {
   CommandContext,
   Extension,
   Collection,
-  GuildTextChannel
-} from '../../mod.ts'
+  GuildTextChannel,
+  Interaction,
+  slash
+} from '../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import { Manager, Player } from 'https://deno.land/x/lavadeno/mod.ts'
-import { Interaction } from '../structures/slash.ts'
-import { slash } from '../client/mod.ts'
 // import { SlashCommandOptionType } from '../types/slash.ts'
 
 export const nodes = [
