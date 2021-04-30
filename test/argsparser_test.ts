@@ -43,7 +43,7 @@ const expectedResult1 = {
   ],
   permaban: true,
   user: '708544768342229012',
-  reason: ['bye', 'bye', 'Skyler']
+  reason: 'bye bye Skyler'
 }
 
 Deno.test({
@@ -68,7 +68,7 @@ const expectedResult2 = {
   originalMessage: ['<@!708544768342229012>', 'bye', 'bye', 'Skyler'],
   permaban: true,
   user: '708544768342229012',
-  reason: ['bye', 'bye', 'Skyler']
+  reason: 'bye bye Skyler'
 }
 
 Deno.test({
@@ -91,7 +91,7 @@ const messageArgs3: string[] = [
 const expectedResult3 = {
   permaban: false,
   user: '708544768342229012',
-  reason: ['bye', 'bye', 'Skyler']
+  reason: 'bye bye Skyler'
 }
 
 Deno.test({
@@ -105,10 +105,8 @@ Deno.test({
   sanitizeExit: true
 })
 
-
-
 const commandArgs2: Args[] = [
-    {
+  {
     name: 'user',
     match: 'mentionUser'
   },
@@ -118,14 +116,13 @@ const commandArgs2: Args[] = [
   },
   {
     name: 'role',
-    match: 'mentionRole',
+    match: 'mentionRole'
   },
   {
     name: 'reason',
     match: 'rest',
     defaultValue: 'ree'
   }
-
 ]
 
 const messageArgs4: string[] = [
@@ -135,10 +132,10 @@ const messageArgs4: string[] = [
   '<@&836715188690092032>'
 ]
 const expectedResult4 = {
-  channel: "783319033730564098",
-  role: "836715188690092032",
-  user: "708544768342229012",
-  reason: ["bye"]
+  channel: '783319033730564098',
+  role: '836715188690092032',
+  user: '708544768342229012',
+  reason: 'bye'
 }
 
 Deno.test({
