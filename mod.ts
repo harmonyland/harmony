@@ -191,3 +191,4 @@ export {
   isVoiceChannel,
   default as getChannelByType
 } from './src/utils/channel.ts'
+export * from "./src/utils/command.ts"
