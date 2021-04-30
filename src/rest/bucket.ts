@@ -10,11 +10,17 @@ import { RequestQueue } from './queue.ts'
 import { APIRequest } from './request.ts'
 
 function parseResponse(res: Response, raw: boolean): any {
-  if (raw) return res
-  if (res.status === 204) return undefined
-  if (res.headers.get('content-type')?.startsWith('application/json') === true)
-    return res.json()
-  return res.arrayBuffer().then((e) => new Uint8Array(e))
+  let result
+  if (res.status === 204) result = Promise.resolve(undefined)
+  else if (
+    res.headers.get('content-type')?.startsWith('application/json') === true
+  )
+    result = res.json()
+  else result = res.arrayBuffer().then((e) => new Uint8Array(e))
+
+  if (raw) {
+    return { response: res, body: result }
+  } else return result
 }
 
 function getAPIOffset(serverDate: number | string): number {
@@ -197,7 +203,7 @@ export class BucketHandler {
 
       let data
       try {
-        data = await parseResponse(res, request.options.rawResponse ?? false)
+        data = await parseResponse(res, false)
       } catch (err) {
         throw new HTTPError(
           err.message,
