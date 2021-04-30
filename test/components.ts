@@ -96,6 +96,25 @@ client.commands.add(
                 url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
               }
             ]
+          },
+          {
+            type: MessageComponentType.ActionRow,
+            components: [
+              {
+                type: 3,
+                customID: 'null',
+                options: [
+                  {
+                    label: 'Hello',
+                    value: 'World'
+                  },
+                  {
+                    label: 'World',
+                    value: 'Hello'
+                  }
+                ]
+              }
+            ]
           }
         ]
       })

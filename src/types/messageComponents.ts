@@ -17,26 +17,30 @@ export interface MessageComponentEmoji {
   animated?: boolean
 }
 
-export interface MessageComponentPayload {
-  type: MessageComponentType
-  components?: MessageComponentPayload[]
-  label?: string
-  style?: ButtonStyle
-  url?: string
-  custom_id?: string
-  emoji?: MessageComponentEmoji
-  disabled?: boolean
+export interface MessageComponentOption {
+  label: string
+  value: string
 }
 
-export interface MessageComponentData {
+export interface MessageComponentBase<T> {
   type: MessageComponentType
-  components?: MessageComponentData[]
+  components?: T[]
   label?: string
   style?: ButtonStyle
   url?: string
-  customID?: string
   emoji?: MessageComponentEmoji
   disabled?: boolean
+  options?: MessageComponentOption[]
+}
+
+export interface MessageComponentPayload
+  extends MessageComponentBase<MessageComponentPayload> {
+  custom_id?: string
+}
+
+export interface MessageComponentData
+  extends MessageComponentBase<MessageComponentData> {
+  customID?: string
 }
 
 export interface InteractionMessageComponentData {
