@@ -102,5 +102,6 @@ function parseRest(
   argsNullable: Array<string | null>
 ): void {
   const restValues = argsNullable.filter((x) => typeof x === 'string')
-  args[entry.name] = restValues !== null ? restValues : entry.defaultValue
+  args[entry.name] =
+    restValues !== null ? restValues?.join(' ') : entry.defaultValue
 }
