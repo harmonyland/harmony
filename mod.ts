@@ -194,4 +194,4 @@ export {
   default as getChannelByType
 } from './src/utils/channel.ts'
 export * from './src/utils/interactions.ts'
-export * from "./src/utils/command.ts"
+export * from './src/utils/command.ts'
