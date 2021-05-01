@@ -96,12 +96,25 @@ client.commands.add(
                 url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
               }
             ]
-          },
+          }
+        ]
+      })
+    }
+  }
+)
+
+client.commands.add(
+  class extends Command {
+    name = 'select'
+
+    execute(ctx: CommandContext): void {
+      ctx.channel.send('Test Select', {
+        components: [
           {
             type: MessageComponentType.ActionRow,
             components: [
               {
-                type: 3,
+                type: MessageComponentType.Select,
                 customID: 'null',
                 options: [
                   {
@@ -200,4 +213,4 @@ client.on('interactionCreate', (i) => {
 })
 
 console.log('Connecting...')
-client.connect(TOKEN, ['GUILDS', 'GUILD_MESSAGES', 'DIRECT_MESSAGES'])
+client.connect(TOKEN, ['GUILDS', 'GUILD_MESSAGES'])
