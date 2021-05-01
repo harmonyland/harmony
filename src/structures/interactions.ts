@@ -1,4 +1,5 @@
 import type { Client } from '../client/client.ts'
+import { transformComponent } from '../managers/_util.ts'
 import {
   AllowedMentionsPayload,
   ChannelTypes,
@@ -13,6 +14,10 @@ import {
   InteractionResponseType,
   InteractionType
 } from '../types/interactions.ts'
+import {
+  InteractionMessageComponentData,
+  MessageComponentData
+} from '../types/messageComponents.ts'
 import {
   InteractionApplicationCommandData,
   InteractionChannelPayload
@@ -45,6 +50,7 @@ export interface InteractionMessageOptions {
   allowedMentions?: AllowedMentionsPayload
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
+  components?: MessageComponentData[]
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
@@ -101,7 +107,7 @@ export class Interaction extends SnowflakeBase {
   _httpResponded?: boolean
   applicationID: string
   /** Data sent with Interaction. Only applies to Application Command */
-  data?: InteractionApplicationCommandData
+  data?: InteractionApplicationCommandData | InteractionMessageComponentData
   message?: Message
 
   constructor(
@@ -148,7 +154,11 @@ export class Interaction extends SnowflakeBase {
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
-              allowed_mentions: data.allowedMentions ?? undefined
+              allowed_mentions: data.allowedMentions ?? undefined,
+              components:
+                data.components === undefined
+                  ? undefined
+                  : transformComponent(data.components)
             }
           : undefined
     }
@@ -221,6 +231,7 @@ export class Interaction extends SnowflakeBase {
     embeds?: Array<Embed | EmbedPayload>
     flags?: number | number[]
     allowedMentions?: AllowedMentionsPayload
+    components?: MessageComponentData[]
   }): Promise<Interaction> {
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
@@ -230,7 +241,11 @@ export class Interaction extends SnowflakeBase {
         typeof data.flags === 'object'
           ? data.flags.reduce((p, a) => p | a, 0)
           : data.flags,
-      allowed_mentions: data.allowedMentions
+      allowed_mentions: data.allowedMentions,
+      components:
+        data.components === undefined
+          ? undefined
+          : transformComponent(data.components)
     })
     return this
   }
@@ -276,7 +291,11 @@ export class Interaction extends SnowflakeBase {
       file: (option as WebhookMessageOptions)?.file,
       files: (option as WebhookMessageOptions)?.files,
       tts: (option as WebhookMessageOptions)?.tts,
-      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions
+      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
+      components:
+        (option as WebhookMessageOptions).components === undefined
+          ? undefined
+          : transformComponent((option as WebhookMessageOptions).components!)
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {
@@ -313,6 +332,7 @@ export class Interaction extends SnowflakeBase {
     msg: Message | string,
     data: {
       content?: string
+      components?: MessageComponentData[]
       embeds?: Array<Embed | EmbedPayload>
       file?: any
       allowed_mentions?: {
@@ -323,6 +343,12 @@ export class Interaction extends SnowflakeBase {
       }
     }
   ): Promise<Interaction> {
+    data = { ...data }
+
+    if (data.components !== undefined) {
+      data.components = transformComponent(data.components)
+    }
+
     await this.client.rest.patch(
       WEBHOOK_MESSAGE(
         this.applicationID,
