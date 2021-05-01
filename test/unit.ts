@@ -5,7 +5,7 @@ import { TOKEN } from '../src/test/config.ts'
 import {
   assertEquals,
   assertExists
-} from 'https://deno.land/std@0.84.0/testing/asserts.ts'
+} from './deps.ts'
 
 //#region Lib Tests
 Deno.test({

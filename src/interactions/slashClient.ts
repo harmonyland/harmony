@@ -17,7 +17,6 @@ import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { encodeText, decodeText } from '../utils/encoding.ts'
 import { SlashCommandsManager } from './slashCommand.ts'
-import { MessageComponentInteraction } from '../structures/messageComponents.ts'
 
 export type SlashCommandHandlerCallback = (
   interaction: SlashCommandInteraction
@@ -203,10 +202,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Process an incoming Interaction */
   private async _process(
-    interaction:
-      | Interaction
-      | SlashCommandInteraction
-      | MessageComponentInteraction
+    interaction: Interaction | SlashCommandInteraction
   ): Promise<void> {
     if (!this.enabled) return
 

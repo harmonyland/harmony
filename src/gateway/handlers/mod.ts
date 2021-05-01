@@ -69,7 +69,6 @@ import { applicationCommandCreate } from './applicationCommandCreate.ts'
 import { applicationCommandDelete } from './applicationCommandDelete.ts'
 import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
 import type { SlashCommand } from '../../interactions/slashCommand.ts'
-import { MessageComponentInteraction } from '../../structures/messageComponents.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -365,12 +364,7 @@ export type ClientEvents = {
    * An Interaction was created
    * @param interaction Created interaction object
    */
-  interactionCreate: [
-    interaction:
-      | Interaction
-      | SlashCommandInteraction
-      | MessageComponentInteraction
-  ]
+  interactionCreate: [interaction: Interaction | SlashCommandInteraction]
 
   /**
    * When debug message was made
