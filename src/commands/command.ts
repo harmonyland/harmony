@@ -6,7 +6,7 @@ import { Collection } from '../utils/collection.ts'
 import type { CommandClient } from './client.ts'
 import type { Extension } from './extension.ts'
 import { join, walk } from '../../deps.ts'
-
+import type { Args } from '../utils/command.ts'
 export interface CommandContext {
   /** The Client object */
   client: CommandClient
@@ -23,7 +23,7 @@ export interface CommandContext {
   /** Name of Command which was used */
   name: string
   /** Array of Arguments used with Command */
-  args: string[]
+  args: Record<string, unknown> | null
   /** Complete Raw String of Arguments */
   argString: string
   /** Guild which the command has called */
@@ -46,7 +46,7 @@ export interface CommandOptions {
   /** Usage Example of Command, only Arguments (without Prefix and Name) */
   examples?: string | string[]
   /** Does the Command take Arguments? Maybe number of required arguments? Or list of arguments? */
-  args?: number | boolean | string[]
+  args?: Args[]
   /** Permissions(s) required by both User and Bot in order to use Command */
   permissions?: string | string[]
   /** Permission(s) required for using Command */
@@ -81,7 +81,7 @@ export class Command implements CommandOptions {
   extension?: Extension
   usage?: string | string[]
   examples?: string | string[]
-  args?: number | boolean | string[]
+  args?: Args[]
   permissions?: string | string[]
   userPermissions?: string | string[]
   botPermissions?: string | string[]

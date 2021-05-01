@@ -254,6 +254,13 @@ client.on('messageCreate', async (msg: Message) => {
       buf += `\n${role.name === '@everyone' ? 'everyone' : role.name}`
     }
     msg.reply(buf)
+  } else if (msg.content === '!addrole') {
+    msg.member?.roles.add('837255383759716362')
+  } else if (msg.content === '!dm') {
+    console.log('wtf')
+    msg.author.send('UwU').then((m) => {
+      msg.reply(`Done, ${m.id}`)
+    })
   } else if (msg.content === '!timer') {
     msg.channel.send('3...').then((msg) => {
       setTimeout(() => {

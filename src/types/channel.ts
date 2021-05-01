@@ -204,6 +204,7 @@ export interface AllowedMentionsPayload {
 }
 
 export interface MessageOptions {
+  content?: string
   tts?: boolean
   embed?: Embed
   file?: MessageAttachment
