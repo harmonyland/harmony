@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Guild } from '../../structures/guild.ts'
 import { Member } from '../../structures/member.ts'
 import {
@@ -19,7 +20,10 @@ import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { User } from '../../structures/user.ts'
 import { Role } from '../../structures/role.ts'
 import { RolePayload } from '../../types/role.ts'
-import { InteractionChannelPayload } from '../../types/slashCommands.ts'
+import {
+  InteractionApplicationCommandData,
+  InteractionChannelPayload
+} from '../../types/slashCommands.ts'
 import { Message } from '../../structures/message.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
 
@@ -71,7 +75,7 @@ export const interactionCreate: GatewayEventHandler = async (
     roles: {}
   }
 
-  if ((d.data as any)?.resolved !== undefined) {
+  if ((d.data as InteractionApplicationCommandData)?.resolved !== undefined) {
     for (const [id, data] of Object.entries(
       (d.data as any)?.resolved.users ?? {}
     )) {
@@ -84,7 +88,7 @@ export const interactionCreate: GatewayEventHandler = async (
     }
 
     for (const [id, data] of Object.entries(
-      (d.data as any)?.resolved.members ?? {}
+      (d.data as InteractionApplicationCommandData)?.resolved?.members ?? {}
     )) {
       const roles = await guild?.roles.array()
       let permissions = new Permissions(Permissions.DEFAULT)
@@ -109,7 +113,7 @@ export const interactionCreate: GatewayEventHandler = async (
     }
 
     for (const [id, data] of Object.entries(
-      (d.data as any).resolved.roles ?? {}
+      (d.data as InteractionApplicationCommandData).resolved?.roles ?? {}
     )) {
       if (guild !== undefined) {
         await guild.roles.set(id, data as RolePayload)
@@ -124,7 +128,7 @@ export const interactionCreate: GatewayEventHandler = async (
     }
 
     for (const [id, data] of Object.entries(
-      (d.data as any).resolved.channels ?? {}
+      (d.data as InteractionApplicationCommandData).resolved?.channels ?? {}
     )) {
       resolved.channels[id] = new InteractionChannel(
         gateway.client,
