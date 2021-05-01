@@ -59,7 +59,8 @@ import type {
   EveryTextChannelTypes
 } from '../../utils/channel.ts'
 import { interactionCreate } from './interactionCreate.ts'
-import type { Interaction } from '../../structures/slash.ts'
+import type { Interaction } from '../../structures/interactions.ts'
+import type { SlashCommandInteraction } from '../../structures/slash.ts'
 import type { CommandContext } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
@@ -358,11 +359,12 @@ export type ClientEvents = {
    * @param channel Channel of which Webhooks were updated
    */
   webhooksUpdate: [guild: Guild, channel: GuildTextBasedChannel]
+
   /**
    * An Interaction was created
    * @param interaction Created interaction object
    */
-  interactionCreate: [interaction: Interaction]
+  interactionCreate: [interaction: Interaction | SlashCommandInteraction]
 
   /**
    * When debug message was made
