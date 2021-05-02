@@ -3,7 +3,7 @@
 <p align=center><i><b>An easy to use Discord API Library for Deno</b></i></p>
 <p align=center>
 <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
-<a href=https://discord.gg/WVN2JF2FRv>
+<a href=https://discord.gg/harmony>
   <img src="https://img.shields.io/discord/783319033205751809.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge" alt="Support">
  </a>
 </p>
@@ -156,7 +156,7 @@ Documentation is available for `main` (branch) and `stable` (release).
 
 ## Found a bug or want support? Join our discord server!
 
-[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmonyland)
+[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmony)
 
 ## Maintainer
 
