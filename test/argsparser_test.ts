@@ -148,3 +148,27 @@ Deno.test({
   sanitizeResources: true,
   sanitizeExit: true
 })
+
+const messageArgs5: string[] = ['<@!708544768342229012>']
+const expectedResult5 = {
+  user: '708544768342229012',
+  reason: 'No reason provided'
+}
+const commandArgs5: Args[] = [
+  {
+    name: 'user',
+    match: 'mentionUser'
+  },
+  {
+    name: 'reason',
+    match: 'rest',
+    defaultValue: 'No reason provided'
+  }
+]
+Deno.test({
+  name: 'parse command arguments, rest match default',
+  fn: () => {
+    const result = parseArgs(commandArgs5, messageArgs5)
+    assertEquals(result, expectedResult5)
+  }
+})
