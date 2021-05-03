@@ -1,4 +1,4 @@
-import { Interaction } from './mod.ts'
+import { Interaction } from './src/structures/interactions.ts '
 import {
   SlashCommandsManager,
   SlashClient,
@@ -146,8 +146,6 @@ export * from './src/types/interactions.ts'
 export * from './src/structures/slash.ts'
 export * from './src/interactions/mod.ts'
 export * from './src/types/channel.ts'
-export * from './src/types/messageComponents.ts'
 export * from './src/structures/interactions.ts'
-export * from './src/structures/messageComponents.ts'
 export * from './src/structures/message.ts'
 export * from './src/structures/embed.ts'
