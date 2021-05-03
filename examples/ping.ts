@@ -1,4 +1,4 @@
-import { Client, Message, GatewayIntents } from '../mod.ts'
+import { Client, Message, Intents } from '../mod.ts'
 
 const client = new Client()
 
@@ -21,8 +21,4 @@ if (token === null) {
   Deno.exit()
 }
 
-client.connect(token, [
-  GatewayIntents.GUILD_MESSAGES,
-  GatewayIntents.GUILDS,
-  GatewayIntents.DIRECT_MESSAGES
-])
+client.connect(token, Intents.None)
