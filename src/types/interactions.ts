@@ -51,12 +51,16 @@ export interface InteractionPayload {
 }
 
 export enum InteractionResponseType {
-  /** Just ack a ping, Http-only. */
+  /** [HTTP Only] Just ack a ping. */
   PONG = 1,
   /** Send a channel message as response. */
   CHANNEL_MESSAGE_WITH_SOURCE = 4,
   /** Let the user know bot is processing ("thinking") and you can edit the response later */
-  DEFERRED_CHANNEL_MESSAGE = 5
+  DEFERRED_CHANNEL_MESSAGE = 5,
+  /** Components: It will acknowledge the interaction and update the button to a loading state, and then you can PATCH the message later. */
+  DEFERRED_MESSAGE_UPDATE = 6,
+  /** Components: Sent in response to a button interaction to immediately update the message to which the button was attached */
+  UPDATE_MESSAGE = 7
 }
 
 export interface InteractionResponsePayload {
