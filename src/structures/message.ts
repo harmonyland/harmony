@@ -20,7 +20,7 @@ import type { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
 import type { Emoji } from './emoji.ts'
-import type { InteractionType } from '../types/slash.ts'
+import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'
 
 type AllMessageOptions = MessageOptions | Embed

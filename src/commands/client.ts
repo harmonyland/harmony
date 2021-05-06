@@ -9,6 +9,7 @@ import {
   CommandsManager,
   parseCommand
 } from './command.ts'
+import { parseArgs } from '../utils/command.ts'
 import { Extension, ExtensionsManager } from './extension.ts'
 
 type PrefixReturnType = string | string[] | Promise<string | string[]>
@@ -239,7 +240,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       client: this,
       name: parsed.name,
       prefix,
-      args: parsed.args,
+      args: parseArgs(command.args, parsed.args),
       argString: parsed.argString,
       message: msg,
       author: msg.author,

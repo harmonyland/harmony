@@ -5,7 +5,7 @@ import type { Role } from '../structures/role.ts'
 import type { Permissions } from '../utils/permissions.ts'
 import type { EmojiPayload } from './emoji.ts'
 import type { MemberPayload } from './guild.ts'
-import type { InteractionType } from './slash.ts'
+import type { InteractionType } from './interactions.ts'
 import type { UserPayload } from './user.ts'
 
 export interface ChannelPayload {
