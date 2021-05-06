@@ -33,7 +33,7 @@ interface Content extends ArgsBase {
 
 interface Rest extends ArgsBase {
   match: 'rest'
-  defaultValue?: any
+  defaultValue?: string
 }
 
 export type Args = Flag | Mention | Content | Rest
@@ -41,11 +41,11 @@ export type Args = Flag | Mention | Content | Rest
 export function parseArgs(
   commandArgs: Args[] | undefined,
   messageArgs: string[]
-): Record<string, unknown> | null {
+): Record<string, string | number | boolean> | null {
   if (commandArgs === undefined) return null
 
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
-  const args: Record<string, unknown> = {}
+  const args: Record<string, string | number | boolean> = {}
 
   for (const entry of commandArgs) {
     switch (entry.match) {
