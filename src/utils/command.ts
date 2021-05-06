@@ -11,20 +11,32 @@ const mentionToRegex: MentionToRegex = {
   mentionChannel: /<#(\d{17,19})>/
 }
 
-export type CommandArgumentMatchTypes =
-  | 'flag'
-  | 'mentionUser'
-  | 'mentionRole'
-  | 'mentionChannel'
-  | 'content'
-  | 'rest'
-
-export interface Args<T = unknown> {
+interface ArgsBase {
   name: string
-  match: CommandArgumentMatchTypes
-  defaultValue?: T
-  flag?: string
 }
+
+interface Flag extends ArgsBase {
+  match: 'flag'
+  flag: string
+  defaultValue?: boolean
+}
+
+interface Mention extends ArgsBase {
+  match: 'mentionUser' | 'mentionRole' | 'mentionChannel'
+  defaultValue?: string
+}
+interface Content extends ArgsBase {
+  match: 'content'
+  defaultValue?: string | number
+  contentFilter?: (value: string, index: number, array: string[]) => boolean
+}
+
+interface Rest extends ArgsBase {
+  match: 'rest'
+  defaultValue?: any
+}
+
+export type Args = Flag | Mention | Content | Rest
 
 export function parseArgs(
   commandArgs: Args[] | undefined,
@@ -58,7 +70,7 @@ export function parseArgs(
 
 function parseFlags(
   args: Record<string, unknown>,
-  entry: Args,
+  entry: Flag,
   argsNullable: Array<string | null>
 ): void {
   for (let i = 0; i < argsNullable.length; i++) {
@@ -72,7 +84,7 @@ function parseFlags(
 
 function parseMention(
   args: Record<string, unknown>,
-  entry: Args,
+  entry: Mention,
   argsNullable: Array<string | null>
 ): void {
   const regex = mentionToRegex[entry.match]
@@ -89,16 +101,20 @@ function parseMention(
 
 function parseContent(
   args: Record<string, unknown>,
-  entry: Args,
-  argsNonNullable: Array<string | null>
+  entry: Content,
+  argsNonNullable: string[]
 ): void {
   args[entry.name] =
-    argsNonNullable.length > 0 ? argsNonNullable : entry.defaultValue
+    argsNonNullable.length > 0
+      ? entry.contentFilter !== undefined
+        ? argsNonNullable.filter(entry.contentFilter)
+        : argsNonNullable
+      : entry.defaultValue
 }
 
 function parseRest(
   args: Record<string, unknown>,
-  entry: Args,
+  entry: Rest,
   argsNullable: Array<string | null>
 ): void {
   const restValues = argsNullable.filter((x) => typeof x === 'string')
