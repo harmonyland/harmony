@@ -33,17 +33,15 @@ export const voiceStateUpdate: GatewayEventHandler = async (
   }
 
   await guild.voiceStates.set(d.user_id, d)
-  const newVoiceState = await guild.voiceStates.get(d.user_id)
+  const newVoiceState = (await guild.voiceStates.get(d.user_id))!
+
+  if (d.user_id === gateway.client.user!.id) {
+    gateway.client.voice.emit('voiceStateUpdate', newVoiceState)
+  }
+
   if (voiceState === undefined) {
-    gateway.client.emit(
-      'voiceStateAdd',
-      (newVoiceState as unknown) as VoiceState
-    )
+    gateway.client.emit('voiceStateAdd', newVoiceState)
   } else {
-    gateway.client.emit(
-      'voiceStateUpdate',
-      voiceState,
-      (newVoiceState as unknown) as VoiceState
-    )
+    gateway.client.emit('voiceStateUpdate', voiceState, newVoiceState)
   }
 }
