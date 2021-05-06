@@ -1,8 +1,5 @@
 import { Args, parseArgs } from '../src/utils/command.ts'
-import {
-  assertEquals,
-  assertNotEquals
-} from './deps.ts'
+import { assertEquals, assertNotEquals } from './deps.ts'
 
 const commandArgs: Args[] = [
   {
@@ -173,7 +170,6 @@ Deno.test({
   }
 })
 
-
 const messageArgs6: string[] = ['get', '<@!708544768342229012>']
 const expectedResult6 = {
   user: '708544768342229012',
@@ -188,7 +184,7 @@ const commandArgs6: Args[] = [
     name: 'subcommand',
     match: 'content',
     defaultValue: 'random',
-    contentFilter: ((x: string) => x === "get")
+    contentFilter: (x: string) => x === 'get'
   }
 ]
 
