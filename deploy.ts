@@ -1,4 +1,4 @@
-import { Interaction } from './src/structures/interactions.ts '
+import { Interaction } from './src/structures/interactions.ts'
 import {
   SlashCommandsManager,
   SlashClient,

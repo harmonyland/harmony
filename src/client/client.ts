@@ -23,6 +23,7 @@ import type { VoiceRegion } from '../types/voice.ts'
 import { fetchAuto } from '../../deps.ts'
 import type { DMChannel } from '../structures/dmChannel.ts'
 import { Template } from '../structures/template.ts'
+import { VoiceManager } from './voice.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -118,6 +119,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   slash: SlashClient
   /** Whether to fetch Gateway info or not */
   fetchGatewayInfo: boolean = true
+
+  /** Voice Connections Manager */
+  readonly voice = new VoiceManager(this)
 
   /** Users Manager, containing all Users cached */
   readonly users: UsersManager = new UsersManager(this)
