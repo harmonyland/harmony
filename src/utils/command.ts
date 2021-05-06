@@ -6,9 +6,9 @@ interface MentionToRegex {
 }
 
 const mentionToRegex: MentionToRegex = {
-  mentionUser: /<@!?(\d{17,19})>/,
-  mentionRole: /<@&(\d{17,19})>/,
-  mentionChannel: /<#(\d{17,19})>/
+  mentionUser: /<@!?(\d{17,19})>|(\d{17,19})/,
+  mentionRole: /<@&(\d{17,19})>|(\d{17,19})/,
+  mentionChannel: /<#(\d{17,19})>|(\d{17,19})/
 }
 
 export type CommandArgumentMatchTypes =
