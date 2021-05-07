@@ -6,16 +6,16 @@ interface MentionToRegex {
 }
 
 const mentionToRegex: MentionToRegex = {
-  mentionUser: /<@!?(\d{17,19})>|(\d{17,19})/,
-  mentionRole: /<@&(\d{17,19})>|(\d{17,19})/,
-  mentionChannel: /<#(\d{17,19})>|(\d{17,19})/
+  user: /<@!?(\d{17,19})>|(\d{17,19})/,
+  mention: /<@&(\d{17,19})>|(\d{17,19})/,
+  channel: /<#(\d{17,19})>|(\d{17,19})/
 }
 
 export type CommandArgumentMatchTypes =
   | 'flag'
-  | 'mentionUser'
-  | 'mentionRole'
-  | 'mentionChannel'
+  | 'user'
+  | 'role'
+  | 'channel'
   | 'content'
   | 'rest'
 
@@ -40,9 +40,9 @@ export function parseArgs(
       case 'flag':
         parseFlags(args, entry, messageArgsNullableCopy)
         break
-      case 'mentionUser':
-      case 'mentionRole':
-      case 'mentionChannel':
+      case 'user':
+      case 'role':
+      case 'channel':
         parseMention(args, entry, messageArgsNullableCopy)
         break
       case 'content':
