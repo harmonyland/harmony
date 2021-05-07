@@ -11,32 +11,37 @@ const mentionToRegex: MentionToRegex = {
   mentionChannel: /<#(\d{17,19})>/
 }
 
-interface ArgsBase {
+interface ArgumentBase {
   name: string
 }
 
-interface Flag extends ArgsBase {
+export interface FlagArgument extends ArgumentBase {
   match: 'flag'
   flag: string
   defaultValue?: boolean
 }
 
-interface Mention extends ArgsBase {
+export interface MentionArgument extends ArgumentBase {
   match: 'mentionUser' | 'mentionRole' | 'mentionChannel'
   defaultValue?: string
 }
-interface Content extends ArgsBase {
+
+export interface ContentArgument extends ArgumentBase {
   match: 'content'
   defaultValue?: string | number
   contentFilter?: (value: string, index: number, array: string[]) => boolean
 }
 
-interface Rest extends ArgsBase {
+export interface RestArgument extends ArgumentBase {
   match: 'rest'
   defaultValue?: string
 }
 
-export type Args = Flag | Mention | Content | Rest
+export type Args =
+  | FlagArgument
+  | MentionArgument
+  | ContentArgument
+  | RestArgument
 
 export function parseArgs(
   commandArgs: Args[] | undefined,
@@ -70,7 +75,7 @@ export function parseArgs(
 
 function parseFlags(
   args: Record<string, unknown>,
-  entry: Flag,
+  entry: FlagArgument,
   argsNullable: Array<string | null>
 ): void {
   for (let i = 0; i < argsNullable.length; i++) {
@@ -84,7 +89,7 @@ function parseFlags(
 
 function parseMention(
   args: Record<string, unknown>,
-  entry: Mention,
+  entry: MentionArgument,
   argsNullable: Array<string | null>
 ): void {
   const regex = mentionToRegex[entry.match]
@@ -101,7 +106,7 @@ function parseMention(
 
 function parseContent(
   args: Record<string, unknown>,
-  entry: Content,
+  entry: ContentArgument,
   argsNonNullable: string[]
 ): void {
   args[entry.name] =
@@ -114,7 +119,7 @@ function parseContent(
 
 function parseRest(
   args: Record<string, unknown>,
-  entry: Rest,
+  entry: RestArgument,
   argsNullable: Array<string | null>
 ): void {
   const restValues = argsNullable.filter((x) => typeof x === 'string')
