@@ -113,7 +113,7 @@ const commandArgs2: Args[] = [
   },
   {
     name: 'role',
-    match: 'channel'
+    match: 'role'
   },
   {
     name: 'reason',
