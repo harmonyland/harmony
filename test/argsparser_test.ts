@@ -1,8 +1,5 @@
 import { Args, parseArgs } from '../src/utils/command.ts'
-import {
-  assertEquals,
-  assertNotEquals
-} from 'https://deno.land/std@0.95.0/testing/asserts.ts'
+import { assertEquals, assertNotEquals } from './deps.ts'
 
 const commandArgs: Args[] = [
   {
@@ -170,5 +167,31 @@ Deno.test({
   fn: () => {
     const result = parseArgs(commandArgs5, messageArgs5)
     assertEquals(result, expectedResult5)
+  }
+})
+
+const messageArgs6: string[] = ['get', '<@!708544768342229012>']
+const expectedResult6 = {
+  user: '708544768342229012',
+  subcommand: ['get']
+}
+const commandArgs6: Args[] = [
+  {
+    name: 'user',
+    match: 'mentionUser'
+  },
+  {
+    name: 'subcommand',
+    match: 'content',
+    defaultValue: 'random',
+    contentFilter: (x: string) => x === 'get'
+  }
+]
+
+Deno.test({
+  name: 'parse command arguments, match content filter',
+  fn: () => {
+    const result = parseArgs(commandArgs6, messageArgs6)
+    assertEquals(result, expectedResult6)
   }
 })
