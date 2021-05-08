@@ -17,7 +17,7 @@ const commandArgs: Args[] = [
   },
   {
     name: 'user',
-    match: 'mentionUser'
+    match: 'user'
   },
   {
     name: 'reason',
@@ -108,15 +108,15 @@ Deno.test({
 const commandArgs2: Args[] = [
   {
     name: 'user',
-    match: 'mentionUser'
+    match: 'user'
   },
   {
     name: 'channel',
-    match: 'mentionChannel'
+    match: 'channel'
   },
   {
     name: 'role',
-    match: 'mentionRole'
+    match: 'channel'
   },
   {
     name: 'reason',
@@ -157,7 +157,7 @@ const expectedResult5 = {
 const commandArgs5: Args[] = [
   {
     name: 'user',
-    match: 'mentionUser'
+    match: 'user'
   },
   {
     name: 'reason',
@@ -171,4 +171,28 @@ Deno.test({
     const result = parseArgs(commandArgs5, messageArgs5)
     assertEquals(result, expectedResult5)
   }
+})
+
+// only ID testing
+const messageArgs6: string[] = [
+  '708544768342229012',
+  'bye',
+  '783319033730564098',
+  '836715188690092032'
+]
+const expectedResult6 = {
+  channel: '783319033730564098',
+  role: '836715188690092032',
+  user: '708544768342229012',
+  reason: 'bye'
+}
+Deno.test({
+  name: 'parse command arguments with ID\'s (assertEquals)',
+  fn: () => {
+    const result = parseArgs(commandArgs2, messageArgs6)
+    assertEquals(result, expectedResult6)
+  },
+  sanitizeOps: true,
+  sanitizeResources: true,
+  sanitizeExit: true
 })
