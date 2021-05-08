@@ -174,13 +174,13 @@ Deno.test({
 })
 
 // only ID testing
-const messageArgs6: string[] = [
+const messageArgs7: string[] = [
   '708544768342229012',
   'bye',
   '783319033730564098',
   '836715188690092032'
 ]
-const expectedResult6 = {
+const expectedResult7 = {
   channel: '783319033730564098',
   role: '836715188690092032',
   user: '708544768342229012',
@@ -189,8 +189,8 @@ const expectedResult6 = {
 Deno.test({
   name: 'parse command arguments with ID\'s (assertEquals)',
   fn: () => {
-    const result = parseArgs(commandArgs2, messageArgs6)
-    assertEquals(result, expectedResult6)
+    const result = parseArgs(commandArgs2, messageArgs7)
+    assertEquals(result, expectedResult7)
   },
   sanitizeOps: true,
   sanitizeResources: true,
