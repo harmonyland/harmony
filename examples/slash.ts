@@ -1,6 +1,6 @@
 import {
   Client,
-  Intents,
+  GatewayIntents,
   event,
   slash,
   SlashCommandInteraction,
@@ -48,4 +48,7 @@ if (token === null) {
   Deno.exit()
 }
 
-client.connect(token, Intents.None)
+// You can also use Intents.None (all intents without priviliged ones, Intents.All has all of them)
+// to not have to specify intents manually, but it is recommended to specify intents only which are needed!
+// It makes your bot more memory efficient and uses less bandwidth.
+client.connect(token, [GatewayIntents.GUILDS])
