@@ -33,7 +33,8 @@ export class MyClient extends Client {
 
   @slash()
   ping(d: SlashCommandInteraction): void {
-    console.log(d.resolved)
+    const arg = d.option<string | undefined>('pingarg')
+    d.reply(`Pong! You typed: ${arg !== undefined ? arg : 'nothing'}`)
   }
 }
 
