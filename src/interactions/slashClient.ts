@@ -1,13 +1,14 @@
 import {
-  Interaction,
+  SlashCommandInteraction,
   InteractionApplicationCommandResolved
 } from '../structures/slash.ts'
+import { Interaction } from '../structures/interactions.ts'
 import {
   InteractionPayload,
   InteractionResponsePayload,
-  InteractionType,
-  SlashCommandOptionType
-} from '../types/slash.ts'
+  InteractionType
+} from '../types/interactions.ts'
+import { SlashCommandOptionType } from '../types/slashCommands.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { SlashModule } from './slashModule.ts'
@@ -17,7 +18,9 @@ import { HarmonyEventEmitter } from '../utils/events.ts'
 import { encodeText, decodeText } from '../utils/encoding.ts'
 import { SlashCommandsManager } from './slashCommand.ts'
 
-export type SlashCommandHandlerCallback = (interaction: Interaction) => unknown
+export type SlashCommandHandlerCallback = (
+  interaction: SlashCommandInteraction
+) => unknown
 export interface SlashCommandHandler {
   name: string
   guild?: string
@@ -47,11 +50,21 @@ export type SlashClientEvents = {
 export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   id: string | (() => string)
   client?: Client
-  token?: string
+
+  #token?: string
+
+  get token(): string | undefined {
+    return this.#token
+  }
+
+  set token(val: string | undefined) {
+    this.#token = val
+  }
+
   enabled: boolean = true
   commands: SlashCommandsManager
   handlers: SlashCommandHandler[] = []
-  rest: RESTManager
+  readonly rest!: RESTManager
   modules: SlashModule[] = []
   publicKey?: string
 
@@ -62,7 +75,14 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     if (id === undefined)
       throw new Error('ID could not be found. Pass at least client or token')
     this.id = id
-    this.client = options.client
+
+    if (options.client !== undefined) {
+      Object.defineProperty(this, 'client', {
+        value: options.client,
+        enumerable: false
+      })
+    }
+
     this.token = options.token
     this.publicKey = options.publicKey
 
@@ -85,14 +105,17 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       })
     }
 
-    this.rest =
-      options.client === undefined
-        ? options.rest === undefined
-          ? new RESTManager({
-              token: this.token
-            })
-          : options.rest
-        : options.client.rest
+    Object.defineProperty(this, 'rest', {
+      value:
+        options.client === undefined
+          ? options.rest === undefined
+            ? new RESTManager({
+                token: this.token
+              })
+            : options.rest
+          : options.client.rest,
+      enumerable: false
+    })
 
     this.client?.on(
       'interactionCreate',
@@ -165,7 +188,9 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Get Handler for an Interaction. Supports nested sub commands and sub command groups. */
-  private _getCommand(i: Interaction): SlashCommandHandler | undefined {
+  private _getCommand(
+    i: SlashCommandInteraction
+  ): SlashCommandHandler | undefined {
     return this.getHandlers().find((e) => {
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
       const groupMatched =
@@ -196,28 +221,28 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Process an incoming Interaction */
-  private async _process(interaction: Interaction): Promise<void> {
+  private async _process(
+    interaction: Interaction | SlashCommandInteraction
+  ): Promise<void> {
     if (!this.enabled) return
 
-    if (
-      interaction.type !== InteractionType.APPLICATION_COMMAND ||
-      interaction.data === undefined
-    )
-      return
+    if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
     const cmd =
-      this._getCommand(interaction) ??
+      this._getCommand(interaction as SlashCommandInteraction) ??
       this.getHandlers().find((e) => e.name === '*')
     if (cmd?.group !== undefined)
-      interaction.data.options = interaction.data.options[0].options ?? []
+      (interaction as SlashCommandInteraction).data.options =
+        (interaction as SlashCommandInteraction).data.options[0].options ?? []
     if (cmd?.parent !== undefined)
-      interaction.data.options = interaction.data.options[0].options ?? []
+      (interaction as SlashCommandInteraction).data.options =
+        (interaction as SlashCommandInteraction).data.options[0].options ?? []
 
     if (cmd === undefined) return
 
     await this.emit('interaction', interaction)
     try {
-      await cmd.handler(interaction)
+      await cmd.handler(interaction as SlashCommandInteraction)
     } catch (e) {
       await this.emit('interactionError', e)
     }
@@ -266,20 +291,31 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       const payload: InteractionPayload = JSON.parse(decodeText(rawbody))
 
       // TODO: Maybe fix all this hackery going on here?
-      const res = new Interaction(this as any, payload, {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        user: new User(this as any, (payload.member?.user ?? payload.user)!),
-        member: payload.member as any,
-        guild: payload.guild_id as any,
-        channel: payload.channel_id as any,
-        resolved: ((payload.data
-          ?.resolved as unknown) as InteractionApplicationCommandResolved) ?? {
-          users: {},
-          members: {},
-          roles: {},
-          channels: {}
-        }
-      })
+      let res
+      if (payload.type === InteractionType.APPLICATION_COMMAND) {
+        res = new SlashCommandInteraction(this as any, payload, {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          user: new User(this as any, (payload.member?.user ?? payload.user)!),
+          member: payload.member as any,
+          guild: payload.guild_id as any,
+          channel: payload.channel_id as any,
+          resolved: (((payload.data as any)
+            ?.resolved as unknown) as InteractionApplicationCommandResolved) ?? {
+            users: {},
+            members: {},
+            roles: {},
+            channels: {}
+          }
+        })
+      } else {
+        res = new Interaction(this as any, payload, {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          user: new User(this as any, (payload.member?.user ?? payload.user)!),
+          member: payload.member as any,
+          guild: payload.guild_id as any,
+          channel: payload.channel_id as any
+        })
+      }
       res._httpRespond = async (d: InteractionResponsePayload | FormData) =>
         await req.respond({
           status: 200,

@@ -103,8 +103,18 @@ export class RESTManager {
    *   ```
    */
   api: APIMap
+
+  #token?: string | (() => string | undefined)
+
   /** Token being used for Authorization */
-  token?: string | (() => string | undefined)
+  get token(): string | (() => string | undefined) | undefined {
+    return this.#token
+  }
+
+  set token(val: string | (() => string | undefined) | undefined) {
+    this.#token = val
+  }
+
   /** Token Type of the Token if any */
   tokenType: TokenType = TokenType.Bot
   /** Headers object which patch the current ones */
@@ -114,13 +124,13 @@ export class RESTManager {
   /** Whether REST Manager is using Canary API */
   canary?: boolean
   /** Optional Harmony Client object */
-  client?: Client
+  readonly client?: Client
   endpoints: RESTEndpoints
   requestTimeout = 30000
-  timers: Set<number> = new Set()
+  readonly timers!: Set<number>
   apiURL = Constants.DISCORD_API_URL
 
-  handlers = new Collection<string, BucketHandler>()
+  readonly handlers!: Collection<string, BucketHandler>
   globalLimit = Infinity
   globalRemaining = this.globalLimit
   globalReset: number | null = null
@@ -136,11 +146,28 @@ export class RESTManager {
     if (options?.tokenType !== undefined) this.tokenType = options.tokenType
     if (options?.userAgent !== undefined) this.userAgent = options.userAgent
     if (options?.canary !== undefined) this.canary = options.canary
-    if (options?.client !== undefined) this.client = options.client
     if (options?.retryLimit !== undefined) this.retryLimit = options.retryLimit
     if (options?.requestTimeout !== undefined)
       this.requestTimeout = options.requestTimeout
+
+    if (options?.client !== undefined) {
+      Object.defineProperty(this, 'client', {
+        value: options.client,
+        enumerable: false
+      })
+    }
+
     this.endpoints = new RESTEndpoints(this)
+
+    Object.defineProperty(this, 'timers', {
+      value: new Set(),
+      enumerable: false
+    })
+
+    Object.defineProperty(this, 'handlers', {
+      value: new Collection<string, BucketHandler>(),
+      enumerable: false
+    })
   }
 
   setTimeout(fn: (...args: any[]) => any, ms: number): number {

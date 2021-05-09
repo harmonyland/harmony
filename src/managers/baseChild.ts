@@ -1,15 +1,15 @@
 import type { Client } from '../client/mod.ts'
+import { Base } from '../structures/base.ts'
 import { Collection } from '../utils/collection.ts'
 import { BaseManager } from './base.ts'
 
 /** Child Managers validate data from their parents i.e. from Managers */
-export class BaseChildManager<T, T2> {
-  client: Client
+export class BaseChildManager<T, T2> extends Base {
   /** Parent Manager */
   parent: BaseManager<T, T2>
 
   constructor(client: Client, parent: BaseManager<T, T2>) {
-    this.client = client
+    super(client)
     this.parent = parent
   }
 
@@ -61,5 +61,9 @@ export class BaseChildManager<T, T2> {
       const fetchValue = await this.fetch(key).catch(() => undefined)
       if (fetchValue !== undefined) return fetchValue
     }
+  }
+
+  [Deno.customInspect](): string {
+    return `ChildManager(${this.parent.cacheName})`
   }
 }

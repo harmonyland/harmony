@@ -11,7 +11,7 @@ import type {
   ClientStatus
 } from './presence.ts'
 import type { RolePayload } from './role.ts'
-import type { SlashCommandPayload } from './slash.ts'
+import type { SlashCommandPayload } from './slashCommands.ts'
 import type { UserPayload } from './user.ts'
 
 /**

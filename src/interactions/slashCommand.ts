@@ -6,7 +6,7 @@ import {
   SlashCommandOptionType,
   SlashCommandPartial,
   SlashCommandPayload
-} from '../types/slash.ts'
+} from '../types/slashCommands.ts'
 import { Collection } from '../utils/collection.ts'
 import type { SlashClient, SlashCommandHandlerCallback } from './slashClient.ts'
 
@@ -198,12 +198,15 @@ export class SlashBuilder {
 
 /** Manages Slash Commands, allows fetching/modifying/deleting/creating Slash Commands. */
 export class SlashCommandsManager {
-  slash: SlashClient
-  rest: RESTManager
+  readonly slash!: SlashClient
+  readonly rest!: RESTManager
 
   constructor(client: SlashClient) {
-    this.slash = client
-    this.rest = client.rest
+    Object.defineProperty(this, 'slash', { value: client, enumerable: false })
+    Object.defineProperty(this, 'rest', {
+      enumerable: false,
+      value: client.rest
+    })
   }
 
   /** Get all Global Slash Commands */

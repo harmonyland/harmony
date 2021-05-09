@@ -1,5 +1,3 @@
-import type { VoiceServerUpdateData } from '../gateway/handlers/mod.ts'
-import type { VoiceStateOptions } from '../gateway/mod.ts'
 import type { Client } from '../client/mod.ts'
 import type {
   GuildVoiceChannelPayload,
@@ -9,14 +7,13 @@ import type {
 import { CHANNEL } from '../types/endpoint.ts'
 import { GuildChannel } from './channel.ts'
 import type { Guild } from './guild.ts'
-import type { VoiceState } from './voiceState.ts'
 import { GuildChannelVoiceStatesManager } from '../managers/guildChannelVoiceStates.ts'
 import type { User } from './user.ts'
 import type { Member } from './member.ts'
-
-export interface VoiceServerData extends VoiceServerUpdateData {
-  sessionID: string
-}
+import type {
+  VoiceChannelJoinOptions,
+  VoiceServerData
+} from '../client/voice.ts'
 
 export class VoiceChannel extends GuildChannel {
   bitrate: string
@@ -34,65 +31,13 @@ export class VoiceChannel extends GuildChannel {
   }
 
   /** Join the Voice Channel */
-  async join(
-    options?: VoiceStateOptions & { onlyJoin?: boolean }
-  ): Promise<VoiceServerData> {
-    return await new Promise((resolve, reject) => {
-      let vcdata: VoiceServerData
-      let sessionID: string
-      let done = 0
-
-      const onVoiceStateAdd = (state: VoiceState): void => {
-        if (state.user.id !== this.client.user?.id) return
-        if (state.channel?.id !== this.id) return
-        this.client.off('voiceStateAdd', onVoiceStateAdd)
-        done++
-        sessionID = state.sessionID
-        if (done >= 2) {
-          vcdata.sessionID = sessionID
-          if (options?.onlyJoin !== true) {
-          }
-          resolve(vcdata)
-        }
-      }
-
-      const onVoiceServerUpdate = (data: VoiceServerUpdateData): void => {
-        if (data.guild.id !== this.guild.id) return
-        vcdata = (data as unknown) as VoiceServerData
-        this.client.off('voiceServerUpdate', onVoiceServerUpdate)
-        done++
-        if (done >= 2) {
-          vcdata.sessionID = sessionID
-          resolve(vcdata)
-        }
-      }
-
-      this.client.shards
-        .get(this.guild.shardID)
-        ?.updateVoiceState(this.guild.id, this.id, options)
-
-      this.client.on('voiceStateAdd', onVoiceStateAdd)
-      this.client.on('voiceServerUpdate', onVoiceServerUpdate)
-
-      setTimeout(() => {
-        if (done < 2) {
-          this.client.off('voiceServerUpdate', onVoiceServerUpdate)
-          this.client.off('voiceStateAdd', onVoiceStateAdd)
-          reject(
-            new Error(
-              "Connection timed out - couldn't connect to Voice Channel"
-            )
-          )
-        }
-      }, 1000 * 60)
-    })
+  async join(options?: VoiceChannelJoinOptions): Promise<VoiceServerData> {
+    return this.client.voice.join(this.id, options)
   }
 
   /** Leave the Voice Channel */
-  leave(): void {
-    this.client.shards
-      .get(this.guild.shardID)
-      ?.updateVoiceState(this.guild.id, undefined)
+  async leave(): Promise<void> {
+    return this.client.voice.leave(this.guild)
   }
 
   readFromData(data: GuildVoiceChannelPayload): void {
@@ -114,6 +59,14 @@ export class VoiceChannel extends GuildChannel {
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
 
     return new VoiceChannel(this.client, resp, this.guild)
+  }
+
+  async setBitrate(rate: number | undefined): Promise<VoiceChannel> {
+    return await this.edit({ bitrate: rate })
+  }
+
+  async setUserLimit(limit: number | undefined): Promise<VoiceChannel> {
+    return await this.edit({ userLimit: limit })
   }
 
   async disconnectMember(

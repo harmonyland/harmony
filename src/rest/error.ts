@@ -13,7 +13,7 @@ export class DiscordAPIError extends Error {
     this.message =
       typeof error === 'string'
         ? `${error} `
-        : `\n${error.method.toUpperCase()} ${error.url.slice(7)} returned ${
+        : `\n${error.method.toUpperCase()} ${error.url} returned ${
             error.status
           }\n(${error.code ?? 'unknown'}) ${error.message}${
             fmt.length === 0
