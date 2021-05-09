@@ -53,17 +53,34 @@ export class SlashCommand {
   }
 
   async setPermissions(
-    data: SlashCommandPermission[]
+    data: SlashCommandPermission[],
+    guild?: Guild | string
   ): Promise<GuildSlashCommandPermissions> {
-    if (this.guildID === undefined)
+    const guildID =
+      this.guildID ??
+      (typeof guild === 'string'
+        ? guild
+        : typeof guild === 'object'
+        ? guild.id
+        : undefined)
+    if (guildID === undefined)
       throw new Error('Expected Slash Command to be a Guild one')
-    return await this.slash.permissions.set(this.guildID, this.id, data)
+    return await this.slash.permissions.set(guildID, this.id, data)
   }
 
-  async getPermissions(): Promise<GuildSlashCommandPermissions> {
-    if (this.guildID === undefined)
+  async getPermissions(
+    guild?: Guild | string
+  ): Promise<GuildSlashCommandPermissions> {
+    const guildID =
+      this.guildID ??
+      (typeof guild === 'string'
+        ? guild
+        : typeof guild === 'object'
+        ? guild.id
+        : undefined)
+    if (guildID === undefined)
       throw new Error('Expected Slash Command to be a Guild one')
-    return await this.slash.permissions.get(this.guildID, this.id)
+    return await this.slash.permissions.get(guildID, this.id)
   }
 
   /** Create a handler for this Slash Command */
