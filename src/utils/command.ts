@@ -1,14 +1,14 @@
 interface MentionToRegex {
   [key: string]: RegExp
-  mentionUser: RegExp
-  mentionRole: RegExp
-  mentionChannel: RegExp
+  user: RegExp
+  role: RegExp
+  channel: RegExp
 }
 
 const mentionToRegex: MentionToRegex = {
-  mentionUser: /<@!?(\d{17,19})>/,
-  mentionRole: /<@&(\d{17,19})>/,
-  mentionChannel: /<#(\d{17,19})>/
+  user: /<@!?(\d{17,19})>|(\d{17,19})/,
+  role: /<@&(\d{17,19})>|(\d{17,19})/,
+  channel: /<#(\d{17,19})>|(\d{17,19})/
 }
 
 interface ArgumentBase {
@@ -22,7 +22,7 @@ export interface FlagArgument extends ArgumentBase {
 }
 
 export interface MentionArgument extends ArgumentBase {
-  match: 'mentionUser' | 'mentionRole' | 'mentionChannel'
+  match: 'user' | 'role' | 'channel'
   defaultValue?: string
 }
 
@@ -57,9 +57,9 @@ export function parseArgs(
       case 'flag':
         parseFlags(args, entry, messageArgsNullableCopy)
         break
-      case 'mentionUser':
-      case 'mentionRole':
-      case 'mentionChannel':
+      case 'user':
+      case 'role':
+      case 'channel':
         parseMention(args, entry, messageArgsNullableCopy)
         break
       case 'content':
