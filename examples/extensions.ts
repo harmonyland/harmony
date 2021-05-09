@@ -30,7 +30,7 @@ class Ping extends Command {
 class FancyExtension extends Extension {
   constructor(client: CommandClient) {
     super(client)
-    this.client.on('messageDelete', (msg: Message) => {
+    this.listen('messageDelete', (_, msg: Message) => {
       console.log(
         `Message Deleted: ${msg.id}, ${msg.author.tag}, ${msg.content}`
       )
