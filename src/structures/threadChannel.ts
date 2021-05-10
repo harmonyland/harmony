@@ -10,6 +10,8 @@ import { GuildTextBasedChannel } from './guildTextChannel.ts'
 import type { IResolvable } from './resolvable.ts'
 import { UserResolvable } from './user.ts'
 import type { User } from './user.ts'
+import { ThreadMembersManager } from '../managers/threadMembers.ts'
+import { Collection } from '../utils/collection.ts'
 
 export class ThreadMetadata extends Base {
   archived: boolean = false
@@ -83,10 +85,12 @@ export class ThreadChannel extends GuildTextBasedChannel {
   memberCount!: number
   messageCount!: number
   member?: ThreadMember
+  members: ThreadMembersManager
 
   constructor(client: Client, data: ThreadChannelPayload, guild: Guild) {
     super(client, data as any, guild)
     this.readFromData(data)
+    this.members = new ThreadMembersManager(client, this)
   }
 
   private _readFromData(data: ThreadChannelPayload): void {
@@ -129,6 +133,16 @@ export class ThreadChannel extends GuildTextBasedChannel {
       typeof user === 'string' ? user : user.id
     )
     return this
+  }
+
+  async fetchMembers(): Promise<Collection<string, ThreadMember>> {
+    const payloads = await this.client.rest.endpoints.getThreadMembers(this.id)
+    const members: Collection<string, ThreadMember> = new Collection()
+    for (const payload of payloads) {
+      await this.members.set(payload.id, payload)
+      members.set(payload.id, (await this.members.get(payload.id))!)
+    }
+    return members
   }
 
   /** Not possible to set Thread Channel topic */

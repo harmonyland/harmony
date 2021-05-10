@@ -18,6 +18,7 @@ import type { CreateInviteOptions } from '../managers/invites.ts'
 import type { Invite } from './invite.ts'
 import type { CategoryChannel } from './guildCategoryChannel.ts'
 import type { ThreadChannel, ThreadMember } from './threadChannel.ts'
+import { ChannelThreadsManager } from '../managers/channelThreads.ts'
 
 const GUILD_TEXT_BASED_CHANNEL_TYPES: ChannelTypes[] = [
   ChannelTypes.GUILD_TEXT,
@@ -43,12 +44,19 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
     return this.mention
   }
 
+  threads: ChannelThreadsManager
+
   constructor(
     client: Client,
     data: GuildTextBasedChannelPayload,
     guild: Guild
   ) {
     super(client, data, guild)
+    this.threads = new ChannelThreadsManager(
+      this.client,
+      this.guild.threads,
+      this
+    )
     this.topic = data.topic
   }
 
@@ -174,7 +182,7 @@ export class GuildTextChannel extends GuildTextBasedChannel {
     return await this.edit({ slowmode: slowmode ?? null })
   }
 
-  async startPublicThread(
+  async startThread(
     options: CreateThreadOptions,
     message: Message | string
   ): Promise<ThreadChannel> {
@@ -198,14 +206,77 @@ export class GuildTextChannel extends GuildTextBasedChannel {
     return (await this.client.channels.get<ThreadChannel>(payload.id))!
   }
 
-  async getPublicArchivedThreads(
+  async fetchArchivedThreads(
+    type: 'public' | 'private' = 'public',
     params: { before?: string; limit?: number } = {}
   ): Promise<{
     threads: ThreadChannel[]
     members: ThreadMember[]
     hasMore: boolean
   }> {
-    const data = await this.client.rest.endpoints.getPublicArchivedThreads(
+    const data =
+      type === 'public'
+        ? await this.client.rest.endpoints.getPublicArchivedThreads(
+            this.id,
+            params
+          )
+        : await this.client.rest.endpoints.getPrivateArchivedThreads(
+            this.id,
+            params
+          )
+
+    const threads: ThreadChannel[] = []
+    const members: ThreadMember[] = []
+
+    for (const d of data.threads) {
+      await this.threads.set(d.id, d)
+      threads.push((await this.threads.get(d.id))!)
+    }
+
+    for (const d of data.members) {
+      const thread =
+        threads.find((e) => e.id === d.id) ?? (await this.threads.get(d.id))
+      if (thread !== undefined) {
+        await thread.members.set(d.user_id, d)
+        members.push((await thread.members.get(d.user_id))!)
+      }
+    }
+
+    return {
+      threads,
+      members,
+      hasMore: data.has_more
+    }
+  }
+
+  async fetchPublicArchivedThreads(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return await this.fetchArchivedThreads('public', params)
+  }
+
+  async fetchPrivateArchivedThreads(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return await this.fetchArchivedThreads('private', params)
+  }
+
+  async fetchJoinedPrivateArchivedThreads(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    const data = await this.client.rest.endpoints.getJoinedPrivateArchivedThreads(
       this.id,
       params
     )
@@ -214,14 +285,18 @@ export class GuildTextChannel extends GuildTextBasedChannel {
     const members: ThreadMember[] = []
 
     for (const d of data.threads) {
-      await this.client.channels.set(d.id, d)
-      threads.push((await this.client.channels.get<ThreadChannel>(d.id))!)
+      await this.threads.set(d.id, d)
+      threads.push((await this.threads.get(d.id))!)
     }
 
-    // for (const d of data.members) {
-    //   // TODO(DjDeveloperr): Cache members?
-    //   // members.push(new ThreadMember(this.client, d))
-    // }
+    for (const d of data.members) {
+      const thread =
+        threads.find((e) => e.id === d.id) ?? (await this.threads.get(d.id))
+      if (thread !== undefined) {
+        await thread.members.set(d.user_id, d)
+        members.push((await thread.members.get(d.user_id))!)
+      }
+    }
 
     return {
       threads,

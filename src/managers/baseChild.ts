@@ -21,7 +21,7 @@ export class BaseChildManager<T, T2> extends Base {
     return this.parent.set(key, value)
   }
 
-  async delete(key: string): Promise<any> {
+  async delete(_: string): Promise<any> {
     return false
   }
 

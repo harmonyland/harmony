@@ -48,6 +48,7 @@ import { Template } from './template.ts'
 import { DiscordAPIError } from '../rest/mod.ts'
 import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
+import { ThreadsManager } from '../managers/threads.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -188,6 +189,7 @@ export class Guild extends SnowflakeBase {
   approximatePresenceCount?: number
   bans: GuildBans
   nsfw?: boolean
+  threads: ThreadsManager
 
   /** Get Shard ID of Guild on which it is */
   get shardID(): number {
@@ -208,6 +210,7 @@ export class Guild extends SnowflakeBase {
       this.client.channels,
       this
     )
+    this.threads = new ThreadsManager(client, this.channels)
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)

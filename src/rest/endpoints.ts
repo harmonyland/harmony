@@ -1409,4 +1409,24 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
       }`
     )
   }
+
+  /** Returns all active threads in the channel, including public and private threads. Threads are ordered by their id, in descending order. Requires the READ_MESSAGE_HISTORY permission. */
+  async getActiveThreads(
+    channelId: string,
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannelPayload[]
+    members: ThreadMemberPayload[]
+    has_more: boolean
+  }> {
+    const qs = queryString(params)
+    return this.rest.get(
+      `/channels/${channelId}/threads/active${qs.length !== 0 ? `?${qs}` : ''}`
+    )
+  }
+
+  /** Returns array of thread members objects that are members of the thread. */
+  async getThreadMembers(channelId: string): Promise<ThreadMemberPayload[]> {
+    return this.rest.get(`/channels/${channelId}/thread-members`)
+  }
 }
