@@ -245,7 +245,7 @@ export class SlashBuilder {
 export function transformSlashCommandOption(
   _data: SlashCommandOption
 ): SlashCommandOptionPayload {
-  const data = _data as any
+  const data = { ...(_data as any) }
   if (typeof data.type === 'string') {
     data.type = SlashCommandOptionType[data.type.toUpperCase()]
   }
@@ -258,7 +258,7 @@ export function transformSlashCommandOption(
 export function transformSlashCommand(
   _cmd: SlashCommandPartial
 ): SlashCommandPartialPayload {
-  const cmd = _cmd as any
+  const cmd = { ...(_cmd as any) }
   if (cmd.defaultPermission !== undefined) {
     cmd.default_permission = cmd.defaultPermission
     delete cmd.default_permission
@@ -272,6 +272,7 @@ export function transformSlashCommand(
 export function transformSlashCommandPermission(
   data: SlashCommandPermission
 ): SlashCommandPermissionPayload {
+  data = { ...data }
   if (typeof data.type === 'string') {
     data.type =
       SlashCommandPermissionType[
@@ -284,7 +285,7 @@ export function transformSlashCommandPermission(
 export function transformSlashCommandPermissions(
   _data: GuildSlashCommmandPermissionsPartial
 ): GuildSlashCommmandPermissionsPayload {
-  const data = _data as any
+  const data = { ...(_data as any) }
   if (typeof data.permissions === 'object' && Array.isArray(data.permissions)) {
     data.permissions = data.permissions.map(transformSlashCommandPermission)
   }
@@ -294,7 +295,7 @@ export function transformSlashCommandPermissions(
 export function transformSlashCommandPermissionsPayload(
   _data: GuildSlashCommmandPermissionsPayload
 ): GuildSlashCommandPermissions {
-  const data = _data as any
+  const data = { ...(_data as any) }
   data.applicationID = data.application_id
   data.guildID = data.guild_id
   delete data.application_id
