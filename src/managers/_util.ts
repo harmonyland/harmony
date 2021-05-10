@@ -7,6 +7,7 @@ export function transformComponent(
   d: MessageComponentData[]
 ): MessageComponentPayload[] {
   return d.map((e: any) => {
+    e = { ...e }
     if (e.customID !== undefined) {
       e.custom_id = e.customID
       delete e.customID
@@ -30,6 +31,7 @@ export function transformComponentPayload(
   d: MessageComponentPayload[]
 ): MessageComponentData[] {
   return d.map((e: any) => {
+    e = { ...e }
     if (e.custom_id !== undefined) {
       e.customID = e.custom_id
       delete e.custom_id
