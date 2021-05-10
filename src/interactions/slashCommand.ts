@@ -65,7 +65,7 @@ export class SlashCommand {
         : undefined)
     if (guildID === undefined)
       throw new Error('Expected Slash Command to be a Guild one')
-    return await this.slash.permissions.set(guildID, this.id, data)
+    return await this.slash.permissions.set(this.id, data, guildID)
   }
 
   async getPermissions(
@@ -307,7 +307,7 @@ export class SlashCommandPermissionsManager {
   readonly slash!: SlashClient
   readonly rest!: RESTManager
 
-  constructor(client: SlashClient) {
+  constructor(client: SlashClient, public guildID?: string) {
     Object.defineProperty(this, 'slash', { value: client, enumerable: false })
     Object.defineProperty(this, 'rest', {
       enumerable: false,
@@ -316,7 +316,9 @@ export class SlashCommandPermissionsManager {
   }
 
   /** Get an array of all Slash Commands (of current Client) Permissions in a Guild */
-  async all(guild: Guild | string): Promise<GuildSlashCommandPermissions[]> {
+  async all(guild?: Guild | string): Promise<GuildSlashCommandPermissions[]> {
+    guild = guild ?? this.guildID
+    if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands.permissions.get()
@@ -325,9 +327,11 @@ export class SlashCommandPermissionsManager {
 
   /** Get slash command permissions for a specific command */
   async get(
-    guild: Guild | string,
-    cmd: string | SlashCommand
+    cmd: string | SlashCommand,
+    guild: Guild | string
   ): Promise<GuildSlashCommandPermissions> {
+    guild = guild ?? this.guildID
+    if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands[typeof cmd === 'object' ? cmd.id : cmd].permissions.get()
@@ -336,10 +340,12 @@ export class SlashCommandPermissionsManager {
 
   /** Sets permissions of a Slash Command in a Guild */
   async set(
-    guild: Guild | string,
     cmd: string | SlashCommand,
-    permissions: SlashCommandPermission[]
+    permissions: SlashCommandPermission[],
+    guild: Guild | string
   ): Promise<GuildSlashCommandPermissions> {
+    guild = guild ?? this.guildID
+    if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands[typeof cmd === 'object' ? cmd.id : cmd].permissions.patch({
@@ -350,15 +356,26 @@ export class SlashCommandPermissionsManager {
 
   /** Sets permissions of multiple Slash Commands in a Guild with just one call */
   async bulkEdit(
-    guild: Guild | string,
-    permissions: GuildSlashCommmandPermissionsPartial[]
+    permissions: GuildSlashCommmandPermissionsPartial[],
+    guild?: Guild | string
   ): Promise<GuildSlashCommandPermissions[]> {
+    guild = guild ?? this.guildID
+    if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands.permissions.patch(
       permissions.map(transformSlashCommandPermissions)
     )
     return data.map(transformSlashCommandPermissionsPayload)
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<GuildSlashCommandPermissions> {
+    const arr = await this.all()
+    const { readable, writable } = new TransformStream()
+    const writer = writable.getWriter()
+    arr.forEach((el: unknown) => writer.write(el))
+    writer.close()
+    yield* readable
   }
 }
 
@@ -422,6 +439,10 @@ export class SlashCommandsManager {
     return col
   }
 
+  for(guild: Guild | string): GuildSlashCommandsManager {
+    return new GuildSlashCommandsManager(this.slash, guild)
+  }
+
   /** Create a Slash Command (global or Guild) */
   async create(
     data: SlashCommandPartial,
@@ -455,7 +476,7 @@ export class SlashCommandsManager {
     id: string,
     data: SlashCommandPartial,
     guild?: Guild | string
-  ): Promise<SlashCommandsManager> {
+  ): Promise<SlashCommand> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
@@ -463,8 +484,13 @@ export class SlashCommandsManager {
             typeof guild === 'string' ? guild : guild.id
           ].commands[id]
 
-    await route.patch(transformSlashCommand(data))
-    return this
+    const d = await route.patch(transformSlashCommand(data))
+    const _guild =
+      (await this.slash.client?.guilds.get(d.guild_id)) ??
+      (typeof guild === 'object' ? guild : undefined)
+    const cmd = new SlashCommand(this, d, _guild)
+    if ('guild_id' in d) cmd.guildID = d.guildID
+    return cmd
   }
 
   /** Delete a Slash Command (global or Guild) */
@@ -506,9 +532,9 @@ export class SlashCommandsManager {
 
   /** Bulk Edit Global or Guild Slash Commands */
   async bulkEdit(
-    cmds: SlashCommandPartial[],
+    cmds: Array<SlashCommandPartial & { id?: string }>,
     guild?: Guild | string
-  ): Promise<SlashCommandsManager> {
+  ): Promise<Collection<string, SlashCommand>> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands
@@ -516,8 +542,93 @@ export class SlashCommandsManager {
             typeof guild === 'string' ? guild : guild.id
           ].commands
 
-    await route.put(cmds.map(transformSlashCommand))
+    const d = await route.put(cmds.map(transformSlashCommand))
+    const col = new Collection<string, SlashCommand>()
 
+    const _guild =
+      typeof guild === 'object'
+        ? guild
+        : typeof guild === 'string'
+        ? await this.slash.client?.guilds.get(guild)
+        : undefined
+
+    for (const raw of d) {
+      const cmd = new SlashCommand(this, raw, _guild)
+      cmd.guildID = _guild?.id
+      cmd.guild = _guild
+      col.set(raw.id, cmd)
+    }
+
+    return col
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<SlashCommand> {
+    const arr = await this.all()
+    const { readable, writable } = new TransformStream()
+    const writer = writable.getWriter()
+    arr.forEach((el: unknown) => writer.write(el))
+    writer.close()
+    yield* readable
+  }
+}
+
+export class GuildSlashCommandsManager {
+  readonly slash!: SlashClient
+  readonly guild!: Guild | string
+  readonly permissions: SlashCommandPermissionsManager
+
+  private get commands(): SlashCommandsManager {
+    return this.slash.commands
+  }
+
+  constructor(slash: SlashClient, guild: Guild | string) {
+    Object.defineProperty(this, 'slash', {
+      enumerable: false,
+      value: slash
+    })
+    Object.defineProperty(this, 'guild', {
+      enumerable: false,
+      value: guild
+    })
+    this.permissions = new SlashCommandPermissionsManager(
+      this.slash,
+      typeof guild === 'object' ? guild.id : guild
+    )
+  }
+
+  async get(id: string): Promise<SlashCommand> {
+    return await this.commands.get(id, this.guild)
+  }
+
+  async delete(id: string): Promise<GuildSlashCommandsManager> {
+    await this.commands.delete(id, this.guild)
     return this
+  }
+
+  async all(): Promise<Collection<string, SlashCommand>> {
+    return await this.commands.guild(this.guild)
+  }
+
+  async bulkEdit(
+    commands: Array<SlashCommandPartial & { id?: string }>
+  ): Promise<Collection<string, SlashCommand>> {
+    return await this.commands.bulkEdit(commands, this.guild)
+  }
+
+  async create(cmd: SlashCommandPartial): Promise<SlashCommand> {
+    return await this.commands.create(cmd, this.guild)
+  }
+
+  async edit(id: string, cmd: SlashCommandPartial): Promise<SlashCommand> {
+    return await this.commands.edit(id, cmd, this.guild)
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<SlashCommand> {
+    const arr = await this.all()
+    const { readable, writable } = new TransformStream()
+    const writer = writable.getWriter()
+    arr.forEach((el: unknown) => writer.write(el))
+    writer.close()
+    yield* readable
   }
 }
