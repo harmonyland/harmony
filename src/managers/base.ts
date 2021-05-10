@@ -1,4 +1,5 @@
 import type { Client } from '../client/mod.ts'
+import { Base } from '../structures/base.ts'
 import { Collection } from '../utils/collection.ts'
 
 /**
@@ -6,15 +7,14 @@ import { Collection } from '../utils/collection.ts'
  *
  * You should not be making Managers yourself.
  */
-export class BaseManager<T, T2> {
-  client: Client
+export class BaseManager<T, T2> extends Base {
   /** Caches Name or Key used to differentiate caches */
   cacheName: string
   /** Which data type does this cache have */
   DataType: any
 
   constructor(client: Client, cacheName: string, DataType: any) {
-    this.client = client
+    super(client)
     this.cacheName = cacheName
     this.DataType = DataType
   }
@@ -86,5 +86,9 @@ export class BaseManager<T, T2> {
   /** Deletes everything from Cache */
   flush(): any {
     return this.client.cache.deleteCache(this.cacheName)
+  }
+
+  [Deno.customInspect](): string {
+    return `Manager(${this.cacheName})`
   }
 }

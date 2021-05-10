@@ -62,7 +62,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   lastPingTimestamp = 0
   sessionID?: string
   private heartbeatServerResponded = false
-  client: Client
+  client!: Client
   cache: GatewayCache
   private timedIdentify: number | null = null
   shards?: number[]
@@ -70,7 +70,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
   constructor(client: Client, shards?: number[]) {
     super()
-    this.client = client
+    Object.defineProperty(this, 'client', { value: client, enumerable: false })
     this.cache = new GatewayCache(client)
     this.shards = shards
   }
@@ -371,13 +371,13 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
             : channel?.id,
         self_mute:
           channel === undefined
-            ? undefined
+            ? false
             : voiceOptions.mute === undefined
             ? false
             : voiceOptions.mute,
         self_deaf:
           channel === undefined
-            ? undefined
+            ? false
             : voiceOptions.deaf === undefined
             ? false
             : voiceOptions.deaf
@@ -399,7 +399,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       await this.cache.delete(`seq_${this.shards?.join('-') ?? '0'}`)
     }
 
-    this.close(1000, RECONNECT_REASON)
+    this.closeGateway(1000, RECONNECT_REASON)
     this.initWebsocket()
   }
 
@@ -418,7 +418,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.websocket.onerror = this.onerror.bind(this) as any
   }
 
-  close(code: number = 1000, reason?: string): void {
+  closeGateway(code: number = 1000, reason?: string): void {
     this.debug(
       `Closing with code ${code}${
         reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''

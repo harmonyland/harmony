@@ -6,6 +6,8 @@ import { ImageURL } from './cdn.ts'
 import type { ImageSize, ImageFormats } from '../types/cdn.ts'
 import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
 import type { DMChannel } from './dmChannel.ts'
+import { AllMessageOptions } from './textChannel.ts'
+import { Message } from './message.ts'
 import { IResolvable } from './resolvable.ts'
 
 export class User extends SnowflakeBase {
@@ -94,6 +96,27 @@ export class User extends SnowflakeBase {
 
   async createDM(): Promise<DMChannel> {
     return this.client.createDM(this)
+  }
+
+  async resolveDM(): Promise<DMChannel> {
+    const dmID = await this.client.channels.getUserDM(this.id)
+    const dm =
+      (dmID !== undefined
+        ? await this.client.channels.get<DMChannel>(dmID)
+        : undefined) ??
+      (await this.createDM().then((chan) =>
+        this.client.channels.setUserDM(this.id, chan.id).then(() => chan)
+      ))
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    return dm!
+  }
+
+  async send(
+    content: string | AllMessageOptions,
+    options?: AllMessageOptions
+  ): Promise<Message> {
+    const dm = await this.resolveDM()
+    return dm.send(content, options)
   }
 }
 

@@ -21,6 +21,9 @@ if (token === null) {
   Deno.exit()
 }
 
+// You can also use Intents.None (all intents without priviliged ones, Intents.All has all of them)
+// to not have to specify intents manually, but it is recommended to specify intents only which are needed!
+// It makes your bot more memory efficient and uses less bandwidth.
 client.connect(token, [
   GatewayIntents.GUILD_MESSAGES,
   GatewayIntents.GUILDS,

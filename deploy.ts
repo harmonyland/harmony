@@ -1,15 +1,20 @@
+import { Interaction } from './src/structures/interactions.ts'
 import {
   SlashCommandsManager,
   SlashClient,
   SlashCommandHandlerCallback,
   SlashCommandHandler
 } from './src/interactions/mod.ts'
-import { InteractionResponseType, InteractionType } from './src/types/slash.ts'
+import {
+  InteractionResponseType,
+  InteractionType
+} from './src/types/interactions.ts'
 
 export interface DeploySlashInitOptions {
   env?: boolean
   publicKey?: string
   token?: string
+  path?: string
 }
 
 /** Current Slash Client being used to handle commands */
@@ -37,8 +42,12 @@ let commands: SlashCommandsManager
  *
  * @param options Initialization options
  */
-export function init(options: { env: boolean }): void
-export function init(options: { publicKey: string; token?: string }): void
+export function init(options: { env: boolean; path?: string }): void
+export function init(options: {
+  publicKey: string
+  token?: string
+  path?: string
+}): void
 export function init(options: DeploySlashInitOptions): void {
   if (client !== undefined) throw new Error('Already initialized')
   if (options.env === true) {
@@ -60,6 +69,9 @@ export function init(options: DeploySlashInitOptions): void {
     respondWith: CallableFunction
     request: Request
   }): Promise<void> => {
+    if (options.path !== undefined) {
+      if (new URL(evt.request.url).pathname !== options.path) return
+    }
     try {
       // we have to wrap because there are some weird scope errors
       const d = await client.verifyFetchEvent({
@@ -124,8 +136,16 @@ export function handle(
   client.handle(cmd, handler)
 }
 
+export function interactions(cb: (i: Interaction) => any): void {
+  client.on('interaction', cb)
+}
+
 export { commands, client }
-export * from './src/types/slash.ts'
+export * from './src/types/slashCommands.ts'
+export * from './src/types/interactions.ts'
 export * from './src/structures/slash.ts'
 export * from './src/interactions/mod.ts'
 export * from './src/types/channel.ts'
+export * from './src/structures/interactions.ts'
+export * from './src/structures/message.ts'
+export * from './src/structures/embed.ts'
