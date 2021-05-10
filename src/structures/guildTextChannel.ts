@@ -44,19 +44,12 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
     return this.mention
   }
 
-  threads: ChannelThreadsManager
-
   constructor(
     client: Client,
     data: GuildTextBasedChannelPayload,
     guild: Guild
   ) {
     super(client, data, guild)
-    this.threads = new ChannelThreadsManager(
-      this.client,
-      this.guild.threads,
-      this
-    )
     this.topic = data.topic
   }
 
@@ -147,10 +140,16 @@ export const checkGuildTextBasedChannel = (
 
 export class GuildTextChannel extends GuildTextBasedChannel {
   slowmode: number
+  threads: ChannelThreadsManager
 
   constructor(client: Client, data: GuildTextChannelPayload, guild: Guild) {
     super(client, data, guild)
     this.slowmode = data.rate_limit_per_user
+    this.threads = new ChannelThreadsManager(
+      this.client,
+      this.guild.threads,
+      this
+    )
   }
 
   readFromData(data: GuildTextChannelPayload): void {

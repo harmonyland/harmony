@@ -3,6 +3,7 @@ import { ThreadMemberPayload } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import { BaseManager } from './base.ts'
 import { ThreadChannel, ThreadMember } from '../structures/threadChannel.ts'
+import { User } from '../../mod.ts'
 
 export class ThreadMembersManager extends BaseManager<
   ThreadMemberPayload,
@@ -34,5 +35,15 @@ export class ThreadMembersManager extends BaseManager<
       result.push(new ThreadMember(this.client, elem))
     }
     return result
+  }
+
+  async add(who: string | User): Promise<ThreadMembersManager> {
+    await this.thread.addUser(who)
+    return this
+  }
+
+  async remove(who: string | User): Promise<ThreadMembersManager> {
+    await this.thread.removeUser(who)
+    return this
   }
 }

@@ -16,7 +16,8 @@ import type {
   GuildNewsChannelPayload,
   GuildTextBasedChannelPayload,
   GuildTextChannelPayload,
-  GuildVoiceChannelPayload
+  GuildVoiceChannelPayload,
+  ThreadChannelPayload
 } from './channel.ts'
 import type { EmojiPayload } from './emoji.ts'
 import type { PresenceUpdatePayload } from './gateway.ts'
@@ -72,6 +73,7 @@ export interface GuildPayload {
   approximate_number_count?: number
   approximate_presence_count?: number
   nsfw: boolean
+  threads?: ThreadChannelPayload[]
 }
 
 export interface MemberPayload {

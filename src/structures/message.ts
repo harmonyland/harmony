@@ -15,13 +15,18 @@ import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
 import type { TextChannel } from './textChannel.ts'
-import type { GuildTextBasedChannel } from './guildTextChannel.ts'
+import type {
+  CreateThreadOptions,
+  GuildTextBasedChannel,
+  GuildTextChannel
+} from './guildTextChannel.ts'
 import type { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageSticker } from './messageSticker.ts'
 import type { Emoji } from './emoji.ts'
 import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'
+import { ThreadChannel } from './threadChannel.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 
@@ -215,6 +220,13 @@ export class Message extends SnowflakeBase {
     user?: User | Member | string
   ): Promise<void> {
     return this.channel.removeReaction(this, emoji, user)
+  }
+
+  async startThread(options: CreateThreadOptions): Promise<ThreadChannel> {
+    if (this.channel.isGuildText() === true) {
+      const chan = (this.channel as unknown) as GuildTextChannel
+      return chan.startThread(options, this)
+    } else throw new Error('Threads can only be made in Guild Text Channels')
   }
 }
 

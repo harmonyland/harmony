@@ -1,20 +1,27 @@
 import type { Client } from '../client/mod.ts'
-import { ThreadChannelPayload } from '../types/channel.ts'
+import type { ThreadChannelPayload } from '../types/channel.ts'
 import { BaseChildManager } from './baseChild.ts'
-import { ThreadsManager } from './threads.ts'
-import { ThreadChannel } from '../structures/threadChannel.ts'
-import { GuildTextBasedChannel } from '../structures/guildTextChannel.ts'
+import type { ThreadsManager } from './threads.ts'
+import type {
+  ThreadChannel,
+  ThreadMember
+} from '../structures/threadChannel.ts'
+import type {
+  CreateThreadOptions,
+  GuildTextChannel
+} from '../structures/guildTextChannel.ts'
+import type { Message } from '../../mod.ts'
 
 export class ChannelThreadsManager extends BaseChildManager<
   ThreadChannelPayload,
   ThreadChannel
 > {
-  channel: GuildTextBasedChannel
+  channel: GuildTextChannel
 
   constructor(
     client: Client,
     parent: ThreadsManager,
-    channel: GuildTextBasedChannel
+    channel: GuildTextChannel
   ) {
     super(client, parent as any)
     this.channel = channel
@@ -47,5 +54,57 @@ export class ChannelThreadsManager extends BaseChildManager<
       this.parent._delete(elem.id)
     }
     return true
+  }
+
+  async start(
+    options: CreateThreadOptions,
+    message: string | Message
+  ): Promise<ThreadChannel> {
+    return this.channel.startThread(options, message)
+  }
+
+  async startPrivate(options: CreateThreadOptions): Promise<ThreadChannel> {
+    return this.channel.startPrivateThread(options)
+  }
+
+  async fetchArchived(
+    type: 'public' | 'private' = 'public',
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return this.channel.fetchArchivedThreads(type, params)
+  }
+
+  async fetchPublicArchived(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return this.channel.fetchPublicArchivedThreads(params)
+  }
+
+  async fetchPrivateArchived(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return this.channel.fetchPrivateArchivedThreads(params)
+  }
+
+  async fetchJoinedPrivateArchived(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return this.channel.fetchJoinedPrivateArchivedThreads(params)
   }
 }

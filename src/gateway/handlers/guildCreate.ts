@@ -20,6 +20,12 @@ export const guildCreate: GatewayEventHandler = async (
     }
   }
 
+  if (d.threads !== undefined) {
+    for (const data of d.threads) {
+      await guild.threads.set(data.id, data)
+    }
+  }
+
   await guild.roles.fromPayload(d.roles)
 
   if (d.presences !== undefined) await guild.presences.fromPayload(d.presences)

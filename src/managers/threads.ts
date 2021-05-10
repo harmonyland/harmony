@@ -21,7 +21,7 @@ export class ThreadsManager extends BaseChildManager<
   }
 
   async get(id: string): Promise<ThreadChannel | undefined> {
-    const res = await this.get(id)
+    const res = await this.parent.get(id)
     if (res === undefined || !ThreadTypes.includes(res.type)) return undefined
   }
 
