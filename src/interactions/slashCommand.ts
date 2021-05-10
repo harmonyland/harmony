@@ -80,7 +80,7 @@ export class SlashCommand {
         : undefined)
     if (guildID === undefined)
       throw new Error('Expected Slash Command to be a Guild one')
-    return await this.slash.permissions.get(guildID, this.id)
+    return await this.slash.permissions.get(this.id, guildID)
   }
 
   /** Create a handler for this Slash Command */

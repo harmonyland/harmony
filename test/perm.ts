@@ -10,7 +10,7 @@ slash.commands
     {
       name: 'kick',
       description: 'Kicks a user',
-      defaultPermission: true,
+      defaultPermission: false,
       options: [
         {
           type: 'USER',
