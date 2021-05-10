@@ -348,7 +348,7 @@ export class SlashCommandPermissionsManager {
     if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
-    ].commands[typeof cmd === 'object' ? cmd.id : cmd].permissions.patch({
+    ].commands[typeof cmd === 'object' ? cmd.id : cmd].permissions.put({
       permissions: permissions.map(transformSlashCommandPermission)
     })
     return transformSlashCommandPermissionsPayload(data)
