@@ -261,7 +261,7 @@ export function transformSlashCommand(
   const cmd = { ...(_cmd as any) }
   if (cmd.defaultPermission !== undefined) {
     cmd.default_permission = cmd.defaultPermission
-    delete cmd.default_permission
+    delete cmd.defaultPermission
   }
   if (typeof cmd.options === 'object' && Array.isArray(cmd.options)) {
     cmd.options = cmd.options.map(transformSlashCommandOption)
@@ -506,7 +506,7 @@ export class SlashCommandsManager {
 
   /** Bulk Edit Global or Guild Slash Commands */
   async bulkEdit(
-    cmds: Array<SlashCommandPartial | SlashCommandPayload>,
+    cmds: SlashCommandPartial[],
     guild?: Guild | string
   ): Promise<SlashCommandsManager> {
     const route =
