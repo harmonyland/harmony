@@ -29,7 +29,7 @@ export class ThreadMetadata extends Base {
   readFromData(data: ThreadMetadataPayload): this {
     this.archived = data.archived ?? this.archived
     this.archiver =
-      data.archiver_id === undefined
+      data.archiver_id === undefined || data.archiver_id === null
         ? undefined
         : new UserResolvable(this.client, data.archiver_id)
     this.autoArchiveDuration = data.auto_archive_duration ?? this.locked

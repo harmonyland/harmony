@@ -13,6 +13,10 @@ export class BaseChildManager<T, T2> extends Base {
     this.parent = parent
   }
 
+  get cacheName(): string {
+    return this.parent.cacheName
+  }
+
   async get(key: string): Promise<T2 | undefined> {
     return this.parent.get(key)
   }
@@ -64,6 +68,6 @@ export class BaseChildManager<T, T2> extends Base {
   }
 
   [Deno.customInspect](): string {
-    return `ChildManager(${this.parent.cacheName})`
+    return `ChildManager(${this.cacheName})`
   }
 }

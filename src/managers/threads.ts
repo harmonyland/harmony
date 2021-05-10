@@ -1,5 +1,9 @@
 import type { Client } from '../client/mod.ts'
-import { ChannelTypes, ThreadChannelPayload } from '../types/channel.ts'
+import {
+  ChannelTypes,
+  ThreadChannelPayload,
+  ThreadMemberPayload
+} from '../types/channel.ts'
 import { ThreadChannel } from '../structures/threadChannel.ts'
 import { BaseChildManager } from './baseChild.ts'
 import { GuildChannelsManager } from './guildChannels.ts'
@@ -20,9 +24,20 @@ export class ThreadsManager extends BaseChildManager<
     super(client, parent as any)
   }
 
+  async set(id: string, data: ThreadChannelPayload): Promise<void> {
+    if ('members' in data) {
+      for (const member of (data as any).members as ThreadMemberPayload[]) {
+        await this.client.cache.set(`thread_members:${id}`, member.id, member)
+      }
+      ;(data as any).members = undefined
+    }
+    await super.set(id, data)
+  }
+
   async get(id: string): Promise<ThreadChannel | undefined> {
     const res = await this.parent.get(id)
     if (res === undefined || !ThreadTypes.includes(res.type)) return undefined
+    else return res
   }
 
   async array(): Promise<ThreadChannel[]> {
