@@ -1,8 +1,8 @@
-import { Guild } from '../../structures/guild.ts'
-import { VoiceState } from '../../structures/voiceState.ts'
-import { MemberPayload } from '../../types/guild.ts'
-import { VoiceStatePayload } from '../../types/voice.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Guild } from '../../structures/guild.ts'
+import type { VoiceState } from '../../structures/voiceState.ts'
+import type { MemberPayload } from '../../types/guild.ts'
+import type { VoiceStatePayload } from '../../types/voice.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const voiceStateUpdate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -24,7 +24,7 @@ export const voiceStateUpdate: GatewayEventHandler = async (
       return gateway.client.emit('voiceStateRemoveUncached', { guild, member })
     }
     // No longer in the channel, so delete
-    await guild.voiceStates.delete(d.user_id)
+    await guild.voiceStates._delete(d.user_id)
     gateway.client.emit(
       'voiceStateRemove',
       (voiceState as unknown) as VoiceState
@@ -33,17 +33,15 @@ export const voiceStateUpdate: GatewayEventHandler = async (
   }
 
   await guild.voiceStates.set(d.user_id, d)
-  const newVoiceState = await guild.voiceStates.get(d.user_id)
+  const newVoiceState = (await guild.voiceStates.get(d.user_id))!
+
+  if (d.user_id === gateway.client.user!.id) {
+    gateway.client.voice.emit('voiceStateUpdate', newVoiceState)
+  }
+
   if (voiceState === undefined) {
-    gateway.client.emit(
-      'voiceStateAdd',
-      (newVoiceState as unknown) as VoiceState
-    )
+    gateway.client.emit('voiceStateAdd', newVoiceState)
   } else {
-    gateway.client.emit(
-      'voiceStateUpdate',
-      voiceState,
-      (newVoiceState as unknown) as VoiceState
-    )
+    gateway.client.emit('voiceStateUpdate', voiceState, newVoiceState)
   }
 }

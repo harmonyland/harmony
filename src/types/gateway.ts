@@ -1,17 +1,18 @@
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway
 // https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events
-import { Guild } from '../structures/guild.ts'
-import { Member } from '../structures/member.ts'
-import { EmojiPayload } from './emoji.ts'
-import { MemberPayload } from './guild.ts'
-import {
+import type { Guild } from '../structures/guild.ts'
+import type { Member } from '../structures/member.ts'
+import type { EmojiPayload } from './emoji.ts'
+import type { MemberPayload } from './guild.ts'
+import type {
   ActivityGame,
   ActivityPayload,
   StatusType,
   ClientStatus
 } from './presence.ts'
-import { RolePayload } from './role.ts'
-import { UserPayload } from './user.ts'
+import type { RolePayload } from './role.ts'
+import type { SlashCommandPayload } from './slashCommands.ts'
+import type { UserPayload } from './user.ts'
 
 /**
  * Gateway OPcodes from Discord docs.
@@ -106,7 +107,10 @@ export enum GatewayEvents {
   Voice_Server_Update = 'VOICE_SERVER_UPDATE',
   Voice_State_Update = 'VOICE_STATE_UPDATE',
   Webhooks_Update = 'WEBHOOKS_UPDATE',
-  Interaction_Create = 'INTERACTION_CREATE'
+  Interaction_Create = 'INTERACTION_CREATE',
+  Application_Command_Create = 'APPLICATION_COMMAND_CREATE',
+  Application_Command_Update = 'APPLICATION_COMMAND_UPDATE',
+  Application_Command_Delete = 'APPLICATION_COMMAND_DELETE'
 }
 
 export interface IdentityPayload {
@@ -168,6 +172,7 @@ export interface Ready {
   guilds: []
   session_id: string
   shard?: number[]
+  application: { id: string; flags: number }
 }
 
 export interface ChannelPinsUpdatePayload {
@@ -207,7 +212,7 @@ export interface GuildMemberUpdatePayload {
   guild_id: string
   roles: string[]
   user: UserPayload
-  nick?: string | undefined
+  nick: string | null
   joined_at: string
   premium_since?: string | undefined
 }
@@ -343,4 +348,8 @@ export interface TypingStartPayload {
 export interface TypingStartGuildData {
   guild: Guild
   member: Member
+}
+
+export interface ApplicationCommandPayload extends SlashCommandPayload {
+  guild_id?: string
 }

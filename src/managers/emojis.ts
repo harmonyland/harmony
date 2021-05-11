@@ -1,6 +1,6 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { Emoji } from '../structures/emoji.ts'
-import { EmojiPayload } from '../types/emoji.ts'
+import type { EmojiPayload } from '../types/emoji.ts'
 import { GUILD_EMOJI } from '../types/endpoint.ts'
 import { BaseManager } from './base.ts'
 

@@ -1,15 +1,15 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
+import { Base } from '../structures/base.ts'
 import { Collection } from '../utils/collection.ts'
 import { BaseManager } from './base.ts'
 
 /** Child Managers validate data from their parents i.e. from Managers */
-export class BaseChildManager<T, T2> {
-  client: Client
+export class BaseChildManager<T, T2> extends Base {
   /** Parent Manager */
   parent: BaseManager<T, T2>
 
   constructor(client: Client, parent: BaseManager<T, T2>) {
-    this.client = client
+    super(client)
     this.parent = parent
   }
 
@@ -38,5 +38,32 @@ export class BaseChildManager<T, T2> {
       collection.set((elem as any).id, elem)
     }
     return collection
+  }
+
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<T2> {
+    const arr = (await this.array()) ?? []
+    const { readable, writable } = new TransformStream()
+    const writer = writable.getWriter()
+    arr.forEach((el: unknown) => writer.write(el))
+    writer.close()
+    yield* readable
+  }
+
+  async fetch(...args: unknown[]): Promise<T2 | undefined> {
+    return this.parent.fetch(...args)
+  }
+
+  /** Try to get value from cache, if not found then fetch */
+  async resolve(key: string): Promise<T2 | undefined> {
+    const cacheValue = await this.get(key)
+    if (cacheValue !== undefined) return cacheValue
+    else {
+      const fetchValue = await this.fetch(key).catch(() => undefined)
+      if (fetchValue !== undefined) return fetchValue
+    }
+  }
+
+  [Deno.customInspect](): string {
+    return `ChildManager(${this.parent.cacheName})`
   }
 }

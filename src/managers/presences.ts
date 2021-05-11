@@ -1,8 +1,8 @@
-import { Client } from '../models/client.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Client } from '../client/mod.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Presence } from '../structures/presence.ts'
 import { User } from '../structures/user.ts'
-import { PresenceUpdatePayload } from '../types/gateway.ts'
+import type { PresenceUpdatePayload } from '../types/gateway.ts'
 import { BaseManager } from './base.ts'
 
 export class GuildPresencesManager extends BaseManager<

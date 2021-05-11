@@ -1,4 +1,4 @@
-import { UserPayload } from './user.ts'
+import type { UserPayload } from './user.ts'
 
 export interface WebhookPayload {
   id: string

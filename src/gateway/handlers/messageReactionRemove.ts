@@ -1,6 +1,6 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
-import { MessageReactionRemovePayload } from '../../types/gateway.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
+import type { MessageReactionRemovePayload } from '../../types/gateway.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
 
 export const messageReactionRemove: GatewayEventHandler = async (
   gateway: Gateway,
@@ -31,7 +31,7 @@ export const messageReactionRemove: GatewayEventHandler = async (
   const reaction = await message.reactions.get(emojiID)
   if (reaction === undefined) return
 
-  reaction.users.delete(d.user_id)
+  reaction.users._delete(d.user_id)
 
   gateway.client.emit('messageReactionRemove', reaction, user)
 }

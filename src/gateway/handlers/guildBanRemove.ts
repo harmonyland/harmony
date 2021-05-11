@@ -1,4 +1,4 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { Guild } from '../../structures/guild.ts'
 import { User } from '../../structures/user.ts'
 import { GuildBanRemovePayload } from '../../types/gateway.ts'

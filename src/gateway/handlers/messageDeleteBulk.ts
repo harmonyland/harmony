@@ -1,14 +1,14 @@
-import { Message } from '../../structures/message.ts'
-import { GuildTextChannel } from '../../structures/textChannel.ts'
-import { MessageDeleteBulkPayload } from '../../types/gateway.ts'
+import type { Message } from '../../structures/message.ts'
+import type { GuildTextBasedChannel } from '../../structures/guildTextChannel.ts'
+import type { MessageDeleteBulkPayload } from '../../types/gateway.ts'
 import { Collection } from '../../utils/collection.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const messageDeleteBulk: GatewayEventHandler = async (
   gateway: Gateway,
   d: MessageDeleteBulkPayload
 ) => {
-  let channel = await gateway.client.channels.get<GuildTextChannel>(
+  let channel = await gateway.client.channels.get<GuildTextBasedChannel>(
     d.channel_id
   )
   // Fetch the channel if not cached
@@ -16,7 +16,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     channel = (await gateway.client.channels.fetch(
       d.channel_id
-    )) as GuildTextChannel
+    )) as GuildTextBasedChannel
 
   const messages = new Collection<string, Message>()
   const uncached = new Set<string>()
@@ -25,7 +25,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
     if (message === undefined) uncached.add(id)
     else {
       messages.set(id, message)
-      await channel.messages.delete(id)
+      await channel.messages._delete(id)
     }
   }
 

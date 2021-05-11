@@ -1,6 +1,6 @@
 import { Guild } from '../../structures/guild.ts'
 import { GuildPayload } from '../../types/guild.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const guildDelete: GatewayEventHandler = async (
   gateway: Gateway,
@@ -13,6 +13,7 @@ export const guildDelete: GatewayEventHandler = async (
     await guild.channels.flush()
     await guild.roles.flush()
     await guild.presences.flush()
+    await guild.emojis.flush()
     await gateway.client.guilds._delete(d.id)
 
     gateway.client.emit('guildDelete', guild)

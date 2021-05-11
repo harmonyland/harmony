@@ -3,7 +3,7 @@
 <p align=center><i><b>An easy to use Discord API Library for Deno</b></i></p>
 <p align=center>
 <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
-<a href=https://discord.gg/WVN2JF2FRv>
+<a href=https://discord.gg/harmony>
   <img src="https://img.shields.io/discord/783319033205751809.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge" alt="Support">
  </a>
 </p>
@@ -28,7 +28,9 @@
 
 ## Usage
 
-You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmony-org/harmony/main/mod.ts too.
+You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
+
+You can also check(not import) the module in https://nest.land/package/harmony (link for importing is in the site).
 
 For a quick example, run this:
 
@@ -36,12 +38,16 @@ For a quick example, run this:
 deno run --allow-net https://deno.land/x/harmony/examples/ping.ts
 ```
 
-And input your bot's token and Intents.
+And input your bot's token.
 
 Here is a small example of how to use harmony,
 
 ```ts
-import { Client, Message, Intents } from 'https://deno.land/x/harmony/mod.ts'
+import {
+  Client,
+  Message,
+  GatewayIntents
+} from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new Client()
 
@@ -53,13 +59,16 @@ client.on('ready', () => {
 // Listen for event whenever a Message is sent
 client.on('messageCreate', (msg: Message): void => {
   if (msg.content === '!ping') {
-    msg.channel.send(`Pong! WS Ping: ${client.ping}`)
+    msg.channel.send(`Pong! WS Ping: ${client.gateway.ping}`)
   }
 })
 
 // Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-client.connect('super secret token comes here', Intents.All)
+client.connect('super secret token comes here', [
+  GatewayIntents.DIRECT_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.GUILD_MESSAGES
+])
 ```
 
 Or with CommandClient!
@@ -69,8 +78,7 @@ import {
   CommandClient,
   Command,
   CommandContext,
-  Message,
-  Intents
+  GatewayIntents
 } from 'https://deno.land/x/harmony/mod.ts'
 
 const client = new CommandClient({
@@ -87,26 +95,29 @@ class PingCommand extends Command {
   name = 'ping'
 
   execute(ctx: CommandContext) {
-    ctx.message.reply(`pong! Ping: ${ctx.client.ping}ms`)
+    ctx.message.reply(`pong! Ping: ${ctx.client.gateway.ping}ms`)
   }
 }
 
 client.commands.add(PingCommand)
 
 // Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-client.connect('super secret token comes here', Intents.All)
+client.connect('super secret token comes here', [
+  GatewayIntents.DIRECT_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.GUILD_MESSAGES
+])
 ```
 
 Or with Decorators!
 
 ```ts
 import {
-  Client,
   event,
-  Intents,
+  CommandClient,
   command,
-  CommandContext
+  CommandContext,
+  GatewayIntents
 } from 'https://deno.land/x/harmony/mod.ts'
 
 class MyClient extends CommandClient {
@@ -128,22 +139,24 @@ class MyClient extends CommandClient {
   }
 }
 
-// Connect to gateway
-// Replace with your bot's token and intents (Intents.All, Intents.None, Intents.Presence, Intents.GuildMembers)
-new MyClient().connect('super secret token comes here', Intents.All)
+new MyClient().connect('super secret token comes here', [
+  GatewayIntents.DIRECT_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.GUILD_MESSAGES
+])
 ```
 
 ## Docs
 
 Documentation is available for `main` (branch) and `stable` (release).
 
-- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmony-org/harmony/main/mod.ts)
+- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
-- [Guide](https://harmony-org.github.io)
+- [Guide](https://harmony.mod.land)
 
 ## Found a bug or want support? Join our discord server!
 
-[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/WVN2JF2FRv)
+[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmony)
 
 ## Maintainer
 
@@ -159,6 +172,6 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT © 2020 Harmony Org](LICENSE)
+[MIT © 2020-2021 Harmonyland](LICENSE)
 
-#### Made with ❤ by Harmony-org
+#### Made with ❤ by Harmonyland

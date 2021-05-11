@@ -109,6 +109,7 @@ yarn.lock
 
 # PRIVACY XDDDD
 src/test/config.ts
+test/config.ts
 .vscode
 
 # macOS is shit xD
@@ -118,3 +119,5 @@ src/test/config.ts
 .idea/
 
 src/test/music.mp3
+
+.vscode/

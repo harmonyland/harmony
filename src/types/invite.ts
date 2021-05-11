@@ -1,8 +1,8 @@
-import { Channel } from '../structures/channel.ts'
-import { Guild } from '../structures/guild.ts'
-import { ChannelPayload } from './channel.ts'
-import { GuildPayload } from './guild.ts'
-import { UserPayload } from './user.ts'
+import type { Channel } from '../structures/channel.ts'
+import type { Guild } from '../structures/guild.ts'
+import type { ChannelPayload } from './channel.ts'
+import type { GuildPayload } from './guild.ts'
+import type { UserPayload } from './user.ts'
 
 export interface InvitePayload {
   code: string
@@ -20,3 +20,20 @@ export interface PartialInvitePayload {
   channel: Channel
   guild?: Guild
 }
+
+export interface InviteMetadataPayload {
+  /** number of times this invite has been used */
+  uses: number
+  /** max number of times this invite can be used */
+  max_uses: number
+  /** duration (in seconds) after which the invite expires */
+  max_age: number
+  /** whether this invite only grants temporary membership */
+  temporary: boolean
+  /** when this invite was created */
+  created_at: Date
+}
+
+export interface InviteWithMetadataPayload
+  extends InvitePayload,
+    InviteMetadataPayload {}

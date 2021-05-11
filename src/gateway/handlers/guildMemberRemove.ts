@@ -1,4 +1,4 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { Guild } from '../../structures/guild.ts'
 import { User } from '../../structures/user.ts'
 import { GuildMemberRemovePayload } from '../../types/gateway.ts'
@@ -12,7 +12,7 @@ export const guildMemberRemove: GatewayEventHandler = async (
   if (guild === undefined) return
 
   const member = await guild.members.get(d.user.id)
-  await guild.members.delete(d.user.id)
+  await guild.members._delete(d.user.id)
 
   if (member !== undefined) gateway.client.emit('guildMemberRemove', member)
   else {

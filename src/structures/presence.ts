@@ -7,9 +7,9 @@ import {
 } from '../types/presence.ts'
 import { PresenceUpdatePayload, StatusUpdatePayload } from '../types/gateway.ts'
 import { Base } from './base.ts'
-import { Guild } from './guild.ts'
-import { User } from './user.ts'
-import { Client } from '../models/client.ts'
+import type { Guild } from './guild.ts'
+import type { User } from './user.ts'
+import type { Client } from '../client/mod.ts'
 
 export enum ActivityTypes {
   PLAYING = 0,
@@ -77,6 +77,7 @@ export class ClientPresence {
     }
   }
 
+  /** Parses from Payload */
   parse(payload: StatusPayload): ClientPresence {
     this.afk = payload.afk
     this.activity = payload.activities ?? undefined
@@ -86,10 +87,12 @@ export class ClientPresence {
     return this
   }
 
+  /** Parses from Payload and creates new ClientPresence */
   static parse(payload: StatusUpdatePayload): ClientPresence {
     return new ClientPresence().parse(payload)
   }
 
+  /** Creates Presence Payload */
   create(): StatusPayload {
     return {
       afk: this.afk === undefined ? false : this.afk,
@@ -100,6 +103,7 @@ export class ClientPresence {
     }
   }
 
+  /** Creates Activity Payload */
   createActivity(): ActivityGame[] | null {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     const activity =
@@ -118,47 +122,45 @@ export class ClientPresence {
     }
   }
 
+  /** Set Status of Presence */
   setStatus(status: StatusType): ClientPresence {
     this.status = status
     return this
   }
 
+  /** Set Activity for Presence */
   setActivity(activity: ActivityGame): ClientPresence {
     this.activity = activity
     return this
   }
 
+  /** Set Activities for Presence */
   setActivities(activities: ActivityGame[]): ClientPresence {
     this.activity = activities
     return this
   }
 
+  /** Set AFK value */
   setAFK(afk: boolean): ClientPresence {
     this.afk = afk
     return this
   }
 
+  /** Remove AFK (set false) */
   removeAFK(): ClientPresence {
     this.afk = false
     return this
   }
 
+  /** Toggle AFK (boolean) value */
   toggleAFK(): ClientPresence {
     this.afk = this.afk === undefined ? true : !this.afk
     return this
   }
 
+  /** Set Since property of Activity */
   setSince(since?: number): ClientPresence {
     this.since = since
     return this
   }
-
-  // setClientStatus(
-  //   client: 'desktop' | 'web' | 'mobile',
-  //   status: StatusType
-  // ): ClientPresence {
-  //   if (this.clientStatus === undefined) this.clientStatus = {}
-  //   this.clientStatus[client] = status
-  //   return this
-  // }
 }

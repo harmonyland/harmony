@@ -1,11 +1,11 @@
-import { Client } from '../models/client.ts'
-import {
+import type { Client } from '../client/mod.ts'
+import type {
   MessageStickerFormatTypes,
   MessageStickerPayload
 } from '../types/channel.ts'
-import { Base } from './base.ts'
+import { SnowflakeBase } from './base.ts'
 
-export class MessageSticker extends Base {
+export class MessageSticker extends SnowflakeBase {
   id: string
   packID: string
   name: string

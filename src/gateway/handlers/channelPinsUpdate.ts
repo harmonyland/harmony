@@ -1,6 +1,6 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
-import { TextChannel } from '../../structures/textChannel.ts'
-import { ChannelPinsUpdatePayload } from '../../types/gateway.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
+import type { TextChannel } from '../../structures/textChannel.ts'
+import type { ChannelPinsUpdatePayload } from '../../types/gateway.ts'
 
 export const channelPinsUpdate: GatewayEventHandler = async (
   gateway: Gateway,

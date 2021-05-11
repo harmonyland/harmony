@@ -1,11 +1,11 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
 import { Emoji } from '../structures/emoji.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
-import { EmojiPayload } from '../types/emoji.ts'
+import type { EmojiPayload } from '../types/emoji.ts'
 import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
-import { EmojisManager } from './emojis.ts'
+import type { EmojisManager } from './emojis.ts'
 import { fetchAuto } from '../../deps.ts'
 
 export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
@@ -88,7 +88,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     const arr = await this.array()
     for (const elem of arr) {
       const emojiID = elem.id !== null ? elem.id : elem.name
-      this.parent.delete(emojiID as string)
+      this.parent._delete(emojiID as string)
     }
     return true
   }

@@ -1,9 +1,9 @@
-import { Client } from '../models/client.ts'
-import { MessagePayload } from '../types/channel.ts'
+import type { Client } from '../client/mod.ts'
+import type { MessagePayload } from '../types/channel.ts'
 import { Collection } from '../utils/collection.ts'
-import { GuildTextChannel } from './textChannel.ts'
-import { Message } from './message.ts'
-import { Role } from './role.ts'
+import { GuildTextBasedChannel } from './guildTextChannel.ts'
+import type { Message } from './message.ts'
+import type { Role } from './role.ts'
 import { User } from './user.ts'
 
 export class MessageMentions {
@@ -11,7 +11,7 @@ export class MessageMentions {
   message: Message
   users: Collection<string, User> = new Collection()
   roles: Collection<string, Role> = new Collection()
-  channels: Collection<string, GuildTextChannel> = new Collection()
+  channels: Collection<string, GuildTextBasedChannel> = new Collection()
   everyone: boolean = false
 
   static EVERYONE_MENTION = /@(everyone|here)/g
@@ -39,7 +39,7 @@ export class MessageMentions {
     }
     if (payload.mention_channels !== undefined) {
       for (const mentionChannel of payload.mention_channels) {
-        const channel = await this.client.channels.get<GuildTextChannel>(
+        const channel = await this.client.channels.get<GuildTextBasedChannel>(
           mentionChannel.id
         )
         if (channel !== undefined) this.channels.set(channel.id, channel)
@@ -51,7 +51,7 @@ export class MessageMentions {
     if (matchChannels !== null) {
       for (const id of matchChannels) {
         const parsedID = id.substr(2, id.length - 3)
-        const channel = await this.client.channels.get<GuildTextChannel>(
+        const channel = await this.client.channels.get<GuildTextBasedChannel>(
           parsedID
         )
         if (channel !== undefined) this.channels.set(channel.id, channel)

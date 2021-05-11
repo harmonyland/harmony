@@ -1,20 +1,17 @@
-import {
-  DISCORD_API_URL,
-  DISCORD_API_VERSION
-} from '../consts/urlsAndVersions.ts'
-import { Client } from '../models/client.ts'
-import { RESTManager } from '../models/rest.ts'
-import { MessageOption } from '../types/channel.ts'
-import { UserPayload } from '../types/user.ts'
-import { WebhookPayload } from '../types/webhook.ts'
+import type { Client } from '../client/mod.ts'
+import { RESTManager } from '../rest/mod.ts'
+import type { MessageOptions } from '../types/channel.ts'
+import type { UserPayload } from '../types/user.ts'
+import type { WebhookPayload } from '../types/webhook.ts'
 import { Embed } from './embed.ts'
 import { Message } from './message.ts'
-import { TextChannel } from './textChannel.ts'
+import type { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { fetchAuto } from '../../deps.ts'
 import { WEBHOOK_MESSAGE } from '../types/endpoint.ts'
+import { Constants } from '../types/constants.ts'
 
-export interface WebhookMessageOptions extends MessageOption {
+export interface WebhookMessageOptions extends MessageOptions {
   embeds?: Embed[]
   name?: string
   avatar?: string
@@ -47,7 +44,9 @@ export class Webhook {
   rest: RESTManager
 
   get url(): string {
-    return `${DISCORD_API_URL}/v${DISCORD_API_VERSION}/webhooks/${this.id}/${this.token}`
+    return `${Constants.DISCORD_API_URL}/v${
+      this.rest.version ?? Constants.DISCORD_API_VERSION
+    }/webhooks/${this.id}/${this.token}`
   }
 
   constructor(data: WebhookPayload, client?: Client, rest?: RESTManager) {
@@ -170,7 +169,7 @@ export class Webhook {
    * @param options Options to edit the Webhook.
    */
   async edit(options: WebhookEditOptions): Promise<Webhook> {
-    if (options.channelID !== undefined && this.rest.client === undefined)
+    if (options.channelID !== undefined && this.client === undefined)
       throw new Error('Authentication is required for editing Webhook Channel')
     if (
       options.avatar !== undefined &&

@@ -1,5 +1,5 @@
-import { PresenceUpdatePayload } from '../../types/gateway.ts'
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { PresenceUpdatePayload } from '../../types/gateway.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const presenceUpdate: GatewayEventHandler = async (
   gateway: Gateway,

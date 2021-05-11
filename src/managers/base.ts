@@ -1,4 +1,5 @@
-import { Client } from '../models/client.ts'
+import type { Client } from '../client/mod.ts'
+import { Base } from '../structures/base.ts'
 import { Collection } from '../utils/collection.ts'
 
 /**
@@ -6,15 +7,14 @@ import { Collection } from '../utils/collection.ts'
  *
  * You should not be making Managers yourself.
  */
-export class BaseManager<T, T2> {
-  client: Client
+export class BaseManager<T, T2> extends Base {
   /** Caches Name or Key used to differentiate caches */
   cacheName: string
   /** Which data type does this cache have */
   DataType: any
 
   constructor(client: Client, cacheName: string, DataType: any) {
-    this.client = client
+    super(client)
     this.cacheName = cacheName
     this.DataType = DataType
   }
@@ -41,11 +41,6 @@ export class BaseManager<T, T2> {
     return this.client.cache.delete(this.cacheName, key)
   }
 
-  /** Alias to _delete (cache) for compatibility purposes */
-  async delete(key: string): Promise<boolean> {
-    return await this._delete(key)
-  }
-
   /** Gets an Array of values from Cache */
   async array(): Promise<T2[]> {
     let arr = await (this.client.cache.array(this.cacheName) as T[])
@@ -65,8 +60,35 @@ export class BaseManager<T, T2> {
     return collection
   }
 
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<T2> {
+    const arr = (await this.array()) ?? []
+    const { readable, writable } = new TransformStream()
+    const writer = writable.getWriter()
+    arr.forEach((el: unknown) => writer.write(el))
+    writer.close()
+    yield* readable
+  }
+
+  async fetch(...args: unknown[]): Promise<T2 | undefined> {
+    return undefined
+  }
+
+  /** Try to get value from cache, if not found then fetch */
+  async resolve(key: string): Promise<T2 | undefined> {
+    const cacheValue = await this.get(key)
+    if (cacheValue !== undefined) return cacheValue
+    else {
+      const fetchValue = await this.fetch(key).catch(() => undefined)
+      if (fetchValue !== undefined) return fetchValue
+    }
+  }
+
   /** Deletes everything from Cache */
   flush(): any {
     return this.client.cache.deleteCache(this.cacheName)
+  }
+
+  [Deno.customInspect](): string {
+    return `Manager(${this.cacheName})`
   }
 }

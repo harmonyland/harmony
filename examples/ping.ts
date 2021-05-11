@@ -1,4 +1,4 @@
-import { Client, Message, Intents } from '../mod.ts'
+import { Client, Message, GatewayIntents } from '../mod.ts'
 
 const client = new Client()
 
@@ -13,7 +13,7 @@ client.on('messageCreate', (msg: Message) => {
   }
 })
 
-console.log('harmony - ping example')
+console.log('Harmony - Ping Example')
 
 const token = prompt('Input Bot Token:')
 if (token === null) {
@@ -21,23 +21,11 @@ if (token === null) {
   Deno.exit()
 }
 
-const intents = prompt(
-  'Input Intents (0 = All, 1 = Presence, 2 = Server Members, 3 = None):'
-)
-if (intents === null || !['0', '1', '2', '3'].includes(intents)) {
-  console.log('No intents provided')
-  Deno.exit()
-}
-
-let ints
-if (intents === '0') {
-  ints = Intents.All
-} else if (intents === '1') {
-  ints = Intents.Presence
-} else if (intents === '2') {
-  ints = Intents.GuildMembers
-} else {
-  ints = Intents.None
-}
-
-client.connect(token, ints)
+// You can also use Intents.None (all intents without priviliged ones, Intents.All has all of them)
+// to not have to specify intents manually, but it is recommended to specify intents only which are needed!
+// It makes your bot more memory efficient and uses less bandwidth.
+client.connect(token, [
+  GatewayIntents.GUILD_MESSAGES,
+  GatewayIntents.GUILDS,
+  GatewayIntents.DIRECT_MESSAGES
+])

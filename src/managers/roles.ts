@@ -1,9 +1,9 @@
 import { Permissions } from '../../mod.ts'
-import { Client } from '../models/client.ts'
-import { Guild } from '../structures/guild.ts'
+import type { Client } from '../client/mod.ts'
+import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE, GUILD_ROLES } from '../types/endpoint.ts'
-import { RolePayload } from '../types/role.ts'
+import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import { BaseManager } from './base.ts'
 
 export interface CreateGuildRoleOptions {
@@ -22,17 +22,32 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
     this.guild = guild
   }
 
-  /** Fetch a Guild Role (from API) */
-  async fetch(id: string): Promise<Role> {
+  /** Fetch All Guild Roles */
+  async fetchAll(): Promise<Role[]> {
     return await new Promise((resolve, reject) => {
-      this.client.rest
-        .get(GUILD_ROLE(this.guild.id, id))
-        .then(async (data) => {
-          await this.set(id, data as RolePayload)
-          resolve(((await this.get(id)) as unknown) as Role)
+      this.client.rest.api.guilds[this.guild.id].roles.get
+        .then(async (data: RolePayload[]) => {
+          const roles: Role[] = []
+          for (const raw of data) {
+            await this.set(raw.id, raw)
+            roles.push(new Role(this.client, raw, this.guild))
+          }
+          resolve(roles)
         })
         .catch((e) => reject(e))
     })
+  }
+
+  async get(key: string): Promise<Role | undefined> {
+    const raw = await this._get(key)
+    if (raw === undefined) return
+    return new Role(this.client, raw, this.guild)
+  }
+
+  async array(): Promise<Role[]> {
+    let arr = await (this.client.cache.array(this.cacheName) as RolePayload[])
+    if (arr === undefined) arr = []
+    return arr.map((e) => new Role(this.client, e, this.guild))
   }
 
   async fromPayload(roles: RolePayload[]): Promise<boolean> {
@@ -74,10 +89,41 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
   }
 
   /** Delete a Guild Role */
-  async delete(role: Role | string): Promise<boolean> {
+  async delete(role: Role | string): Promise<Role | undefined> {
+    const oldRole = await this.get(typeof role === 'object' ? role.id : role)
+
     await this.client.rest.delete(
       GUILD_ROLE(this.guild.id, typeof role === 'object' ? role.id : role)
     )
-    return true
+
+    return oldRole
+  }
+
+  async edit(role: Role | string, options: RoleModifyPayload): Promise<Role> {
+    if (role instanceof Role) {
+      role = role.id
+    }
+    const resp: RolePayload = await this.client.rest.patch(
+      GUILD_ROLE(this.guild.id, role),
+      options
+    )
+
+    return new Role(this.client, resp, this.guild)
+  }
+
+  /** Modify the positions of a set of role positions for the guild. */
+  async editPositions(
+    ...positions: Array<{ id: string | Role; position: number | null }>
+  ): Promise<RolesManager> {
+    if (positions.length === 0)
+      throw new Error('No role positions to change specified')
+
+    await this.client.rest.api.guilds[this.guild.id].roles.patch(
+      positions.map((e) => ({
+        id: typeof e.id === 'string' ? e.id : e.id.id,
+        position: e.position ?? null
+      }))
+    )
+    return this
   }
 }

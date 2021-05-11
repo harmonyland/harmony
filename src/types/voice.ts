@@ -1,4 +1,4 @@
-import { MemberPayload } from './guild.ts'
+import type { MemberPayload } from './guild.ts'
 
 export enum VoiceOpcodes {
   IDENTIFY = 0,
@@ -41,4 +41,21 @@ export interface VoiceStatePayload {
   self_stream?: boolean
   self_video: boolean
   suppress: boolean
+  request_to_speak_timestamp: string | null
+}
+
+/** Voice Region Structure */
+export interface VoiceRegion {
+  /** Unique ID for the region */
+  id: string
+  /** Name of the region */
+  name: string
+  /** True if this is a vip-only server */
+  vip: boolean
+  /** True for a single server that is closest to the current user's client */
+  optimal: boolean
+  /** Whether this is a deprecated voice region (avoid switching to these) */
+  deprecated: boolean
+  /** Whether this is a custom voice region (used for events/etc) */
+  custom: boolean
 }

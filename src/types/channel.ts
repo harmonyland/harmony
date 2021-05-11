@@ -1,7 +1,12 @@
-import { Embed } from '../structures/embed.ts'
-import { EmojiPayload } from './emoji.ts'
-import { MemberPayload } from './guild.ts'
-import { UserPayload } from './user.ts'
+import type { Embed } from '../structures/embed.ts'
+import type { Member } from '../structures/member.ts'
+import type { Message, MessageAttachment } from '../structures/message.ts'
+import type { Role } from '../structures/role.ts'
+import type { Permissions } from '../utils/permissions.ts'
+import type { EmojiPayload } from './emoji.ts'
+import type { MemberPayload } from './guild.ts'
+import type { InteractionType } from './interactions.ts'
+import type { UserPayload } from './user.ts'
 
 export interface ChannelPayload {
   id: string
@@ -17,24 +22,22 @@ export interface GuildChannelPayload extends ChannelPayload {
   guild_id: string
   name: string
   position: number
-  permission_overwrites: Overwrite[]
+  permission_overwrites: OverwritePayload[]
+  nsfw: boolean
   parent_id?: string
 }
 
-export interface GuildTextChannelPayload
+export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
-  nsfw: boolean
-  rate_limit_per_user: number
   topic?: string
 }
 
-export interface GuildNewsChannelPayload
-  extends TextChannelPayload,
-    GuildChannelPayload {
-  topic?: string
-  nsfw: boolean
+export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
+  rate_limit_per_user: number
 }
+
+export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -58,25 +61,27 @@ export interface GuildCategoryChannelPayload
 export interface ModifyChannelPayload {
   name?: string
   position?: number | null
-  permission_overwrites?: Overwrite[] | null
+  permission_overwrites?: OverwritePayload[] | null
   parent_id?: string
+  nsfw?: boolean | null
 }
 
 export interface ModifyGuildCategoryChannelPayload
   extends ModifyChannelPayload {}
 
-export interface ModifyGuildTextChannelPayload extends ModifyChannelPayload {
+export interface ModifyGuildTextBasedChannelPayload
+  extends ModifyChannelPayload {
   type?: number
   topic?: string | null
-  nsfw?: boolean | null
+}
+
+export interface ModifyGuildTextChannelPayload
+  extends ModifyGuildTextBasedChannelPayload {
   rate_limit_per_user?: number | null
 }
 
-export interface ModifyGuildNewsChannelPayload extends ModifyChannelPayload {
-  type?: number
-  topic?: string | null
-  nsfw?: boolean | null
-}
+export interface ModifyGuildNewsChannelPayload
+  extends ModifyGuildTextBasedChannelPayload {}
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
@@ -86,35 +91,63 @@ export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
 export interface ModifyChannelOption {
   name?: string
   position?: number | null
-  permissionOverwrites?: Overwrite[] | null
+  permissionOverwrites?: OverwritePayload[] | null
   parentID?: string
+  nsfw?: boolean | null
 }
 
 export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
 
-export interface ModifyGuildTextChannelOption extends ModifyChannelOption {
+export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
   topic?: string | null
-  nsfw?: boolean | null
-  rateLimitPerUser?: number | null
 }
 
-export interface ModifyGuildNewsChannelOption extends ModifyChannelOption {
-  type?: number
-  topic?: string | null
-  nsfw?: boolean | null
+export interface ModifyGuildTextChannelOption
+  extends ModifyGuildTextBasedChannelOption {
+  slowmode?: number | null
 }
+
+export interface ModifyGuildNewsChannelOption
+  extends ModifyGuildTextBasedChannelOption {}
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
   userLimit?: number | null
 }
 
-export interface Overwrite {
+export enum OverwriteType {
+  ROLE = 0,
+  USER = 1
+}
+
+export interface OverwritePayload {
   id: string
-  type: number
+  type: OverwriteType
   allow: string
   deny: string
+}
+
+export interface Overwrite {
+  id: string | Role | Member
+  type: OverwriteType
+  allow: Permissions
+  deny: Permissions
+}
+
+export interface OverwriteAsOptions {
+  id: string | Role | Member
+  type?: OverwriteType
+  allow?: string | Permissions
+  deny?: string | Permissions
+}
+
+export type OverwriteAsArg = OverwriteAsOptions | OverwritePayload
+
+export enum OverrideType {
+  ADD = 0,
+  REMOVE = 1,
+  REPLACE = 2
 }
 
 export enum ChannelTypes {
@@ -124,7 +157,8 @@ export enum ChannelTypes {
   GROUP_DM = 3,
   GUILD_CATEGORY = 4,
   GUILD_NEWS = 5,
-  GUILD_STORE = 6
+  GUILD_STORE = 6,
+  GUILD_STAGE_VOICE = 13
 }
 
 export interface MessagePayload {
@@ -153,17 +187,30 @@ export interface MessagePayload {
   message_reference?: MessageReference
   flags?: number
   stickers?: MessageStickerPayload[]
+  interaction?: MessageInteractionPayload
 }
 
-export interface MessageOption {
+export enum AllowedMentionType {
+  Roles = 'roles',
+  Users = 'users',
+  Everyone = 'everyone'
+}
+
+export interface AllowedMentionsPayload {
+  parse?: AllowedMentionType[]
+  users?: string[]
+  roles?: string[]
+  replied_user?: boolean
+}
+
+export interface MessageOptions {
+  content?: string
   tts?: boolean
   embed?: Embed
-  file?: Attachment
-  allowedMentions?: {
-    parse?: 'everyone' | 'users' | 'roles'
-    roles?: string[]
-    users?: string[]
-  }
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+  allowedMentions?: AllowedMentionsPayload
+  reply?: Message | MessageReference | string
 }
 
 export interface ChannelMention {
@@ -291,7 +338,11 @@ export enum MessageTypes {
   USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3 = 11,
   CHANNEL_FOLLOW_ADD = 12,
   GUILD_DISCOVERY_DISQUALIFIED = 14,
-  GUILD_DISCOVERY_REQUALIFIED = 15
+  GUILD_DISCOVERY_REQUALIFIED = 15,
+  GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING = 16,
+  GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING = 17,
+  REPLY = 19,
+  APPLICATION_COMMAND = 20
 }
 
 export enum MessageActivityTypes {
@@ -329,4 +380,40 @@ export interface MessageStickerPayload {
   asset: string
   preview_asset: string | null
   format_type: MessageStickerFormatTypes
+}
+
+export interface MessageInteractionPayload {
+  id: string
+  type: InteractionType
+  name: string
+  user: UserPayload
+}
+
+export interface EditMessagePayload {
+  content?: string
+  embed?: EmbedPayload
+  allowed_mentions?: AllowedMentionsPayload
+  flags?: number
+}
+
+export interface CreateMessagePayload extends EditMessagePayload {
+  nonce?: string
+  tts?: boolean
+  message_reference?: MessageReference
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+}
+
+export interface CreateWebhookMessageBasePayload {
+  content?: string
+  embeds?: EmbedPayload[]
+  tts?: boolean
+  file?: MessageAttachment
+  files?: MessageAttachment[]
+  allowed_mentions?: AllowedMentionsPayload
+}
+
+export interface CreateWebhookMessagePayload extends CreateMessagePayload {
+  username?: string
+  avatar_url?: string
 }

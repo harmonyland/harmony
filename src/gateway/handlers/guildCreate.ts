@@ -1,4 +1,4 @@
-import { Gateway, GatewayEventHandler } from '../index.ts'
+import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { Guild } from '../../structures/guild.ts'
 import { GuildPayload } from '../../types/guild.ts'
 import { GuildChannelPayload } from '../../types/channel.ts'
@@ -26,6 +26,11 @@ export const guildCreate: GatewayEventHandler = async (
 
   if (d.voice_states !== undefined)
     await guild.voiceStates.fromPayload(d.voice_states)
+
+  for (const emojiPayload of d.emojis) {
+    if (emojiPayload.id === null) continue
+    await gateway.client.emojis.set(emojiPayload.id, emojiPayload)
+  }
 
   if (hasGuild === undefined) {
     // It wasn't lazy load, so emit event
