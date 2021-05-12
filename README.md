@@ -15,7 +15,7 @@
 - Built-in Commands framework.
 - Customizable Caching, with Redis support.
 - Use `@decorators` to easily make things!
-- Made with ❤️ TypeScript.
+- Made with ❤️ in TypeScript.
 
 ## Table of Contents
 
