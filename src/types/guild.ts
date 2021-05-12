@@ -53,7 +53,7 @@ export interface GuildPayload {
   rules_channel_id?: string
   joined_at?: string
   large?: boolean
-  unavailable: boolean
+  unavailable?: boolean
   member_count?: number
   voice_states?: VoiceStatePayload[]
   members?: MemberPayload[]

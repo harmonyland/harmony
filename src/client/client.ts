@@ -309,6 +309,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     token?: string,
     intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   ): Promise<Client> {
+    await this.guilds.flush()
     token ??= this.token
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token
