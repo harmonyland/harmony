@@ -197,7 +197,7 @@ export class Guild extends SnowflakeBase {
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
     this.id = data.id
-    this.unavailable = data.unavailable
+    this.unavailable = data.unavailable ?? false
     this.readFromData(data)
     this.bans = new GuildBans(client, this)
     this.members = new MembersManager(this.client, this)
