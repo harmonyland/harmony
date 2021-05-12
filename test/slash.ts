@@ -1,5 +1,5 @@
 import { Client, Intents, event, slash } from '../mod.ts'
-import { Interaction } from '../src/structures/slash.ts'
+import { SlashCommandInteraction } from '../src/structures/slash.ts'
 import { TOKEN } from './config.ts'
 
 export class MyClient extends Client {
@@ -39,7 +39,7 @@ export class MyClient extends Client {
     // this.slash.commands.bulkEdit([])
   }
 
-  @slash() test(d: Interaction): void {
+  @slash() test(d: SlashCommandInteraction): void {
     console.log(d.resolved)
   }
 

@@ -11,8 +11,7 @@ export function simplifyAPIError(errors: any): SimplifiedError {
       Object.entries(obj).forEach((obj: [string, any]) => {
         const arrayIndex = !isNaN(Number(obj[0]))
         if (arrayIndex) obj[0] = `[${obj[0]}]`
-        if (acum !== '' && !arrayIndex) acum += '.'
-        fmt(obj[1], acum + obj[0])
+        fmt(obj[1], acum + (acum !== '' && !arrayIndex ? '.' : '') + obj[0])
       })
     }
   }

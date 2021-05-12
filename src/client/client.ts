@@ -299,6 +299,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     token: string | undefined = this.token,
     intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   ): Promise<Client> {
+    await this.guilds.flush()
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token
     if (intents !== undefined && this.intents !== undefined) {
@@ -418,7 +419,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       recipient_id: id
     })
     await this.channels.set(dmPayload.id, dmPayload)
-    return (this.channels.get<DMChannel>(dmPayload.id) as unknown) as DMChannel
+    return this.channels.get<DMChannel>(dmPayload.id) as unknown as DMChannel
   }
 
   /** Returns a template object for the given code. */
@@ -437,9 +438,11 @@ export function event(name?: keyof ClientEvents) {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
-    const listener = ((client as unknown) as {
-      [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
-    })[(prop as unknown) as keyof ClientEvents]
+    const listener = (
+      client as unknown as {
+        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
+      }
+    )[prop as unknown as keyof ClientEvents]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
 

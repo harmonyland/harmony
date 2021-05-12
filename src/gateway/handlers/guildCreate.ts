@@ -9,7 +9,7 @@ export const guildCreate: GatewayEventHandler = async (
 ) => {
   const hasGuild: Guild | undefined = await gateway.client.guilds.get(d.id)
   await gateway.client.guilds.set(d.id, d)
-  const guild = ((await gateway.client.guilds.get(d.id)) as unknown) as Guild
+  const guild = (await gateway.client.guilds.get(d.id)) as unknown as Guild
 
   if (d.members !== undefined) await guild.members.fromPayload(d.members)
 
@@ -35,5 +35,11 @@ export const guildCreate: GatewayEventHandler = async (
   if (hasGuild === undefined) {
     // It wasn't lazy load, so emit event
     gateway.client.emit('guildCreate', guild)
-  } else gateway.client.emit('guildLoaded', guild)
+  } else {
+    if (gateway._guildsLoaded !== undefined) {
+      gateway._guildsLoaded++
+      gateway._checkGuildsLoaded()
+    }
+    gateway.client.emit('guildLoaded', guild)
+  }
 }

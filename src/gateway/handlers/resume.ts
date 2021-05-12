@@ -14,5 +14,4 @@ export const resume: GatewayEventHandler = async (
       gateway.client,
       await gateway.client.rest.get(CLIENT_USER())
     )
-  gateway.client.emit('ready', gateway.shards?.[0] ?? 0)
 }
