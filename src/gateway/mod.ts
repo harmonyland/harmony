@@ -151,7 +151,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         }
         if (t !== null && t !== undefined) {
           this.emit(t as any, d)
-          this.client.emit('raw', t, d)
+          this.client.emit('raw', t, d, this.shards?.[0] ?? 0)
 
           const handler = gatewayHandlers[t]
 
