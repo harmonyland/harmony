@@ -9,7 +9,10 @@ export const guildCreate: GatewayEventHandler = async (
 ) => {
   const hasGuild: Guild | undefined = await gateway.client.guilds.get(d.id)
   await gateway.client.guilds.set(d.id, d)
-  const guild = (await gateway.client.guilds.get(d.id)) as unknown as Guild
+  const guild = (await gateway.client.guilds.get(d.id))
+
+  // Hack around <GuildManager>.get that value can be null
+  if (guild === undefined) return
 
   if (d.members !== undefined) await guild.members.fromPayload(d.members)
 
@@ -32,14 +35,13 @@ export const guildCreate: GatewayEventHandler = async (
     await gateway.client.emojis.set(emojiPayload.id, emojiPayload)
   }
 
-  if (hasGuild === undefined) {
-    // It wasn't lazy load, so emit event
-    gateway.client.emit('guildCreate', guild)
-  } else {
-    if (gateway._guildsLoaded !== undefined) {
-      gateway._guildsLoaded++
-      gateway._checkGuildsLoaded()
-    }
-    gateway.client.emit('guildLoaded', guild)
+  // Not lazy load, emit the event
+  if (hasGuild === undefined) return gateway.client.emit('guildCreate', guild)
+
+  if (gateway._guildsLoaded !== undefined) {
+    gateway._guildsLoaded++
+    gateway._checkGuildsLoaded()
   }
+  
+  gateway.client.emit('guildLoaded', guild)
 }

@@ -1,5 +1,4 @@
 import { Member } from '../../structures/member.ts'
-import type { TextChannel } from '../../structures/textChannel.ts'
 import type { TypingStartPayload } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
@@ -11,25 +10,20 @@ export const typingStart: GatewayEventHandler = async (
   const user = await gateway.client.users.get(d.user_id)
   if (user === undefined) return
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const channel = (await gateway.client.channels.get(
-    d.channel_id
-  )) as TextChannel
+  const channel = (await gateway.client.channels.get(d.channel_id))
   if (channel === undefined) return
 
-  const guild =
-    d.guild_id !== undefined
-      ? await gateway.client.guilds.get(d.guild_id)
-      : undefined
+  const guild = d.guild_id !== undefined
+    ? await gateway.client.guilds.get(d.guild_id)
+    : undefined
+
   if (guild === undefined && d.guild_id !== undefined) return
 
-  const member =
-    d.member !== undefined && guild !== undefined
-      ? new Member(gateway.client, d.member, user, guild)
-      : undefined
+  const member = d.member !== undefined && guild !== undefined
+    ? new Member(gateway.client, d.member, user, guild)
+    : undefined
 
-  gateway.client.emit(
-    'typingStart',
+  gateway.client.emit('typingStart',
     user,
     channel,
     new Date(d.timestamp),

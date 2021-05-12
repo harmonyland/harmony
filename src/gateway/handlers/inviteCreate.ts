@@ -1,19 +1,16 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 import { Guild } from '../../structures/guild.ts'
 import { InviteCreatePayload } from '../../types/gateway.ts'
-import { ChannelPayload } from '../../types/channel.ts'
 import { GuildPayload } from '../../types/guild.ts'
 import { InvitePayload } from '../../types/invite.ts'
-import { Invite } from '../../structures/invite.ts'
 
 export const inviteCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: InviteCreatePayload
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id!)
+  const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id ?? "")
 
-  // Weird case, shouldn't happen
+  // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
   /**
@@ -21,17 +18,17 @@ export const inviteCreate: GatewayEventHandler = async (
    */
   const cachedChannel = await gateway.client.channels._get(d.channel_id)
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const cachedGuild: GuildPayload | undefined =
-    d.guild_id === undefined
-      ? undefined
-      : await guild.client.guilds._get(d.guild_id)
+  // Hack around <ChannelManager>.get that value can be null
+  if (cachedChannel === undefined) return
+
+  const cachedGuild: GuildPayload | undefined = d.guild_id === undefined
+    ? undefined
+    : await guild.client.guilds._get(d.guild_id)
 
   const dataConverted: InvitePayload = {
     code: d.code,
     guild: cachedGuild,
-    // had to use `as ChannelPayload` because the _get method returned `ChannelPayload | undefined` which errored
-    channel: (cachedChannel as unknown) as ChannelPayload,
+    channel: cachedChannel,
     inviter: d.inviter,
     target_user: d.target_user,
     target_user_type: d.target_user_type
@@ -39,5 +36,5 @@ export const inviteCreate: GatewayEventHandler = async (
 
   await guild.invites.set(d.code, dataConverted)
   const invite = await guild.invites.get(d.code)
-  gateway.client.emit('inviteCreate', (invite as unknown) as Invite)
+  gateway.client.emit('inviteCreate', invite)
 }

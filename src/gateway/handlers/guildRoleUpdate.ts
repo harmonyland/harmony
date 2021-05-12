@@ -8,16 +8,15 @@ export const guildRoleUpdate: GatewayEventHandler = async (
   d: GuildRoleUpdatePayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  // Weird case, shouldn't happen
+  // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
   const role = await guild.roles.get(d.role.id)
   await guild.roles.set(d.role.id, d.role)
   const newRole = (await guild.roles.get(d.role.id)) as Role
 
-  // Shouldn't happen either
-  if (role === undefined)
-    return gateway.client.emit('guildRoleUpdateUncached', newRole)
+  // Hack around <RoleManager>.get that value can be null
+  if (role === undefined) return gateway.client.emit('guildRoleUpdateUncached', newRole)
 
   gateway.client.emit('guildRoleUpdate', role, newRole)
 }

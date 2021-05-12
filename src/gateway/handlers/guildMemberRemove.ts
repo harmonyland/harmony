@@ -8,15 +8,15 @@ export const guildMemberRemove: GatewayEventHandler = async (
   d: GuildMemberRemovePayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  // Weird case, shouldn't happen
+
+  // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
   const member = await guild.members.get(d.user.id)
   await guild.members._delete(d.user.id)
 
-  if (member !== undefined) gateway.client.emit('guildMemberRemove', member)
-  else {
-    const user = new User(gateway.client, d.user)
-    gateway.client.emit('guildMemberRemoveUncached', user)
-  }
+  if (member !== undefined) return gateway.client.emit('guildMemberRemove', member)
+
+  const user = new User(gateway.client, d.user)
+  gateway.client.emit('guildMemberRemoveUncached', user)
 }

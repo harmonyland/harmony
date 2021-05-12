@@ -7,11 +7,13 @@ export const guildRoleDelete: GatewayEventHandler = async (
   d: GuildRoleDeletePayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  // Weird case, shouldn't happen
+
+  // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
   const role = await guild.roles.get(d.role_id)
-  // Shouldn't happen either
+
+  // Hack around <RoleManager>.get that value can be null
   if (role === undefined) return
   await guild.roles._delete(d.role_id)
 

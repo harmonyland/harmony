@@ -7,7 +7,8 @@ export const guildMembersChunk: GatewayEventHandler = async (
   d: GuildMemberChunkPayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  // Weird case, shouldn't happen
+
+  // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
   for (const member of d.members) {

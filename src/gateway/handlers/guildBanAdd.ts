@@ -8,9 +8,7 @@ export const guildBanAdd: GatewayEventHandler = async (
   d: GuildBanAddPayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  const user: User =
-    (await gateway.client.users.get(d.user.id)) ??
-    new User(gateway.client, d.user)
+  const user: User = (await gateway.client.users.get(d.user.id)) ?? new User(gateway.client, d.user)
 
   if (guild !== undefined) {
     // We don't have to delete member, already done with guildMemberRemove event

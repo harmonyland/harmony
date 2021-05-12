@@ -8,7 +8,8 @@ export const guildMemberAdd: GatewayEventHandler = async (
   d: GuildMemberAddPayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  // Weird case, shouldn't happen
+  
+  // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
   await guild.members.set(d.user.id, d)

@@ -6,10 +6,7 @@ export const applicationCommandUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: ApplicationCommandPayload
 ) => {
-  const guild =
-    d.guild_id === undefined
-      ? undefined
-      : await gateway.client.guilds.get(d.guild_id)
+  const guild = await gateway.client.guilds.get(d.guild_id ?? "")
   const cmd = new SlashCommand(gateway.client.slash.commands, d, guild)
   gateway.client.emit('slashCommandUpdate', cmd)
 }

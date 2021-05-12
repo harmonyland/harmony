@@ -8,8 +8,7 @@ export const userUpdate: GatewayEventHandler = async (
 ) => {
   const oldUser: User | undefined = await gateway.client.users.get(d.id)
   await gateway.client.users.set(d.id, d)
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const newUser = (await gateway.client.users.get(d.id)) as User
+  const newUser = await gateway.client.users.get(d.id)
 
   if (oldUser !== undefined) {
     gateway.client.emit('userUpdate', oldUser, newUser)
