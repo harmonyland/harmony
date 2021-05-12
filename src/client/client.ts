@@ -152,11 +152,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Since when is Client online (ready). */
   get uptime(): number {
     if (this.upSince === undefined) return 0
-    else {
-      const dif = Date.now() - this.upSince.getTime()
-      if (dif < 0) return 0
-      else return dif
-    }
+    return Math.abs(Date.now() - this.upSince.getTime())
   }
 
   /** Get Shard 0's Gateway */
@@ -176,18 +172,19 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     )
     this.shards = new ShardManager(this)
     this.forceNewSession = options.forceNewSession
+
     if (options.cache !== undefined) this.cache = options.cache
-    if (options.presence !== undefined)
-      this.presence =
-        options.presence instanceof ClientPresence
-          ? options.presence
-          : new ClientPresence(options.presence)
+
+    this.presence = options.presence instanceof ClientPresence
+      ? options.presence
+      : new ClientPresence(options.presence)
+
     if (options.messageCacheLifetime !== undefined)
       this.messageCacheLifetime = options.messageCacheLifetime
     if (options.reactionCacheLifetime !== undefined)
       this.reactionCacheLifetime = options.reactionCacheLifetime
-    if (options.fetchUncachedReactions === true)
-      this.fetchUncachedReactions = true
+
+    this.fetchUncachedReactions = Boolean(options.fetchUncachedReactions)
 
     if (
       (this as any)._decoratedEvents !== undefined &&
@@ -196,18 +193,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       Object.entries((this as any)._decoratedEvents).forEach((entry) => {
         this.on(entry[0] as keyof ClientEvents, (entry as any)[1].bind(this))
       })
-      ;(this as any)._decoratedEvents = undefined
+        ; (this as any)._decoratedEvents = undefined
     }
 
     Object.defineProperty(this, 'clientProperties', {
-      value:
-        options.clientProperties === undefined
-          ? {
-              os: Deno.build.os,
-              browser: 'harmony',
-              device: 'harmony'
-            }
-          : options.clientProperties,
+      value: options.clientProperties
+        ?? { os: Deno.build.os, browser: 'harmony', device: 'harmony' },
+
       enumerable: false
     })
 
@@ -223,7 +215,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
           this.token = token
           this.debug('Info', 'Found token in ENV')
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     const restOptions: RESTOptions = {
@@ -235,6 +227,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
     if (options.restOptions !== undefined)
       Object.assign(restOptions, options.restOptions)
+
     this.rest = new RESTManager(restOptions)
 
     this.slash = new SlashClient({
@@ -260,6 +253,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (presence instanceof ClientPresence) {
       this.presence = presence
     } else this.presence = new ClientPresence(presence)
+    this.presence = presence instanceof ClientPresence ? this.presence : new ClientPresence(presence)
     this.gateway?.sendPresence(this.presence.create())
   }
 
@@ -290,13 +284,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Fetch an Invite */
   async fetchInvite(id: string): Promise<Invite> {
-    return await new Promise((resolve, reject) => {
-      this.rest
-        .get(INVITE(id))
-        .then((data) => {
-          resolve(new Invite(this, data))
-        })
-        .catch((e) => reject(e))
+    return await new Promise(async (resolve, reject) => {
+      let inviteData = await this.rest.get(INVITE(id)).catch(reject)
+      resolve(new Invite(this, inviteData))
     })
   }
 
@@ -306,10 +296,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
    * @param intents Gateway intents in array. This is required if not given in ClientOptions.
    */
   async connect(
-    token?: string,
+    token: string | undefined = this.token,
     intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   ): Promise<Client> {
-    token ??= this.token
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token
     if (intents !== undefined && this.intents !== undefined) {

@@ -8,9 +8,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   } = {}
 
   async get(cacheName: string, key: string): Promise<undefined | any> {
-    const cache = this.data[cacheName]
-    if (cache === undefined) return
-    return cache.get(key)
+    return this.data[cacheName]?.get(key)
   }
 
   async set(
@@ -26,21 +24,15 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     }
     cache.set(key, value)
     if (expire !== undefined)
-      setTimeout(() => {
-        cache.delete(key)
-      }, expire)
+      setTimeout(cache.delete, expire, key)
   }
 
   async delete(cacheName: string, key: string): Promise<boolean> {
-    const cache = this.data[cacheName]
-    if (cache === undefined) return false
-    return cache.delete(key)
+    return this.data[cacheName]?.delete(key) ?? false
   }
 
   async array(cacheName: string): Promise<any[] | undefined> {
-    const cache = this.data[cacheName]
-    if (cache === undefined) return
-    return cache.array()
+    return this.data[cacheName]?.array()
   }
 
   async deleteCache(cacheName: string): Promise<boolean> {

@@ -50,9 +50,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     this.queue.shift()
     await delay(5000)
     this.queueProcessing = false
-    if (this.queue.length === 0) {
-      this.queueProcessing = false
-    } else {
+    if (this.queue.length > 0) {
       await this.processQueue()
     }
   }
@@ -75,10 +73,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
         this.debug(`Reset After: ${info.session_start_limit.reset_after}ms`)
         shardCount = info.shards as number
       } else
-        shardCount =
-          typeof this.client.shardCount === 'string'
-            ? 1
-            : this.client.shardCount ?? 1
+        shardCount = this.client.shardCount === 'auto' || this.client.shardCount === 0 ? 1 : this.client.shardCount
     }
     this.cachedShardCount = shardCount
     return this.cachedShardCount
@@ -120,10 +115,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
       await this.launch(i)
     }
     const endTime = Date.now()
-    const diff = endTime - startTime
-    this.debug(
-      `Launched ${shardCount} shards! Time taken: ${Math.floor(diff / 1000)}s`
-    )
+    this.debug(`Launched ${shardCount} shards! Time taken: ${Math.floor(endTime - startTime / 1000)}s`)
     return this
   }
 

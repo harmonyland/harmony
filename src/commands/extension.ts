@@ -23,11 +23,9 @@ export class ExtensionCommands {
   /** Gets an Extension Command */
   get(cmd: string): Command | undefined {
     const find = this.extension.client.commands.find(cmd)
-    // linter sucks
-    if (find === undefined) return undefined
-    else if (find.extension === undefined) return undefined
-    else if (find.extension.name !== this.extension.name) return undefined
-    else return find
+    return find?.extension?.name !== this.extension.name
+      ? undefined
+      : find
   }
 
   /** Adds an Extension Command */
@@ -42,13 +40,10 @@ export class ExtensionCommands {
     const find = this.extension.client.commands.find(
       typeof cmd === 'string' ? cmd : cmd.name
     )
-    if (find === undefined) return false
-    if (
-      find.extension !== undefined &&
-      find.extension.name !== this.extension.name
-    )
-      return false
-    else return this.extension.client.commands.delete(find)
+
+    return find?.extension?.name !== this.extension.name
+      ? false
+      : this.extension.client.commands.delete(find)
   }
 
   /** Deletes all Commands of an Extension */
@@ -110,9 +105,9 @@ export class Extension {
   }
 
   /** Method called upon loading of an Extension */
-  load(): any {}
+  load(): any { }
   /** Method called upon unloading of an Extension */
-  unload(): any {}
+  unload(): any { }
 }
 
 /** Extensions Manager for CommandClient */
@@ -138,8 +133,8 @@ export class ExtensionsManager {
   load(ext: Extension | typeof Extension): void {
     // eslint-disable-next-line new-cap
     if (!(ext instanceof Extension)) ext = new ext(this.client)
-    if (this.exists(ext.name))
-      throw new Error(`Extension with name '${ext.name}' already exists`)
+    if (this.exists(ext.name)) throw new Error(`Extension with name '${ext.name}' already exists`)
+
     this.list.set(ext.name, ext)
     ext.load()
   }

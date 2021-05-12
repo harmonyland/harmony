@@ -74,59 +74,33 @@ export class CommandClient extends Client implements CommandClientOptions {
   constructor(options: CommandClientOptions) {
     super(options)
     this.prefix = options.prefix
-    this.mentionPrefix =
-      options.mentionPrefix === undefined ? false : options.mentionPrefix
+    this.mentionPrefix = Boolean(options.mentionPrefix)
 
-    this.getGuildPrefix =
-      options.getGuildPrefix === undefined
-        ? (id: string) => this.prefix
-        : options.getGuildPrefix
-    this.getUserPrefix =
-      options.getUserPrefix === undefined
-        ? (id: string) => this.prefix
-        : options.getUserPrefix
+    this.getGuildPrefix = options.getGuildPrefix ?? ((id: string) => this.prefix)
+    this.getUserPrefix = options.getUserPrefix ?? ((id: string) => this.prefix)
 
-    this.getChannelPrefix =
-      options.getChannelPrefix === undefined
-        ? (id: string) => this.prefix
-        : options.getChannelPrefix
+    this.getChannelPrefix = options.getChannelPrefix ?? ((id: string) => this.prefix)
 
-    this.isUserBlacklisted =
-      options.isUserBlacklisted === undefined
-        ? (id: string) => false
-        : options.isUserBlacklisted
-    this.isGuildBlacklisted =
-      options.isGuildBlacklisted === undefined
-        ? (id: string) => false
-        : options.isGuildBlacklisted
-    this.isChannelBlacklisted =
-      options.isChannelBlacklisted === undefined
-        ? (id: string) => false
-        : options.isChannelBlacklisted
+    this.isUserBlacklisted = options.isUserBlacklisted ?? ((id: string) => false)
+    this.isGuildBlacklisted = options.isGuildBlacklisted ?? ((id: string) => false)
+    this.isChannelBlacklisted = options.isChannelBlacklisted ?? ((id: string) => false)
 
-    this.spacesAfterPrefix =
-      options.spacesAfterPrefix === undefined
-        ? false
-        : options.spacesAfterPrefix
+    this.spacesAfterPrefix = options.spacesAfterPrefix ?? false
 
-    this.owners = options.owners === undefined ? [] : options.owners
-    this.allowBots = options.allowBots === undefined ? false : options.allowBots
-    this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
-    this.caseSensitive =
-      options.caseSensitive === undefined ? false : options.caseSensitive
+    this.owners = options.owners ?? []
+    this.allowBots = options.allowBots ?? false
+    this.allowDMs = options.allowDMs ?? true
+    this.caseSensitive = options.caseSensitive ?? false
 
     const self = this as any
     if (self._decoratedCommands !== undefined) {
-      Object.values(self._decoratedCommands).forEach((entry: any) => {
+      (Object.values(self._decoratedCommands)).forEach((entry: any) => {
         this.commands.add(entry)
       })
       self._decoratedCommands = undefined
     }
 
-    this.on(
-      'messageCreate',
-      async (msg: Message) => await this.processMessage(msg)
-    )
+    this.on('messageCreate', async (msg: Message) => await this.processMessage(msg))
   }
 
   /** Processes a Message to Execute Command. */
@@ -189,10 +163,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     const command = this.commands.fetch(parsed)
 
     if (command === undefined) return
-    const category =
-      command.category !== undefined
-        ? this.categories.get(command.category)
-        : undefined
+    const category = this.categories.get(command.category ?? "")
 
     // Guild whitelist exists, and if does and Command used in a Guild, is this Guild allowed?
     // This is a bit confusing here, if these settings on a Command exist, and also do on Category, Command overrides them
@@ -252,78 +223,66 @@ export class CommandClient extends Client implements CommandClientOptions {
     // In these checks too, Command overrides Category if present
     // Checks if Command is only for Owners
     if (
-      (command.ownerOnly !== undefined || category === undefined
-        ? command.ownerOnly
-        : category.ownerOnly) === true &&
-      !this.owners.includes(msg.author.id)
+      (command.ownerOnly !== undefined || category === undefined ? command.ownerOnly : category.ownerOnly) === true
+      && !this.owners.includes(msg.author.id)
     )
       return this.emit('commandOwnerOnly', ctx)
 
     // Checks if Command is only for Guild
     if (
-      (command.guildOnly !== undefined || category === undefined
-        ? command.guildOnly
-        : category.guildOnly) === true &&
-      msg.guild === undefined
+      (command.guildOnly !== undefined || category === undefined ? command.guildOnly : category.guildOnly) === true
+      && msg.guild === undefined
     )
       return this.emit('commandGuildOnly', ctx)
 
     // Checks if Command is only for DMs
     if (
-      (command.dmOnly !== undefined || category === undefined
-        ? command.dmOnly
-        : category.dmOnly) === true &&
-      msg.guild !== undefined
+      (command.dmOnly !== undefined || category === undefined ? command.dmOnly : category.dmOnly) === true
+      && msg.guild !== undefined
     )
       return this.emit('commandDmOnly', ctx)
 
     if (
-      command.nsfw === true &&
-      (msg.guild === undefined ||
-        ((msg.channel as unknown) as GuildTextBasedChannel).nsfw !== true)
+      command.nsfw === true
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      && (msg.guild === undefined || ((msg.channel) as GuildTextBasedChannel).nsfw !== true)
     )
       return this.emit('commandNSFW', ctx)
 
-    const allPermissions =
-      command.permissions !== undefined
-        ? command.permissions
-        : category?.permissions
+    const allPermissions = command.permissions !== undefined ? command.permissions : category?.permissions
 
     if (
-      (command.botPermissions !== undefined ||
-        category?.botPermissions !== undefined ||
-        allPermissions !== undefined) &&
-      msg.guild !== undefined
+      (
+        command.botPermissions !== undefined
+        || category?.botPermissions !== undefined
+        || allPermissions !== undefined
+      ) && msg.guild !== undefined
     ) {
       // TODO: Check Overwrites too
       const me = await msg.guild.me()
       const missing: string[] = []
 
-      let permissions =
-        command.botPermissions === undefined
-          ? category?.permissions
-          : command.botPermissions
+      let permissions = command.botPermissions === undefined ? category?.permissions : command.botPermissions
 
       if (permissions !== undefined) {
         if (typeof permissions === 'string') permissions = [permissions]
 
-        if (allPermissions !== undefined)
-          permissions = [...new Set(...permissions, ...allPermissions)]
+        if (allPermissions !== undefined) permissions = [...new Set(...permissions, ...allPermissions)]
 
         for (const perm of permissions) {
           if (me.permissions.has(perm) === false) missing.push(perm)
         }
 
-        if (missing.length !== 0)
-          return this.emit('commandBotMissingPermissions', ctx, missing)
+        if (missing.length !== 0) return this.emit('commandBotMissingPermissions', ctx, missing)
       }
     }
 
     if (
-      (command.userPermissions !== undefined ||
-        category?.userPermissions !== undefined ||
-        allPermissions !== undefined) &&
-      msg.guild !== undefined
+      (
+        command.userPermissions !== undefined
+        || category?.userPermissions !== undefined
+        || allPermissions !== undefined
+      ) && msg.guild !== undefined
     ) {
       let permissions =
         command.userPermissions !== undefined
@@ -339,8 +298,7 @@ export class CommandClient extends Client implements CommandClientOptions {
         const missing: string[] = []
 
         for (const perm of permissions) {
-          const has = msg.member?.permissions.has(perm)
-          if (has !== true) missing.push(perm)
+          if (msg.member?.permissions.has(perm) !== true) missing.push(perm)
         }
 
         if (missing.length !== 0)
@@ -349,12 +307,9 @@ export class CommandClient extends Client implements CommandClientOptions {
     }
 
     if (command.args !== undefined) {
-      if (typeof command.args === 'boolean' && parsed.args.length === 0)
-        return this.emit('commandMissingArgs', ctx)
-      else if (
-        typeof command.args === 'number' &&
-        parsed.args.length < command.args
-      )
+      if (typeof command.args === 'boolean' && parsed.args.length === 0) return this.emit('commandMissingArgs', ctx)
+
+      if (typeof command.args === 'number' && parsed.args.length < command.args)
         this.emit('commandMissingArgs', ctx)
     }
 
