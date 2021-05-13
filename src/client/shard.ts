@@ -107,7 +107,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
       this.emit('shardDisconnect', id, code, reason)
     )
 
-    return gw.waitFor('guildsLoaded', () => true).then(() => this)
+    return gw.waitFor(GatewayEvents.Ready, () => true).then(() => this)
   }
 
   /** Launches all Shards */
@@ -116,11 +116,22 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     this.client.shardCount = shardCount
     this.debug(`Launching ${shardCount} shard${shardCount === 1 ? '' : 's'}...`)
     const startTime = Date.now()
+    const shardLoadPromises = []
     for (let i = 0; i < shardCount; i++) {
       await this.launch(i)
-      this.client.emit('guildsLoaded', i)
+      shardLoadPromises.push(
+        this.list.get(i.toString())!.waitFor('guildsLoaded', () => {
+          this.client.emit('guildsLoaded', i)
+          return true
+        })
+      )
     }
-    this.client.emit('ready', shardCount)
+    Promise.allSettled(shardLoadPromises).then(
+      () => {
+        this.client.emit('ready', shardCount)
+      },
+      () => {}
+    )
     const endTime = Date.now()
     const diff = endTime - startTime
     this.debug(
