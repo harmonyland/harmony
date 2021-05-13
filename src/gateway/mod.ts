@@ -71,6 +71,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
   _guildsToBeLoaded?: number
   _guildsLoaded?: number
+  _guildLoadTimeout?: number
+
+  get shardID(): number {
+    return this.shards?.[0] ?? 0
+  }
 
   constructor(client: Client, shards?: number[]) {
     super()
@@ -151,7 +156,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         }
         if (t !== null && t !== undefined) {
           this.emit(t as any, d)
-          this.client.emit('raw', t, d, this.shards?.[0] ?? 0)
+          this.client.emit('raw', t, d, this.shardID)
 
           const handler = gatewayHandlers[t]
 
@@ -159,9 +164,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
             try {
               handler(this, d)
             } catch (e) {
-              console.log(
-                `Internal error in Shard ${this.shards?.[0] ?? 0}: ${e}`
-              )
+              console.error(`Internal error in Shard ${this.shardID}: ${e}`)
             }
           }
         }
@@ -195,10 +198,27 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       this._guildsLoaded !== undefined &&
       this._guildsToBeLoaded !== undefined
     ) {
+      if (this._guildLoadTimeout !== undefined) {
+        clearTimeout(this._guildLoadTimeout)
+        this._guildLoadTimeout = undefined
+      }
       if (this._guildsLoaded >= this._guildsToBeLoaded) {
+        this.debug('Guilds arrived!')
         this.emit('guildsLoaded')
         this._guildsLoaded = undefined
         this._guildsToBeLoaded = undefined
+      } else {
+        this._guildLoadTimeout = setTimeout(() => {
+          this._guildLoadTimeout = undefined
+          this.debug(
+            `Guild Load Timout, ${
+              this._guildsToBeLoaded! - this._guildsLoaded!
+            } guilds unavailable`
+          )
+          this.emit('guildsLoaded')
+          this._guildsLoaded = undefined
+          this._guildsToBeLoaded = undefined
+        }, 15000)
       }
     }
   }
@@ -271,7 +291,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       })
     )
     error.name = 'ErrorEvent'
-    console.log(error)
+    console.error(error)
     this.emit('error', error, event)
     this.client.emit('gatewayError', event, this.shards)
   }
@@ -409,7 +429,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   debug(msg: string): void {
-    this.client.debug(`Shard ${this.shards?.[0] ?? 0}`, msg)
+    this.client.debug(`Shard ${this.shardID}`, msg)
   }
 
   async reconnect(forceNew?: boolean): Promise<void> {
