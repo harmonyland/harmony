@@ -75,7 +75,7 @@ export function init(options: DeploySlashInitOptions): void {
     try {
       // we have to wrap because there are some weird scope errors
       const d = await client.verifyFetchEvent({
-        respondWith: (...args: any[]) => evt.respondWith(...args),
+        respondWith: (...args: unknown[]) => evt.respondWith(...args),
         request: evt.request
       })
       if (d === false) {
@@ -99,7 +99,7 @@ export function init(options: DeploySlashInitOptions): void {
     }
   }
 
-  addEventListener('fetch', cb as any)
+  addEventListener('fetch', cb as unknown as EventListener)
 }
 
 /**
