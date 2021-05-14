@@ -7,6 +7,7 @@ const client = new discord.Client({
   shardCount: 5
 })
 
+// eslint-disable-next-line prefer-const
 let started: number
 
 client.on('shardReady', (shard) => {
