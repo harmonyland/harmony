@@ -4,7 +4,7 @@ import { TOKEN2 } from './config.ts'
 const client = new discord.Client({
   intents: ['GUILDS'],
   token: TOKEN2,
-  shardCount: 5
+  shardCount: 20
 })
 
 // eslint-disable-next-line prefer-const
