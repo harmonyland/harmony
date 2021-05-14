@@ -46,6 +46,7 @@ export type GatewayTypedEvents = {
   reconnecting: []
   guildsLoaded: []
   init: []
+  hello: []
 }
 
 /**
@@ -114,6 +115,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.heartbeat()
         }, this.heartbeatInterval)
 
+        this.emit('hello')
         if (!this.initialized) {
           this.initialized = true
           this.enqueueIdentify(this.client.forceNewSession)
@@ -298,7 +300,10 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
   private enqueueIdentify(forceNew?: boolean): void {
     this.client.shards.enqueueIdentify(
-      async () => await this.sendIdentify(forceNew)
+      async () =>
+        await this.sendIdentify(forceNew).then(() =>
+          this.waitFor(GatewayEvents.Ready)
+        )
     )
   }
 
