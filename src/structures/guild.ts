@@ -15,7 +15,11 @@ import {
   GuildModifyOptions,
   GuildGetPruneCountPayload,
   GuildPruneCountPayload,
-  GuildBeginPrunePayload
+  GuildBeginPrunePayload,
+  AuditLogPayload,
+  AuditLogEvents,
+  AuditLogEntryPayload,
+  AuditLogEntry
 } from '../types/guild.ts'
 import { Base, SnowflakeBase } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
@@ -49,6 +53,7 @@ import { DiscordAPIError } from '../rest/mod.ts'
 import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
 import type { GuildSlashCommandsManager } from '../interactions/slashCommand.ts'
+import { toCamelCase } from '../utils/snake_case.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -622,6 +627,52 @@ export class Guild extends SnowflakeBase {
 
     return result.pruned
   }
+
+  async fetchAuditLog(
+    options: {
+      user?: string | User
+      actionType?: AuditLogEvents
+      before?: string
+      limit?: number
+    } = {}
+  ): Promise<AuditLogPayload> {
+    if (
+      typeof options.limit === 'number' &&
+      (options.limit < 1 || options.limit > 100)
+    )
+      throw new Error('Invalid limit, must be between 1-100')
+
+    const data = await this.client.rest.endpoints.getGuildAuditLog(this.id, {
+      userId: typeof options.user === 'object' ? options.user.id : options.user,
+      actionType: options.actionType,
+      before: options.before,
+      limit: options.limit ?? 50
+    })
+
+    if ('audit_log_entries' in data) {
+      ;(data as any).entries = data.audit_log_entries.map(
+        transformAuditLogEntryPayload
+      )
+      delete (data as any).audit_log_entries
+    }
+
+    if ('users' in data) {
+      const users: User[] = []
+      for (const d of data.users) {
+        await this.client.users.set(d.id, d)
+        users.push((await this.client.users.get(d.id))!)
+      }
+      ;(data as any).users = users
+    }
+
+    if ('integrations' in data) {
+      ;(data as any).integrations = data.integrations.map(
+        (e) => new GuildIntegration(this.client, e)
+      )
+    }
+
+    return data
+  }
 }
 
 export class GuildIntegration extends Base {
@@ -664,4 +715,8 @@ export class GuildIntegration extends Base {
         ? new Application(client, data.application)
         : undefined
   }
+}
+
+function transformAuditLogEntryPayload(d: AuditLogEntryPayload): AuditLogEntry {
+  return toCamelCase(d)
 }

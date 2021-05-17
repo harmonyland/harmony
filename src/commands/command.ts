@@ -7,6 +7,7 @@ import type { CommandClient } from './client.ts'
 import type { Extension } from './extension.ts'
 import { join, walk } from '../../deps.ts'
 import type { Args } from '../utils/command.ts'
+
 export interface CommandContext {
   /** The Client object */
   client: CommandClient
@@ -69,6 +70,8 @@ export interface CommandOptions {
   dmOnly?: boolean
   /** Whether the Command can only be used by Bot Owners */
   ownerOnly?: boolean
+  /** Sub Commands */
+  subCommands?: CommandOptions[]
 }
 
 export class Command implements CommandOptions {
@@ -93,6 +96,7 @@ export class Command implements CommandOptions {
   guildOnly?: boolean
   dmOnly?: boolean
   ownerOnly?: boolean
+  subCommands?: Command[]
 
   /** Method called when the command errors */
   onError(ctx: CommandContext, error: Error): any {}
@@ -115,6 +119,16 @@ export class Command implements CommandOptions {
         ? ` [${this.category}]`
         : ''
     }`
+  }
+
+  constructor() {
+    const self = this as unknown as { _decoratedSubCommands: Command[] }
+    if (
+      self._decoratedSubCommands !== undefined &&
+      self._decoratedSubCommands.length > 0
+    ) {
+      self._decoratedSubCommands.forEach((cmd) => this.subCommands?.push(cmd))
+    }
   }
 }
 
@@ -287,6 +301,17 @@ export class CommandBuilder extends Command {
     this.afterExecute = fn
     return this
   }
+
+  setSubCommands(subCommands: Command[]): this {
+    this.subCommands = subCommands
+    return this
+  }
+
+  subCommand(command: Command): this {
+    if (this.subCommands === undefined) this.subCommands = []
+    this.subCommands.push(command)
+    return this
+  }
 }
 
 export class CommandsLoader {
@@ -456,11 +481,36 @@ export class CommandsManager {
       )
         return
 
-      parsed.args.shift()
+      const shifted = parsed.args.shift()
+      if (shifted !== undefined)
+        parsed.argString = parsed.argString.slice(shifted.length).trim()
     }
 
     if (cmd === undefined) return
     if (this.isDisabled(cmd) && bypassDisable !== true) return
+
+    if (parsed.args.length !== 0 && cmd.subCommands !== undefined) {
+      const resolveSubCommand = (command: Command = cmd!): Command => {
+        let name = parsed.args[0]
+        if (name === undefined) return command
+        if (this.client.caseSensitive !== true) name = name.toLowerCase()
+        const sub = command?.subCommands?.find(
+          (e) =>
+            (this.client.caseSensitive === true
+              ? e.name
+              : e.name.toLowerCase()) === name
+        )
+        if (sub !== undefined) {
+          const shifted = parsed.args.shift()
+          if (shifted !== undefined)
+            parsed.argString = parsed.argString.slice(shifted.length).trim()
+          return resolveSubCommand(sub)
+        } else return command
+      }
+
+      cmd = resolveSubCommand()
+    }
+
     return cmd
   }
 
@@ -492,8 +542,9 @@ export class CommandsManager {
 
   /** Add a Command */
   add(cmd: Command | typeof Command): boolean {
+    let CmdClass: typeof Command | undefined
     if (!(cmd instanceof Command)) {
-      const CmdClass = cmd
+      CmdClass = cmd
       cmd = new CmdClass()
       Object.assign(cmd, CmdClass.meta ?? {})
     }
@@ -501,6 +552,15 @@ export class CommandsManager {
       throw new Error(
         `Failed to add Command '${cmd.toString()}' with name/alias already exists.`
       )
+    if (cmd.name === '' && CmdClass !== undefined) {
+      let name = CmdClass.constructor.name
+      if (
+        name.toLowerCase().endsWith('command') &&
+        name.toLowerCase() !== 'command'
+      )
+        name = name.substr(0, name.length - 'command'.length).trim()
+      cmd.name = name
+    }
     if (cmd.name === '') throw new Error('Command has no name')
     this.list.set(
       `${cmd.name}-${
