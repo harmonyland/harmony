@@ -23,6 +23,8 @@ export interface CommandContext {
   command: Command
   /** Name of Command which was used */
   name: string
+  /** Array of Raw Arguments used with Command */
+  rawArgs: string[]
   /** Array of Arguments used with Command */
   args: Record<string, unknown> | null
   /** Complete Raw String of Arguments */
@@ -98,6 +100,8 @@ export class Command implements CommandOptions {
   ownerOnly?: boolean
   subCommands?: Command[]
 
+  declare readonly _decoratedSubCommands?: Command[]
+
   /** Method called when the command errors */
   onError(ctx: CommandContext, error: Error): any {}
 
@@ -122,13 +126,23 @@ export class Command implements CommandOptions {
   }
 
   constructor() {
-    const self = this as unknown as { _decoratedSubCommands: Command[] }
     if (
-      self._decoratedSubCommands !== undefined &&
-      self._decoratedSubCommands.length > 0
+      this._decoratedSubCommands !== undefined &&
+      this._decoratedSubCommands.length > 0
     ) {
-      self._decoratedSubCommands.forEach((cmd) => this.subCommands?.push(cmd))
+      if (this.subCommands === undefined) this.subCommands = []
+      const commands = this._decoratedSubCommands
+      delete (this as any)._decoratedSubCommands
+      Object.defineProperty(this, '_decoratedSubCommands', {
+        value: commands,
+        enumerable: false
+      })
     }
+  }
+
+  /** Get an Array of Sub Commands, including decorated ones */
+  getSubCommands(): Command[] {
+    return [...(this._decoratedSubCommands ?? []), ...(this.subCommands ?? [])]
   }
 }
 
@@ -466,7 +480,7 @@ export class CommandsManager {
     return filtered.first()
   }
 
-  /** Fetch a Command including disable checks and subPrefix implementation */
+  /** Fetch a Command including disable checks, sub commands and subPrefix implementation */
   fetch(parsed: ParsedCommand, bypassDisable?: boolean): Command | undefined {
     let cmd = this.find(parsed.name)
     if (cmd?.extension?.subPrefix !== undefined) cmd = undefined
@@ -494,12 +508,14 @@ export class CommandsManager {
         let name = parsed.args[0]
         if (name === undefined) return command
         if (this.client.caseSensitive !== true) name = name.toLowerCase()
-        const sub = command?.subCommands?.find(
-          (e) =>
-            (this.client.caseSensitive === true
-              ? e.name
-              : e.name.toLowerCase()) === name
-        )
+        const sub = command
+          ?.getSubCommands()
+          .find(
+            (e) =>
+              (this.client.caseSensitive === true
+                ? e.name
+                : e.name.toLowerCase()) === name
+          )
         if (sub !== undefined) {
           const shifted = parsed.args.shift()
           if (shifted !== undefined)
@@ -553,7 +569,7 @@ export class CommandsManager {
         `Failed to add Command '${cmd.toString()}' with name/alias already exists.`
       )
     if (cmd.name === '' && CmdClass !== undefined) {
-      let name = CmdClass.constructor.name
+      let name = CmdClass.name
       if (
         name.toLowerCase().endsWith('command') &&
         name.toLowerCase() !== 'command'

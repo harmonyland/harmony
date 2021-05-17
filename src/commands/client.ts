@@ -240,6 +240,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       client: this,
       name: parsed.name,
       prefix,
+      rawArgs: parsed.args,
       args: parseArgs(command.args, parsed.args),
       argString: parsed.argString,
       message: msg,
