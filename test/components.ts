@@ -31,19 +31,19 @@ const components = [
     components: [
       {
         type: MessageComponentType.Button,
-        style: ButtonStyle.Primary,
+        style: ButtonStyle.PRIMARY,
         label: 'Rock',
         customID: 'rps::Rock'
       },
       {
         type: MessageComponentType.Button,
-        style: ButtonStyle.Primary,
+        style: ButtonStyle.PRIMARY,
         label: 'Paper',
         customID: 'rps::Paper'
       },
       {
         type: MessageComponentType.Button,
-        style: ButtonStyle.Primary,
+        style: ButtonStyle.PRIMARY,
         label: 'Scissor',
         customID: 'rps::Scissor'
       }
@@ -68,31 +68,31 @@ client.commands.add(
               {
                 type: MessageComponentType.Button,
                 label: 'Primary',
-                style: ButtonStyle.Primary,
+                style: ButtonStyle.PRIMARY,
                 customID: '1'
               },
               {
                 type: MessageComponentType.Button,
                 label: 'Secondary',
-                style: ButtonStyle.Secondary,
+                style: ButtonStyle.SECONDARY,
                 customID: '2'
               },
               {
                 type: MessageComponentType.Button,
                 label: 'Destructive',
-                style: ButtonStyle.Destructive,
+                style: ButtonStyle.DESTRUCTIVE,
                 customID: '3'
               },
               {
                 type: MessageComponentType.Button,
                 label: 'Success',
-                style: ButtonStyle.Success,
+                style: ButtonStyle.SUCESS,
                 customID: '4'
               },
               {
                 type: MessageComponentType.Button,
                 label: 'Link',
-                style: ButtonStyle.Link,
+                style: ButtonStyle.LINK,
                 url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
               }
             ]

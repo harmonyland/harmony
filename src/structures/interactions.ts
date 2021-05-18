@@ -6,6 +6,7 @@ import {
   EmbedPayload,
   MessageOptions
 } from '../types/channel.ts'
+import { Constants } from '../types/constants.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
   InteractionPayload,
@@ -29,7 +30,7 @@ import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { GuildTextChannel } from './guildTextChannel.ts'
 import { Member } from './member.ts'
-import { Message } from './message.ts'
+import { Message, MessageAttachment } from './message.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
@@ -55,7 +56,7 @@ export interface InteractionMessageOptions {
 
 export interface InteractionResponse extends InteractionMessageOptions {
   /** Type of Interaction Response */
-  type?: InteractionResponseType
+  type?: InteractionResponseType | keyof typeof InteractionResponseType
 }
 
 /** Represents a Channel Object for an Option in Slash Command */
@@ -145,7 +146,12 @@ export class Interaction extends SnowflakeBase {
       else if (typeof data.flags === 'number') flags |= data.flags
     }
     const payload: InteractionResponsePayload = {
-      type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      type:
+        data.type === undefined
+          ? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+          : typeof data.type === 'string'
+          ? InteractionResponseType[data.type]
+          : data.type,
       data:
         data.type === undefined ||
         data.content !== undefined ||
@@ -229,13 +235,20 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Edit the original Interaction response */
-  async editResponse(data: {
-    content?: string
-    embeds?: Array<Embed | EmbedPayload>
-    flags?: number | number[]
-    allowedMentions?: AllowedMentionsPayload
-    components?: MessageComponentData[]
-  }): Promise<Interaction> {
+  async editResponse(
+    data:
+      | {
+          content?: string
+          embeds?: Array<Embed | EmbedPayload>
+          flags?: number | number[]
+          allowedMentions?: AllowedMentionsPayload
+          components?: MessageComponentData[]
+          files?: MessageAttachment[]
+          file?: MessageAttachment
+        }
+      | string
+  ): Promise<Interaction> {
+    if (typeof data === 'string') data = { content: data }
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
       content: data.content ?? '',
@@ -261,7 +274,9 @@ export class Interaction extends SnowflakeBase {
   }
 
   get url(): string {
-    return `https://discord.com/api/v8/webhooks/${this.applicationID}/${this.token}`
+    return `https://discord.com/api/v${
+      this.client?.rest?.version ?? Constants.DISCORD_API_VERSION
+    }/webhooks/${this.applicationID}/${this.token}`
   }
 
   /** Send a followup message */
@@ -323,8 +338,8 @@ export class Interaction extends SnowflakeBase {
     const res = new Message(
       this.client,
       resp,
-      (this as unknown) as TextChannel,
-      (this as unknown) as User
+      this as unknown as TextChannel,
+      this as unknown as User
     )
     await res.mentions.fromPayload(resp)
     return res
