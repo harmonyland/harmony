@@ -53,7 +53,7 @@ export function transformComponentPayload(
       delete e.max_values
     }
     if (e.components !== undefined) {
-      e.components = transformComponent(e.components)
+      e.components = transformComponentPayload(e.components)
     }
     return e
   })
