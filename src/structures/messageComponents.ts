@@ -29,14 +29,16 @@ export class MessageComponents extends Array<MessageComponentData> {
 
   button(options: {
     label?: string
-    style?: ButtonStyle
+    style?: ButtonStyle | keyof typeof ButtonStyle
     url?: string
     emoji?: MessageComponentEmoji
     disabled?: boolean
     customID?: string
   }): this {
-    if (options.style !== ButtonStyle.Link && options.customID === undefined)
+    if (options.style !== ButtonStyle.LINK && options.customID === undefined)
       throw new Error('customID is required for non-link buttons')
+    if (options.style === ButtonStyle.LINK && options.url === undefined)
+      throw new Error('url is required for link buttons')
 
     this.push({
       type: MessageComponentType.Button,

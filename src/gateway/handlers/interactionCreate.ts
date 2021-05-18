@@ -81,9 +81,9 @@ export const interactionCreate: GatewayEventHandler = async (
       (d.data as any)?.resolved.users ?? {}
     )) {
       await gateway.client.users.set(id, data as UserPayload)
-      resolved.users[id] = ((await gateway.client.users.get(
+      resolved.users[id] = (await gateway.client.users.get(
         id
-      )) as unknown) as User
+      )) as unknown as User
       if (resolved.members[id] !== undefined)
         resolved.users[id].member = resolved.members[id]
     }
@@ -101,9 +101,9 @@ export const interactionCreate: GatewayEventHandler = async (
         )
         permissions = new Permissions(mRoles.map((r) => r.permissions))
       }
-      ;(data as any).user = ((d.data as any).resolved.users?.[
+      ;(data as any).user = (d.data as any).resolved.users?.[
         id
-      ] as unknown) as UserPayload
+      ] as unknown as UserPayload
       resolved.members[id] = new Member(
         gateway.client,
         data as any,
@@ -118,12 +118,12 @@ export const interactionCreate: GatewayEventHandler = async (
     )) {
       if (guild !== undefined) {
         await guild.roles.set(id, data as RolePayload)
-        resolved.roles[id] = ((await guild.roles.get(id)) as unknown) as Role
+        resolved.roles[id] = (await guild.roles.get(id)) as unknown as Role
       } else {
         resolved.roles[id] = new Role(
           gateway.client,
           data as any,
-          (guild as unknown) as Guild
+          guild as unknown as Guild
         )
       }
     }
@@ -147,7 +147,9 @@ export const interactionCreate: GatewayEventHandler = async (
       gateway.client,
       d.message,
       channel,
-      new User(gateway.client, d.message.author)
+      (d.message.author !== undefined
+        ? new User(gateway.client, d.message.author)
+        : undefined)! // skip author for now since ephemeral messages don't have it
     )
   }
 

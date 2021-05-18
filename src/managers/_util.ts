@@ -1,6 +1,8 @@
 import {
+  ButtonStyle,
   MessageComponentData,
-  MessageComponentPayload
+  MessageComponentPayload,
+  MessageComponentType
 } from '../types/messageComponents.ts'
 
 export function transformComponent(
@@ -22,6 +24,12 @@ export function transformComponent(
     }
     if (e.components !== undefined) {
       e.components = transformComponent(e.components)
+    }
+    if (typeof e.type === 'string') {
+      e.type = MessageComponentType[e.type.toUpperCase()]
+    }
+    if (typeof e.style === 'string') {
+      e.style = ButtonStyle[e.style.toUpperCase()]
     }
     return e
   })

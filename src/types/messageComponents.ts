@@ -8,11 +8,18 @@ export enum MessageComponentType {
 }
 
 export enum ButtonStyle {
-  Primary = 1,
-  Secondary = 2,
-  Success = 3,
-  Destructive = 4,
-  Link = 5
+  PRIMARY = 1,
+  SECONDARY = 2,
+  SUCESS = 3,
+  DANGER = 4,
+  LINK = 5,
+
+  // Aliases
+  BLURPLE = 1,
+  GREY = 2,
+  GREEN = 3,
+  RED = 4,
+  DESTRUCTIVE = 4
 }
 
 export interface MessageComponentEmoji {
@@ -29,11 +36,15 @@ export interface MessageComponentOption {
   emoji?: MessageComponentEmoji
 }
 
-export interface MessageComponentBase<T> {
-  type: MessageComponentType
-  components?: T[]
+export interface MessageComponentBase<
+  T1 = MessageComponentType,
+  T2 = MessageComponentPayload,
+  T3 = ButtonStyle
+> {
+  type: T1
+  components?: T2[]
   label?: string
-  style?: ButtonStyle
+  style?: T3
   url?: string
   emoji?: MessageComponentEmoji
   disabled?: boolean
@@ -41,15 +52,18 @@ export interface MessageComponentBase<T> {
   placeholder?: string
 }
 
-export interface MessageComponentPayload
-  extends MessageComponentBase<MessageComponentPayload> {
+export interface MessageComponentPayload extends MessageComponentBase {
   custom_id?: string
   min_values?: number
   max_values?: number
 }
 
 export interface MessageComponentData
-  extends MessageComponentBase<MessageComponentData> {
+  extends MessageComponentBase<
+    keyof typeof MessageComponentType | MessageComponentType,
+    MessageComponentData,
+    ButtonStyle | keyof typeof ButtonStyle
+  > {
   customID?: string
   minValues?: number
   maxValues?: number

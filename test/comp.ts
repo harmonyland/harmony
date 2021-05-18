@@ -7,6 +7,7 @@ import {
   MessageComponents,
   SlashCommandPartial
 } from '../mod.ts'
+import { MessageComponentType } from '../src/types/messageComponents.ts'
 import { TOKEN } from './config.ts'
 
 const client = new Client()
@@ -15,37 +16,82 @@ console.log('Connecting...')
 await client.connect(TOKEN, ['GUILDS', 'GUILD_MESSAGES'])
 console.log('Ready!')
 
+client.on('messageCreate', (msg) => {
+  if (msg.content === '!select') {
+    msg.reply('Hello Components', {
+      components: [
+        {
+          type: MessageComponentType.ActionRow,
+          components: [
+            {
+              customID: 'test',
+              type: MessageComponentType.Select,
+              options: [
+                {
+                  label: 'Label 1',
+                  value: 'Value 1'
+                },
+                {
+                  label: 'Label 2',
+                  value: 'Value 2'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    })
+  }
+})
+
 client.slash.handle('button', (d) => {
   d.reply({
     content: 'Button Components',
-    components: new MessageComponents().row((e) =>
-      e
-        .button({
-          label: 'Primary',
+    flags: 64,
+    components: new MessageComponents()
+      .row((e) =>
+        e
+          .button({
+            label: 'Primary',
+            customID: 'test',
+            style: 'PRIMARY'
+          })
+          .button({
+            label: 'Secondary',
+            customID: 'test',
+            style: 'SECONDARY'
+          })
+          .button({
+            label: 'Success',
+            customID: 'test',
+            style: 'SUCESS'
+          })
+          .button({
+            label: 'Danger',
+            customID: 'test',
+            style: 'DANGER'
+          })
+          .button({
+            label: 'Link',
+            url: 'https://google.com',
+            style: 'LINK'
+          })
+      )
+      .row((e) =>
+        e.select({
           customID: 'test',
-          style: ButtonStyle.Primary
+          options: [
+            {
+              label: 'Label 1',
+              value: 'Value 1'
+            },
+            {
+              label: 'Label 2',
+              value: 'Value 2'
+            }
+          ]
         })
-        .button({
-          label: 'Secondary',
-          customID: 'test',
-          style: ButtonStyle.Secondary
-        })
-        .button({
-          label: 'Success',
-          customID: 'test',
-          style: ButtonStyle.Success
-        })
-        .button({
-          label: 'Destructive',
-          customID: 'test',
-          style: ButtonStyle.Destructive
-        })
-        .button({
-          label: 'Link',
-          url: 'https://google.com',
-          style: ButtonStyle.Link
-        })
-    )
+      )
   })
 })
 
