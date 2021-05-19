@@ -773,15 +773,19 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects that are members of the guild.
    */
-  async listGuildMembers(guildId: string): Promise<MemberPayload[]> {
-    return this.rest.get(`/guilds/${guildId}/members`)
+  async listGuildMembers(guildId: string, params: { limit?: number, after?: string }): Promise<MemberPayload[]> {
+    if (limit && (limit < 1 || limit > 1000)) return
+
+    return this.rest.get(`/guilds/${guildId}/members`, { query: params })
   }
 
   /**
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
    */
-  async searchGuildMembers(guildId: string, query: string, limit: number): Promise<MemberPayload[]> {
-    return this.rest.get(`/guilds/${guildId}/members/search?query=${query}&limit=${limit}`)
+  async searchGuildMembers(guildId: string, params: { query: string, limit?: number }): Promise<MemberPayload[]> {
+    if (limit && (limit < 1 || limit > 1000)) return
+
+    return this.rest.get(`/guilds/${guildId}/members/search`, { query: params })
   }
 
   /**
