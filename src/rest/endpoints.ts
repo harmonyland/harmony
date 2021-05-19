@@ -778,6 +778,13 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   }
 
   /**
+   * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
+   */
+  async searchGuildMembers(guildId: string, query: string, limit: number): Promise<MemberPayload[]> {
+    return this.rest.get(`/guilds/${guildID}/members/search?query=${query}&limit=${limit}`)
+  }
+
+  /**
    * Adds a user to the guild, provided you have a valid oauth2 access token for the user with the `guilds.join` scope. Returns a 201 Created with the [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) as the body, or 204 No Content if the user is already a member of the guild. Fires a [Guild Member Add](#DOCS_TOPICS_GATEWAY/guild-member-add) Gateway event.
    * For guilds with [Membership Screening](#DOCS_RESOURCES_GUILD/membership-screening-object) enabled, this endpoint will default to adding new members as `pending` in the [guild member object](#DOCS_RESOURCES_GUILD/guild-member-object). Members that are `pending` will have to complete membership screening before they become full members that can talk.
    */
