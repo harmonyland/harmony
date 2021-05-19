@@ -781,7 +781,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
    */
   async searchGuildMembers(guildId: string, query: string, limit: number): Promise<MemberPayload[]> {
-    return this.rest.get(`/guilds/${guildID}/members/search?query=${query}&limit=${limit}`)
+    return this.rest.get(`/guilds/${guildId}/members/search?query=${query}&limit=${limit}`)
   }
 
   /**
