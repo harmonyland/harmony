@@ -774,7 +774,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects that are members of the guild.
    */
   async listGuildMembers(guildId: string, params: { limit?: number, after?: string }): Promise<MemberPayload[]> {
-    if (params.limit && (params.limit < 1 || params.limit > 1000)) return
+    if (params.limit && (params.limit < 1 || params.limit > 1000)) throw new Error('Limit should be a number between 1 and 1000')
 
     return this.rest.get(`/guilds/${guildId}/members`, { query: params })
   }
@@ -783,7 +783,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
    */
   async searchGuildMembers(guildId: string, params: { query: string, limit?: number }): Promise<MemberPayload[]> {
-    if (params.limit && (params.limit < 1 || params.limit > 1000)) return
+    if (params.limit && (params.limit < 1 || params.limit > 1000)) throw new Error('Limit should be a number between 1 and 1000')
 
     return this.rest.get(`/guilds/${guildId}/members/search`, { query: params })
   }
