@@ -53,7 +53,7 @@ import { DiscordAPIError } from '../rest/mod.ts'
 import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
 import type { GuildSlashCommandsManager } from '../interactions/slashCommand.ts'
-import { toCamelCase } from '../utils/snake_case.ts'
+import { toCamelCase } from '../utils/snakeCase.ts'
 
 export class GuildBan extends Base {
   guild: Guild

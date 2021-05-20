@@ -8,8 +8,7 @@ export function camelCase(name: string): string {
 }
 
 export function toCamelCase(data: any): any {
-  if (typeof data === 'object' && Array.isArray(data))
-    return data.map(toCamelCase)
+  if (Array.isArray(data)) return data.map(toCamelCase)
   const result: any = {}
   Object.entries(data).forEach(([k, v]) => {
     result[camelCase(k)] =
