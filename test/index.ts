@@ -66,6 +66,10 @@ client.on('messageCreate', async (msg: Message) => {
     msg.reply('Check console for thicc json', {
       allowedMentions: { replied_user: false }
     })
+  } else if (msg.content === '!reactions') {
+    for (const e of ['😂', '😄', '🎉', '🙂', '🤦‍♂️', '👋', '👌', '🤞', '✋']) {
+      await msg.addReaction(e)
+    }
   } else if (msg.content === '!members') {
     const col = await msg.guild?.members.array()
     const data = col
