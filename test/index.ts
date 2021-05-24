@@ -61,6 +61,8 @@ client.on('messageCreate', async (msg: Message) => {
   }
   if (msg.content === '!ping') {
     msg.reply(`Pong! Ping: ${client.gateway.ping}ms`)
+  } else if (msg.content === '!fetchMessages') {
+    await msg.channel.fetchMessages().then((e) => console.log(e.size))
   } else if (msg.content === '!audit') {
     console.log(await msg.guild!.fetchAuditLog())
     msg.reply('Check console for thicc json', {
