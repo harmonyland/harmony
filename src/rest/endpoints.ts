@@ -13,6 +13,7 @@ import type { CreateEmojiPayload, EmojiPayload } from '../types/emoji.ts'
 import type { GuildBanAddPayload } from '../types/gateway.ts'
 import type { GatewayBotPayload } from '../types/gatewayBot.ts'
 import type {
+  AuditLogEvents,
   AuditLogPayload,
   GuildBanPayload,
   GuildBeginPrunePayload,
@@ -340,8 +341,27 @@ export class RESTEndpoints {
   /**
    * Returns an [audit log](#DOCS_RESOURCES_AUDIT_LOG/audit-log-object) object for the guild. Requires the 'VIEW_AUDIT_LOG' permission.
    */
-  async getGuildAuditLog(guildId: string): Promise<AuditLogPayload> {
-    return this.rest.get(`/guilds/${guildId}/audit-logs`)
+  async getGuildAuditLog(
+    guildId: string,
+    params: {
+      userId?: string
+      actionType?: AuditLogEvents
+      before?: string
+      limit?: number
+    }
+  ): Promise<AuditLogPayload> {
+    let q = ''
+    const entries = Object.entries(params)
+    if (entries.length > 0) {
+      q = '?'
+      for (const [k, v] of entries) {
+        if (v === undefined) continue
+        q += `${encodeURIComponent(k)}=${encodeURIComponent(
+          v?.toString() ?? ''
+        )}`
+      }
+    }
+    return this.rest.get(`/guilds/${guildId}/audit-logs${q}`)
   }
 
   /**

@@ -129,7 +129,7 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Respond to an Interaction */
-  async respond(data: InteractionResponse): Promise<Interaction> {
+  async respond(data: InteractionResponse): Promise<this> {
     if (this.responded) throw new Error('Already responded to Interaction')
     let flags = 0
     if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
@@ -167,7 +167,7 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Defer the Interaction i.e. let the user know bot is processing and will respond later. You only have 15 minutes to edit the response! */
-  async defer(ephemeral = false): Promise<Interaction> {
+  async defer(ephemeral = false): Promise<this> {
     await this.respond({
       type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE,
       flags: ephemeral ? 1 << 6 : 0
@@ -177,16 +177,16 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Reply with a Message to the Interaction */
-  async reply(content: string): Promise<Interaction>
-  async reply(options: InteractionMessageOptions): Promise<Interaction>
+  async reply(content: string): Promise<this>
+  async reply(options: InteractionMessageOptions): Promise<this>
   async reply(
     content: string,
     options: InteractionMessageOptions
-  ): Promise<Interaction>
+  ): Promise<this>
   async reply(
     content: string | InteractionMessageOptions,
     messageOptions?: InteractionMessageOptions
-  ): Promise<Interaction> {
+  ): Promise<this> {
     let options: InteractionMessageOptions | undefined =
       typeof content === 'object' ? content : messageOptions
     if (
@@ -221,7 +221,7 @@ export class Interaction extends SnowflakeBase {
     embeds?: Array<Embed | EmbedPayload>
     flags?: number | number[]
     allowedMentions?: AllowedMentionsPayload
-  }): Promise<Interaction> {
+  }): Promise<this> {
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
       content: data.content ?? '',
@@ -236,7 +236,7 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Delete the original Interaction Response */
-  async deleteResponse(): Promise<Interaction> {
+  async deleteResponse(): Promise<this> {
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.delete(url)
     return this
@@ -301,8 +301,8 @@ export class Interaction extends SnowflakeBase {
     const res = new Message(
       this.client,
       resp,
-      (this as unknown) as TextChannel,
-      (this as unknown) as User
+      this as unknown as TextChannel,
+      this as unknown as User
     )
     await res.mentions.fromPayload(resp)
     return res
@@ -322,7 +322,7 @@ export class Interaction extends SnowflakeBase {
         everyone?: boolean
       }
     }
-  ): Promise<Interaction> {
+  ): Promise<this> {
     await this.client.rest.patch(
       WEBHOOK_MESSAGE(
         this.applicationID,
@@ -335,7 +335,7 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Delete a follow-up Message */
-  async deleteMessage(msg: Message | string): Promise<Interaction> {
+  async deleteMessage(msg: Message | string): Promise<this> {
     await this.client.rest.delete(
       WEBHOOK_MESSAGE(
         this.applicationID,

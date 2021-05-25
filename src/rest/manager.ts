@@ -38,9 +38,11 @@ export const builder = (rest: RESTManager, acum = '/'): APIMap => {
     get: (_, p, __) => {
       if (p === 'toString') return () => acum
       if (METHODS.includes(String(p)) === true) {
-        const method = ((rest as unknown) as {
-          [name: string]: MethodFunction
-        })[String(p)]
+        const method = (
+          rest as unknown as {
+            [name: string]: MethodFunction
+          }
+        )[String(p)]
         return async (...args: any[]) =>
           await method.bind(rest)(
             `${Constants.DISCORD_API_URL}/v${rest.version}${acum.substring(
@@ -53,7 +55,7 @@ export const builder = (rest: RESTManager, acum = '/'): APIMap => {
       return builder(rest, acum + String(p) + '/')
     }
   })
-  return (proxy as unknown) as APIMap
+  return proxy as unknown as APIMap
 }
 
 export interface RESTOptions {
@@ -179,17 +181,35 @@ export class RESTManager {
     return timer
   }
 
+  resolveBucket(url: string): string {
+    if (url.startsWith(this.apiURL)) url = url.slice(this.apiURL.length)
+    if (url.startsWith('/')) url = url.slice(1)
+    const bucket: string[] = []
+    const route = url.split('/')
+    for (let i = 0; i < route.length; i++) {
+      if (route[i - 1] === 'reactions') break
+      if (
+        route[i].match(/\d{15,20}/) !== null &&
+        route[i - 1].match(/(channels|guilds)/) === null
+      )
+        bucket.push('minor_id')
+      else bucket.push(route[i])
+    }
+    return bucket.join('/')
+  }
+
   async request<T = any>(
     method: RequestMethods,
     path: string,
     options: RequestOptions = {}
   ): Promise<T> {
     const req = new APIRequest(this, method, path, options)
-    let handler = this.handlers.get(req.path)
+    const bucket = this.resolveBucket(path)
+    let handler = this.handlers.get(bucket)
 
     if (handler === undefined) {
       handler = new BucketHandler(this)
-      this.handlers.set(req.route, handler)
+      this.handlers.set(bucket, handler)
     }
 
     return handler.push(req)

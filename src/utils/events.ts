@@ -3,6 +3,10 @@ import { EventEmitter } from '../../deps.ts'
 export class HarmonyEventEmitter<
   T extends Record<string, unknown[]>
 > extends EventEmitter<T> {
+  constructor() {
+    super(0)
+  }
+
   /** Wait for an Event to fire with given condition. */
   async waitFor<K extends keyof T>(
     event: K,
