@@ -95,7 +95,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
         .listGuildMembers(this.guild.id, { limit, after })
         .then(async (data) => {
           const roles = await this.guild.roles.array()
-          let members: Member[] = []
+          const members: Member[] = []
 
           for (const member of data) {
             await this.set(member.user.id, member)
@@ -129,7 +129,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
         .searchGuildMembers(this.guild.id, { query, limit })
         .then(async (data) => {
           const roles = await this.guild.roles.array()
-          let members: Member[] = []
+          const members: Member[] = []
 
           for (const member of data) {
             await this.set(member.user.id, member)
