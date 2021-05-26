@@ -785,11 +785,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
    */
   async searchGuildMembers(guildId: string, params: { query: string, limit?: number }): Promise<MemberPayload[]> {
-    if (params === undefined) {
-      throw new Error('Params is not defined')
-    }
-
-    if (params.query === undefined) {
+    if (params?.query === undefined) {
       throw new Error('Query is a required parameter')
     }
 
