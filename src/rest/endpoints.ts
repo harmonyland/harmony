@@ -789,6 +789,10 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
       if (params.limit < 1 || params.limit > 1000) throw new Error('Limit should be a number between 1 and 1000')
     }
 
+    if (params.query === undefined) {
+      throw new Error('Query is a required parameter')
+    }
+
     return this.rest.get(`/guilds/${guildId}/members/search`, { query: params })
   }
 
