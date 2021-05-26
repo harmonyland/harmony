@@ -91,31 +91,30 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   /** Fetch a list of Guild Members */
   async fetchList(limit?: number, after?: string): Promise<Member[]> {
     return await new Promise((resolve, reject) => {
-      this.client.rest
+      this.client.rest.endpoints
         .listGuildMembers(this.guild.id, { limit, after })
         .then(async (data) => {
           const roles = await this.guild.roles.array()
           let members: Member[] = []
 
-          data.forEach(async (member) => {
-            await this.set(member.id, member as MemberPayload)
+          for (const member of data) {
+            await this.set(member.user.id, member)
             const user = new User(this.client, member.user)
             let permissions = new Permissions(Permissions.DEFAULT)
             if (roles !== undefined) {
               const mRoles = roles.filter(
-                (r) =>
-                  (data.roles.includes(r.id) as boolean) || r.id === this.guild.id
+                (r) => (member.roles.includes(r.id) as boolean) || r.id === this.guild.id
               )
               permissions = new Permissions(mRoles.map((r) => r.permissions))
               members.push(new Member(
                 this.client,
-                data as MemberPayload,
+                member, 
                 user,
                 this.guild,
                 permissions
               ))
             }
-          })
+          }
 
           resolve(members)
         })
@@ -126,31 +125,30 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   /** Search for Guild Members */
   async search(query: string, limit?: number): Promise<Member[]> {
     return await new Promise((resolve, reject) => {
-      this.client.rest
+      this.client.rest.endpoints
         .searchGuildMembers(this.guild.id, { query, limit })
         .then(async (data) => {
           const roles = await this.guild.roles.array()
           let members: Member[] = []
 
-          data.forEach(async (member) => {
-            await this.set(member.id, member as MemberPayload)
+          for (const member of data) {
+            await this.set(member.user.id, member)
             const user = new User(this.client, member.user)
             let permissions = new Permissions(Permissions.DEFAULT)
             if (roles !== undefined) {
               const mRoles = roles.filter(
-                (r) =>
-                  (data.roles.includes(r.id) as boolean) || r.id === this.guild.id
+                (r) => (member.roles.includes(r.id) as boolean) || r.id === this.guild.id
               )
               permissions = new Permissions(mRoles.map((r) => r.permissions))
               members.push(new Member(
                 this.client,
-                data as MemberPayload,
+                member, 
                 user,
                 this.guild,
                 permissions
               ))
             }
-          })
+          }
 
           resolve(members)
         })
