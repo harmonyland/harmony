@@ -97,7 +97,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       data = new Uint8Array(data)
     }
     if (data instanceof Uint8Array) {
-      data = unzlib(data, 0, (e: Uint8Array) => decodeText(e))
+      data = unzlib(data)
+      data = decodeText(data)
     }
 
     const { op, d, s, t }: GatewayResponse = JSON.parse(data)
