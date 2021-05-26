@@ -368,6 +368,7 @@ export class SlashCommandPermissionsManager {
     )
     return data.map(transformSlashCommandPermissionsPayload)
   }
+  
   async *[Symbol.asyncIterator](): AsyncIterableIterator<GuildSlashCommandPermissions> {
     const arr = await this.all()
     const { readable, writable } = new TransformStream()
