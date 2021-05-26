@@ -774,7 +774,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects that are members of the guild.
    */
   async listGuildMembers(guildId: string, params: { limit?: number, after?: string }): Promise<MemberPayload[]> {
-    if (params && (params.limit !== undefined)) {
+    if (params?.limit !== undefined) {
       if (params.limit < 1 || params.limit > 1000) throw new Error('Limit should be a number between 1 and 1000')
     }
 
