@@ -119,4 +119,7 @@ test/config.ts
 .idea/
 
 src/test/music.mp3
+
+.vscode/
+test/dd.ts
 /test/dd.ts

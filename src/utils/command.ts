@@ -1,48 +1,65 @@
 interface MentionToRegex {
   [key: string]: RegExp
-  mentionUser: RegExp
-  mentionRole: RegExp
-  mentionChannel: RegExp
+  user: RegExp
+  role: RegExp
+  channel: RegExp
 }
 
 const mentionToRegex: MentionToRegex = {
-  mentionUser: /<@!?(\d{17,19})>/,
-  mentionRole: /<@&(\d{17,19})>/,
-  mentionChannel: /<#(\d{17,19})>/
+  user: /<@!?(\d{17,19})>|(\d{17,19})/,
+  role: /<@&(\d{17,19})>|(\d{17,19})/,
+  channel: /<#(\d{17,19})>|(\d{17,19})/
 }
 
-export type CommandArgumentMatchTypes =
-  | 'flag'
-  | 'mentionUser'
-  | 'mentionRole'
-  | 'mentionChannel'
-  | 'content'
-  | 'rest'
-
-export interface Args<T = unknown> {
+interface ArgumentBase {
   name: string
-  match: CommandArgumentMatchTypes
-  defaultValue?: T
-  flag?: string
 }
+
+export interface FlagArgument extends ArgumentBase {
+  match: 'flag'
+  flag: string
+  defaultValue?: boolean
+}
+
+export interface MentionArgument extends ArgumentBase {
+  match: 'user' | 'role' | 'channel'
+  defaultValue?: string
+}
+
+export interface ContentArgument extends ArgumentBase {
+  match: 'content'
+  defaultValue?: string | number
+  contentFilter?: (value: string, index: number, array: string[]) => boolean
+}
+
+export interface RestArgument extends ArgumentBase {
+  match: 'rest'
+  defaultValue?: string
+}
+
+export type Args =
+  | FlagArgument
+  | MentionArgument
+  | ContentArgument
+  | RestArgument
 
 export function parseArgs(
   commandArgs: Args[] | undefined,
   messageArgs: string[]
-): Record<string, unknown> | null {
+): Record<string, string | number | boolean> | null {
   if (commandArgs === undefined) return null
 
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
-  const args: Record<string, unknown> = {}
+  const args: Record<string, string | number | boolean> = {}
 
   for (const entry of commandArgs) {
     switch (entry.match) {
       case 'flag':
         parseFlags(args, entry, messageArgsNullableCopy)
         break
-      case 'mentionUser':
-      case 'mentionRole':
-      case 'mentionChannel':
+      case 'user':
+      case 'role':
+      case 'channel':
         parseMention(args, entry, messageArgsNullableCopy)
         break
       case 'content':
@@ -58,7 +75,7 @@ export function parseArgs(
 
 function parseFlags(
   args: Record<string, unknown>,
-  entry: Args,
+  entry: FlagArgument,
   argsNullable: Array<string | null>
 ): void {
   for (let i = 0; i < argsNullable.length; i++) {
@@ -72,7 +89,7 @@ function parseFlags(
 
 function parseMention(
   args: Record<string, unknown>,
-  entry: Args,
+  entry: MentionArgument,
   argsNullable: Array<string | null>
 ): void {
   const regex = mentionToRegex[entry.match]
@@ -89,16 +106,20 @@ function parseMention(
 
 function parseContent(
   args: Record<string, unknown>,
-  entry: Args,
-  argsNonNullable: Array<string | null>
+  entry: ContentArgument,
+  argsNonNullable: string[]
 ): void {
   args[entry.name] =
-    argsNonNullable.length > 0 ? argsNonNullable : entry.defaultValue
+    argsNonNullable.length > 0
+      ? entry.contentFilter !== undefined
+        ? argsNonNullable.filter(entry.contentFilter)
+        : argsNonNullable
+      : entry.defaultValue
 }
 
 function parseRest(
   args: Record<string, unknown>,
-  entry: Args,
+  entry: RestArgument,
   argsNullable: Array<string | null>
 ): void {
   const restValues = argsNullable.filter((x) => typeof x === 'string')

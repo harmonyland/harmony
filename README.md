@@ -15,7 +15,7 @@
 - Built-in Commands framework.
 - Customizable Caching, with Redis support.
 - Use `@decorators` to easily make things!
-- Made with ❤️ TypeScript.
+- Made with ❤️ in TypeScript.
 
 ## Table of Contents
 
@@ -154,9 +154,11 @@ Documentation is available for `main` (branch) and `stable` (release).
 - [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
 - [Guide](https://harmony.mod.land)
 
-## Found a bug or want support? Join our discord server!
+## Discord
 
-[![Widget for the Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmony)
+Found a bug or want support? Join our Discord Server!
+
+[![Harmony Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmony)
 
 ## Maintainer
 

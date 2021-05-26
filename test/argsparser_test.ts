@@ -1,8 +1,5 @@
 import { Args, parseArgs } from '../src/utils/command.ts'
-import {
-  assertEquals,
-  assertNotEquals
-} from 'https://deno.land/std@0.95.0/testing/asserts.ts'
+import { assertEquals, assertNotEquals } from './deps.ts'
 
 const commandArgs: Args[] = [
   {
@@ -17,7 +14,7 @@ const commandArgs: Args[] = [
   },
   {
     name: 'user',
-    match: 'mentionUser'
+    match: 'user'
   },
   {
     name: 'reason',
@@ -108,15 +105,15 @@ Deno.test({
 const commandArgs2: Args[] = [
   {
     name: 'user',
-    match: 'mentionUser'
+    match: 'user'
   },
   {
     name: 'channel',
-    match: 'mentionChannel'
+    match: 'channel'
   },
   {
     name: 'role',
-    match: 'mentionRole'
+    match: 'role'
   },
   {
     name: 'reason',
@@ -157,7 +154,7 @@ const expectedResult5 = {
 const commandArgs5: Args[] = [
   {
     name: 'user',
-    match: 'mentionUser'
+    match: 'user'
   },
   {
     name: 'reason',
@@ -170,5 +167,54 @@ Deno.test({
   fn: () => {
     const result = parseArgs(commandArgs5, messageArgs5)
     assertEquals(result, expectedResult5)
+  }
+})
+
+// only ID testing
+const messageArgs7: string[] = [
+  '708544768342229012',
+  'bye',
+  '783319033730564098',
+  '836715188690092032'
+]
+const expectedResult7 = {
+  channel: '783319033730564098',
+  role: '836715188690092032',
+  user: '708544768342229012',
+  reason: 'bye'
+}
+Deno.test({
+  name: 'parse command arguments with ID\'s (assertEquals)',
+  fn: () => {
+    const result = parseArgs(commandArgs2, messageArgs7)
+    assertEquals(result, expectedResult7)
+  },
+  sanitizeOps: true,
+  sanitizeResources: true,
+  sanitizeExit: true
+
+const messageArgs6: string[] = ['get', '<@!708544768342229012>']
+const expectedResult6 = {
+  user: '708544768342229012',
+  subcommand: ['get']
+}
+const commandArgs6: Args[] = [
+  {
+    name: 'user',
+    match: 'mentionUser'
+  },
+  {
+    name: 'subcommand',
+    match: 'content',
+    defaultValue: 'random',
+    contentFilter: (x: string) => x === 'get'
+  }
+]
+
+Deno.test({
+  name: 'parse command arguments, match content filter',
+  fn: () => {
+    const result = parseArgs(commandArgs6, messageArgs6)
+    assertEquals(result, expectedResult6)
   }
 })

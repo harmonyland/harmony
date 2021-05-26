@@ -93,12 +93,15 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
   }
 
   /** Launches a new Shard */
-  async launch(id: number): Promise<ShardManager> {
+  async launch(
+    id: number,
+    waitFor: GatewayEvents.Ready | 'hello' = GatewayEvents.Ready
+  ): Promise<ShardManager> {
     if (this.list.has(id.toString()) === true)
       throw new Error(`Shard ${id} already launched`)
 
     this.debug(`Launching Shard: ${id}`)
-    const shardCount = await this.getShardCount()
+    const shardCount = this.cachedShardCount ?? (await this.getShardCount())
 
     const gw = new Gateway(this.client, [Number(id), shardCount])
     this.list.set(id.toString(), gw)
@@ -114,8 +117,9 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     gw.on('close', (code: number, reason: string) =>
       this.emit('shardDisconnect', id, code, reason)
     )
+    gw.on('guildsLoaded', () => this.client.emit('guildsLoaded', id))
 
-    return gw.waitFor(GatewayEvents.Ready, () => true).then(() => this)
+    return gw.waitFor(waitFor, () => true).then(() => this)
   }
 
   /** Launches all Shards */
@@ -124,9 +128,22 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     this.client.shardCount = shardCount
     this.debug(`Launching ${shardCount} shard${shardCount === 1 ? '' : 's'}...`)
     const startTime = Date.now()
+    const shardLoadPromises = []
     for (let i = 0; i < shardCount; i++) {
-      await this.launch(i)
+      shardLoadPromises.push(
+        this.client.waitFor('guildsLoaded', (n) => n === i)
+      )
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      await this.launch(i, 'hello')
     }
+    await Promise.allSettled(shardLoadPromises).then(
+      () => {
+        this.client.emit('ready', shardCount)
+      },
+      (e) => {
+        console.error('Failed to launch some shard', e)
+      }
+    )
     const endTime = Date.now()
     const diff = endTime - startTime
     this.debug(

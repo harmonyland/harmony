@@ -309,6 +309,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     token?: string,
     intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   ): Promise<Client> {
+    const readyPromise = this.waitFor('ready', () => true);
+    await this.guilds.flush()
     token ??= this.token
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token
@@ -331,7 +333,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
         this.shards.cachedShardCount = this.shardCount
       await this.shards.launch(this.shard)
     } else await this.shards.connect()
-    return this.waitFor('ready', () => true).then(() => this)
+    await readyPromise
+    return this
   }
 
   /** Destroy the Gateway connection */
@@ -429,7 +432,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       recipient_id: id
     })
     await this.channels.set(dmPayload.id, dmPayload)
-    return (this.channels.get<DMChannel>(dmPayload.id) as unknown) as DMChannel
+    return this.channels.get<DMChannel>(dmPayload.id) as unknown as DMChannel
   }
 
   /** Returns a template object for the given code. */
@@ -448,9 +451,11 @@ export function event(name?: keyof ClientEvents) {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
-    const listener = ((client as unknown) as {
-      [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
-    })[(prop as unknown) as keyof ClientEvents]
+    const listener = (
+      client as unknown as {
+        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
+      }
+    )[prop as unknown as keyof ClientEvents]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
 

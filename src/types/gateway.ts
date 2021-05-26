@@ -3,7 +3,7 @@
 import type { Guild } from '../structures/guild.ts'
 import type { Member } from '../structures/member.ts'
 import type { EmojiPayload } from './emoji.ts'
-import type { MemberPayload } from './guild.ts'
+import type { GuildPayload, MemberPayload } from './guild.ts'
 import type {
   ActivityGame,
   ActivityPayload,
@@ -169,7 +169,7 @@ export interface Ready {
   v: number
   user: UserPayload
   privateChannels: []
-  guilds: []
+  guilds: GuildPayload[]
   session_id: string
   shard?: number[]
   application: { id: string; flags: number }
