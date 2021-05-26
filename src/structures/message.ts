@@ -22,6 +22,8 @@ import { MessageSticker } from './messageSticker.ts'
 import type { Emoji } from './emoji.ts'
 import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'
+import { MessageComponentData } from '../types/messageComponents.ts'
+import { transformComponentPayload } from '../managers/_util.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 
@@ -65,9 +67,11 @@ export class Message extends SnowflakeBase {
   flags?: number
   stickers?: MessageSticker[]
   interaction?: MessageInteraction
+  createdTimestamp: Date
+  components: MessageComponentData[] = []
 
   get createdAt(): Date {
-    return new Date(this.timestamp)
+    return this.createdTimestamp // new Date(this.timestamp)
   }
 
   constructor(
@@ -82,6 +86,7 @@ export class Message extends SnowflakeBase {
     this.guildID = data.guild_id
     this.author = author
     this.content = data.content
+    this.createdTimestamp = new Date(data.timestamp)
     this.editedTimestamp =
       data.edited_timestamp === undefined
         ? undefined
@@ -89,7 +94,7 @@ export class Message extends SnowflakeBase {
     this.tts = data.tts
     this.mentions = new MessageMentions(this.client, this)
     this.attachments = data.attachments
-    this.embeds = data.embeds.map((v) => new Embed(v))
+    this.embeds = (data.embeds ?? []).map((v) => new Embed(v))
     this.reactions = new MessageReactionsManager(this.client, this)
     this.nonce = data.nonce
     this.pinned = data.pinned
@@ -98,7 +103,7 @@ export class Message extends SnowflakeBase {
     this.activity = data.activity
     this.application = data.application
     this.messageReference = data.message_reference
-    this.flags = data.flags
+    this.flags = data.flags ?? 0
     this.channel = channel
     this.stickers =
       data.stickers !== undefined
@@ -110,6 +115,10 @@ export class Message extends SnowflakeBase {
       data.interaction === undefined
         ? undefined
         : new MessageInteraction(this.client, data.interaction)
+    this.components =
+      data.components === undefined
+        ? []
+        : transformComponentPayload(data.components)
   }
 
   readFromData(data: MessagePayload): void {
@@ -137,6 +146,14 @@ export class Message extends SnowflakeBase {
             (payload) => new MessageSticker(this.client, payload)
           )
         : this.stickers
+    this.interaction =
+      data.interaction === undefined
+        ? this.interaction
+        : new MessageInteraction(this.client, data.interaction)
+    this.components =
+      data.components === undefined
+        ? []
+        : transformComponentPayload(data.components)
   }
 
   async updateRefs(): Promise<void> {
@@ -150,10 +167,8 @@ export class Message extends SnowflakeBase {
       const newMember = await this.guild?.members.get(this.member?.id)
       if (newMember !== undefined) this.member = newMember
     }
-    if (
-      ((this.channel as unknown) as GuildTextBasedChannel).guild !== undefined
-    )
-      this.guild = ((this.channel as unknown) as GuildTextBasedChannel).guild
+    if ((this.channel as unknown as GuildTextBasedChannel).guild !== undefined)
+      this.guild = (this.channel as unknown as GuildTextBasedChannel).guild
     if (this.guild !== undefined && this.guildID === undefined)
       this.guildID = this.guild.id
   }
