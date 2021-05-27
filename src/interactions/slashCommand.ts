@@ -279,7 +279,7 @@ export function transformSlashCommandPermission(
         data.type.toUpperCase() as keyof typeof SlashCommandPermissionType
       ]
   }
-  return (data as unknown) as SlashCommandPermissionPayload
+  return data as unknown as SlashCommandPermissionPayload
 }
 
 export function transformSlashCommandPermissions(
@@ -368,7 +368,7 @@ export class SlashCommandPermissionsManager {
     )
     return data.map(transformSlashCommandPermissionsPayload)
   }
-  
+
   async *[Symbol.asyncIterator](): AsyncIterableIterator<GuildSlashCommandPermissions> {
     const arr = await this.all()
     const { readable, writable } = new TransformStream()

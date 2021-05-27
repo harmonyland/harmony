@@ -4,6 +4,7 @@ import {
   MessageComponentPayload,
   MessageComponentType
 } from '../types/messageComponents.ts'
+import { toCamelCase } from '../utils/snakeCase.ts'
 
 export function transformComponent(
   d: MessageComponentData[]
@@ -38,23 +39,5 @@ export function transformComponent(
 export function transformComponentPayload(
   d: MessageComponentPayload[]
 ): MessageComponentData[] {
-  return d.map((e: any) => {
-    e = { ...e }
-    if (e.custom_id !== undefined) {
-      e.customID = e.custom_id
-      delete e.custom_id
-    }
-    if (e.min_values !== undefined) {
-      e.minValues = e.min_values
-      delete e.min_values
-    }
-    if (e.max_values !== undefined) {
-      e.maxValues = e.max_values
-      delete e.max_values
-    }
-    if (e.components !== undefined) {
-      e.components = transformComponentPayload(e.components)
-    }
-    return e
-  })
+  return d.map(toCamelCase)
 }
