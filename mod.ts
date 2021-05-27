@@ -28,7 +28,7 @@ export {
   ExtensionsManager
 } from './src/commands/extension.ts'
 export { SlashModule } from './src/interactions/slashModule.ts'
-export { CommandClient, command } from './src/commands/client.ts'
+export { CommandClient, command, subcommand } from './src/commands/client.ts'
 export type { CommandClientOptions } from './src/commands/client.ts'
 export { BaseManager } from './src/managers/base.ts'
 export { BaseChildManager } from './src/managers/baseChild.ts'
@@ -42,6 +42,8 @@ export * from './src/structures/slash.ts'
 export * from './src/structures/interactions.ts'
 export * from './src/types/slashCommands.ts'
 export * from './src/types/interactions.ts'
+export * from './src/types/messageComponents.ts'
+export * from './src/structures/messageComponents.ts'
 export { GuildEmojisManager } from './src/managers/guildEmojis.ts'
 export { MembersManager } from './src/managers/members.ts'
 export { MessageReactionsManager } from './src/managers/messageReactions.ts'
@@ -113,7 +115,8 @@ export {
 } from './src/types/channel.ts'
 export type {
   OverwriteAsOptions,
-  OverwritePayload
+  OverwritePayload,
+  EmbedPayload
 } from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
@@ -194,4 +197,4 @@ export {
   default as getChannelByType
 } from './src/utils/channel.ts'
 export * from './src/utils/interactions.ts'
-export * from "./src/utils/command.ts"
+export * from './src/utils/command.ts'

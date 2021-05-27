@@ -299,6 +299,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     token: string | undefined = this.token,
     intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   ): Promise<Client> {
+    const readyPromise = this.waitFor('ready', () => true);
     await this.guilds.flush()
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token
@@ -321,7 +322,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
         this.shards.cachedShardCount = this.shardCount
       await this.shards.launch(this.shard)
     } else await this.shards.connect()
-    return this.waitFor('ready', () => true).then(() => this)
+    await readyPromise
+    return this
   }
 
   /** Destroy the Gateway connection */

@@ -24,8 +24,19 @@ export class APIRequest {
     public options: RequestOptions
   ) {
     this.route = options.route ?? path
+    if (
+      (method === 'get' || method === 'delete' || method === 'head') &&
+      typeof options.data === 'object'
+    ) {
+      if (options.query !== undefined) {
+        Object.assign(options.query, options.data)
+      } else options.query = options.data
+      options.data = undefined
+    }
     if (typeof options.query === 'object') {
-      const entries = Object.entries(options.query)
+      const entries = Object.entries(options.query).filter(
+        (e) => e[1] !== undefined && e[1] !== null
+      )
       if (entries.length > 0) {
         this.path += '?'
         entries.forEach((entry, i) => {
@@ -81,18 +92,25 @@ export class APIRequest {
 
   async execute(): Promise<Response> {
     let contentType: string | undefined
-    let body: any = this.options.data
-    if (this.options.files !== undefined && this.options.files.length > 0) {
-      contentType = undefined
-      const form = new FormData()
-      this.options.files.forEach((file, i) =>
-        form.append(`file${i === 0 ? '' : i}`, file.blob, file.name)
-      )
-      form.append('payload_json', JSON.stringify(body))
-      body = form
-    } else if (body !== undefined) {
-      contentType = 'application/json'
-      body = JSON.stringify(body)
+    let body: any
+    if (
+      this.method === 'post' ||
+      this.method === 'put' ||
+      this.method === 'patch'
+    ) {
+      body = this.options.data
+      if (this.options.files !== undefined && this.options.files.length > 0) {
+        contentType = undefined
+        const form = new FormData()
+        this.options.files.forEach((file, i) =>
+          form.append(`file${i === 0 ? '' : i}`, file.blob, file.name)
+        )
+        form.append('payload_json', JSON.stringify(body))
+        body = form
+      } else if (body !== undefined) {
+        contentType = 'application/json'
+        body = JSON.stringify(body)
+      }
     }
 
     const controller = new AbortController()
@@ -122,6 +140,11 @@ export class APIRequest {
       signal: controller.signal,
       headers: Object.assign(headers, this.rest.headers, this.options.headers),
       body
+    }
+
+    if (this.options.reason !== undefined) {
+      ;(init.headers as { [name: string]: string })['X-Audit-Log-Reason'] =
+        encodeURIComponent(this.options.reason)
     }
 
     return fetch(url, init).finally(() => {

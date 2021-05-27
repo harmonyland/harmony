@@ -17,7 +17,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
     channel = (await gateway.client.channels.fetch(
       d.channel_id
     )) as GuildTextBasedChannel
-
+  if (channel === undefined) return
   const messages = new Collection<string, Message>()
   const uncached = new Set<string>()
   for (const id of d.ids) {

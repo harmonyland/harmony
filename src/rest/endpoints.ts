@@ -13,6 +13,7 @@ import type { CreateEmojiPayload, EmojiPayload } from '../types/emoji.ts'
 import type { GuildBanAddPayload } from '../types/gateway.ts'
 import type { GatewayBotPayload } from '../types/gatewayBot.ts'
 import type {
+  AuditLogEvents,
   AuditLogPayload,
   GuildBanPayload,
   GuildBeginPrunePayload,
@@ -340,8 +341,27 @@ export class RESTEndpoints {
   /**
    * Returns an [audit log](#DOCS_RESOURCES_AUDIT_LOG/audit-log-object) object for the guild. Requires the 'VIEW_AUDIT_LOG' permission.
    */
-  async getGuildAuditLog(guildId: string): Promise<AuditLogPayload> {
-    return this.rest.get(`/guilds/${guildId}/audit-logs`)
+  async getGuildAuditLog(
+    guildId: string,
+    params: {
+      userId?: string
+      actionType?: AuditLogEvents
+      before?: string
+      limit?: number
+    }
+  ): Promise<AuditLogPayload> {
+    let q = ''
+    const entries = Object.entries(params)
+    if (entries.length > 0) {
+      q = '?'
+      for (const [k, v] of entries) {
+        if (v === undefined) continue
+        q += `${encodeURIComponent(k)}=${encodeURIComponent(
+          v?.toString() ?? ''
+        )}`
+      }
+    }
+    return this.rest.get(`/guilds/${guildId}/audit-logs${q}`)
   }
 
   /**
@@ -753,8 +773,27 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects that are members of the guild.
    */
-  async listGuildMembers(guildId: string): Promise<MemberPayload[]> {
-    return this.rest.get(`/guilds/${guildId}/members`)
+  async listGuildMembers(guildId: string, params: { limit?: number, after?: string }): Promise<MemberPayload[]> {
+    if (params?.limit !== undefined) {
+      if (params.limit < 1 || params.limit > 1000) throw new Error('Limit should be a number between 1 and 1000')
+    }
+
+    return this.rest.get(`/guilds/${guildId}/members`, params)
+  }
+
+  /**
+   * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
+   */
+  async searchGuildMembers(guildId: string, params: { query: string, limit?: number }): Promise<MemberPayload[]> {
+    if (params?.query === undefined) {
+      throw new Error('Query is a required parameter')
+    }
+
+    if (params.limit !== undefined) {
+      if (params.limit < 1 || params.limit > 1000) throw new Error('Limit should be a number between 1 and 1000')
+    }
+    
+    return this.rest.get(`/guilds/${guildId}/members/search`, params)
   }
 
   /**
