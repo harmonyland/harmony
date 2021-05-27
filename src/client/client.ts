@@ -285,7 +285,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Fetch an Invite */
   async fetchInvite(id: string): Promise<Invite> {
     return await new Promise(async (resolve, reject) => {
-      let inviteData = await this.rest.get(INVITE(id)).catch(reject)
+      const inviteData = await this.rest.get(INVITE(id)).catch(reject)
       resolve(new Invite(this, inviteData))
     })
   }
