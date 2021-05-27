@@ -168,6 +168,6 @@ export const interactionCreate: GatewayEventHandler = async (
       channel, user,
       message
     })
-
+  }
   gateway.client.emit('interactionCreate', interaction)
 }
