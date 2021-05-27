@@ -23,7 +23,7 @@ import type { Emoji } from './emoji.ts'
 import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'
 import { MessageComponentData } from '../types/messageComponents.ts'
-import { transformComponentPayload } from '../managers/_util.ts'
+import { transformComponentPayload } from '../utils/components.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 

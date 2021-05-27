@@ -1,5 +1,5 @@
 import type { Client } from '../client/client.ts'
-import { transformComponent } from '../managers/_util.ts'
+import { transformComponent } from '../utils/components.ts'
 import {
   AllowedMentionsPayload,
   ChannelTypes,
