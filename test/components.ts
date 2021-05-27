@@ -86,7 +86,7 @@ client.commands.add(
               {
                 type: MessageComponentType.Button,
                 label: 'Success',
-                style: ButtonStyle.SUCESS,
+                style: ButtonStyle.SUCCESS,
                 customID: '4'
               },
               {

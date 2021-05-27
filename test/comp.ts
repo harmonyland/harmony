@@ -64,7 +64,7 @@ client.slash.handle('button', (d) => {
           .button({
             label: 'Success',
             customID: 'test',
-            style: 'SUCESS'
+            style: 'SUCCESS'
           })
           .button({
             label: 'Danger',
