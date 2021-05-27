@@ -12,6 +12,7 @@ import type {
 import { CHANNEL } from '../types/endpoint.ts'
 import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
+import { transformComponent } from '../utils/components.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
@@ -81,11 +82,11 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
             guild = await this.client.guilds.get(data.guild_id)
           }
           resolve(
-            (getChannelByType(
+            getChannelByType(
               this.client,
               data as ChannelPayload,
               guild
-            ) as unknown) as T
+            ) as unknown as T
           )
         })
         .catch((e) => reject(e))
@@ -119,6 +120,10 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions,
+      components:
+        option?.components !== undefined
+          ? transformComponent(option.components)
+          : undefined,
       message_reference:
         option?.reply === undefined
           ? undefined
@@ -184,7 +189,11 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       // Cannot upload new files with Message
       // file: option?.file,
       tts: option?.tts,
-      allowed_mentions: option?.allowedMentions
+      allowed_mentions: option?.allowedMentions,
+      components:
+        option?.components !== undefined
+          ? transformComponent(option.components)
+          : undefined
     })
 
     const chan =

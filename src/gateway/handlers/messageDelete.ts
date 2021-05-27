@@ -11,7 +11,7 @@ export const messageDelete: GatewayEventHandler = async (
   if (channel === undefined)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
-
+  if (channel === undefined) return
   const message = await channel.messages.get(d.id)
   if (message === undefined)
     return gateway.client.emit('messageDeleteUncached', d)

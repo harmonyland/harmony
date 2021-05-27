@@ -26,6 +26,14 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     return this.client.rest
   }
 
+  /** Get average ping from all Shards */
+  get ping(): number {
+    return (
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      this.list.map((e) => e.ping).reduce((p, a) => p + a, 0) / this.list.size
+    )
+  }
+
   constructor(client: Client) {
     super()
     this.client = client

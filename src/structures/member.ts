@@ -182,13 +182,16 @@ export class Member extends SnowflakeBase {
   /**
    * Kicks the member.
    */
-  async kick(): Promise<boolean> {
+  async kick(reason?: string): Promise<boolean> {
     const resp = await this.client.rest.delete(
       GUILD_MEMBER(this.guild.id, this.id),
       undefined,
       undefined,
       null,
-      true
+      true,
+      {
+        reason
+      }
     )
     if (resp.ok !== true) return false
     else return true
@@ -201,5 +204,33 @@ export class Member extends SnowflakeBase {
    */
   async ban(reason?: string, deleteOldMessages?: number): Promise<void> {
     return this.guild.bans.add(this.id, reason, deleteOldMessages)
+  }
+
+  async manageable(): Promise<boolean> {
+    if (this.id === this.guild.ownerID || this.id === this.client.user?.id)
+      return false
+    if (this.guild.ownerID === this.client.user?.id) return true
+    const me = await this.guild.me()
+    const highestMe = (await me.roles.array()).sort(
+      (b, a) => a.position - b.position
+    )[0]
+    const highest = (await this.roles.array()).sort(
+      (b, a) => a.position - b.position
+    )[0]
+    return highestMe.position > highest.position
+  }
+
+  async bannable(): Promise<boolean> {
+    const manageable = await this.manageable()
+    if (!manageable) return false
+    const me = await this.guild.me()
+    return me.permissions.has('BAN_MEMBERS')
+  }
+
+  async kickable(): Promise<boolean> {
+    const manageable = await this.manageable()
+    if (!manageable) return false
+    const me = await this.guild.me()
+    return me.permissions.has('KICK_MEMBERS')
   }
 }
