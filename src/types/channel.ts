@@ -216,7 +216,7 @@ export interface MessageOptions {
   files?: MessageAttachment[]
   allowedMentions?: AllowedMentionsPayload
   reply?: Message | MessageReference | string
-  components?: MessageComponentData[]
+  components?: MessageComponentData[] | (() => MessageComponentPayload[])
 }
 
 export interface ChannelMention {

@@ -313,7 +313,11 @@ export class Interaction extends SnowflakeBase {
       components:
         (option as WebhookMessageOptions).components === undefined
           ? undefined
-          : transformComponent((option as WebhookMessageOptions).components!)
+          : typeof (option as WebhookMessageOptions).components === 'function'
+          ? (option as { components: CallableFunction }).components()
+          : transformComponent(
+              (option as { components: MessageComponentData[] }).components
+            )
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {

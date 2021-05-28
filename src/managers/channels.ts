@@ -122,7 +122,9 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       allowed_mentions: option?.allowedMentions,
       components:
         option?.components !== undefined
-          ? transformComponent(option.components)
+          ? typeof option.components === 'function'
+            ? option.components
+            : transformComponent(option.components)
           : undefined,
       message_reference:
         option?.reply === undefined
@@ -192,7 +194,9 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       allowed_mentions: option?.allowedMentions,
       components:
         option?.components !== undefined
-          ? transformComponent(option.components)
+          ? typeof option.components === 'function'
+            ? option.components
+            : transformComponent(option.components)
           : undefined
     })
 
