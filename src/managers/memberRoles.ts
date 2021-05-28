@@ -15,11 +15,22 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
     this.member = member
   }
 
+  private async _resolveMemberPayload(): Promise<MemberPayload> {
+    const cached = await this.member.guild.members._get(this.member.id)
+    if (cached !== undefined) return cached
+    else {
+      const fetched = await this.client.rest.endpoints.getGuildMember(
+        this.member.guild.id,
+        this.member.id
+      )
+      await this.member.guild.members.set(fetched.user.id, fetched)
+      return fetched
+    }
+  }
+
   async get(id: string): Promise<Role | undefined> {
     const res = await this.parent.get(id)
-    const mem = (await (this.parent as any).guild.members._get(
-      this.member.id
-    )) as MemberPayload
+    const mem = await this._resolveMemberPayload()
     if (
       res !== undefined &&
       (mem.roles.includes(res.id) === true || res.id === this.member.guild.id)
@@ -30,9 +41,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
 
   async array(): Promise<Role[]> {
     const arr = (await this.parent.array()) as Role[]
-    const mem = (await (this.parent as any).guild.members._get(
-      this.member.id
-    )) as MemberPayload
+    const mem = await this._resolveMemberPayload()
     return arr.filter(
       (c: any) =>
         (mem.roles.includes(c.id) as boolean) || c.id === this.member.guild.id

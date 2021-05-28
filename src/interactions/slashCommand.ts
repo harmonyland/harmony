@@ -279,7 +279,7 @@ export function transformSlashCommandPermission(
         data.type.toUpperCase() as keyof typeof SlashCommandPermissionType
       ]
   }
-  return (data as unknown) as SlashCommandPermissionPayload
+  return data as unknown as SlashCommandPermissionPayload
 }
 
 export function transformSlashCommandPermissions(

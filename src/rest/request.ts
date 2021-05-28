@@ -142,6 +142,11 @@ export class APIRequest {
       body
     }
 
+    if (this.options.reason !== undefined) {
+      ;(init.headers as { [name: string]: string })['X-Audit-Log-Reason'] =
+        encodeURIComponent(this.options.reason)
+    }
+
     return fetch(url, init).finally(() => {
       clearTimeout(timer)
       this.rest.timers.delete(timer)
