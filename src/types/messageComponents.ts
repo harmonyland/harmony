@@ -72,4 +72,5 @@ export interface MessageComponentData
 export interface InteractionMessageComponentData {
   custom_id: string
   component_type: MessageComponentType
+  values?: string[]
 }
