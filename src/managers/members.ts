@@ -88,6 +88,74 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
     })
   }
 
+  /** Fetch a list of Guild Members */
+  async fetchList(limit?: number, after?: string): Promise<Member[]> {
+    return await new Promise((resolve, reject) => {
+      this.client.rest.endpoints
+        .listGuildMembers(this.guild.id, { limit, after })
+        .then(async (data) => {
+          const roles = await this.guild.roles.array()
+          const members: Member[] = []
+
+          for (const member of data) {
+            await this.set(member.user.id, member)
+            const user = new User(this.client, member.user)
+            let permissions = new Permissions(Permissions.DEFAULT)
+            if (roles !== undefined) {
+              const mRoles = roles.filter(
+                (r) => (member.roles.includes(r.id) as boolean) || r.id === this.guild.id
+              )
+              permissions = new Permissions(mRoles.map((r) => r.permissions))
+              members.push(new Member(
+                this.client,
+                member, 
+                user,
+                this.guild,
+                permissions
+              ))
+            }
+          }
+
+          resolve(members)
+        })
+        .catch((e) => reject(e))
+    })
+  }
+
+  /** Search for Guild Members */
+  async search(query: string, limit?: number): Promise<Member[]> {
+    return await new Promise((resolve, reject) => {
+      this.client.rest.endpoints
+        .searchGuildMembers(this.guild.id, { query, limit })
+        .then(async (data) => {
+          const roles = await this.guild.roles.array()
+          const members: Member[] = []
+
+          for (const member of data) {
+            await this.set(member.user.id, member)
+            const user = new User(this.client, member.user)
+            let permissions = new Permissions(Permissions.DEFAULT)
+            if (roles !== undefined) {
+              const mRoles = roles.filter(
+                (r) => (member.roles.includes(r.id) as boolean) || r.id === this.guild.id
+              )
+              permissions = new Permissions(mRoles.map((r) => r.permissions))
+              members.push(new Member(
+                this.client,
+                member, 
+                user,
+                this.guild,
+                permissions
+              ))
+            }
+          }
+
+          resolve(members)
+        })
+        .catch((e) => reject(e))
+    })
+  }
+
   async fromPayload(members: MemberPayload[]): Promise<void> {
     for (const member of members) {
       await this.set(member.user.id, member)
