@@ -147,11 +147,12 @@ export const interactionCreate: GatewayEventHandler = async (
   }
 
   let interaction
-  
-  if (d.type === InteractionType.APPLICATION_COMMAND)
+  if (d.type === InteractionType.APPLICATION_COMMAND) {
     interaction = new SlashCommandInteraction(gateway.client, d, {
-      member, guild,
-      channel, user,
+      member,
+      guild,
+      channel,
+      user,
       resolved
     })
   } else if (d.type === InteractionType.MESSAGE_COMPONENT) {
@@ -164,10 +165,13 @@ export const interactionCreate: GatewayEventHandler = async (
     })
   } else {
     interaction = new Interaction(gateway.client, d, {
-      member, guild,
-      channel, user,
+      member,
+      guild,
+      channel,
+      user,
       message
     })
   }
+  
   gateway.client.emit('interactionCreate', interaction)
 }
