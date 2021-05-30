@@ -24,6 +24,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     }
     cache.set(key, value)
     if (expire !== undefined)
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval
       setTimeout(cache.delete, expire, key)
   }
 

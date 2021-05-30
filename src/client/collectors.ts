@@ -118,9 +118,9 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
     if (!check) return
     const filter = await this.filter(...args)
     if (!filter) return
-    this.collected.set((this.collected.size + 1).toString(), args)
+    this.collected.set((this.collected.size as number + 1).toString(), args)
     this.emit('collect', ...args)
-    if (this.max !== undefined && this.max < this.collected.size + 1) {
+    if (this.max !== undefined && (this.max) < (this.collected.size as number + 1)) {
       this.end()
     }
   }
@@ -140,7 +140,7 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   /** Returns a Promise resolved when Collector ends or a timeout occurs */
   async wait(timeout: number | undefined = this.timeout): Promise<Collector> {
     return await new Promise((resolve, reject) => {
-      if (!timeout)
+      if (timeout === undefined)
         throw new Error('Timeout is required parameter if not given in CollectorOptions')
 
       let done = false
