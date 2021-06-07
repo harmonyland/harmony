@@ -5,12 +5,12 @@ export interface TeamPayload {
   name: string
   icon: string
   owner_user_id: string
-  members?: TeamMemberPayload[]
+  members: TeamMemberPayload[]
 }
 
 export interface TeamMemberPayload {
-    membership_state: string
-    permissions: string[]
-    team_id: string
-    user: UserPayload
+  membership_state: number
+  permissions: string[]
+  team_id: string
+  user: UserPayload
 }
