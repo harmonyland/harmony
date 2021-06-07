@@ -1,10 +1,10 @@
 import type { Client } from '../client/mod.ts'
-import type { TeamPayload, TeamMemberPayload } from '../types/team.ts'
+import type { TeamPayload, TeamMemberPayload, MembershipState } from '../types/team.ts'
 import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'
 
 export class TeamMember extends User {
-  membershipState: number
+  membershipState: MembershipState
   permissions: string[]
   team: Team
 

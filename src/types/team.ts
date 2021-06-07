@@ -9,8 +9,13 @@ export interface TeamPayload {
 }
 
 export interface TeamMemberPayload {
-  membership_state: number
+  membership_state: MembershipState
   permissions: string[]
   team_id: string
   user: UserPayload
+}
+
+export enum MembershipState {
+  INVITED = 1,
+  ACCEPTED = 2
 }
