@@ -11,7 +11,7 @@ export class Application extends SnowflakeBase {
   description: string
   summary: string
   bot?: User
-  team: Team | null
+  team?: Team
 
   constructor(client: Client, data: ApplicationPayload) {
     super(client, data)
@@ -22,6 +22,6 @@ export class Application extends SnowflakeBase {
     this.description = data.description
     this.summary = data.summary
     this.bot = data.bot !== undefined ? new User(client, data.bot) : undefined
-    this.team = data.team ? new Team(client, data.team) : null
+    this.team = data.team ? new Team(client, data.team) : undefined
   }
 }
