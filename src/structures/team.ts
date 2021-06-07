@@ -4,17 +4,17 @@ import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'
 
 export class TeamMember extends User {
-    membershipState: number
-    permissions: string[]
-    team: Team
+  membershipState: number
+  permissions: string[]
+  team: Team
 
-    constructor(client: Client, data: TeamMemberPayload, team: Team) {
-        super(client, data.user);
+  constructor(client: Client, data: TeamMemberPayload, team: Team) {
+    super(client, data.user);
 
-        this.permissions = data.permissions
-        this.membershipState = data.membership_state
-        this.team = team
-    }
+    this.permissions = data.permissions
+    this.membershipState = data.membership_state
+    this.team = team
+  }
 }
 
 export class Team extends SnowflakeBase {
