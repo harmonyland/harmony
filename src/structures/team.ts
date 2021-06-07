@@ -31,6 +31,6 @@ export class Team extends SnowflakeBase {
     this.name = data.name
     this.icon = data.icon
     this.members = data.members.map(member => new TeamMember(client, member, this))
-    this.owner = this.members.filter(member => member.id === data.owner_user_id)[0]
+    this.owner = this.members.find(member => member.id === data.owner_user_id)!
   }
 }
