@@ -22,6 +22,6 @@ export class Application extends SnowflakeBase {
     this.description = data.description
     this.summary = data.summary
     this.bot = data.bot !== undefined ? new User(client, data.bot) : undefined
-    this.team = data.team ? new Team(client, data.team) : undefined
+    this.team = data.team !== null ? new Team(client, data.team) : undefined
   }
 }
