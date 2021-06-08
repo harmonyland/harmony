@@ -29,6 +29,9 @@ export const guildCreate: GatewayEventHandler = async (
 
   for (const emojiPayload of d.emojis) {
     if (emojiPayload.id === null) continue
+    if (emojiPayload.user !== undefined) {
+      await gateway.client.users.set(emojiPayload.user.id, emojiPayload.user)
+    }
     await gateway.client.emojis.set(emojiPayload.id, emojiPayload)
   }
 

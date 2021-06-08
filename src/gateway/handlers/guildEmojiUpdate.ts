@@ -17,6 +17,8 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
     const _updated: EmojiPayload[] = []
 
     for (const raw of d.emojis) {
+      if (raw.user !== undefined)
+        await gateway.client.users.set(raw.user.id, raw.user)
       const emojiID = (raw.id !== null ? raw.id : raw.name) as string
       const has = emojis.get(emojiID)
       if (has === undefined) {

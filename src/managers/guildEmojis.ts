@@ -22,6 +22,15 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     else return undefined
   }
 
+  async size(): Promise<number> {
+    return (
+      (await this.client.cache.size(
+        this.parent.cacheName,
+        (d) => d.guild_id === this.guild.id
+      )) ?? 0
+    )
+  }
+
   async delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
   }
