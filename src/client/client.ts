@@ -68,7 +68,7 @@ export interface ClientOptions {
   shard?: number
   /** ADVACNED: Shard count. */
   shardCount?: number | 'auto'
-  /** Whether to enable Zlib Compression or not (enabled by default) */
+  /** Whether to enable Zlib Compression (for Gateway) or not (enabled by default) */
   compress?: boolean
   /** Max number of messages to cache per channel. Default 100 */
   messageCacheMax?: number
@@ -155,7 +155,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Collectors set */
   collectors: Set<Collector> = new Set()
 
-  /** Whether Zlib compression is enabled or not */
+  /** Whether Zlib compression (for Gateway) is enabled or not */
   compress = true
 
   /** Since when is Client online (ready). */
