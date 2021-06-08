@@ -7,9 +7,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   data = new Map<string, Collection<string, any>>()
 
   get(cacheName: string, key: string): any {
-    const cache = this.data.get(cacheName)
-    if (cache === undefined) return
-    return cache.get(key)
+    return this.data.get(cacheName)?.get(key)
   }
 
   set(cacheName: string, key: string, value: any, expire?: number): void {
@@ -36,9 +34,7 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   }
 
   array(cacheName: string): any[] | undefined {
-    const cache = this.data.get(cacheName)
-    if (cache === undefined) return
-    return cache.array()
+    return this.data.get(cacheName)?.array()
   }
 
   deleteCache(cacheName: string): boolean {
