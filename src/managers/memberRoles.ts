@@ -42,7 +42,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
   async size(): Promise<number> {
     const payload = await this.member.guild.members._get(this.member.id)
     if (payload === undefined) return 0
-    else return payload.roles.length
+    return payload.roles.length
   }
 
   async array(): Promise<Role[]> {
