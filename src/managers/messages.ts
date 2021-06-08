@@ -34,7 +34,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     return res
   }
 
-  async set(key: string, value: MessagePayload): Promise<any> {
+  async set(key: string, value: MessagePayload): Promise<void> {
     await this.client.cache.set(
       this.cacheName,
       key,
