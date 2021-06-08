@@ -198,3 +198,5 @@ export {
 } from './src/utils/channel.ts'
 export * from './src/utils/interactions.ts'
 export * from './src/utils/command.ts'
+export { Team, TeamMember } from './src/structures/team.ts'
+export type { TeamPayload, TeamMemberPayload, MembershipState } from './src/types/team.ts'
