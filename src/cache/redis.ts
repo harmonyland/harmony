@@ -68,9 +68,9 @@ export class RedisCacheAdapter implements ICacheAdapter {
     key: string,
     value: any,
     expire?: number
-  ): Promise<number | undefined> {
+  ): Promise<void> {
     await this._checkReady()
-    const result = await this.redis?.hset(
+    await this.redis?.hset(
       cacheName,
       key,
       typeof value === 'object' ? JSON.stringify(value) : value
@@ -86,15 +86,11 @@ export class RedisCacheAdapter implements ICacheAdapter {
         })
       )
     }
-    return result
   }
 
-  async delete(cacheName: string, key: string): Promise<boolean> {
+  async delete(cacheName: string, ...keys: string[]): Promise<boolean> {
     await this._checkReady()
-    const exists = await this.redis?.hexists(cacheName, key)
-    if (exists === 0) return false
-    await this.redis?.hdel(cacheName, key)
-    return true
+    return ((await this.redis?.hdel(cacheName, ...keys)) ?? 0) === keys.length
   }
 
   async array(cacheName: string): Promise<any[] | undefined> {
@@ -103,8 +99,18 @@ export class RedisCacheAdapter implements ICacheAdapter {
     return data?.map((e: string) => JSON.parse(e))
   }
 
+  async keys(cacheName: string): Promise<string[] | undefined> {
+    await this._checkReady()
+    return this.redis?.hkeys(cacheName)
+  }
+
   async deleteCache(cacheName: string): Promise<boolean> {
     await this._checkReady()
     return (await this.redis?.del(cacheName)) !== 0
+  }
+
+  async size(cacheName: string): Promise<number | undefined> {
+    await this._checkReady()
+    return this.redis?.hlen(cacheName)
   }
 }

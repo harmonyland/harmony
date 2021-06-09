@@ -114,7 +114,8 @@ function createSlashOption(
     name: data.name,
     type,
     description:
-      type === 0 || type === 1
+      type === SlashCommandOptionType.SUB_COMMAND ||
+      type === SlashCommandOptionType.SUB_COMMAND_GROUP
         ? undefined
         : data.description ?? 'No description.',
     options: data.options?.map((e) =>

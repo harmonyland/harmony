@@ -3,6 +3,7 @@ import type { Guild } from '../structures/guild.ts'
 import { Presence } from '../structures/presence.ts'
 import { User } from '../structures/user.ts'
 import type { PresenceUpdatePayload } from '../types/gateway.ts'
+import { UserPayload } from '../types/user.ts'
 import { BaseManager } from './base.ts'
 
 export class GuildPresencesManager extends BaseManager<
@@ -25,6 +26,14 @@ export class GuildPresencesManager extends BaseManager<
     if (guild === undefined) return
     const presence = new Presence(this.client, raw, user, guild)
     return presence
+  }
+
+  async set(id: string, payload: PresenceUpdatePayload): Promise<void> {
+    await this.client.users.set(payload.user.id, payload.user)
+    // see Members Manager's set method for more info
+    payload = { ...payload }
+    payload.user = { id: payload.user.id } as unknown as UserPayload
+    await super.set(id, payload)
   }
 
   async array(): Promise<Presence[]> {

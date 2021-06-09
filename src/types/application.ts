@@ -1,4 +1,5 @@
 import type { UserPayload } from './user.ts'
+import type { TeamPayload } from './team.ts'
 
 export interface ApplicationPayload {
   id: string
@@ -7,4 +8,5 @@ export interface ApplicationPayload {
   description: string
   summary: string
   bot?: UserPayload
+  team: TeamPayload | null
 }

@@ -63,6 +63,11 @@ export class BaseChildManager<T, T2> extends Base {
     }
   }
 
+  /** Gets number of values stored in Cache */
+  async size(): Promise<number> {
+    return this.parent.size()
+  }
+
   [Deno.customInspect](): string {
     return `ChildManager(${this.parent.cacheName})`
   }

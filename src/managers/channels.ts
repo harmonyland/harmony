@@ -209,4 +209,20 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     await res.mentions.fromPayload(newMsg)
     return res
   }
+
+  /** Get cache size for messages. Returns total messages cache size if channel param is not given */
+  async messageCacheSize(channel?: string | TextChannel): Promise<number> {
+    if (channel === undefined) {
+      const channels = (await this.client.cache.keys('channels')) ?? []
+      if (channels.length === 0) return 0
+      let size = 0
+      for (const id of channels) {
+        size += await this.messageCacheSize(id)
+      }
+      return size
+    }
+
+    const id = typeof channel === 'object' ? channel.id : channel
+    return (await this.client.cache.size(`messages:${id}`)) ?? 0
+  }
 }
