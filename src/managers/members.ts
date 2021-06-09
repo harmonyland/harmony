@@ -6,6 +6,7 @@ import { GUILD_MEMBER } from '../types/endpoint.ts'
 import type { MemberPayload } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { Permissions } from '../utils/permissions.ts'
+import { UserPayload } from '../types/user.ts'
 
 export class MembersManager extends BaseManager<MemberPayload, Member> {
   guild: Guild
@@ -18,7 +19,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   async get(key: string): Promise<Member | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
-    const user = new User(this.client, raw.user)
+    const user = (await this.client.users.get(raw.user.id))! // it will always be present, see `set` impl for details
     const roles = await this.guild.roles.array()
     let permissions = new Permissions(Permissions.DEFAULT)
     if (roles !== undefined) {
@@ -35,6 +36,15 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
       permissions
     )
     return res
+  }
+
+  async set(id: string, payload: MemberPayload): Promise<void> {
+    await this.client.users.set(payload.user.id, payload.user)
+    // to prevent duplication of user object we'll store it in user cache
+    // and only keep id here for retreiving later from user cache
+    payload = { ...payload }
+    payload.user = { id: payload.user.id } as unknown as UserPayload
+    await super.set(id, payload)
   }
 
   async array(): Promise<Member[]> {
@@ -103,16 +113,14 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
             let permissions = new Permissions(Permissions.DEFAULT)
             if (roles !== undefined) {
               const mRoles = roles.filter(
-                (r) => (member.roles.includes(r.id) as boolean) || r.id === this.guild.id
+                (r) =>
+                  (member.roles.includes(r.id) as boolean) ||
+                  r.id === this.guild.id
               )
               permissions = new Permissions(mRoles.map((r) => r.permissions))
-              members.push(new Member(
-                this.client,
-                member, 
-                user,
-                this.guild,
-                permissions
-              ))
+              members.push(
+                new Member(this.client, member, user, this.guild, permissions)
+              )
             }
           }
 
@@ -137,16 +145,14 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
             let permissions = new Permissions(Permissions.DEFAULT)
             if (roles !== undefined) {
               const mRoles = roles.filter(
-                (r) => (member.roles.includes(r.id) as boolean) || r.id === this.guild.id
+                (r) =>
+                  (member.roles.includes(r.id) as boolean) ||
+                  r.id === this.guild.id
               )
               permissions = new Permissions(mRoles.map((r) => r.permissions))
-              members.push(new Member(
-                this.client,
-                member, 
-                user,
-                this.guild,
-                permissions
-              ))
+              members.push(
+                new Member(this.client, member, user, this.guild, permissions)
+              )
             }
           }
 

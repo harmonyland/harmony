@@ -12,11 +12,20 @@ export interface ICacheAdapter {
     key: string,
     value: any,
     expire?: number
-  ) => Promise<any> | any
+  ) => Promise<void> | void
   /** Deletes a key from a Cache */
-  delete: (cacheName: string, key: string) => Promise<boolean> | boolean
+  delete: (cacheName: string, ...keys: string[]) => Promise<boolean> | boolean
   /** Gets array of all values in a Cache */
   array: (cacheName: string) => undefined | any[] | Promise<any[] | undefined>
   /** Entirely deletes a Cache */
-  deleteCache: (cacheName: string) => any
+  deleteCache: (cacheName: string) => boolean | Promise<boolean>
+  /** Get size (length) of entries in a Cache */
+  size: (
+    cacheName: string,
+    filter?: (payload: any) => boolean
+  ) => number | undefined | Promise<number | undefined>
+  /** Gets all keys of the Cache */
+  keys: (
+    cacheName: string
+  ) => string[] | undefined | Promise<string[] | undefined>
 }

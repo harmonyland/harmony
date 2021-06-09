@@ -3,48 +3,57 @@ import type { ICacheAdapter } from './adapter.ts'
 
 /** Default Cache Adapter for in-memory caching. */
 export class DefaultCacheAdapter implements ICacheAdapter {
-  data: {
-    [name: string]: Collection<string, any>
-  } = {}
+  // we're using Map here because we don't utilize Collection's methods
+  data = new Map<string, Collection<string, any>>()
 
-  async get(cacheName: string, key: string): Promise<undefined | any> {
-    const cache = this.data[cacheName]
-    if (cache === undefined) return
-    return cache.get(key)
+  get(cacheName: string, key: string): any {
+    return this.data.get(cacheName)?.get(key)
   }
 
-  async set(
-    cacheName: string,
-    key: string,
-    value: any,
-    expire?: number
-  ): Promise<any> {
-    let cache = this.data[cacheName]
+  set(cacheName: string, key: string, value: any, expire?: number): void {
+    let cache = this.data.get(cacheName)
     if (cache === undefined) {
-      this.data[cacheName] = new Collection()
-      cache = this.data[cacheName]
+      cache = new Collection()
+      this.data.set(cacheName, cache)
     }
     cache.set(key, value)
     if (expire !== undefined)
       setTimeout(() => {
-        cache.delete(key)
+        cache?.delete(key)
       }, expire)
   }
 
-  async delete(cacheName: string, key: string): Promise<boolean> {
-    const cache = this.data[cacheName]
+  delete(cacheName: string, ...keys: string[]): boolean {
+    const cache = this.data.get(cacheName)
     if (cache === undefined) return false
-    return cache.delete(key)
+    let deleted = true
+    for (const key of keys) {
+      if (cache.delete(key) === false) deleted = false
+    }
+    return deleted
   }
 
-  async array(cacheName: string): Promise<any[] | undefined> {
-    const cache = this.data[cacheName]
-    if (cache === undefined) return
-    return cache.array()
+  array(cacheName: string): any[] | undefined {
+    return this.data.get(cacheName)?.array()
   }
 
-  async deleteCache(cacheName: string): Promise<boolean> {
+  deleteCache(cacheName: string): boolean {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    return delete this.data[cacheName]
+    return this.data.delete(cacheName)
+  }
+
+  size(
+    cacheName: string,
+    filter?: (payload: any) => boolean
+  ): number | undefined {
+    const cache = this.data.get(cacheName)
+    if (cache === undefined) return
+    return filter !== undefined ? cache.filter(filter).size : cache.size
+  }
+
+  keys(cacheName: string): string[] | undefined {
+    const cache = this.data.get(cacheName)
+    if (cache === undefined) return
+    return [...cache.keys()]
   }
 }
