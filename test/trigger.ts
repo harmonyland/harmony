@@ -31,7 +31,7 @@ export async function fetchModule(name: string): Promise<any> {
       if (res.status !== 200) throw new Error('not found')
       return res
     })
-    .then(async (r) => await r.json())
+    .then((r) => r.json())
     .then((json) => {
       if (!json.success) throw new Error('failed')
       return json
