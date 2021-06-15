@@ -1,9 +1,21 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": [
+      "esnext"
+    ],
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "jsx": "react",
     "jsxFactory": "BotUI.createElement",
     "jsxFragmentFactory": "fragment",
+    "skipLibCheck": true,
+    "emitDecoratorMetadata": false,
     "experimentalDecorators": true,
-    "strictNullChecks": true
+    "strict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
