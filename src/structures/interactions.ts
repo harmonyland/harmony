@@ -311,7 +311,7 @@ export class Interaction extends SnowflakeBase {
       tts: (option as WebhookMessageOptions)?.tts,
       allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
       components:
-        (option as WebhookMessageOptions).components === undefined
+        (option as WebhookMessageOptions)?.components === undefined
           ? undefined
           : transformComponent((option as WebhookMessageOptions).components!)
     }
