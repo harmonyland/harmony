@@ -92,4 +92,8 @@ export class MessageComponentInteraction extends Interaction {
   get componentType(): MessageComponentType {
     return this.data.component_type
   }
+
+  get values(): string[] {
+    return this.data.values ?? []
+  }
 }
