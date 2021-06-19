@@ -126,7 +126,7 @@ export class Webhook {
     }
 
     if ((option as WebhookMessageOptions)?.avatar !== undefined) {
-      payload.avatar = (option as WebhookMessageOptions)?.avatar
+      payload.avatar_url = (option as WebhookMessageOptions)?.avatar
     }
 
     if (
