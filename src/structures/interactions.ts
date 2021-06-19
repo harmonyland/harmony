@@ -167,14 +167,14 @@ export class Interaction extends SnowflakeBase {
         data.content !== undefined ||
         data.embeds !== undefined ||
         data.components !== undefined ||
-        data.flags !== undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+        data.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
           ? {
               content: data.content ?? '',
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
-              allowed_mentions: data.allowedMentions ?? undefined,
+              allowed_mentions: data.allowedMentions,
               components:
                 data.components === undefined
                   ? undefined
