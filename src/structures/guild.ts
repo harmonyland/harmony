@@ -678,7 +678,7 @@ export class Guild extends SnowflakeBase {
     }
 
     if ('webhooks' in data) {
-      ret.webhooks = data.webhooks;
+      ret.webhooks = data.webhooks
     }
 
     return ret
