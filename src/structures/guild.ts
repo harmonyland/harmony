@@ -16,7 +16,7 @@ import {
   GuildGetPruneCountPayload,
   GuildPruneCountPayload,
   GuildBeginPrunePayload,
-  AuditLogPayload,
+  AuditLog,
   AuditLogEvents,
   AuditLogEntryPayload,
   AuditLogEntry
@@ -635,7 +635,7 @@ export class Guild extends SnowflakeBase {
       before?: string
       limit?: number
     } = {}
-  ): Promise<AuditLogPayload> {
+  ): Promise<AuditLog> {
     if (
       typeof options.limit === 'number' &&
       (options.limit < 1 || options.limit > 100)
@@ -649,11 +649,17 @@ export class Guild extends SnowflakeBase {
       limit: options.limit ?? 50
     })
 
+    const ret: AuditLog = {
+      webhooks: [],
+      users: [],
+      entries: [],
+      integrations: []  
+    }
+
     if ('audit_log_entries' in data) {
-      ;(data as any).entries = data.audit_log_entries.map(
+      ret.entries = data.audit_log_entries.map(
         transformAuditLogEntryPayload
       )
-      delete (data as any).audit_log_entries
     }
 
     if ('users' in data) {
@@ -662,16 +668,20 @@ export class Guild extends SnowflakeBase {
         await this.client.users.set(d.id, d)
         users.push((await this.client.users.get(d.id))!)
       }
-      ;(data as any).users = users
+      ret.users = users
     }
 
     if ('integrations' in data) {
-      ;(data as any).integrations = data.integrations.map(
+      ret.integrations = data.integrations.map(
         (e) => new GuildIntegration(this.client, e)
       )
     }
 
-    return data
+    if ('webhooks' in data) {
+      ret.webhooks = data.webhooks;
+    }
+
+    return ret
   }
 }
 
