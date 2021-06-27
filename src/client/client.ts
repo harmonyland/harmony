@@ -66,7 +66,7 @@ export interface ClientOptions {
   fetchGatewayInfo?: boolean
   /** ADVANCED: Shard ID to launch on */
   shard?: number
-  /** ADVACNED: Shard count. */
+  /** ADVANCED: Shard count. */
   shardCount?: number | 'auto'
   /** Whether to enable Zlib Compression (for Gateway) or not (enabled by default) */
   compress?: boolean
