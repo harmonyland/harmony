@@ -3,7 +3,7 @@
  *
  * `"jsx": "react"`
  * `"jsxFactory": "BotUI.createElement"`
- * `"jsxFragmentFactory": "BotUI.rootElement"`
+ * `"jsxFragmentFactory": "fragment"`
  *
  * else TSX compilation won't work.
  */
