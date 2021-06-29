@@ -150,7 +150,7 @@ export function fragment(
         throw new Error('Invalid second level component: ' + el.type)
       }
 
-      row.components?.flat(2).push({
+      row.components?.push({
         type: el.type === 'Button' ? 2 : 3,
         custom_id: el.props.id,
         label: el.props.label,
