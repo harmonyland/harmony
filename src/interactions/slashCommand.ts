@@ -113,11 +113,7 @@ function createSlashOption(
   return {
     name: data.name,
     type,
-    description:
-      type === SlashCommandOptionType.SUB_COMMAND ||
-      type === SlashCommandOptionType.SUB_COMMAND_GROUP
-        ? undefined
-        : data.description ?? 'No description.',
+    description: data.description ?? 'No description.',
     options: data.options?.map((e) =>
       typeof e === 'function' ? e(SlashOption) : e
     ),
