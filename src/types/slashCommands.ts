@@ -67,8 +67,8 @@ export interface SlashCommandOptionBase<
 > {
   /** Name of the option. */
   name: string
-  /** Description of the Option. Not required in Sub-Command-Group */
-  description?: string
+  /** Description of the Option. */
+  description: string
   /** Option type */
   type: OptionType
   /** Whether the option is required or not, false by default */
