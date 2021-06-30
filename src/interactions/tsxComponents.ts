@@ -135,7 +135,7 @@ export function fragment(
   if (props !== null) throw new Error('Root fragment does not accept props')
   const res: MessageComponentPayload[] = []
 
-  components.flat(2).forEach((component) => {
+  components.flat().forEach((component) => {
     if (typeof component !== 'object' || component === null) return
     if (component.type !== 'ActionRow') {
       throw new Error('Only ActionRow components may appear at top level')
@@ -145,32 +145,34 @@ export function fragment(
       components: []
     }
 
-    component.children?.flat(2).forEach((el: Element<ButtonProps & SelectProps>) => {
-      if (el.type !== 'Button' && el.type !== 'Select') {
-        throw new Error('Invalid second level component: ' + el.type)
-      }
+    component.children
+      ?.flat()
+      .forEach((el: Element<ButtonProps & SelectProps>) => {
+        if (el.type !== 'Button' && el.type !== 'Select') {
+          throw new Error('Invalid second level component: ' + el.type)
+        }
 
-      row.components?.flat(2).push({
-        type: el.type === 'Button' ? 2 : 3,
-        custom_id: el.props.id,
-        label: el.props.label,
-        style:
-          el.props.style !== undefined
-            ? resolveStyle(el.props.style)
-            : undefined,
-        url: el.props.url,
-        emoji: el.props.emoji,
-        min_values: el.props.minValues,
-        max_values: el.props.maxValues,
-        placeholder: el.props.placeholder,
-        disabled: el.props.disabled,
-        options: Array.isArray(el.children)
-          ? el.children.map((e) => {
-              return e.props
-            })
-          : undefined
+        row.components?.push({
+          type: el.type === 'Button' ? 2 : 3,
+          custom_id: el.props.id,
+          label: el.props.label,
+          style:
+            el.props.style !== undefined
+              ? resolveStyle(el.props.style)
+              : undefined,
+          url: el.props.url,
+          emoji: el.props.emoji,
+          min_values: el.props.minValues,
+          max_values: el.props.maxValues,
+          placeholder: el.props.placeholder,
+          disabled: el.props.disabled,
+          options: Array.isArray(el.children)
+            ? el.children.map((e) => {
+                return e.props
+              })
+            : undefined
+        })
       })
-    })
 
     if (row.components !== undefined && row.components.length > 5) {
       throw new Error('An Action Row may only have 5 components at max')

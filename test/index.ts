@@ -20,7 +20,7 @@ import { TOKEN } from './config.ts'
 const client = new Client({
   // clientProperties: {
   //   browser: 'Discord iOS'
-  // }
+  // },
   // bot: false,
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
@@ -90,6 +90,14 @@ client.on('messageCreate', async (msg: Message) => {
             return `${i + 1}. ${c.name} - ${c.memberCount} members`
           })
           .join('\n') as string)
+    )
+  } else if (msg.content === '!guild') {
+    msg.reply(`Guild Name: ${msg.guild?.name}`)
+  } else if (msg.content === '!perms') {
+    msg.reply(
+      `Permissions:\n${Object.entries(msg.member?.permissions.serialize() ?? {})
+        .map((e) => `${e[0]}: ${e[1]}`)
+        .join('\n')}`
     )
   } else if (msg.content === '!channels') {
     const col = await msg.guild?.channels.array()
@@ -300,7 +308,7 @@ client.on('messageReactionRemove', (reaction, user) => {
   }
 })
 
-client.connect(TOKEN, Intents.None)
+client.connect(TOKEN, Intents.None ?? ['GUILDS'])
 
 // OLD: Was a way to reproduce reconnect infinite loop
 // setTimeout(() => {
