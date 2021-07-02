@@ -30,7 +30,7 @@ export class Embed {
   files: MessageAttachment[] = []
 
   static MAX_TITLE_LENGTH = 256
-  static MAX_DESCRIPTION_LENGTH = 2048
+  static MAX_DESCRIPTION_LENGTH = 4096
   static MAX_FIELD_NAME_LENGTH = 256
   static MAX_FIELD_VALUE_LENGTH = 1024
   static MAX_FIELDS_LENGTH = 25
