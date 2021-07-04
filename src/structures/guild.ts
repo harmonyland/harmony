@@ -15,7 +15,11 @@ import {
   GuildModifyOptions,
   GuildGetPruneCountPayload,
   GuildPruneCountPayload,
-  GuildBeginPrunePayload
+  GuildBeginPrunePayload,
+  AuditLog,
+  AuditLogEvents,
+  AuditLogEntryPayload,
+  AuditLogEntry
 } from '../types/guild.ts'
 import { Base, SnowflakeBase } from './base.ts'
 import { CreateGuildRoleOptions, RolesManager } from '../managers/roles.ts'
@@ -48,6 +52,8 @@ import { Template } from './template.ts'
 import { DiscordAPIError } from '../rest/mod.ts'
 import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
+import type { GuildSlashCommandsManager } from '../interactions/slashCommand.ts'
+import { toCamelCase } from '../utils/snakeCase.ts'
 import { ThreadsManager } from '../managers/threads.ts'
 
 export class GuildBan extends Base {
@@ -187,6 +193,7 @@ export class Guild extends SnowflakeBase {
   approximatePresenceCount?: number
   bans: GuildBans
   nsfw?: boolean
+  commands: GuildSlashCommandsManager
   threads: ThreadsManager
 
   /** Get Shard ID of Guild on which it is */
@@ -197,7 +204,7 @@ export class Guild extends SnowflakeBase {
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
     this.id = data.id
-    this.unavailable = data.unavailable
+    this.unavailable = data.unavailable ?? false
     this.readFromData(data)
     this.bans = new GuildBans(client, this)
     this.members = new MembersManager(this.client, this)
@@ -212,6 +219,7 @@ export class Guild extends SnowflakeBase {
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
+    this.commands = this.client.slash.commands.for(this)
   }
 
   readFromData(data: GuildPayload): void {
@@ -619,6 +627,62 @@ export class Guild extends SnowflakeBase {
 
     return result.pruned
   }
+
+  async fetchAuditLog(
+    options: {
+      user?: string | User
+      actionType?: AuditLogEvents
+      before?: string
+      limit?: number
+    } = {}
+  ): Promise<AuditLog> {
+    if (
+      typeof options.limit === 'number' &&
+      (options.limit < 1 || options.limit > 100)
+    )
+      throw new Error('Invalid limit, must be between 1-100')
+
+    const data = await this.client.rest.endpoints.getGuildAuditLog(this.id, {
+      userId: typeof options.user === 'object' ? options.user.id : options.user,
+      actionType: options.actionType,
+      before: options.before,
+      limit: options.limit ?? 50
+    })
+
+    const ret: AuditLog = {
+      webhooks: [],
+      users: [],
+      entries: [],
+      integrations: []  
+    }
+
+    if ('audit_log_entries' in data) {
+      ret.entries = data.audit_log_entries.map(
+        transformAuditLogEntryPayload
+      )
+    }
+
+    if ('users' in data) {
+      const users: User[] = []
+      for (const d of data.users) {
+        await this.client.users.set(d.id, d)
+        users.push((await this.client.users.get(d.id))!)
+      }
+      ret.users = users
+    }
+
+    if ('integrations' in data) {
+      ret.integrations = data.integrations.map(
+        (e) => new GuildIntegration(this.client, e)
+      )
+    }
+
+    if ('webhooks' in data) {
+      ret.webhooks = data.webhooks
+    }
+
+    return ret
+  }
 }
 
 export class GuildIntegration extends Base {
@@ -661,4 +725,8 @@ export class GuildIntegration extends Base {
         ? new Application(client, data.application)
         : undefined
   }
+}
+
+function transformAuditLogEntryPayload(d: AuditLogEntryPayload): AuditLogEntry {
+  return toCamelCase(d)
 }

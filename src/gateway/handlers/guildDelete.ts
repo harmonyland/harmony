@@ -6,7 +6,13 @@ export const guildDelete: GatewayEventHandler = async (
   gateway: Gateway,
   d: GuildPayload
 ) => {
+  // It will be removed anyway if its deleted
+  await gateway.client.guilds.set(d.id, d)
   const guild: Guild | undefined = await gateway.client.guilds.get(d.id)
+  if ('unavailable' in d) {
+    gateway.client.emit('guildUnavailable', guild)
+    return
+  }
 
   if (guild !== undefined) {
     await guild.members.flush()

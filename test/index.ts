@@ -43,8 +43,8 @@ client.on('threadDeleteUncached', (t) =>
 
 client.on('channelUpdate', (b: EveryChannelTypes, a: EveryChannelTypes) => {
   if (b.type === ChannelTypes.GUILD_TEXT) {
-    const before = (b as unknown) as GuildTextChannel
-    const after = (a as unknown) as GuildTextChannel
+    const before = b as unknown as GuildTextChannel
+    const after = a as unknown as GuildTextChannel
     before.send('', {
       embed: new Embed({
         title: 'Channel Update',
@@ -67,6 +67,17 @@ client.on('messageCreate', async (msg: Message) => {
   }
   if (msg.content === '!ping') {
     msg.reply(`Pong! Ping: ${client.gateway.ping}ms`)
+  } else if (msg.content === '!fetchMessages') {
+    await msg.channel.fetchMessages().then((e) => console.log(e.size))
+  } else if (msg.content === '!audit') {
+    console.log(await msg.guild!.fetchAuditLog())
+    msg.reply('Check console for thicc json', {
+      allowedMentions: { replied_user: false }
+    })
+  } else if (msg.content === '!reactions') {
+    for (const e of ['😂', '😄', '🎉', '🙂', '🤦‍♂️', '👋', '👌', '🤞', '✋']) {
+      await msg.addReaction(e)
+    }
   } else if (msg.content === '!members') {
     const col = await msg.guild?.members.array()
     const data = col
@@ -203,7 +214,9 @@ client.on('messageCreate', async (msg: Message) => {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const permissions = await ((msg.channel as unknown) as GuildTextChannel).permissionsFor(
+    const permissions = await (
+      msg.channel as unknown as GuildTextChannel
+    ).permissionsFor(
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       msg.member as Member
     )

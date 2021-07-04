@@ -25,6 +25,8 @@ import type { RolePayload } from './role.ts'
 import type { UserPayload } from './user.ts'
 import type { VoiceStatePayload } from './voice.ts'
 import type { WebhookPayload } from './webhook.ts'
+import type { User } from '../structures/user.ts'
+import { GuildIntegration } from '../../mod.ts'
 
 export interface GuildPayload {
   id: string
@@ -54,7 +56,7 @@ export interface GuildPayload {
   rules_channel_id?: string
   joined_at?: string
   large?: boolean
-  unavailable: boolean
+  unavailable?: boolean
   member_count?: number
   voice_states?: VoiceStatePayload[]
   members?: MemberPayload[]
@@ -424,5 +426,61 @@ export interface AuditLogChangePayload {
   /** old value of the key */
   old_value?: any
   /** name of audit log [change key](#DOCS_RESOURCES_AUDIT_LOG/audit-log-change-object-audit-log-change-key) */
+  key: string
+}
+
+export interface AuditLog {
+  /** list of webhooks found in the audit log */
+  webhooks: WebhookPayload[]
+  /** list of users found in the audit log */
+  users: User[]
+  /** list of audit log entries */
+  entries: AuditLogEntry[]
+  /** list of partial integration objects */
+  integrations: GuildIntegration[]
+}
+
+export interface AuditLogEntry {
+  /** id of the affected entity (webhook, user, role, etc.) */
+  target_id: string | null
+  /** changes made to the target_id */
+  changes?: AuditLogChangePayload[]
+  /** the user who made the changes */
+  userID: string
+  /** id of the entry */
+  id: string
+  /** type of action that occurred */
+  action_type: AuditLogEvents
+  /** additional info for certain action types */
+  options?: OptionalAuditEntryInfo
+  /** the reason for the change (0-512 characters) */
+  reason?: string
+}
+
+export interface OptionalAuditEntryInfo {
+  /** number of days after which inactive members were kicked */
+  deleteMemberDays: string
+  /** number of members removed by the prune */
+  membersRemoved: string
+  /** channel in which the entities were targeted */
+  channelID: string
+  /** id of the message that was targeted */
+  messageID: string
+  /** number of entities that were targeted */
+  count: string
+  /** id of the overwritten entity */
+  id: string
+  /** type of overwritten entity - "0" for "role" or "1" for "member" */
+  type: string
+  /** name of the role if type is "0" (not present if type is "1") */
+  roleName: string
+}
+
+export interface AuditLogChange {
+  /** new value of the key */
+  newValue?: any
+  /** old value of the key */
+  oldValue?: any
+  /** name of audit log change key */
   key: string
 }

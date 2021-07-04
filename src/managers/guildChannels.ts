@@ -42,6 +42,15 @@ export class GuildChannelsManager extends BaseChildManager<
     else return undefined
   }
 
+  async size(): Promise<number> {
+    return (
+      (await this.client.cache.size(
+        this.parent.cacheName,
+        (d) => d.guild_id === this.guild.id
+      )) ?? 0
+    )
+  }
+
   /** Delete a Guild Channel */
   async delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
@@ -66,7 +75,7 @@ export class GuildChannelsManager extends BaseChildManager<
   async create(options: CreateChannelOptions): Promise<GuildChannels> {
     if (options.name === undefined)
       throw new Error('name is required for GuildChannelsManager#create')
-    const res = ((await this.client.rest.post(GUILD_CHANNELS(this.guild.id), {
+    const res = (await this.client.rest.post(GUILD_CHANNELS(this.guild.id), {
       name: options.name,
       type: options.type,
       topic: options.topic,
@@ -82,11 +91,11 @@ export class GuildChannelsManager extends BaseChildManager<
           ? options.parent.id
           : options.parent,
       nsfw: options.nsfw
-    })) as unknown) as GuildChannelPayload
+    })) as unknown as GuildChannelPayload
 
     await this.set(res.id, res)
     const channel = await this.get(res.id)
-    return (channel as unknown) as GuildChannels
+    return channel as unknown as GuildChannels
   }
 
   /** Modify the positions of a set of channel positions for the guild. */

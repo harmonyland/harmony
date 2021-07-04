@@ -12,6 +12,7 @@ import type {
 import { CHANNEL } from '../types/endpoint.ts'
 import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
+import { transformComponent } from '../utils/components.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
@@ -81,11 +82,11 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
             guild = await this.client.guilds.get(data.guild_id)
           }
           resolve(
-            (getChannelByType(
+            getChannelByType(
               this.client,
               data as ChannelPayload,
               guild
-            ) as unknown) as T
+            ) as unknown as T
           )
         })
         .catch((e) => reject(e))
@@ -119,6 +120,12 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions,
+      components:
+        option?.components !== undefined
+          ? typeof option.components === 'function'
+            ? option.components
+            : transformComponent(option.components)
+          : undefined,
       message_reference:
         option?.reply === undefined
           ? undefined
@@ -184,7 +191,13 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       // Cannot upload new files with Message
       // file: option?.file,
       tts: option?.tts,
-      allowed_mentions: option?.allowedMentions
+      allowed_mentions: option?.allowedMentions,
+      components:
+        option?.components !== undefined
+          ? typeof option.components === 'function'
+            ? option.components
+            : transformComponent(option.components)
+          : undefined
     })
 
     const chan =
@@ -195,5 +208,21 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     const res = new Message(this.client, newMsg, chan, this.client.user)
     await res.mentions.fromPayload(newMsg)
     return res
+  }
+
+  /** Get cache size for messages. Returns total messages cache size if channel param is not given */
+  async messageCacheSize(channel?: string | TextChannel): Promise<number> {
+    if (channel === undefined) {
+      const channels = (await this.client.cache.keys('channels')) ?? []
+      if (channels.length === 0) return 0
+      let size = 0
+      for (const id of channels) {
+        size += await this.messageCacheSize(id)
+      }
+      return size
+    }
+
+    const id = typeof channel === 'object' ? channel.id : channel
+    return (await this.client.cache.size(`messages:${id}`)) ?? 0
   }
 }

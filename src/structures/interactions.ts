@@ -1,10 +1,12 @@
 import type { Client } from '../client/client.ts'
+import { transformComponent } from '../utils/components.ts'
 import {
   AllowedMentionsPayload,
   ChannelTypes,
   EmbedPayload,
   MessageOptions
 } from '../types/channel.ts'
+import { Constants } from '../types/constants.ts'
 import { INTERACTION_CALLBACK, WEBHOOK_MESSAGE } from '../types/endpoint.ts'
 import {
   InteractionPayload,
@@ -13,6 +15,10 @@ import {
   InteractionResponseType,
   InteractionType
 } from '../types/interactions.ts'
+import {
+  InteractionMessageComponentData,
+  MessageComponentData
+} from '../types/messageComponents.ts'
 import {
   InteractionApplicationCommandData,
   InteractionChannelPayload
@@ -24,9 +30,11 @@ import { Embed } from './embed.ts'
 import { Guild } from './guild.ts'
 import { GuildTextChannel } from './guildTextChannel.ts'
 import { Member } from './member.ts'
-import { Message } from './message.ts'
+import { Message, MessageAttachment } from './message.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
+import type { SlashCommandInteraction } from './slash.ts'
+import type { MessageComponentInteraction } from './messageComponents.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   embeds?: Array<Embed | EmbedPayload>
@@ -45,11 +53,12 @@ export interface InteractionMessageOptions {
   allowedMentions?: AllowedMentionsPayload
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
+  components?: MessageComponentData[]
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
   /** Type of Interaction Response */
-  type?: InteractionResponseType
+  type?: InteractionResponseType | keyof typeof InteractionResponseType
 }
 
 /** Represents a Channel Object for an Option in Slash Command */
@@ -101,7 +110,7 @@ export class Interaction extends SnowflakeBase {
   _httpResponded?: boolean
   applicationID: string
   /** Data sent with Interaction. Only applies to Application Command */
-  data?: InteractionApplicationCommandData
+  data?: InteractionApplicationCommandData | InteractionMessageComponentData
   message?: Message
 
   constructor(
@@ -128,27 +137,48 @@ export class Interaction extends SnowflakeBase {
     this.message = others.message
   }
 
+  isSlashCommand(): this is SlashCommandInteraction {
+    return this.type === InteractionType.APPLICATION_COMMAND
+  }
+
+  isMessageComponent(): this is MessageComponentInteraction {
+    return this.type === InteractionType.MESSAGE_COMPONENT
+  }
+
   /** Respond to an Interaction */
-  async respond(data: InteractionResponse): Promise<Interaction> {
+  async respond(data: InteractionResponse): Promise<this> {
     if (this.responded) throw new Error('Already responded to Interaction')
     let flags = 0
     if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
     if (data.flags !== undefined) {
-      if (Array.isArray(data.flags))
+      if (Array.isArray(data.flags)) {
         flags = data.flags.reduce((p, a) => p | a, flags)
-      else if (typeof data.flags === 'number') flags |= data.flags
+      } else if (typeof data.flags === 'number') flags |= data.flags
     }
     const payload: InteractionResponsePayload = {
-      type: data.type ?? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      type:
+        data.type === undefined
+          ? InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+          : typeof data.type === 'string'
+          ? InteractionResponseType[data.type]
+          : data.type,
       data:
         data.type === undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+        data.content !== undefined ||
+        data.embeds !== undefined ||
+        data.components !== undefined ||
+        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+        data.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
           ? {
               content: data.content ?? '',
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
-              allowed_mentions: data.allowedMentions ?? undefined
+              allowed_mentions: data.allowedMentions,
+              components:
+                data.components === undefined
+                  ? undefined
+                  : transformComponent(data.components)
             }
           : undefined
     }
@@ -156,18 +186,19 @@ export class Interaction extends SnowflakeBase {
     if (this._httpRespond !== undefined && this._httpResponded !== true) {
       this._httpResponded = true
       await this._httpRespond(payload)
-    } else
+    } else {
       await this.client.rest.post(
         INTERACTION_CALLBACK(this.id, this.token),
         payload
       )
+    }
     this.responded = true
 
     return this
   }
 
   /** Defer the Interaction i.e. let the user know bot is processing and will respond later. You only have 15 minutes to edit the response! */
-  async defer(ephemeral = false): Promise<Interaction> {
+  async defer(ephemeral = false): Promise<this> {
     await this.respond({
       type: InteractionResponseType.DEFERRED_CHANNEL_MESSAGE,
       flags: ephemeral ? 1 << 6 : 0
@@ -177,24 +208,25 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Reply with a Message to the Interaction */
-  async reply(content: string): Promise<Interaction>
-  async reply(options: InteractionMessageOptions): Promise<Interaction>
+  async reply(content: string): Promise<this>
+  async reply(options: InteractionMessageOptions): Promise<this>
   async reply(
     content: string,
     options: InteractionMessageOptions
-  ): Promise<Interaction>
+  ): Promise<this>
   async reply(
     content: string | InteractionMessageOptions,
     messageOptions?: InteractionMessageOptions
-  ): Promise<Interaction> {
+  ): Promise<this> {
     let options: InteractionMessageOptions | undefined =
       typeof content === 'object' ? content : messageOptions
     if (
       typeof content === 'object' &&
       messageOptions !== undefined &&
       options !== undefined
-    )
+    ) {
       Object.assign(options, messageOptions)
+    }
     if (options === undefined) options = {}
     if (typeof content === 'string') Object.assign(options, { content })
 
@@ -205,23 +237,32 @@ export class Interaction extends SnowflakeBase {
         flags: options.flags,
         allowedMentions: options.allowedMentions
       })
-    } else
+    } else {
       await this.respond(
         Object.assign(options, {
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
         })
       )
+    }
 
     return this
   }
 
   /** Edit the original Interaction response */
-  async editResponse(data: {
-    content?: string
-    embeds?: Array<Embed | EmbedPayload>
-    flags?: number | number[]
-    allowedMentions?: AllowedMentionsPayload
-  }): Promise<Interaction> {
+  async editResponse(
+    data:
+      | {
+          content?: string
+          embeds?: Array<Embed | EmbedPayload>
+          flags?: number | number[]
+          allowedMentions?: AllowedMentionsPayload
+          components?: MessageComponentData[]
+          files?: MessageAttachment[]
+          file?: MessageAttachment
+        }
+      | string
+  ): Promise<Interaction> {
+    if (typeof data === 'string') data = { content: data }
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.patch(url, {
       content: data.content ?? '',
@@ -230,20 +271,26 @@ export class Interaction extends SnowflakeBase {
         typeof data.flags === 'object'
           ? data.flags.reduce((p, a) => p | a, 0)
           : data.flags,
-      allowed_mentions: data.allowedMentions
+      allowed_mentions: data.allowedMentions,
+      components:
+        data.components === undefined
+          ? undefined
+          : transformComponent(data.components)
     })
     return this
   }
 
   /** Delete the original Interaction Response */
-  async deleteResponse(): Promise<Interaction> {
+  async deleteResponse(): Promise<this> {
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
     await this.client.rest.delete(url)
     return this
   }
 
   get url(): string {
-    return `https://discord.com/api/v8/webhooks/${this.applicationID}/${this.token}`
+    return `https://discord.com/api/v${
+      this.client?.rest?.version ?? Constants.DISCORD_API_VERSION
+    }/webhooks/${this.applicationID}/${this.token}`
   }
 
   /** Send a followup message */
@@ -260,10 +307,11 @@ export class Interaction extends SnowflakeBase {
       throw new Error('Either text or option is necessary.')
     }
 
-    if (option instanceof Embed)
+    if (option instanceof Embed) {
       option = {
         embeds: [option]
       }
+    }
 
     const payload: any = {
       content: text,
@@ -276,7 +324,15 @@ export class Interaction extends SnowflakeBase {
       file: (option as WebhookMessageOptions)?.file,
       files: (option as WebhookMessageOptions)?.files,
       tts: (option as WebhookMessageOptions)?.tts,
-      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions
+      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
+      components:
+        (option as WebhookMessageOptions)?.components === undefined
+          ? undefined
+          : typeof (option as WebhookMessageOptions).components === 'function'
+          ? (option as { components: CallableFunction }).components()
+          : transformComponent(
+              (option as { components: MessageComponentData[] }).components
+            )
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {
@@ -291,18 +347,19 @@ export class Interaction extends SnowflakeBase {
       payload.embeds !== undefined &&
       payload.embeds instanceof Array &&
       payload.embeds.length > 10
-    )
+    ) {
       throw new Error(
         `Cannot send more than 10 embeds through Interaction Webhook`
       )
+    }
 
     const resp = await this.client.rest.post(`${this.url}?wait=true`, payload)
 
     const res = new Message(
       this.client,
       resp,
-      (this as unknown) as TextChannel,
-      (this as unknown) as User
+      this as unknown as TextChannel,
+      this as unknown as User
     )
     await res.mentions.fromPayload(resp)
     return res
@@ -313,6 +370,7 @@ export class Interaction extends SnowflakeBase {
     msg: Message | string,
     data: {
       content?: string
+      components?: MessageComponentData[]
       embeds?: Array<Embed | EmbedPayload>
       file?: any
       allowed_mentions?: {
@@ -322,7 +380,12 @@ export class Interaction extends SnowflakeBase {
         everyone?: boolean
       }
     }
-  ): Promise<Interaction> {
+  ): Promise<this> {
+    data = { ...data }
+
+    if (data.components !== undefined) {
+      data.components = transformComponent(data.components)
+    }
     await this.client.rest.patch(
       WEBHOOK_MESSAGE(
         this.applicationID,
@@ -335,7 +398,7 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Delete a follow-up Message */
-  async deleteMessage(msg: Message | string): Promise<Interaction> {
+  async deleteMessage(msg: Message | string): Promise<this> {
     await this.client.rest.delete(
       WEBHOOK_MESSAGE(
         this.applicationID,

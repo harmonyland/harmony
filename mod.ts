@@ -28,7 +28,7 @@ export {
   ExtensionsManager
 } from './src/commands/extension.ts'
 export { SlashModule } from './src/interactions/slashModule.ts'
-export { CommandClient, command } from './src/commands/client.ts'
+export { CommandClient, command, subcommand } from './src/commands/client.ts'
 export type { CommandClientOptions } from './src/commands/client.ts'
 export { BaseManager } from './src/managers/base.ts'
 export { BaseChildManager } from './src/managers/baseChild.ts'
@@ -42,6 +42,8 @@ export * from './src/structures/slash.ts'
 export * from './src/structures/interactions.ts'
 export * from './src/types/slashCommands.ts'
 export * from './src/types/interactions.ts'
+export * from './src/types/messageComponents.ts'
+export * from './src/structures/messageComponents.ts'
 export { GuildEmojisManager } from './src/managers/guildEmojis.ts'
 export { MembersManager } from './src/managers/members.ts'
 export { MessageReactionsManager } from './src/managers/messageReactions.ts'
@@ -111,6 +113,11 @@ export {
   OverwriteType,
   OverrideType
 } from './src/types/channel.ts'
+export type {
+  OverwriteAsOptions,
+  OverwritePayload,
+  EmbedPayload
+} from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
@@ -165,6 +172,7 @@ export type {
   GuildCreateChannelOptions,
   GuildCreateRolePayload
 } from './src/types/guild.ts'
+export { AuditLogEvents } from './src/types/guild.ts'
 export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
 export { PermissionFlags } from './src/types/permissionFlags.ts'
 export type {
@@ -182,6 +190,7 @@ export type { TemplatePayload } from './src/types/template.ts'
 export type { UserPayload } from './src/types/user.ts'
 export { UserFlags } from './src/types/userFlags.ts'
 export type { VoiceStatePayload } from './src/types/voice.ts'
+export type { VoiceState } from './src/structures/voiceState.ts'
 export type { WebhookPayload } from './src/types/webhook.ts'
 export * from './src/client/collectors.ts'
 export type { Dict } from './src/utils/dict.ts'
@@ -190,7 +199,24 @@ export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
 export { StoreChannel } from './src/structures/guildStoreChannel.ts'
 export { StageVoiceChannel } from './src/structures/guildVoiceStageChannel.ts'
-export { default as getChannelByType } from './src/utils/channel.ts'
+export {
+  isCategoryChannel,
+  isDMChannel,
+  isGroupDMChannel,
+  isGuildBasedTextChannel,
+  isGuildChannel,
+  isGuildTextChannel,
+  isNewsChannel,
+  isStageVoiceChannel,
+  isStoreChannel,
+  isTextChannel,
+  isVoiceChannel,
+  default as getChannelByType
+} from './src/utils/channel.ts'
+export * from './src/utils/interactions.ts'
+export * from './src/utils/command.ts'
+export { Team, TeamMember } from './src/structures/team.ts'
+export type { TeamPayload, TeamMemberPayload, MembershipState } from './src/types/team.ts'
 export * from './src/structures/threadChannel.ts'
 export * from './src/structures/resolvable.ts'
 export * from './src/utils/channelTypes.ts'

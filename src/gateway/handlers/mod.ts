@@ -60,7 +60,6 @@ import type {
 } from '../../utils/channel.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import type { Interaction } from '../../structures/interactions.ts'
-import type { SlashCommandInteraction } from '../../structures/slash.ts'
 import type { CommandContext } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
@@ -142,7 +141,11 @@ export interface VoiceServerUpdateData {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ClientEvents = {
   /** When Client has successfully connected to Discord */
-  ready: [shard: number]
+  ready: [shards: number]
+  /** When a Shard has recieved READY */
+  shardReady: [shard: number]
+  /** When all guilds of a Shard are loaded */
+  guildsLoaded: [shard: number]
   /** When a reconnect was requested by Discord */
   reconnect: [shard: number]
   /** When a successful session resume has been done */
@@ -264,6 +267,7 @@ export type ClientEvents = {
    * @param after Guild object after update
    */
   guildUpdate: [before: Guild, after: Guild]
+  guildUnavailable: [guild: Guild]
   /**
    * A new Message was created (sent)
    * @param message The new Message object
@@ -380,7 +384,7 @@ export type ClientEvents = {
    * An Interaction was created
    * @param interaction Created interaction object
    */
-  interactionCreate: [interaction: Interaction | SlashCommandInteraction]
+  interactionCreate: [interaction: Interaction]
 
   /**
    * When debug message was made
@@ -393,7 +397,7 @@ export type ClientEvents = {
    * @param evt Event name string
    * @param payload Payload JSON of the event
    */
-  raw: [evt: string, payload: any]
+  raw: [evt: string, payload: any, shard: number]
 
   /**
    * An uncached Message was deleted.
