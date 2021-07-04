@@ -113,11 +113,7 @@ export {
   OverwriteType,
   OverrideType
 } from './src/types/channel.ts'
-export type {
-  OverwriteAsOptions,
-  OverwritePayload,
-  EmbedPayload
-} from './src/types/channel.ts'
+export type { EmbedPayload } from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
@@ -154,7 +150,6 @@ export type {
   EmbedField,
   EmbedFooter,
   EmbedImage,
-  EmbedPayload,
   EmbedProvider,
   EmbedThumbnail,
   EmbedTypes
@@ -199,6 +194,7 @@ export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
 export { StoreChannel } from './src/structures/guildStoreChannel.ts'
 export { StageVoiceChannel } from './src/structures/guildVoiceStageChannel.ts'
+export { default as getChannelByType } from './src/utils/channel.ts'
 export {
   isCategoryChannel,
   isDMChannel,
@@ -210,13 +206,16 @@ export {
   isStageVoiceChannel,
   isStoreChannel,
   isTextChannel,
-  isVoiceChannel,
-  default as getChannelByType
-} from './src/utils/channel.ts'
+  isVoiceChannel
+} from './src/utils/channelTypes.ts'
 export * from './src/utils/interactions.ts'
 export * from './src/utils/command.ts'
 export { Team, TeamMember } from './src/structures/team.ts'
-export type { TeamPayload, TeamMemberPayload, MembershipState } from './src/types/team.ts'
+export type {
+  TeamPayload,
+  TeamMemberPayload,
+  MembershipState
+} from './src/types/team.ts'
 export * from './src/structures/threadChannel.ts'
 export * from './src/structures/resolvable.ts'
 export * from './src/utils/channelTypes.ts'
