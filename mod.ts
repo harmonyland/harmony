@@ -121,11 +121,6 @@ export type {
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
-  OverwriteAsOptions,
-  OverwritePayload,
-  Attachment,
-  AllowedMentionType,
-  AllowedMentionsPayload,
   ChannelMention,
   ChannelPayload,
   FollowedChannel,
@@ -147,17 +142,7 @@ export type {
   MessageStickerPayload,
   MessageTypes,
   OverwriteAsArg,
-  Overwrite,
-  EmbedVideo,
-  EditMessagePayload,
-  EmbedAuthor,
-  EmbedField,
-  EmbedFooter,
-  EmbedImage,
-  EmbedPayload,
-  EmbedProvider,
-  EmbedThumbnail,
-  EmbedTypes
+  Overwrite
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
@@ -217,6 +202,3 @@ export * from './src/utils/interactions.ts'
 export * from './src/utils/command.ts'
 export { Team, TeamMember } from './src/structures/team.ts'
 export type { TeamPayload, TeamMemberPayload, MembershipState } from './src/types/team.ts'
-export * from './src/structures/threadChannel.ts'
-export * from './src/structures/resolvable.ts'
-export * from './src/utils/channelTypes.ts'
