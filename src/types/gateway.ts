@@ -110,13 +110,7 @@ export enum GatewayEvents {
   Interaction_Create = 'INTERACTION_CREATE',
   Application_Command_Create = 'APPLICATION_COMMAND_CREATE',
   Application_Command_Update = 'APPLICATION_COMMAND_UPDATE',
-  Application_Command_Delete = 'APPLICATION_COMMAND_DELETE',
-  Thread_Create = 'THREAD_CREATE',
-  Thread_Delete = 'THREAD_DELETE',
-  Thread_Update = 'THREAD_UPDATE',
-  Thread_Member_Update = 'THREAD_MEMBER_UPDATE',
-  Thread_Members_Update = 'THREAD_MEMBERS_UPDATE',
-  Thread_List_Sync = 'THREAD_LIST_SYNC'
+  Application_Command_Delete = 'APPLICATION_COMMAND_DELETE'
 }
 
 export interface IdentityPayload {
