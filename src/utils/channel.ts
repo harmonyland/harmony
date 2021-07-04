@@ -6,10 +6,12 @@ import {
   GroupDMChannelPayload,
   GuildCategoryChannelPayload,
   GuildNewsChannelPayload,
+  GuildStageChannelPayload,
   GuildTextBasedChannelPayload,
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
-  TextChannelPayload
+  TextChannelPayload,
+  ThreadChannelPayload
 } from '../types/channel.ts'
 import { DMChannel } from '../structures/dmChannel.ts'
 import { GroupDMChannel } from '../structures/groupChannel.ts'
@@ -25,6 +27,7 @@ import { TextChannel } from '../structures/textChannel.ts'
 import { Channel, GuildChannel } from '../structures/channel.ts'
 import { StoreChannel } from '../structures/guildStoreChannel.ts'
 import { StageVoiceChannel } from '../structures/guildStageVoiceChannel.ts'
+import { ThreadChannel } from '../structures/threadChannel.ts'
 
 export type EveryTextChannelTypes =
   | TextChannel
@@ -33,6 +36,7 @@ export type EveryTextChannelTypes =
   | GuildTextBasedChannel
   | DMChannel
   | GroupDMChannel
+  | ThreadChannel
 
 export type EveryTextChannelPayloadTypes =
   | TextChannelPayload
@@ -41,18 +45,21 @@ export type EveryTextChannelPayloadTypes =
   | GuildTextBasedChannelPayload
   | DMChannelPayload
   | GroupDMChannelPayload
+  | ThreadChannelPayload
 
 export type EveryChannelTypes =
   | Channel
   | GuildChannel
   | CategoryChannel
   | VoiceChannel
+  | StageVoiceChannel
   | EveryTextChannelTypes
 
 export type EveryChannelPayloadTypes =
   | ChannelPayload
   | GuildCategoryChannelPayload
   | GuildVoiceChannelPayload
+  | GuildStageChannelPayload
   | EveryTextChannelPayloadTypes
 
 /** Get appropriate Channel structure by its type */
@@ -102,74 +109,13 @@ const getChannelByType = (
       return new DMChannel(client, data as DMChannelPayload)
     case ChannelTypes.GROUP_DM:
       return new GroupDMChannel(client, data as GroupDMChannelPayload)
+    case ChannelTypes.NEWS_THREAD:
+    case ChannelTypes.PRIVATE_THREAD:
+    case ChannelTypes.PUBLIC_THREAD:
+      if (guild === undefined)
+        throw new Error('No Guild was provided to construct Channel')
+      return new ThreadChannel(client, data as ThreadChannelPayload, guild)
   }
 }
 
 export default getChannelByType
-
-export function isTextChannel(channel: Channel): channel is TextChannel {
-  return (
-    channel.type === ChannelTypes.DM ||
-    channel.type === ChannelTypes.GROUP_DM ||
-    channel.type === ChannelTypes.GUILD_TEXT ||
-    channel.type === ChannelTypes.GUILD_NEWS
-  )
-}
-
-export function isDMChannel(channel: Channel): channel is DMChannel {
-  return channel.type === ChannelTypes.DM
-}
-
-export function isGroupDMChannel(channel: Channel): channel is GroupDMChannel {
-  return channel.type === ChannelTypes.GROUP_DM
-}
-
-export function isGuildTextChannel(
-  channel: Channel
-): channel is GuildTextChannel {
-  return channel.type === ChannelTypes.GUILD_TEXT
-}
-
-export function isGuildBasedTextChannel(
-  channel: Channel
-): channel is GuildTextBasedChannel {
-  return (
-    channel.type === ChannelTypes.GUILD_TEXT ||
-    channel.type === ChannelTypes.GUILD_NEWS
-  )
-}
-
-export function isCategoryChannel(
-  channel: Channel
-): channel is CategoryChannel {
-  return channel.type === ChannelTypes.GUILD_CATEGORY
-}
-
-export function isNewsChannel(channel: Channel): channel is NewsChannel {
-  return channel.type === ChannelTypes.GUILD_NEWS
-}
-
-export function isVoiceChannel(channel: Channel): channel is VoiceChannel {
-  return channel.type === ChannelTypes.GUILD_VOICE
-}
-
-export function isStageVoiceChannel(
-  channel: Channel
-): channel is StageVoiceChannel {
-  return channel.type === ChannelTypes.GUILD_STAGE_VOICE
-}
-
-export function isStoreChannel(channel: Channel): channel is StoreChannel {
-  return channel.type === ChannelTypes.GUILD_STORE
-}
-
-export function isGuildChannel(channel: Channel): channel is GuildChannel {
-  return (
-    channel.type === ChannelTypes.GUILD_CATEGORY ||
-    channel.type === ChannelTypes.GUILD_NEWS ||
-    channel.type === ChannelTypes.GUILD_STORE ||
-    channel.type === ChannelTypes.GUILD_TEXT ||
-    channel.type === ChannelTypes.GUILD_VOICE ||
-    channel.type === ChannelTypes.GUILD_STAGE_VOICE
-  )
-}

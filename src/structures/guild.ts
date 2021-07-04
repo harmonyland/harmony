@@ -54,6 +54,7 @@ import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
 import type { GuildSlashCommandsManager } from '../interactions/slashCommand.ts'
 import { toCamelCase } from '../utils/snakeCase.ts'
+import { ThreadsManager } from '../managers/threads.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -68,12 +69,11 @@ export class GuildBan extends Base {
   }
 }
 
-export class GuildBans {
-  client: Client
+export class GuildBans extends Base {
   guild: Guild
 
   constructor(client: Client, guild: Guild) {
-    this.client = client
+    super(client)
     this.guild = guild
   }
 
@@ -149,7 +149,6 @@ export class Guild extends SnowflakeBase {
   id: string
   name?: string
   icon?: string
-  iconHash?: string
   splash?: string
   discoverySplash?: string
   owner?: boolean
@@ -195,6 +194,7 @@ export class Guild extends SnowflakeBase {
   bans: GuildBans
   nsfw?: boolean
   commands: GuildSlashCommandsManager
+  threads: ThreadsManager
 
   /** Get Shard ID of Guild on which it is */
   get shardID(): number {
@@ -215,6 +215,7 @@ export class Guild extends SnowflakeBase {
       this.client.channels,
       this
     )
+    this.threads = new ThreadsManager(client, this.channels)
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
@@ -228,7 +229,6 @@ export class Guild extends SnowflakeBase {
     if (!this.unavailable) {
       this.name = data.name ?? this.name
       this.icon = data.icon ?? this.icon
-      this.iconHash = data.icon_hash ?? this.iconHash
       this.splash = data.splash ?? this.splash
       this.discoverySplash = data.discovery_splash ?? this.discoverySplash
       this.owner = data.owner ?? this.owner
@@ -270,7 +270,7 @@ export class Guild extends SnowflakeBase {
         data.approximate_number_count ?? this.approximateNumberCount
       this.approximatePresenceCount =
         data.approximate_presence_count ?? this.approximatePresenceCount
-      this.nsfw = data.nsfw ?? this.nsfw
+      this.nsfw = data.nsfw ?? this.nsfw ?? false
     }
   }
 

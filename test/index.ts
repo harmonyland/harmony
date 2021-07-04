@@ -35,6 +35,12 @@ client.on('ready', () => {
 
 client.on('debug', console.log)
 
+client.on('threadCreate', (t) => console.log('Thread Create', t))
+client.on('threadDelete', (t) => console.log('Thread Delete', t))
+client.on('threadDeleteUncached', (t) =>
+  console.log('Thread Delete Uncached', t)
+)
+
 client.on('channelUpdate', (b: EveryChannelTypes, a: EveryChannelTypes) => {
   if (b.type === ChannelTypes.GUILD_TEXT) {
     const before = b as unknown as GuildTextChannel

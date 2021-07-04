@@ -2,12 +2,15 @@ import type { ApplicationPayload } from '../types/application.ts'
 import type {
   ChannelPayload,
   CreateMessagePayload,
+  CreateThreadPayload,
   CreateWebhookMessageBasePayload,
   CreateWebhookMessagePayload,
   EditMessagePayload,
   FollowedChannel,
   MessagePayload,
-  OverwritePayload
+  OverwritePayload,
+  ThreadChannelPayload,
+  ThreadMemberPayload
 } from '../types/channel.ts'
 import type { CreateEmojiPayload, EmojiPayload } from '../types/emoji.ts'
 import type { GuildBanAddPayload } from '../types/gateway.ts'
@@ -42,6 +45,12 @@ import type { VoiceRegion } from '../types/voice.ts'
 import type { WebhookPayload } from '../types/webhook.ts'
 import type { Dict } from '../utils/dict.ts'
 import type { RESTManager } from './manager.ts'
+
+function queryString<T>(obj: T): string {
+  return Object.entries(obj)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+}
 
 export class RESTEndpoints {
   rest!: RESTManager
@@ -1329,5 +1338,134 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    */
   async getCurrentAuthorizationInformation(): Promise<any> {
     return this.rest.get(`/oauth2/@me`)
+  }
+
+  /**
+   * Creates a new public thread from an existing message. Returns a channel on success, and a 400 BAD REQUEST on invalid parameters. Fires a Thread Create Gateway event.
+   */
+  async startPublicThread(
+    channelId: string,
+    messageId: string,
+    payload: CreateThreadPayload
+  ): Promise<ThreadChannelPayload> {
+    return this.rest.post(
+      `/channels/${channelId}/messages/${messageId}/threads`,
+      payload
+    )
+  }
+
+  /**
+   * Creates a new private thread. Returns a channel on success, and a 400 BAD REQUEST on invalid parameters. Fires a Thread Create Gateway event.
+   */
+  async startPrivateThread(
+    channelId: string,
+    payload: CreateThreadPayload
+  ): Promise<ThreadChannelPayload> {
+    return this.rest.post(`/channels/${channelId}/threads`, payload)
+  }
+
+  /**
+   * Adds the current user to a thread. Returns a 204 empty response on success. Also requires the thread is not archived. Fires a Thread Members Update Gateway event.
+   */
+  async joinThread(channelId: string): Promise<undefined> {
+    return this.rest.post(`/channels/${channelId}/thread-members/@me`)
+  }
+
+  /**
+   * Adds another user to a thread. Requires the ability to send messages in the thread. Also requires the thread is not archived. Returns a 204 empty response on success. Fires a Thread Members Update Gateway event.
+   */
+  async addUserToThread(channelId: string, userId: string): Promise<undefined> {
+    return this.rest.post(`/channels/${channelId}/thread-members/${userId}`)
+  }
+
+  /**
+   * Removes the current user from a thread. Returns a 204 empty response on success. Fires a Thread Members Update Gateway event.
+   */
+  async leaveThread(channelId: string): Promise<void> {
+    return this.rest.delete(`/channels/${channelId}/thread-members/@me`)
+  }
+
+  /**
+   * Removes another user from a thread. Requires the MANAGE_THREADS permission or that you are the creator of the thread. Also requires the thread is not archived. Returns a 204 empty response on success. Fires a Thread Members Update Gateway event.
+   */
+  async removeUserFromThread(channelId: string, userId: string): Promise<void> {
+    return this.rest.delete(`/channels/${channelId}/thread-members/${userId}`)
+  }
+
+  /**
+   * Returns archived threads in the channel that are public. When called on a GUILD_TEXT channel, returns threads of type PUBLIC_THREAD. When called on a GUILD_NEWS channel returns threads of type NEWS_THREAD. Threads are ordered by archive_timestamp, in descending order. Requires the READ_MESSAGE_HISTORY permission.
+   */
+  async getPublicArchivedThreads(
+    channelId: string,
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannelPayload[]
+    members: ThreadMemberPayload[]
+    has_more: boolean
+  }> {
+    const qs = queryString(params)
+    return this.rest.get(
+      `/channels/${channelId}/threads/archived/public${
+        qs.length !== 0 ? `?${qs}` : ''
+      }`
+    )
+  }
+
+  /**
+   * Returns archived threads in the channel that are of type PRIVATE_THREAD. Threads are ordered by archive_timestamp, in descending order. Requires both the READ_MESSAGE_HISTORY and MANAGE_THREADS permissions.
+   */
+  async getPrivateArchivedThreads(
+    channelId: string,
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannelPayload[]
+    members: ThreadMemberPayload[]
+    has_more: boolean
+  }> {
+    const qs = queryString(params)
+    return this.rest.get(
+      `/channels/${channelId}/threads/archived/private${
+        qs.length !== 0 ? `?${qs}` : ''
+      }`
+    )
+  }
+
+  /**
+   * Returns archived threads in the channel that are of type PRIVATE_THREAD, and the user has joined. Threads are ordered by their id, in descending order. Requires the READ_MESSAGE_HISTORY permission.
+   */
+  async getJoinedPrivateArchivedThreads(
+    channelId: string,
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannelPayload[]
+    members: ThreadMemberPayload[]
+    has_more: boolean
+  }> {
+    const qs = queryString(params)
+    return this.rest.get(
+      `/channels/${channelId}/users/@me/threads/archived/private${
+        qs.length !== 0 ? `?${qs}` : ''
+      }`
+    )
+  }
+
+  /** Returns all active threads in the channel, including public and private threads. Threads are ordered by their id, in descending order. Requires the READ_MESSAGE_HISTORY permission. */
+  async getActiveThreads(
+    channelId: string,
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannelPayload[]
+    members: ThreadMemberPayload[]
+    has_more: boolean
+  }> {
+    const qs = queryString(params)
+    return this.rest.get(
+      `/channels/${channelId}/threads/active${qs.length !== 0 ? `?${qs}` : ''}`
+    )
+  }
+
+  /** Returns array of thread members objects that are members of the thread. */
+  async getThreadMembers(channelId: string): Promise<ThreadMemberPayload[]> {
+    return this.rest.get(`/channels/${channelId}/thread-members`)
   }
 }
