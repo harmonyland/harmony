@@ -37,6 +37,15 @@ export interface GuildTextBasedChannelPayload
   topic?: string
 }
 
+export interface ThreadChannelPayload
+  extends TextChannelPayload,
+    GuildChannelPayload {
+  message_count: number
+  member_count: number
+  member?: ThreadMemberPayload
+  thread_metadata: ThreadMetadataPayload
+}
+
 export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
   rate_limit_per_user: number
 }
@@ -46,7 +55,11 @@ export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
   user_limit: number
+  video_quality_mode: number
 }
+
+export interface GuildStageChannelPayload
+  extends Omit<GuildVoiceChannelPayload, 'video_quality_mode'> {}
 
 export interface DMChannelPayload extends TextChannelPayload {
   recipients: UserPayload[]
@@ -84,6 +97,13 @@ export interface ModifyGuildTextChannelPayload
   rate_limit_per_user?: number | null
 }
 
+export interface ModifyThreadChannelPayload
+  extends ModifyGuildTextBasedChannelPayload {
+  archived?: boolean
+  auto_archive_duration?: number
+  locked?: boolean
+}
+
 export interface ModifyGuildNewsChannelPayload
   extends ModifyGuildTextBasedChannelPayload {}
 
@@ -110,6 +130,13 @@ export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
 export interface ModifyGuildTextChannelOption
   extends ModifyGuildTextBasedChannelOption {
   slowmode?: number | null
+}
+
+export interface ModifyThreadChannelOption
+  extends ModifyGuildTextChannelOption {
+  archived?: boolean
+  autoArchiveDuration?: number
+  locked?: boolean
 }
 
 export interface ModifyGuildNewsChannelOption
@@ -162,6 +189,9 @@ export enum ChannelTypes {
   GUILD_CATEGORY = 4,
   GUILD_NEWS = 5,
   GUILD_STORE = 6,
+  NEWS_THREAD = 10,
+  PUBLIC_THREAD = 11,
+  PRIVATE_THREAD = 12,
   GUILD_STAGE_VOICE = 13
 }
 
@@ -189,10 +219,12 @@ export interface MessagePayload {
   activity?: MessageActivity
   application?: MessageApplication
   message_reference?: MessageReference
+  referenced_message?: MessagePayload
   flags?: number
   stickers?: MessageStickerPayload[]
   interaction?: MessageInteractionPayload
   components?: MessageComponentPayload[]
+  thread?: ThreadChannelPayload
 }
 
 export enum AllowedMentionType {
@@ -327,6 +359,7 @@ export interface MessageReference {
   message_id?: string
   channel_id?: string
   guild_id?: string
+  fail_if_not_exists?: boolean
 }
 
 export enum MessageTypes {
@@ -347,8 +380,11 @@ export enum MessageTypes {
   GUILD_DISCOVERY_REQUALIFIED = 15,
   GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING = 16,
   GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING = 17,
+  THREAD_CREATED = 18,
   REPLY = 19,
-  APPLICATION_COMMAND = 20
+  APPLICATION_COMMAND = 20,
+  THREAD_STARTER_MESSAGE = 21,
+  GUILD_INVITE_REMINDER = 22
 }
 
 export enum MessageActivityTypes {
@@ -363,7 +399,10 @@ export enum MessageFlags {
   IS_CROSSPOST = 1 << 1,
   SUPPRESS_EMBEDS = 1 << 2,
   SOURCE_MESSAGE_DELETED = 1 << 3,
-  URGENT = 1 << 4
+  URGENT = 1 << 4,
+  HAS_THREAD = 1 << 5,
+  EPHEMERAL = 1 << 6,
+  LOADING = 1 << 7
 }
 
 export interface FollowedChannel {
@@ -424,4 +463,28 @@ export interface CreateWebhookMessageBasePayload {
 export interface CreateWebhookMessagePayload extends CreateMessagePayload {
   username?: string
   avatar_url?: string
+}
+
+export interface ThreadMetadataPayload {
+  archived: boolean
+  archiver_id?: string
+  /** Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  auto_archive_duration: number
+  archive_timestamp: string
+  locked?: boolean
+}
+
+export interface ThreadMemberPayload {
+  /** ID of the Thread Channel */
+  id: string
+  user_id: string
+  join_timestamp: string
+  flags: number
+}
+
+export interface CreateThreadPayload {
+  /** 2-100 character channel name */
+  name: string
+  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  auto_archive_duration: number
 }

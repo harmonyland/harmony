@@ -20,7 +20,7 @@ import { TOKEN } from './config.ts'
 const client = new Client({
   // clientProperties: {
   //   browser: 'Discord iOS'
-  // },
+  // }
   // bot: false,
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
@@ -34,6 +34,12 @@ client.on('ready', () => {
 })
 
 client.on('debug', console.log)
+
+client.on('threadCreate', (t) => console.log('Thread Create', t))
+client.on('threadDelete', (t) => console.log('Thread Delete', t))
+client.on('threadDeleteUncached', (t) =>
+  console.log('Thread Delete Uncached', t)
+)
 
 client.on('channelUpdate', (b: EveryChannelTypes, a: EveryChannelTypes) => {
   if (b.type === ChannelTypes.GUILD_TEXT) {
@@ -90,14 +96,6 @@ client.on('messageCreate', async (msg: Message) => {
             return `${i + 1}. ${c.name} - ${c.memberCount} members`
           })
           .join('\n') as string)
-    )
-  } else if (msg.content === '!guild') {
-    msg.reply(`Guild Name: ${msg.guild?.name}`)
-  } else if (msg.content === '!perms') {
-    msg.reply(
-      `Permissions:\n${Object.entries(msg.member?.permissions.serialize() ?? {})
-        .map((e) => `${e[0]}: ${e[1]}`)
-        .join('\n')}`
     )
   } else if (msg.content === '!channels') {
     const col = await msg.guild?.channels.array()
@@ -308,7 +306,7 @@ client.on('messageReactionRemove', (reaction, user) => {
   }
 })
 
-client.connect(TOKEN, Intents.None ?? ['GUILDS'])
+client.connect(TOKEN, Intents.None)
 
 // OLD: Was a way to reproduce reconnect infinite loop
 // setTimeout(() => {

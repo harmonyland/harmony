@@ -17,11 +17,20 @@ import type { Message } from './message.ts'
 import type { CreateInviteOptions } from '../managers/invites.ts'
 import type { Invite } from './invite.ts'
 import type { CategoryChannel } from './guildCategoryChannel.ts'
+import type { ThreadChannel, ThreadMember } from './threadChannel.ts'
+import { ChannelThreadsManager } from '../managers/channelThreads.ts'
 
 const GUILD_TEXT_BASED_CHANNEL_TYPES: ChannelTypes[] = [
   ChannelTypes.GUILD_TEXT,
   ChannelTypes.GUILD_NEWS
 ]
+
+export interface CreateThreadOptions {
+  /** 2-100 character channel name */
+  name: string
+  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  autoArchiveDuration: number
+}
 
 /** Represents a Text Channel but in a Guild */
 export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
@@ -131,10 +140,16 @@ export const checkGuildTextBasedChannel = (
 
 export class GuildTextChannel extends GuildTextBasedChannel {
   slowmode: number
+  threads: ChannelThreadsManager
 
   constructor(client: Client, data: GuildTextChannelPayload, guild: Guild) {
     super(client, data, guild)
     this.slowmode = data.rate_limit_per_user
+    this.threads = new ChannelThreadsManager(
+      this.client,
+      this.guild.threads,
+      this
+    )
   }
 
   readFromData(data: GuildTextChannelPayload): void {
@@ -164,5 +179,128 @@ export class GuildTextChannel extends GuildTextBasedChannel {
   /** Edit Slowmode of the channel */
   async setSlowmode(slowmode?: number | null): Promise<GuildTextChannel> {
     return await this.edit({ slowmode: slowmode ?? null })
+  }
+
+  async startThread(
+    options: CreateThreadOptions,
+    message: Message | string
+  ): Promise<ThreadChannel> {
+    const payload = await this.client.rest.endpoints.startPublicThread(
+      this.id,
+      typeof message === 'string' ? message : message.id,
+      { name: options.name, auto_archive_duration: options.autoArchiveDuration }
+    )
+    await this.client.channels.set(payload.id, payload)
+    return (await this.client.channels.get<ThreadChannel>(payload.id))!
+  }
+
+  async startPrivateThread(
+    options: CreateThreadOptions
+  ): Promise<ThreadChannel> {
+    const payload = await this.client.rest.endpoints.startPrivateThread(
+      this.id,
+      { name: options.name, auto_archive_duration: options.autoArchiveDuration }
+    )
+    await this.client.channels.set(payload.id, payload)
+    return (await this.client.channels.get<ThreadChannel>(payload.id))!
+  }
+
+  async fetchArchivedThreads(
+    type: 'public' | 'private' = 'public',
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    const data =
+      type === 'public'
+        ? await this.client.rest.endpoints.getPublicArchivedThreads(
+            this.id,
+            params
+          )
+        : await this.client.rest.endpoints.getPrivateArchivedThreads(
+            this.id,
+            params
+          )
+
+    const threads: ThreadChannel[] = []
+    const members: ThreadMember[] = []
+
+    for (const d of data.threads) {
+      await this.threads.set(d.id, d)
+      threads.push((await this.threads.get(d.id))!)
+    }
+
+    for (const d of data.members) {
+      const thread =
+        threads.find((e) => e.id === d.id) ?? (await this.threads.get(d.id))
+      if (thread !== undefined) {
+        await thread.members.set(d.user_id, d)
+        members.push((await thread.members.get(d.user_id))!)
+      }
+    }
+
+    return {
+      threads,
+      members,
+      hasMore: data.has_more
+    }
+  }
+
+  async fetchPublicArchivedThreads(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return await this.fetchArchivedThreads('public', params)
+  }
+
+  async fetchPrivateArchivedThreads(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    return await this.fetchArchivedThreads('private', params)
+  }
+
+  async fetchJoinedPrivateArchivedThreads(
+    params: { before?: string; limit?: number } = {}
+  ): Promise<{
+    threads: ThreadChannel[]
+    members: ThreadMember[]
+    hasMore: boolean
+  }> {
+    const data = await this.client.rest.endpoints.getJoinedPrivateArchivedThreads(
+      this.id,
+      params
+    )
+
+    const threads: ThreadChannel[] = []
+    const members: ThreadMember[] = []
+
+    for (const d of data.threads) {
+      await this.threads.set(d.id, d)
+      threads.push((await this.threads.get(d.id))!)
+    }
+
+    for (const d of data.members) {
+      const thread =
+        threads.find((e) => e.id === d.id) ?? (await this.threads.get(d.id))
+      if (thread !== undefined) {
+        await thread.members.set(d.user_id, d)
+        members.push((await thread.members.get(d.user_id))!)
+      }
+    }
+
+    return {
+      threads,
+      members,
+      hasMore: data.has_more
+    }
   }
 }

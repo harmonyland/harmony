@@ -73,7 +73,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
         this.client.shardCount === 'auto' &&
         this.client.fetchGatewayInfo !== false
       ) {
-        this.debug('Fetch /gateway/bot...')
+        this.debug(`Fetch /api/${this.client.rest.version}/gateway/bot...`)
         const info = await this.client.rest.api.gateway.bot.get()
         this.debug(`Recommended Shards: ${info.shards}`)
         this.debug('=== Session Limit Info ===')

@@ -92,7 +92,7 @@ export enum TokenType {
 /** An easier to use interface for interacting with Discord REST API. */
 export class RESTManager {
   /** API Version being used by REST Manager */
-  version: number = 8
+  version: number = Constants.DISCORD_API_VERSION
   /**
    * API Map - easy to use way for interacting with Discord API.
    *
