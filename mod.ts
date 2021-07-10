@@ -113,14 +113,14 @@ export {
   OverwriteType,
   OverrideType
 } from './src/types/channel.ts'
-export type {
-  OverwriteAsOptions,
-  OverwritePayload,
-  EmbedPayload
-} from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
+  OverwriteAsOptions,
+  OverwritePayload,
+  Attachment,
+  AllowedMentionType,
+  AllowedMentionsPayload,
   ChannelMention,
   ChannelPayload,
   FollowedChannel,
@@ -142,7 +142,17 @@ export type {
   MessageStickerPayload,
   MessageTypes,
   OverwriteAsArg,
-  Overwrite
+  Overwrite,
+  EmbedVideo,
+  EditMessagePayload,
+  EmbedAuthor,
+  EmbedField,
+  EmbedFooter,
+  EmbedImage,
+  EmbedProvider,
+  EmbedThumbnail,
+  EmbedTypes,
+  EmbedPayload
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
@@ -184,6 +194,7 @@ export { ColorUtil } from './src/utils/colorutil.ts'
 export type { Colors } from './src/utils/colorutil.ts'
 export { StoreChannel } from './src/structures/guildStoreChannel.ts'
 export { StageVoiceChannel } from './src/structures/guildVoiceStageChannel.ts'
+export { default as getChannelByType } from './src/utils/channel.ts'
 export {
   isCategoryChannel,
   isDMChannel,
@@ -195,10 +206,16 @@ export {
   isStageVoiceChannel,
   isStoreChannel,
   isTextChannel,
-  isVoiceChannel,
-  default as getChannelByType
-} from './src/utils/channel.ts'
+  isVoiceChannel
+} from './src/utils/channelTypes.ts'
 export * from './src/utils/interactions.ts'
 export * from './src/utils/command.ts'
 export { Team, TeamMember } from './src/structures/team.ts'
-export type { TeamPayload, TeamMemberPayload, MembershipState } from './src/types/team.ts'
+export type {
+  TeamPayload,
+  TeamMemberPayload,
+  MembershipState
+} from './src/types/team.ts'
+export * from './src/structures/threadChannel.ts'
+export * from './src/structures/resolvable.ts'
+export * from './src/utils/channelTypes.ts'

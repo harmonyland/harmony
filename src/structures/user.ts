@@ -8,6 +8,7 @@ import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
 import type { DMChannel } from './dmChannel.ts'
 import { AllMessageOptions } from './textChannel.ts'
 import { Message } from './message.ts'
+import { IResolvable } from './resolvable.ts'
 
 export class User extends SnowflakeBase {
   id: string
@@ -116,5 +117,23 @@ export class User extends SnowflakeBase {
   ): Promise<Message> {
     const dm = await this.resolveDM()
     return dm.send(content, options)
+  }
+}
+
+export class UserResolvable extends SnowflakeBase implements IResolvable<User> {
+  constructor(client: Client, public id: string) {
+    super(client)
+  }
+
+  async get(): Promise<User | undefined> {
+    return this.client.users.get(this.id)
+  }
+
+  async fetch(): Promise<User> {
+    return this.client.users.fetch(this.id)
+  }
+
+  async resolve(): Promise<User | undefined> {
+    return this.client.users.resolve(this.id)
   }
 }

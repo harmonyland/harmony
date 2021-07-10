@@ -34,5 +34,8 @@ export const PermissionFlags: { [key: string]: bigint } = {
   MANAGE_EMOJIS: 1n << 30n,
   USE_SLASH_COMMANDS: 1n << 31n,
   // Might be removed (as PR says)
-  REQUEST_TO_SPEAK: 0x100000000n
+  REQUEST_TO_SPEAK: 1n << 32n,
+  MANAGE_THREADS: 1n << 34n,
+  USE_PUBLIC_THREADS: 1n << 35n,
+  USE_PRIVATE_THREADS: 1n << 36n
 }
