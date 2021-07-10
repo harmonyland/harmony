@@ -33,6 +33,8 @@ import { Member } from './member.ts'
 import { Message, MessageAttachment } from './message.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
+import type { SlashCommandInteraction } from './slash.ts'
+import type { MessageComponentInteraction } from './messageComponents.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   embeds?: Array<Embed | EmbedPayload>
@@ -135,15 +137,23 @@ export class Interaction extends SnowflakeBase {
     this.message = others.message
   }
 
+  isSlashCommand(): this is SlashCommandInteraction {
+    return this.type === InteractionType.APPLICATION_COMMAND
+  }
+
+  isMessageComponent(): this is MessageComponentInteraction {
+    return this.type === InteractionType.MESSAGE_COMPONENT
+  }
+
   /** Respond to an Interaction */
   async respond(data: InteractionResponse): Promise<this> {
     if (this.responded) throw new Error('Already responded to Interaction')
     let flags = 0
     if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
     if (data.flags !== undefined) {
-      if (Array.isArray(data.flags))
+      if (Array.isArray(data.flags)) {
         flags = data.flags.reduce((p, a) => p | a, flags)
-      else if (typeof data.flags === 'number') flags |= data.flags
+      } else if (typeof data.flags === 'number') flags |= data.flags
     }
     const payload: InteractionResponsePayload = {
       type:
@@ -157,13 +167,14 @@ export class Interaction extends SnowflakeBase {
         data.content !== undefined ||
         data.embeds !== undefined ||
         data.components !== undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
+        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+        data.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
           ? {
               content: data.content ?? '',
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
-              allowed_mentions: data.allowedMentions ?? undefined,
+              allowed_mentions: data.allowedMentions,
               components:
                 data.components === undefined
                   ? undefined
@@ -175,11 +186,12 @@ export class Interaction extends SnowflakeBase {
     if (this._httpRespond !== undefined && this._httpResponded !== true) {
       this._httpResponded = true
       await this._httpRespond(payload)
-    } else
+    } else {
       await this.client.rest.post(
         INTERACTION_CALLBACK(this.id, this.token),
         payload
       )
+    }
     this.responded = true
 
     return this
@@ -212,8 +224,9 @@ export class Interaction extends SnowflakeBase {
       typeof content === 'object' &&
       messageOptions !== undefined &&
       options !== undefined
-    )
+    ) {
       Object.assign(options, messageOptions)
+    }
     if (options === undefined) options = {}
     if (typeof content === 'string') Object.assign(options, { content })
 
@@ -224,12 +237,13 @@ export class Interaction extends SnowflakeBase {
         flags: options.flags,
         allowedMentions: options.allowedMentions
       })
-    } else
+    } else {
       await this.respond(
         Object.assign(options, {
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
         })
       )
+    }
 
     return this
   }
@@ -293,10 +307,11 @@ export class Interaction extends SnowflakeBase {
       throw new Error('Either text or option is necessary.')
     }
 
-    if (option instanceof Embed)
+    if (option instanceof Embed) {
       option = {
         embeds: [option]
       }
+    }
 
     const payload: any = {
       content: text,
@@ -311,9 +326,13 @@ export class Interaction extends SnowflakeBase {
       tts: (option as WebhookMessageOptions)?.tts,
       allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
       components:
-        (option as WebhookMessageOptions).components === undefined
+        (option as WebhookMessageOptions)?.components === undefined
           ? undefined
-          : transformComponent((option as WebhookMessageOptions).components!)
+          : typeof (option as WebhookMessageOptions).components === 'function'
+          ? (option as { components: CallableFunction }).components()
+          : transformComponent(
+              (option as { components: MessageComponentData[] }).components
+            )
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {
@@ -328,10 +347,11 @@ export class Interaction extends SnowflakeBase {
       payload.embeds !== undefined &&
       payload.embeds instanceof Array &&
       payload.embeds.length > 10
-    )
+    ) {
       throw new Error(
         `Cannot send more than 10 embeds through Interaction Webhook`
       )
+    }
 
     const resp = await this.client.rest.post(`${this.url}?wait=true`, payload)
 

@@ -9,13 +9,25 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
   d: GuildEmojiUpdatePayload
 ) => {
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
-  if (guild === undefined) return
 
-  const emojis = await guild.emojis.collection()
-  const deleted: Emoji[] = []
-  const added: Emoji[] = []
-  const updated: Array<{ before: Emoji; after: Emoji }> = []
-  const _updated: EmojiPayload[] = []
+  if (guild !== undefined) {
+    const emojis = await guild.emojis.collection()
+    const deleted: Emoji[] = []
+    const added: Emoji[] = []
+    const updated: Array<{ before: Emoji; after: Emoji }> = []
+    const _updated: EmojiPayload[] = []
+
+    for (const raw of d.emojis) {
+      if (raw.user !== undefined)
+        await gateway.client.users.set(raw.user.id, raw.user)
+      const emojiID = (raw.id !== null ? raw.id : raw.name) as string
+      const has = emojis.get(emojiID)
+      if (has === undefined) {
+        await guild.emojis.set(emojiID, raw)
+        const emoji = (await guild.emojis.get(emojiID)) as Emoji
+        added.push(emoji)
+      } else _updated.push(raw)
+    }
 
   for (const raw of d.emojis) {
     const emojiID = raw.id ?? raw.name as string

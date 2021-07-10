@@ -66,8 +66,12 @@ export interface ClientOptions {
   fetchGatewayInfo?: boolean
   /** ADVANCED: Shard ID to launch on */
   shard?: number
-  /** ADVACNED: Shard count. */
+  /** ADVANCED: Shard count. */
   shardCount?: number | 'auto'
+  /** Whether to enable Zlib Compression (for Gateway) or not (enabled by default) */
+  compress?: boolean
+  /** Max number of messages to cache per channel. Default 100 */
+  messageCacheMax?: number
 }
 
 /**
@@ -107,6 +111,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   forceNewSession?: boolean
   /** Time till messages to stay cached, in MS. */
   messageCacheLifetime: number = 3600000
+  /** Max number of messages to cache per channel. Default 100 */
+  messageCacheMax: number = 100
   /** Time till messages to stay cached, in MS. */
   reactionCacheLifetime: number = 3600000
   /** Whether to fetch Uncached Message of Reaction or not? */
@@ -149,6 +155,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Collectors set */
   collectors: Set<Collector> = new Set()
 
+  /** Whether Zlib compression (for Gateway) is enabled or not */
+  compress = true
+
   /** Since when is Client online (ready). */
   get uptime(): number {
     if (this.upSince === undefined) return 0
@@ -184,7 +193,11 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (options.reactionCacheLifetime !== undefined)
       this.reactionCacheLifetime = options.reactionCacheLifetime
 
-    this.fetchUncachedReactions = Boolean(options.fetchUncachedReactions)
+    if (options.fetchUncachedReactions === true)
+      this.fetchUncachedReactions = true
+    if (options.messageCacheMax !== undefined)
+      this.messageCacheMax = options.messageCacheMax
+    if (options.compress !== undefined) this.compress = options.compress
 
     if (
       (this as any)._decoratedEvents !== undefined &&
@@ -299,7 +312,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     token: string | undefined = this.token,
     intents?: Array<GatewayIntents | keyof typeof GatewayIntents>
   ): Promise<Client> {
-    const readyPromise = this.waitFor('ready', () => true);
+    const readyPromise = this.waitFor('ready', () => true)
     await this.guilds.flush()
     if (token === undefined) throw new Error('No Token Provided')
     this.token = token

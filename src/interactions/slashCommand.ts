@@ -113,10 +113,7 @@ function createSlashOption(
   return {
     name: data.name,
     type,
-    description:
-      type === 1
-        ? undefined
-        : data.description ?? 'No description.',
+    description: data.description ?? 'No description.',
     options: data.options?.map((e) =>
       typeof e === 'function' ? e(SlashOption) : e
     ),

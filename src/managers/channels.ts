@@ -141,8 +141,28 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       files: option?.files,
       tts: option?.tts,
       allowed_mentions: option?.allowedMentions,
-      components: messageComponenets,
-      message_reference: reference
+      components:
+        option?.components !== undefined
+          ? typeof option.components === 'function'
+            ? option.components
+            : transformComponent(option.components)
+          : undefined,
+      message_reference:
+        option?.reply === undefined
+          ? undefined
+          : typeof option.reply === 'string'
+          ? {
+              message_id: option.reply
+            }
+          : typeof option.reply === 'object'
+          ? option.reply instanceof Message
+            ? {
+                message_id: option.reply.id,
+                channel_id: option.reply.channel.id,
+                guild_id: option.reply.guild?.id
+              }
+            : option.reply
+          : undefined
     }
 
     if (payload.content === undefined && payload.embed === undefined) {
@@ -195,7 +215,9 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       allowed_mentions: option?.allowedMentions,
       components:
         option?.components !== undefined
-          ? transformComponent(option.components)
+          ? typeof option.components === 'function'
+            ? option.components
+            : transformComponent(option.components)
           : undefined
     })
 
@@ -206,5 +228,21 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     const res = new Message(this.client, newMsg, chan, this.client.user)
     await res.mentions.fromPayload(newMsg)
     return res
+  }
+
+  /** Get cache size for messages. Returns total messages cache size if channel param is not given */
+  async messageCacheSize(channel?: string | TextChannel): Promise<number> {
+    if (channel === undefined) {
+      const channels = (await this.client.cache.keys('channels')) ?? []
+      if (channels.length === 0) return 0
+      let size = 0
+      for (const id of channels) {
+        size += await this.messageCacheSize(id)
+      }
+      return size
+    }
+
+    const id = typeof channel === 'object' ? channel.id : channel
+    return (await this.client.cache.size(`messages:${id}`)) ?? 0
   }
 }

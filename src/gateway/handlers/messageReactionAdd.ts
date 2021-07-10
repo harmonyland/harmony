@@ -37,14 +37,14 @@ export const messageReactionAdd: GatewayEventHandler = async (
       emoji: d.emoji,
       me: d.user_id === gateway.client.user?.id
     })
-    reaction = ((await message.reactions.get(
+    reaction = (await message.reactions.get(
       emojiID
-    )) as unknown) as MessageReaction
+    )) as unknown as MessageReaction
   }
 
-  const rawUser = ((await gateway.client.users.get(
+  const rawUser = (await gateway.client.users.get(
     d.user_id
-  )) as unknown) as UserPayload
+  )) as unknown as UserPayload
 
   reaction.users.set(rawUser.id, rawUser)
 

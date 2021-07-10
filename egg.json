@@ -4,7 +4,7 @@
   "entry": "./mod.ts",
   "description": "An easy to use Discord API Library for Deno.",
   "homepage": "https://github.com/harmonyland/harmony",
-  "version": "v2.0.0-rc2",
+  "version": "v2.0.0-rc3",
   "files": [
     "./src/**/*",
     "./deps.ts",

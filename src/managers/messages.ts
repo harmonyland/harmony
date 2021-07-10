@@ -4,13 +4,14 @@ import type { TextChannel } from '../structures/textChannel.ts'
 import { User } from '../structures/user.ts'
 import type { MessagePayload } from '../types/channel.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
+import { Snowflake } from '../utils/snowflake.ts'
 import { BaseManager } from './base.ts'
 
 export class MessagesManager extends BaseManager<MessagePayload, Message> {
   channel: TextChannel
 
   constructor(client: Client, channel: TextChannel) {
-    super(client, 'messages', Message)
+    super(client, `messages:${channel.id}`, Message)
     this.channel = channel
   }
 
@@ -24,24 +25,37 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     if (channel === undefined)
       channel = await this.client.channels.fetch(raw.channel_id)
 
-    let author = ((await this.client.users.get(
-      raw.author.id
-    )) as unknown) as User
+    let author = (await this.client.users.get(raw.author.id)) as unknown as User
 
     if (author === undefined) author = new User(this.client, raw.author)
 
-    const res = new this.DataType(this.client, raw, channel, author) as any
+    const res = new this.DataType(this.client, raw, channel, author)
     await res.mentions.fromPayload(raw)
+    
+    if (typeof raw.guild_id === 'string')
+      res.guild = await this.client.guilds.get(raw.guild_id)
+    
+    if (typeof res.guild === 'object') 
+      res.member = await res.guild.members.get(raw.author.id)
+    
     return res
   }
 
-  async set(key: string, value: MessagePayload): Promise<any> {
-    return this.client.cache.set(
+  async set(key: string, value: MessagePayload): Promise<void> {
+    await this.client.cache.set(
       this.cacheName,
       key,
       value,
       this.client.messageCacheLifetime
     )
+    const keys = (await this.client.cache.keys(this.cacheName)) ?? []
+    if (keys.length > this.client.messageCacheMax) {
+      const sorted = keys.sort(
+        (b, a) => new Snowflake(a).timestamp - new Snowflake(b).timestamp
+      )
+      const toRemove = sorted.filter((_, i) => i >= this.client.messageCacheMax)
+      await this.client.cache.delete(this.cacheName, ...toRemove)
+    }
   }
 
   async array(): Promise<Message[]> {
@@ -60,9 +74,9 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
           channel = await this.client.channels.fetch(raw.channel_id)
         if (channel === undefined) return
 
-        let author = ((await this.client.users.get(
+        let author = (await this.client.users.get(
           raw.author.id
-        )) as unknown) as User
+        )) as unknown as User
 
         if (author === undefined) author = new User(this.client, raw.author)
 

@@ -60,7 +60,6 @@ import type {
 } from '../../utils/channel.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import type { Interaction } from '../../structures/interactions.ts'
-import type { SlashCommandInteraction } from '../../structures/slash.ts'
 import type { CommandContext } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
@@ -69,6 +68,16 @@ import { applicationCommandCreate } from './applicationCommandCreate.ts'
 import { applicationCommandDelete } from './applicationCommandDelete.ts'
 import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
 import type { SlashCommand } from '../../interactions/slashCommand.ts'
+import type {
+  ThreadChannel,
+  ThreadMember
+} from '../../structures/threadChannel.ts'
+import { threadCreate } from './threadCreate.ts'
+import { threadDelete } from './threadDelete.ts'
+import { threadUpdate } from './threadUpdate.ts'
+import { threadMembersUpdate } from './threadMembersUpdate.ts'
+import { threadMemberUpdate } from './threadMemberUpdate.ts'
+import { threadListSync } from './threadListSync.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -113,7 +122,13 @@ export const gatewayHandlers: {
   VOICE_STATE_UPDATE: voiceStateUpdate,
   VOICE_SERVER_UPDATE: voiceServerUpdate,
   WEBHOOKS_UPDATE: webhooksUpdate,
-  INTERACTION_CREATE: interactionCreate
+  INTERACTION_CREATE: interactionCreate,
+  THREAD_CREATE: threadCreate,
+  THREAD_DELETE: threadDelete,
+  THREAD_UPDATE: threadUpdate,
+  THREAD_LIST_SYNC: threadListSync,
+  THREAD_MEMBERS_UPDATE: threadMembersUpdate,
+  THREAD_MEMBER_UPDATE: threadMemberUpdate
 }
 
 export interface VoiceServerUpdateData {
@@ -369,7 +384,7 @@ export type ClientEvents = {
    * An Interaction was created
    * @param interaction Created interaction object
    */
-  interactionCreate: [interaction: Interaction | SlashCommandInteraction]
+  interactionCreate: [interaction: Interaction]
 
   /**
    * When debug message was made
@@ -430,4 +445,25 @@ export type ClientEvents = {
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
+
+  threadCreate: [thread: ThreadChannel]
+  threadDelete: [thread: ThreadChannel]
+  threadDeleteUncached: [thread: string]
+  threadUpdate: [old: ThreadChannel, new: ThreadChannel]
+  threadUpdateUncached: [thread: ThreadChannel]
+  threadListSync: [
+    guild: Guild,
+    threads: Collection<string, ThreadChannel>,
+    members: Collection<string, ThreadMember>,
+    channels: Collection<string, GuildTextBasedChannel>
+  ]
+  threadMemberUpdate: [me: ThreadMember]
+  threadMembersUpdate: [
+    guild: Guild,
+    added: Collection<string, ThreadMember>,
+    removed: Collection<string, ThreadMember>,
+    memberCount: number
+  ]
+  threadMemberAdd: [member: ThreadMember, guild: Guild]
+  threadMemberRemove: [member: ThreadMember, guild: Guild]
 }

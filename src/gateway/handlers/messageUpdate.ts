@@ -23,6 +23,6 @@ export const messageUpdate: GatewayEventHandler = async (
   Object.assign(newRaw, d)
   await channel.messages.set(d.id, newRaw)
 
-  const newMsg = ((await channel.messages.get(d.id)) as unknown) as Message
+  const newMsg = (await channel.messages.get(d.id)) as unknown as Message
   gateway.client.emit('messageUpdate', message, newMsg)
 }

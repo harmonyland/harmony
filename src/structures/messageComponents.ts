@@ -82,6 +82,7 @@ export class MessageComponentInteraction extends Interaction {
     super(client, data, others)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     this.data = data.data as InteractionMessageComponentData
+    this.message = others.message!
   }
 
   get customID(): string {
@@ -90,5 +91,9 @@ export class MessageComponentInteraction extends Interaction {
 
   get componentType(): MessageComponentType {
     return this.data.component_type
+  }
+
+  get values(): string[] {
+    return this.data.values ?? []
   }
 }

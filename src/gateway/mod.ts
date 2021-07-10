@@ -330,7 +330,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         $browser: this.client.clientProperties.browser ?? 'harmony',
         $device: this.client.clientProperties.device ?? 'harmony'
       },
-      compress: true,
+      compress: this.client.compress,
       shard:
         this.shards === undefined
           ? [0, 1]

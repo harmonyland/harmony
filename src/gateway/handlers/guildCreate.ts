@@ -23,6 +23,12 @@ export const guildCreate: GatewayEventHandler = async (
     }
   }
 
+  if (d.threads !== undefined) {
+    for (const data of d.threads) {
+      await guild.threads.set(data.id, data)
+    }
+  }
+
   await guild.roles.fromPayload(d.roles)
 
   if (d.presences !== undefined) await guild.presences.fromPayload(d.presences)
@@ -32,6 +38,9 @@ export const guildCreate: GatewayEventHandler = async (
 
   for (const emojiPayload of d.emojis) {
     if (emojiPayload.id === null) continue
+    if (emojiPayload.user !== undefined) {
+      await gateway.client.users.set(emojiPayload.user.id, emojiPayload.user)
+    }
     await gateway.client.emojis.set(emojiPayload.id, emojiPayload)
   }
 

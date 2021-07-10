@@ -88,6 +88,11 @@ export class BaseManager<T, T2> extends Base {
     return this.client.cache.deleteCache(this.cacheName)
   }
 
+  /** Gets number of values stored in Cache */
+  async size(): Promise<number> {
+    return (await this.client.cache.size(this.cacheName)) ?? 0
+  }
+
   [Deno.customInspect](): string {
     return `Manager(${this.cacheName})`
   }

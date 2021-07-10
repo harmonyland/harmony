@@ -12,6 +12,7 @@ export const guildMemberRemove: GatewayEventHandler = async (
   // Hack around <GuildManager>.get that value can be null
   if (guild === undefined) return
 
+  await gateway.client.users.set(d.user.id, d.user)
   const member = await guild.members.get(d.user.id)
   await guild.members._delete(d.user.id)
 

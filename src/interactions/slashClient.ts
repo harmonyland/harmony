@@ -316,6 +316,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
           channel: payload.channel_id as any
         })
       }
+      await this.emit('interaction', res)
       res._httpRespond = async (d: InteractionResponsePayload | FormData) =>
         await req.respond({
           status: 200,

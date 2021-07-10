@@ -250,4 +250,20 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     await this.client.rest.delete(GUILD(guild))
     return oldGuild
   }
+
+  /** Returns number of entries in Members Cache. Returns total of all guilds if guild param is not given */
+  async memberCacheSize(guild?: string | Guild): Promise<number> {
+    if (guild === undefined) {
+      const guilds = (await this.client.cache.keys('guilds')) ?? []
+      if (guilds.length === 0) return 0
+      let size = 0
+      for (const id of guilds) {
+        size += await this.memberCacheSize(id)
+      }
+      return size
+    }
+
+    const id = typeof guild === 'object' ? guild.id : guild
+    return (await this.client.cache.size(`members:${id}`)) ?? 0
+  }
 }
