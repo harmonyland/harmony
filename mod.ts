@@ -113,7 +113,6 @@ export {
   OverwriteType,
   OverrideType
 } from './src/types/channel.ts'
-export type { EmbedPayload } from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
 export type {
@@ -152,7 +151,8 @@ export type {
   EmbedImage,
   EmbedProvider,
   EmbedThumbnail,
-  EmbedTypes
+  EmbedTypes,
+  EmbedPayload
 } from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
