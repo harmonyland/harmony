@@ -105,6 +105,9 @@ export class Command implements CommandOptions {
   /** Method called when the command errors */
   onError(ctx: CommandContext, error: Error): any {}
 
+  /** Method called when there are missing arguments */
+  onMissingArgs(ctx: CommandContext): any {}
+
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
   beforeExecute(ctx: CommandContext): boolean | Promise<boolean> {
     return true
