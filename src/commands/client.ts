@@ -350,26 +350,24 @@ export class CommandClient extends Client implements CommandClientOptions {
     }
 
     if (command.args !== undefined) {
-      if (typeof command.args === 'boolean' && parsed.args.length === 0)
+      if (parsed.args.length === 0) {
         try {
           return await command.onMissingArgs(ctx)
         } catch (e) {
           return this.emit('commandMissingArgs', ctx)
         }
-      else if (
-        typeof command.args === 'number' &&
-        parsed.args.length < command.args
-      )
-      try {
-        return await command.onMissingArgs(ctx)
-      } catch (e) {
-        return this.emit('commandMissingArgs', ctx)
+      }
+      else if (parsed.args.length < command.args.length) {
+        try {
+          return await command.onMissingArgs(ctx)
+        } catch (e) {
+          return this.emit('commandMissingArgs', ctx)
+        } 
       }
     }
 
     try {
       this.emit('commandUsed', ctx)
-
       const beforeExecute = await command.beforeExecute(ctx)
       if (beforeExecute === false) return
 
