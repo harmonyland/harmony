@@ -31,7 +31,7 @@ export const inviteCreate: GatewayEventHandler = async (
     code: d.code,
     guild: cachedGuild,
     // had to use `as ChannelPayload` because the _get method returned `ChannelPayload | undefined` which errored
-    channel: (cachedChannel as unknown) as ChannelPayload,
+    channel: cachedChannel as unknown as ChannelPayload,
     inviter: d.inviter,
     target_user: d.target_user,
     target_user_type: d.target_user_type
@@ -39,5 +39,5 @@ export const inviteCreate: GatewayEventHandler = async (
 
   await guild.invites.set(d.code, dataConverted)
   const invite = await guild.invites.get(d.code)
-  gateway.client.emit('inviteCreate', (invite as unknown) as Invite)
+  gateway.client.emit('inviteCreate', invite as unknown as Invite)
 }

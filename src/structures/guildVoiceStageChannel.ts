@@ -1,3 +1,3 @@
 import { VoiceChannel } from './guildVoiceChannel.ts'
 
-export class StageVoiceChannel extends VoiceChannel { }
+export class StageVoiceChannel extends VoiceChannel {}

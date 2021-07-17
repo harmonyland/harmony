@@ -21,8 +21,8 @@ export const inviteDelete: GatewayEventHandler = async (
 
   if (cachedInvite === undefined) {
     const uncachedInvite: PartialInvitePayload = {
-      guild: (cachedGuild as unknown) as Guild,
-      channel: (cachedChannel as unknown) as Channel,
+      guild: cachedGuild as unknown as Guild,
+      channel: cachedChannel as unknown as Channel,
       code: d.code
     }
     return gateway.client.emit('inviteDeleteUncached', uncachedInvite)

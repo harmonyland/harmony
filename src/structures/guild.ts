@@ -653,13 +653,11 @@ export class Guild extends SnowflakeBase {
       webhooks: [],
       users: [],
       entries: [],
-      integrations: []  
+      integrations: []
     }
 
     if ('audit_log_entries' in data) {
-      ret.entries = data.audit_log_entries.map(
-        transformAuditLogEntryPayload
-      )
+      ret.entries = data.audit_log_entries.map(transformAuditLogEntryPayload)
     }
 
     if ('users' in data) {

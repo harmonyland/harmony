@@ -31,13 +31,13 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
 
     const res = new this.DataType(this.client, raw, channel, author)
     await res.mentions.fromPayload(raw)
-    
+
     if (typeof raw.guild_id === 'string')
       res.guild = await this.client.guilds.get(raw.guild_id)
-    
-    if (typeof res.guild === 'object') 
+
+    if (typeof res.guild === 'object')
       res.member = await res.guild.members.get(raw.author.id)
-    
+
     return res
   }
 

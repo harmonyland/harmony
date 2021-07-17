@@ -6,7 +6,7 @@ export default class LeaveCommand extends Command {
 
   async execute(ctx: CommandContext): Promise<void> {
     const userVS = await ctx.guild?.voiceStates.get(
-      (ctx.client.user?.id as unknown) as string
+      ctx.client.user?.id as unknown as string
     )
     if (userVS === undefined) {
       ctx.message.reply("I'm not in VC.")

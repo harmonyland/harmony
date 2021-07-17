@@ -34,13 +34,13 @@ export class GuildVoiceStatesManager extends BaseManager<
         : await this.client.guilds.get(raw.guild_id)
 
     return new VoiceState(this.client, raw, {
-      user: ((await this.client.users.get(raw.user_id)) as unknown) as User,
+      user: (await this.client.users.get(raw.user_id)) as unknown as User,
       channel:
         raw.channel_id === null
           ? null
-          : (((await this.client.channels.get<VoiceChannel>(
+          : ((await this.client.channels.get<VoiceChannel>(
               raw.channel_id
-            )) as unknown) as VoiceChannel),
+            )) as unknown as VoiceChannel),
       guild,
       member:
         guild === undefined ? undefined : await guild.members.get(raw.user_id)
@@ -61,13 +61,13 @@ export class GuildVoiceStatesManager extends BaseManager<
             : await this.client.guilds.get(raw.guild_id)
 
         return new VoiceState(this.client, raw, {
-          user: ((await this.client.users.get(raw.user_id)) as unknown) as User,
+          user: (await this.client.users.get(raw.user_id)) as unknown as User,
           channel:
             raw.channel_id === null
               ? null
-              : (((await this.client.channels.get<VoiceChannel>(
+              : ((await this.client.channels.get<VoiceChannel>(
                   raw.channel_id
-                )) as unknown) as VoiceChannel),
+                )) as unknown as VoiceChannel),
           guild,
           member:
             guild === undefined

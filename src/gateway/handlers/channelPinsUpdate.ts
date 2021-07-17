@@ -6,9 +6,8 @@ export const channelPinsUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: ChannelPinsUpdatePayload
 ) => {
-  const before:
-    | TextChannel
-    | undefined = await gateway.client.channels.get<TextChannel>(d.channel_id)
+  const before: TextChannel | undefined =
+    await gateway.client.channels.get<TextChannel>(d.channel_id)
 
   if (before !== undefined) {
     const raw = await gateway.client.channels._get(d.channel_id)
@@ -17,9 +16,9 @@ export const channelPinsUpdate: GatewayEventHandler = async (
       raw.id,
       Object.assign(raw, { last_pin_timestamp: d.last_pin_timestamp })
     )
-    const after = ((await gateway.client.channels.get(
+    const after = (await gateway.client.channels.get(
       d.channel_id
-    )) as unknown) as TextChannel
+    )) as unknown as TextChannel
     gateway.client.emit('channelPinsUpdate', before, after)
   }
 }

@@ -141,8 +141,8 @@ export class Webhook {
     const res = new Message(
       this.client as Client,
       resp,
-      (this as unknown) as TextChannel,
-      (this as unknown) as User
+      this as unknown as TextChannel,
+      this as unknown as User
     )
     await res.mentions.fromPayload(resp)
     return res

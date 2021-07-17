@@ -61,7 +61,8 @@ export class ThreadMember extends SnowflakeBase {
 
 export class ThreadResolvable
   extends SnowflakeBase
-  implements IResolvable<ThreadChannel> {
+  implements IResolvable<ThreadChannel>
+{
   constructor(client: Client, public id: string) {
     super(client)
   }

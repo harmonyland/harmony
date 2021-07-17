@@ -82,6 +82,7 @@ export class MessageComponentInteraction extends Interaction {
     super(client, data, others)
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     this.data = data.data as InteractionMessageComponentData
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     this.message = others.message!
   }
 

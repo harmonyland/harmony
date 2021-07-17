@@ -63,7 +63,7 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
       if (data.color.startsWith('#')) data.color = data.color.slice(1)
     }
 
-    const roleRaw = ((await this.client.rest.post(GUILD_ROLES(this.guild.id), {
+    const roleRaw = (await this.client.rest.post(GUILD_ROLES(this.guild.id), {
       name: data?.name,
       permissions:
         data?.permissions === undefined
@@ -82,10 +82,10 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
           : data.color,
       hoist: data?.hoist ?? false,
       mentionable: data?.mentionable ?? false
-    })) as unknown) as RolePayload
+    })) as unknown as RolePayload
 
     await this.set(roleRaw.id, roleRaw)
-    return ((await this.get(roleRaw.id)) as unknown) as Role
+    return (await this.get(roleRaw.id)) as unknown as Role
   }
 
   /** Delete a Guild Role */

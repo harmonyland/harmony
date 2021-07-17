@@ -46,7 +46,7 @@ class VCExtension extends Extension {
   @command()
   async leave(ctx: CommandContext): Promise<void> {
     const userVS = await ctx.guild?.voiceStates.get(
-      (ctx.client.user?.id as unknown) as string
+      ctx.client.user?.id as unknown as string
     )
     if (userVS === undefined) {
       ctx.message.reply("I'm not in VC.")

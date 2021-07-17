@@ -239,7 +239,7 @@ export class Message extends SnowflakeBase {
 
   async startThread(options: CreateThreadOptions): Promise<ThreadChannel> {
     if (this.channel.isGuildText() === true) {
-      const chan = (this.channel as unknown) as GuildTextChannel
+      const chan = this.channel as unknown as GuildTextChannel
       return chan.startThread(options, this)
     } else throw new Error('Threads can only be made in Guild Text Channels')
   }

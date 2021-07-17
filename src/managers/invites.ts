@@ -78,7 +78,7 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
     channel: string | GuildTextChannel,
     options?: CreateInviteOptions
   ): Promise<Invite> {
-    const raw = ((await this.client.rest.post(
+    const raw = (await this.client.rest.post(
       CHANNEL_INVITES(typeof channel === 'string' ? channel : channel.id),
       {
         max_age: options?.maxAge,
@@ -93,7 +93,7 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
             : options.targetUser.id,
         target_user_type: options?.targetUserType
       }
-    )) as unknown) as InvitePayload
+    )) as unknown as InvitePayload
 
     return new Invite(this.client, raw)
   }

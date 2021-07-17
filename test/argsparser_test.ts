@@ -184,7 +184,7 @@ const expectedResult7 = {
   reason: 'bye'
 }
 Deno.test({
-  name: 'parse command arguments with ID\'s (assertEquals)',
+  name: "parse command arguments with ID's (assertEquals)",
   fn: () => {
     const result = parseArgs(commandArgs2, messageArgs7)
     assertEquals(result, expectedResult7)

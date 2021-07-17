@@ -162,7 +162,7 @@ export class TextChannel extends Channel {
 
     for (const raw of raws) {
       await this.messages.set(raw.id, raw)
-      const msg = ((await this.messages.get(raw.id)) as unknown) as Message
+      const msg = (await this.messages.get(raw.id)) as unknown as Message
       res.set(msg.id, msg)
     }
 

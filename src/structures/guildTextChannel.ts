@@ -275,10 +275,11 @@ export class GuildTextChannel extends GuildTextBasedChannel {
     members: ThreadMember[]
     hasMore: boolean
   }> {
-    const data = await this.client.rest.endpoints.getJoinedPrivateArchivedThreads(
-      this.id,
-      params
-    )
+    const data =
+      await this.client.rest.endpoints.getJoinedPrivateArchivedThreads(
+        this.id,
+        params
+      )
 
     const threads: ThreadChannel[] = []
     const members: ThreadMember[] = []

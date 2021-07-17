@@ -259,36 +259,34 @@ export class GuildChannel extends Channel {
 
   /** Set Permission Overwrites of the Channel */
   async setOverwrites(overwrites: OverwriteAsArg[]): Promise<GuildChannels> {
-    const result = overwrites.map(
-      (overwrite): OverwritePayload => {
-        const id =
-          typeof overwrite.id === 'string' ? overwrite.id : overwrite.id.id
-        const allow =
-          typeof overwrite.allow === 'string'
-            ? overwrite.allow
-            : overwrite.allow?.toJSON() ?? '0'
-        const deny =
-          typeof overwrite.deny === 'string'
-            ? overwrite.deny
-            : overwrite.deny?.toJSON() ?? '0'
-        const type =
-          overwrite.id instanceof Role
-            ? 0
-            : overwrite.id instanceof Member
-            ? 1
-            : overwrite.type
-        if (type === undefined) {
-          throw new Error('Overwrite type is undefined.')
-        }
-
-        return {
-          id,
-          type,
-          allow,
-          deny
-        }
+    const result = overwrites.map((overwrite): OverwritePayload => {
+      const id =
+        typeof overwrite.id === 'string' ? overwrite.id : overwrite.id.id
+      const allow =
+        typeof overwrite.allow === 'string'
+          ? overwrite.allow
+          : overwrite.allow?.toJSON() ?? '0'
+      const deny =
+        typeof overwrite.deny === 'string'
+          ? overwrite.deny
+          : overwrite.deny?.toJSON() ?? '0'
+      const type =
+        overwrite.id instanceof Role
+          ? 0
+          : overwrite.id instanceof Member
+          ? 1
+          : overwrite.type
+      if (type === undefined) {
+        throw new Error('Overwrite type is undefined.')
       }
-    )
+
+      return {
+        id,
+        type,
+        allow,
+        deny
+      }
+    })
     return await this.edit({ permissionOverwrites: result })
   }
 
