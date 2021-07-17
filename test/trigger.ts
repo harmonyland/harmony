@@ -14,7 +14,7 @@ const X_REGEX = /\/?x\/([a-zA-Z0-9]+)(@[\x00-\x2e\x30-\xff]+)?(\/[\S\s]+)?/
 
 export async function fetchModule(name: string): Promise<any> {
   if (name.match(NAME_MATCH) !== null) return null
-  return await fetch(`https://api.deno.land/modules/${name}`, {
+  return fetch(`https://api.deno.land/modules/${name}`, {
     credentials: 'omit',
     headers: {
       'User-Agent':
