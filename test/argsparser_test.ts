@@ -192,6 +192,7 @@ Deno.test({
   sanitizeOps: true,
   sanitizeResources: true,
   sanitizeExit: true
+})
 
 const messageArgs6: string[] = ['get', '<@!708544768342229012>']
 const expectedResult6 = {
