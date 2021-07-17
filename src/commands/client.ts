@@ -349,11 +349,14 @@ export class CommandClient extends Client implements CommandClientOptions {
       }
     }
 
-    if (command.args !== undefined && (parsed.args.length === 0 || parsed.args.length < command.args.length)) {
+    if (
+      command.args !== undefined &&
+      (parsed.args.length === 0 || parsed.args.length < command.args.length)
+    ) {
       try {
-          return await command.onMissingArgs(ctx)
+        return await command.onMissingArgs(ctx)
       } catch (e) {
-          return this.emit('commandMissingArgs', ctx)
+        return this.emit('commandMissingArgs', ctx)
       }
     }
 
