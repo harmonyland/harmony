@@ -9,6 +9,6 @@ export const guildUpdate: GatewayEventHandler = async (
   const before: Guild | undefined = await gateway.client.guilds.get(d.id)
   if (before === undefined) return
   await gateway.client.guilds.set(d.id, d)
-  const after = ((await gateway.client.guilds.get(d.id)) as unknown) as Guild
+  const after = (await gateway.client.guilds.get(d.id)) as unknown as Guild
   gateway.client.emit('guildUpdate', before, after)
 }

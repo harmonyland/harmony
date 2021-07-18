@@ -70,7 +70,7 @@ class MyClient extends CommandClient {
   @command()
   rmrf(ctx: CommandContext): any {
     if (ctx.author.id !== '422957901716652033') return
-    ;((ctx.channel as any) as GuildTextChannel)
+    ;(ctx.channel as any as GuildTextChannel)
       .bulkDelete(3)
       .then((chan) => {
         ctx.channel.send(`Bulk deleted 2 in ${chan}`)
@@ -191,7 +191,7 @@ class VCExtension extends Extension {
   @command()
   async leave(ctx: CommandContext): Promise<any> {
     const userVS = await ctx.guild?.voiceStates.get(
-      (ctx.client.user?.id as unknown) as string
+      ctx.client.user?.id as unknown as string
     )
     if (userVS === undefined) {
       ctx.message.reply("I'm not in VC.")
@@ -203,7 +203,7 @@ class VCExtension extends Extension {
     if (players.has(ctx.guild?.id as string) !== true)
       return ctx.message.reply('Not playing anything in this server.')
 
-    const player = (players.get(ctx.guild?.id as string) as unknown) as Player
+    const player = players.get(ctx.guild?.id as string) as unknown as Player
     await player.stop()
     await player.destroy()
 

@@ -145,32 +145,34 @@ export function fragment(
       components: []
     }
 
-    component.children?.flat(2).forEach((el: Element<ButtonProps & SelectProps>) => {
-      if (el.type !== 'Button' && el.type !== 'Select') {
-        throw new Error('Invalid second level component: ' + el.type)
-      }
+    component.children
+      ?.flat(2)
+      .forEach((el: Element<ButtonProps & SelectProps>) => {
+        if (el.type !== 'Button' && el.type !== 'Select') {
+          throw new Error('Invalid second level component: ' + el.type)
+        }
 
-      row.components?.push({
-        type: el.type === 'Button' ? 2 : 3,
-        custom_id: el.props.id,
-        label: el.props.label,
-        style:
-          el.props.style !== undefined
-            ? resolveStyle(el.props.style)
-            : undefined,
-        url: el.props.url,
-        emoji: el.props.emoji,
-        min_values: el.props.minValues,
-        max_values: el.props.maxValues,
-        placeholder: el.props.placeholder,
-        disabled: el.props.disabled,
-        options: Array.isArray(el.children)
-          ? el.children.map((e) => {
-              return e.props
-            })
-          : undefined
+        row.components?.push({
+          type: el.type === 'Button' ? 2 : 3,
+          custom_id: el.props.id,
+          label: el.props.label,
+          style:
+            el.props.style !== undefined
+              ? resolveStyle(el.props.style)
+              : undefined,
+          url: el.props.url,
+          emoji: el.props.emoji,
+          min_values: el.props.minValues,
+          max_values: el.props.maxValues,
+          placeholder: el.props.placeholder,
+          disabled: el.props.disabled,
+          options: Array.isArray(el.children)
+            ? el.children.map((e) => {
+                return e.props
+              })
+            : undefined
+        })
       })
-    })
 
     if (row.components !== undefined && row.components.length > 5) {
       throw new Error('An Action Row may only have 5 components at max')

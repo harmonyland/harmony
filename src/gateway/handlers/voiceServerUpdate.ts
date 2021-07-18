@@ -9,6 +9,6 @@ export const voiceServerUpdate: GatewayEventHandler = async (
   gateway.client.emit('voiceServerUpdate', {
     token: d.token,
     endpoint: d.endpoint,
-    guild: ((await gateway.client.guilds.get(d.guild_id)) as unknown) as Guild
+    guild: (await gateway.client.guilds.get(d.guild_id)) as unknown as Guild
   })
 }

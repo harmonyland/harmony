@@ -2,10 +2,7 @@
 // TODO: Add tests
 import { Client, GatewayIntents as GI, Embed } from '../mod.ts'
 import { TOKEN } from '../src/test/config.ts'
-import {
-  assertEquals,
-  assertExists
-} from './deps.ts'
+import { assertEquals, assertExists } from './deps.ts'
 
 //#region Lib Tests
 Deno.test({

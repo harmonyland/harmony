@@ -782,9 +782,13 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects that are members of the guild.
    */
-  async listGuildMembers(guildId: string, params: { limit?: number, after?: string }): Promise<MemberPayload[]> {
+  async listGuildMembers(
+    guildId: string,
+    params: { limit?: number; after?: string }
+  ): Promise<MemberPayload[]> {
     if (params?.limit !== undefined) {
-      if (params.limit < 1 || params.limit > 1000) throw new Error('Limit should be a number between 1 and 1000')
+      if (params.limit < 1 || params.limit > 1000)
+        throw new Error('Limit should be a number between 1 and 1000')
     }
 
     return this.rest.get(`/guilds/${guildId}/members`, params)
@@ -793,15 +797,19 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Returns a list of [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) objects whose username or nickname starts with a provided string.
    */
-  async searchGuildMembers(guildId: string, params: { query: string, limit?: number }): Promise<MemberPayload[]> {
+  async searchGuildMembers(
+    guildId: string,
+    params: { query: string; limit?: number }
+  ): Promise<MemberPayload[]> {
     if (params?.query === undefined) {
       throw new Error('Query is a required parameter')
     }
 
     if (params.limit !== undefined) {
-      if (params.limit < 1 || params.limit > 1000) throw new Error('Limit should be a number between 1 and 1000')
+      if (params.limit < 1 || params.limit > 1000)
+        throw new Error('Limit should be a number between 1 and 1000')
     }
-    
+
     return this.rest.get(`/guilds/${guildId}/members/search`, params)
   }
 

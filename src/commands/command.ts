@@ -7,6 +7,7 @@ import type { CommandClient } from './client.ts'
 import type { Extension } from './extension.ts'
 import { join, walk } from '../../deps.ts'
 import type { Args } from '../utils/command.ts'
+import { Member } from '../structures/member.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -15,6 +16,8 @@ export interface CommandContext {
   message: Message
   /** The Author of the Message */
   author: User
+  /** The Author of the message as a Member object */
+  member?: Member
   /** The Channel in which Command was used */
   channel: TextChannel
   /** Prefix which was used */
@@ -104,6 +107,9 @@ export class Command implements CommandOptions {
 
   /** Method called when the command errors */
   onError(ctx: CommandContext, error: Error): any {}
+
+  /** Method called when there are missing arguments */
+  onMissingArgs(ctx: CommandContext): any {}
 
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
   beforeExecute(ctx: CommandContext): boolean | Promise<boolean> {

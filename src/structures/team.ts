@@ -1,5 +1,9 @@
 import type { Client } from '../client/mod.ts'
-import type { TeamPayload, TeamMemberPayload, MembershipState } from '../types/team.ts'
+import type {
+  TeamPayload,
+  TeamMemberPayload,
+  MembershipState
+} from '../types/team.ts'
 import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'
 
@@ -9,7 +13,7 @@ export class TeamMember extends User {
   team: Team
 
   constructor(client: Client, data: TeamMemberPayload, team: Team) {
-    super(client, data.user);
+    super(client, data.user)
 
     this.permissions = data.permissions
     this.membershipState = data.membership_state
@@ -30,7 +34,11 @@ export class Team extends SnowflakeBase {
     this.id = data.id
     this.name = data.name
     this.icon = data.icon
-    this.members = data.members.map(member => new TeamMember(client, member, this))
-    this.owner = this.members.find(member => member.id === data.owner_user_id)!
+    this.members = data.members.map(
+      (member) => new TeamMember(client, member, this)
+    )
+    this.owner = this.members.find(
+      (member) => member.id === data.owner_user_id
+    )!
   }
 }

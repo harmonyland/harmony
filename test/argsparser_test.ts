@@ -184,7 +184,7 @@ const expectedResult7 = {
   reason: 'bye'
 }
 Deno.test({
-  name: 'parse command arguments with ID\'s (assertEquals)',
+  name: "parse command arguments with ID's (assertEquals)",
   fn: () => {
     const result = parseArgs(commandArgs2, messageArgs7)
     assertEquals(result, expectedResult7)
@@ -192,6 +192,7 @@ Deno.test({
   sanitizeOps: true,
   sanitizeResources: true,
   sanitizeExit: true
+})
 
 const messageArgs6: string[] = ['get', '<@!708544768342229012>']
 const expectedResult6 = {
