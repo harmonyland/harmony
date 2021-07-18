@@ -51,7 +51,6 @@ export type Args =
 export async function parseArgs(
   commandArgs: Args[] | undefined,
   message: Message,
-  client: Client,
 ): Promise<Record<string, Guild | Role | string | number | boolean> | null> {
   if (commandArgs === undefined) return null
   const messageArgs = message.content.split(" ")
@@ -66,7 +65,7 @@ export async function parseArgs(
       case 'user':
       case 'role':
       case 'channel':
-        await parseMention(args, entry, messageArgsNullableCopy, client, message)
+        await parseMention(args, entry, messageArgsNullableCopy, message.client, message)
         break
       case 'content':
         parseContent(args, entry, messageArgs)
