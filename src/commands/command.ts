@@ -7,6 +7,7 @@ import type { CommandClient } from './client.ts'
 import type { Extension } from './extension.ts'
 import { join, walk } from '../../deps.ts'
 import type { Args } from '../utils/command.ts'
+import { Member } from '../structures/member.ts'
 
 export interface CommandContext {
   /** The Client object */
@@ -15,6 +16,8 @@ export interface CommandContext {
   message: Message
   /** The Author of the Message */
   author: User
+  /** The Author of the message as a Member object */
+  member?: Member
   /** The Channel in which Command was used */
   channel: TextChannel
   /** Prefix which was used */
