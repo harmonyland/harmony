@@ -1,8 +1,8 @@
-import type { Client } from "../client/client.ts"
+import type { Client } from '../client/client.ts'
 import type { Message } from '../structures/message.ts'
-import type { Guild } from "../structures/guild.ts"
-import type { Role } from "../structures/role.ts"
-import type { User } from "../structures/user.ts"
+import type { Guild } from '../structures/guild.ts'
+import type { Role } from '../structures/role.ts'
+import type { User } from '../structures/user.ts'
 
 interface MentionToRegex {
   [key: string]: RegExp
@@ -51,10 +51,13 @@ export type Args =
 
 export async function parseArgs(
   commandArgs: Args[] | undefined,
-  message: Message,
-): Promise<Record<string, Guild | User | Role | string | number | boolean> | null> {
+  message: Message
+): Promise<Record<
+  string,
+  Guild | User | Role | string | number | boolean
+> | null> {
   if (commandArgs === undefined) return null
-  const messageArgs = message.content.split(" ")
+  const messageArgs = message.content.split(' ')
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, string | number | boolean> = {}
 
@@ -66,7 +69,13 @@ export async function parseArgs(
       case 'user':
       case 'role':
       case 'channel':
-        await parseMention(args, entry, messageArgsNullableCopy, message.client, message)
+        await parseMention(
+          args,
+          entry,
+          messageArgsNullableCopy,
+          message.client,
+          message
+        )
         break
       case 'content':
         parseContent(args, entry, messageArgs)
@@ -82,7 +91,7 @@ export async function parseArgs(
 function parseFlags(
   args: Record<string, unknown>,
   entry: FlagArgument,
-  argsNullable: Array<string | null>,
+  argsNullable: Array<string | null>
 ): void {
   for (let i = 0; i < argsNullable.length; i++) {
     if (entry.flag === argsNullable[i]) {
@@ -105,22 +114,32 @@ async function parseMention(
     (x) => typeof x === 'string' && regex.test(x)
   )
   const regexMatches = regex.exec(argsNullable[index]!)
-  const tempValue = regexMatches !== null ? regexMatches[0].replace(regex, '$1$2') : null
+  const tempValue =
+    regexMatches !== null ? regexMatches[0].replace(regex, '$1$2') : null
   let temp
   switch (entry.match) {
     case 'channel':
-      temp = tempValue !== null ? await client.channels.get(tempValue) : entry.defaultValue
+      temp =
+        tempValue !== null
+          ? await client.channels.get(tempValue)
+          : entry.defaultValue
       break
 
-    case 'user': 
-      temp = tempValue !== null ? await client.users.get(tempValue) : entry.defaultValue
+    case 'user':
+      temp =
+        tempValue !== null
+          ? await client.users.get(tempValue)
+          : entry.defaultValue
       break
 
     case 'role':
-      temp = tempValue !== null ? await message.guild?.roles.get(tempValue) : entry.defaultValue
+      temp =
+        tempValue !== null
+          ? await message.guild?.roles.get(tempValue)
+          : entry.defaultValue
       break
   }
-  
+
   args[entry.name] = temp
   argsNullable[index] = null
 }

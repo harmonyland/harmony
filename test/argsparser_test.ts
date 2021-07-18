@@ -1,17 +1,19 @@
 import { Args, parseArgs } from '../src/utils/command.ts'
 import { assertEquals, assertNotEquals } from './deps.ts'
-import type { Message } from "../mod.ts"
+
+import type { Message } from '../mod.ts'
 
 // Mocking of Client
 class FakeClient {
   channels = {
     get: function (id: string) {
-      return new FakeObj(id, "channel")
+      return new FakeObj(id, 'channel')
     }
   }
+
   users = {
     get: function (id: string) {
-      return new FakeObj(id, "user");
+      return new FakeObj(id, 'user')
     }
   }
 }
@@ -26,11 +28,11 @@ class FakeObj {
 }
 // Mocking of Message
 class FakeMessage {
-  content: string;
-  client = new FakeClient();
+  content: string
+  client = new FakeClient()
   guild = {
     roles: {
-      get: function(id: string) {
+      get: function (id: string) {
         return new FakeObj(id, 'roles')
       }
     }
@@ -110,9 +112,10 @@ const commandArgs4: Args[] = [
   }
 ]
 
-
 // TEST 1
-const message1 = new FakeMessage('<@!708544768342229012> --permanent bye bye Skyler')
+const message1 = new FakeMessage(
+  '<@!708544768342229012> --permanent bye bye Skyler'
+)
 const expectedResult1 = {
   originalMessage: [
     '<@!708544768342229012>',
@@ -137,7 +140,6 @@ Deno.test({
   sanitizeExit: true
 })
 
-
 // TEST 2
 const message2 = new FakeMessage('<@!708544768342229012> bye bye Skyler')
 const expectedResult2 = {
@@ -157,16 +159,10 @@ Deno.test({
   sanitizeExit: true
 })
 
-
 // TEST 3
 const message3 = new FakeMessage('<@!708544768342229012> bye bye Skyler')
 const expectedResult3 = {
-  originalMessage: [
-    '<@!708544768342229012>',
-    'bye',
-    'bye',
-    'Skyler'
-  ],
+  originalMessage: ['<@!708544768342229012>', 'bye', 'bye', 'Skyler'],
   // Only permaban should be different!
   permaban: false,
   user: new FakeObj('708544768342229012', 'user'),
@@ -176,11 +172,15 @@ Deno.test({
   name: 'parse command arguments default value (assertNotEquals)',
   fn: async () => {
     const result = await parseArgs(commandArgs1, message3 as unknown as Message)
+    // eslint-disable-next-line
     assertNotEquals(result!.permaban, expectedResult3.permaban)
 
     // This makes sure that only `expectedResult3.permaban` differs
+    // eslint-disable-next-line
     assertEquals(result!.originalMessage, expectedResult3.originalMessage)
+    // eslint-disable-next-line
     assertEquals(result!.user, expectedResult3.user)
+    // eslint-disable-next-line
     assertEquals(result!.reason, expectedResult3.reason)
   },
   sanitizeOps: true,
@@ -188,9 +188,10 @@ Deno.test({
   sanitizeExit: true
 })
 
-
 // TEST 4
-const message4 = new FakeMessage('<@!708544768342229012> bye <#783319033730564098> <@&836715188690092032>')
+const message4 = new FakeMessage(
+  '<@!708544768342229012> bye <#783319033730564098> <@&836715188690092032>'
+)
 const expectedResult4 = {
   channel: new FakeObj('783319033730564098', 'channel'),
   role: new FakeObj('836715188690092032', 'roles'),
@@ -208,9 +209,10 @@ Deno.test({
   sanitizeExit: true
 })
 
-
 // TEST 5
-const message5 = new FakeMessage('708544768342229012 bye 783319033730564098 836715188690092032')
+const message5 = new FakeMessage(
+  '708544768342229012 bye 783319033730564098 836715188690092032'
+)
 Deno.test({
   name: "parse command arguments with ID's (assertEquals)",
   fn: async () => {
@@ -221,7 +223,6 @@ Deno.test({
   sanitizeResources: true,
   sanitizeExit: true
 })
-
 
 // TEST 6
 const message6 = new FakeMessage('<@!708544768342229012>')
