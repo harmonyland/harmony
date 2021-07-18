@@ -1,12 +1,13 @@
 import type { Guild } from '../structures/guild.ts'
 import type { Message } from '../structures/message.ts'
 import type { TextChannel } from '../structures/textChannel.ts'
+import type { User } from '../structures/user.ts'
 import { Collection } from '../utils/collection.ts'
 import type { CommandClient } from './client.ts'
 import type { Extension } from './extension.ts'
 import { join, walk } from '../../deps.ts'
 import type { Args } from '../utils/command.ts'
-import { Member } from '../structures/member.ts'
+import { Member } from "../structures/member.ts";
 
 export interface CommandContext {
   /** The Client object */
