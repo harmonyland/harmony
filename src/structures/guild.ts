@@ -330,7 +330,6 @@ export class Guild extends SnowflakeBase {
    * Gets Everyone role of the Guild
    */
   async getEveryoneRole(): Promise<Role> {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     return (await this.roles.get(this.id)) as Role
   }
 
@@ -354,12 +353,12 @@ export class Guild extends SnowflakeBase {
   }
 
   /** Create a new Guild Channel */
-  async createChannel(options: CreateChannelOptions): Promise<GuildChannels> {
+  createChannel(options: CreateChannelOptions): Promise<GuildChannels> {
     return this.channels.create(options)
   }
 
   /** Create a new Guild Role */
-  async createRole(options?: CreateGuildRoleOptions): Promise<Role> {
+  createRole(options?: CreateGuildRoleOptions): Promise<Role> {
     return this.roles.create(options)
   }
 
@@ -369,12 +368,12 @@ export class Guild extends SnowflakeBase {
    * @param wait Whether to wait for all Members to come before resolving Promise or not.
    * @param timeout Configurable timeout to cancel the wait to safely remove listener.
    */
-  async chunk(
+  chunk(
     options: RequestMembersOptions,
-    wait: boolean = false,
-    timeout: number = 60000
+    wait = false,
+    timeout = 60000
   ): Promise<Guild> {
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.client.shards.get(this.shardID)?.requestMembers(this.id, options)
       if (!wait) return resolve(this)
       else {
@@ -400,8 +399,8 @@ export class Guild extends SnowflakeBase {
    * Fulfills promise when guild becomes available
    * @param timeout Configurable timeout to cancel the wait to safely remove listener.
    */
-  async awaitAvailability(timeout: number = 1000): Promise<Guild> {
-    return await new Promise((resolve, reject) => {
+  awaitAvailability(timeout = 1000): Promise<Guild> {
+    return new Promise((resolve, reject) => {
       if (!this.unavailable) resolve(this)
       const listener = (guild: Guild): void => {
         if (guild.id === this.id) {
@@ -453,7 +452,7 @@ export class Guild extends SnowflakeBase {
   }
 
   /** Returns the widget for the guild. */
-  async getWidget(): Promise<GuildWidgetPayload> {
+  getWidget(): Promise<GuildWidgetPayload> {
     return this.client.rest.api.guilds[this.id]['widget.json'].get()
   }
 
@@ -506,7 +505,7 @@ export class Guild extends SnowflakeBase {
   }
 
   /** Returns an array of template objects. */
-  async getTemplates(): Promise<Template[]> {
+  getTemplates(): Promise<Template[]> {
     return this.client.rest.api.guilds[this.id].templates
       .get()
       .then((temps: TemplatePayload[]) =>
@@ -552,7 +551,7 @@ export class Guild extends SnowflakeBase {
   }
 
   /** Gets a preview of the guild. Returns GuildPreview. */
-  async preview(): Promise<GuildPreview> {
+  preview(): Promise<GuildPreview> {
     return this.client.guilds.preview(this.id)
   }
 
@@ -580,13 +579,12 @@ export class Guild extends SnowflakeBase {
   }): Promise<number> {
     const query: GuildGetPruneCountPayload = {
       days: options?.days,
-      include_roles: options?.includeRoles
+      "include_roles": options?.includeRoles
         ?.map((role) => (role instanceof Role ? role.id : role))
         .join(',')
     }
 
     const result: GuildPruneCountPayload = await this.client.rest.get(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       GUILD_PRUNE(this.id) +
         '?' +
         Object.entries(query)
@@ -614,8 +612,8 @@ export class Guild extends SnowflakeBase {
   }): Promise<number | null> {
     const body: GuildBeginPrunePayload = {
       days: options?.days,
-      compute_prune_count: options?.computePruneCount,
-      include_roles: options?.includeRoles?.map((role) =>
+      "compute_prune_count": options?.computePruneCount,
+      "include_roles": options?.includeRoles?.map((role) =>
         role instanceof Role ? role.id : role
       )
     }

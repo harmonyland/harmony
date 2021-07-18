@@ -48,7 +48,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   }
 
   async array(): Promise<Member[]> {
-    let arr = await (this.client.cache.array(this.cacheName) as MemberPayload[])
+    let arr: MemberPayload[] | undefined = await this.client.cache.array(this.cacheName)
     if (arr === undefined) arr = []
 
     return await Promise.all(

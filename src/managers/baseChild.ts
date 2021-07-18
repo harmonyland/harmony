@@ -17,19 +17,19 @@ export class BaseChildManager<T, T2> extends Base {
     return this.parent.cacheName
   }
 
-  async get(key: string): Promise<T2 | undefined> {
+  get(key: string): Promise<T2 | undefined> {
     return this.parent.get(key)
   }
 
-  async set(key: string, value: T): Promise<void> {
+  set(key: string, value: T): Promise<void> {
     return this.parent.set(key, value)
   }
 
-  async delete(_: string): Promise<any> {
+  delete(_: string): boolean | Promise<boolean> {
     return false
   }
 
-  async array(): Promise<any> {
+  array(): Promise<T2[]> {
     return this.parent.array()
   }
 
@@ -53,7 +53,7 @@ export class BaseChildManager<T, T2> extends Base {
     yield* readable
   }
 
-  async fetch(...args: unknown[]): Promise<T2 | undefined> {
+  fetch(...args: unknown[]): Promise<T2 | undefined> {
     return this.parent.fetch(...args)
   }
 
@@ -68,11 +68,11 @@ export class BaseChildManager<T, T2> extends Base {
   }
 
   /** Gets number of values stored in Cache */
-  async size(): Promise<number> {
+  size(): Promise<number> {
     return this.parent.size()
   }
 
-  [Deno.customInspect](): string {
+  [Symbol.for("Deno.customInspect")](): string {
     return `ChildManager(${this.cacheName})`
   }
 }

@@ -10,7 +10,6 @@ export const inviteCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: InviteCreatePayload
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id!)
 
   // Weird case, shouldn't happen
@@ -21,7 +20,6 @@ export const inviteCreate: GatewayEventHandler = async (
    */
   const cachedChannel = await gateway.client.channels._get(d.channel_id)
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const cachedGuild: GuildPayload | undefined =
     d.guild_id === undefined
       ? undefined
@@ -33,8 +31,8 @@ export const inviteCreate: GatewayEventHandler = async (
     // had to use `as ChannelPayload` because the _get method returned `ChannelPayload | undefined` which errored
     channel: cachedChannel as unknown as ChannelPayload,
     inviter: d.inviter,
-    target_user: d.target_user,
-    target_user_type: d.target_user_type
+    "target_user": d.target_user,
+    "target_user_type": d.target_user_type
   }
 
   await guild.invites.set(d.code, dataConverted)

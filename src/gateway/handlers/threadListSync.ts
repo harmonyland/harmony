@@ -42,7 +42,7 @@ export const threadListSync: GatewayEventHandler = async (
   for (const id of d.channel_ids ?? []) {
     const chan = await guild.channels.get(id)
     if (chan !== undefined) {
-      channels.set(id, chan as unknown as GuildTextBasedChannel)
+      channels.set(id, chan as GuildTextBasedChannel)
     }
   }
 

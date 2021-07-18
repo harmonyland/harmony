@@ -90,7 +90,7 @@ export class APIRequest {
     }
   }
 
-  async execute(): Promise<Response> {
+  execute(): Promise<Response> {
     let contentType: string | undefined
     let body: any
     if (
@@ -123,7 +123,7 @@ export class APIRequest {
       ? this.path
       : `${this.rest.apiURL}/v${this.rest.version}${this.path}`
 
-    const headers: any = {
+    const headers: Record<string, string | undefined> = {
       'User-Agent':
         this.rest.userAgent ??
         `DiscordBot (harmony, https://github.com/harmonyland/harmony)`,
@@ -143,7 +143,7 @@ export class APIRequest {
     }
 
     if (this.options.reason !== undefined) {
-      ;(init.headers as { [name: string]: string })['X-Audit-Log-Reason'] =
+      (init.headers as { [name: string]: string })['X-Audit-Log-Reason'] =
         encodeURIComponent(this.options.reason)
     }
 

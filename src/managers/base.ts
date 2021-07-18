@@ -11,8 +11,10 @@ export class BaseManager<T, T2> extends Base {
   /** Caches Name or Key used to differentiate caches */
   cacheName: string
   /** Which data type does this cache have */
+  // Shouldn't this be either T or T2?
   DataType: any
 
+  // See last comment
   constructor(client: Client, cacheName: string, DataType: any) {
     super(client)
     this.cacheName = cacheName
@@ -20,7 +22,7 @@ export class BaseManager<T, T2> extends Base {
   }
 
   /** Gets raw value from a cache (payload) */
-  async _get(key: string): Promise<T | undefined> {
+  _get(key: string): Promise<T | undefined> {
     return this.client.cache.get(this.cacheName, key)
   }
 
@@ -32,20 +34,20 @@ export class BaseManager<T, T2> extends Base {
   }
 
   /** Sets a value to Cache */
-  async set(key: string, value: T): Promise<any> {
-    return this.client.cache.set(this.cacheName, key, value)
+  set(key: string, value: T): Promise<void> {
+    return this.client.cache.set(this.cacheName, key, value) as Promise<void>
   }
 
   /** Deletes a key from Cache */
-  async _delete(key: string): Promise<boolean> {
-    return this.client.cache.delete(this.cacheName, key)
+  _delete(key: string): Promise<boolean> {
+    return this.client.cache.delete(this.cacheName, key) as Promise<boolean>
   }
 
   /** Gets an Array of values from Cache */
   async array(): Promise<T2[]> {
-    let arr = await (this.client.cache.array(this.cacheName) as T[])
+    let arr = await this.client.cache.array(this.cacheName)
     if (arr === undefined) arr = []
-    return arr.map((e) => new this.DataType(this.client, e)) as any
+    return arr.map((e) => new this.DataType(this.client, e))
   }
 
   /** Gets a Collection of values from Cache */
@@ -54,7 +56,7 @@ export class BaseManager<T, T2> extends Base {
     if (arr === undefined) return new Collection()
     const collection = new Collection()
     for (const elem of arr) {
-      // @ts-expect-error
+      // @ts-expect-error: Does not have a base type that is extended.
       collection.set(elem.id, elem)
     }
     return collection
@@ -69,7 +71,8 @@ export class BaseManager<T, T2> extends Base {
     yield* readable
   }
 
-  async fetch(...args: unknown[]): Promise<T2 | undefined> {
+  // Wtf man...
+  async fetch(..._args: unknown[]): Promise<T2 | undefined> {
     return undefined
   }
 
@@ -84,7 +87,7 @@ export class BaseManager<T, T2> extends Base {
   }
 
   /** Deletes everything from Cache */
-  flush(): any {
+  flush(): Promise<boolean> | boolean {
     return this.client.cache.deleteCache(this.cacheName)
   }
 
@@ -93,7 +96,7 @@ export class BaseManager<T, T2> extends Base {
     return (await this.client.cache.size(this.cacheName)) ?? 0
   }
 
-  [Deno.customInspect](): string {
+  [Symbol.for("Deno.customInspect")](): string {
     return `Manager(${this.cacheName})`
   }
 }

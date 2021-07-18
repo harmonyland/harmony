@@ -56,18 +56,18 @@ export class ChannelThreadsManager extends BaseChildManager<
     return true
   }
 
-  async start(
+  start(
     options: CreateThreadOptions,
     message: string | Message
   ): Promise<ThreadChannel> {
     return this.channel.startThread(options, message)
   }
 
-  async startPrivate(options: CreateThreadOptions): Promise<ThreadChannel> {
+  startPrivate(options: CreateThreadOptions): Promise<ThreadChannel> {
     return this.channel.startPrivateThread(options)
   }
 
-  async fetchArchived(
+  fetchArchived(
     type: 'public' | 'private' = 'public',
     params: { before?: string; limit?: number } = {}
   ): Promise<{
@@ -78,7 +78,7 @@ export class ChannelThreadsManager extends BaseChildManager<
     return this.channel.fetchArchivedThreads(type, params)
   }
 
-  async fetchPublicArchived(
+  fetchPublicArchived(
     params: { before?: string; limit?: number } = {}
   ): Promise<{
     threads: ThreadChannel[]
@@ -88,7 +88,7 @@ export class ChannelThreadsManager extends BaseChildManager<
     return this.channel.fetchPublicArchivedThreads(params)
   }
 
-  async fetchPrivateArchived(
+  fetchPrivateArchived(
     params: { before?: string; limit?: number } = {}
   ): Promise<{
     threads: ThreadChannel[]
@@ -98,7 +98,7 @@ export class ChannelThreadsManager extends BaseChildManager<
     return this.channel.fetchPrivateArchivedThreads(params)
   }
 
-  async fetchJoinedPrivateArchived(
+  fetchJoinedPrivateArchived(
     params: { before?: string; limit?: number } = {}
   ): Promise<{
     threads: ThreadChannel[]

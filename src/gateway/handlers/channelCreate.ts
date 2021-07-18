@@ -12,7 +12,7 @@ export const channelCreate: GatewayEventHandler = async (
 ) => {
   const guild: undefined | Guild =
     'guild_id' in d
-      ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      ? 
         await gateway.client.guilds.get((d as GuildChannelPayload).guild_id)
       : undefined
   const channel = getChannelByType(gateway.client, d, guild)

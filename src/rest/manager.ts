@@ -120,7 +120,7 @@ export class RESTManager {
   /** Token Type of the Token if any */
   tokenType: TokenType = TokenType.Bot
   /** Headers object which patch the current ones */
-  headers: any = {}
+  headers = {}
   /** Optional custom User Agent (header) */
   userAgent?: string
   /** Whether REST Manager is using Canary API */
@@ -198,7 +198,7 @@ export class RESTManager {
     return bucket.join('/')
   }
 
-  async request<T = any>(
+  request<T = any>(
     method: RequestMethods,
     path: string,
     options: RequestOptions = {}

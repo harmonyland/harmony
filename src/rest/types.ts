@@ -30,7 +30,7 @@ export interface DiscordAPIErrorPayload {
   method: string
   code?: number
   message?: string
-  errors: object
+  errors: Record<string, unknown>
   requestData: { [key: string]: any }
 }
 

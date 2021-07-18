@@ -17,8 +17,8 @@ export class CategoryChannel extends GuildChannel {
     const body: ModifyGuildCategoryChannelPayload = {
       name: options?.name,
       position: options?.position,
-      permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID
+      "permission_overwrites": options?.permissionOverwrites,
+      "parent_id": options?.parentID
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)

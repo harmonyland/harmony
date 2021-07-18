@@ -138,7 +138,6 @@ export interface VoiceServerUpdateData {
 }
 
 /** All Client Events */
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type ClientEvents = {
   /** When Client has successfully connected to Discord */
   ready: [shards: number]

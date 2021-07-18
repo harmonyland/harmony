@@ -21,7 +21,7 @@ export class ThreadMembersManager extends BaseManager<
   }
 
   /** Delete a Thread */
-  async delete(id: string | ThreadChannel): Promise<boolean> {
+  delete(id: string | ThreadChannel): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(typeof id === 'string' ? id : id.id))
   }
 
@@ -30,7 +30,7 @@ export class ThreadMembersManager extends BaseManager<
       this.cacheName
     ) as ThreadMemberPayload[])
     if (arr === undefined) return []
-    const result: any[] = []
+    const result: ThreadMember[] = []
     for (const elem of arr) {
       result.push(new ThreadMember(this.client, elem))
     }

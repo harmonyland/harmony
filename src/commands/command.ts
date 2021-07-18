@@ -82,7 +82,7 @@ export interface CommandOptions {
 export class Command implements CommandOptions {
   static meta?: CommandOptions
 
-  name: string = ''
+  name = ''
   description?: string
   category?: string
   aliases?: string | string[]
@@ -106,20 +106,20 @@ export class Command implements CommandOptions {
   declare readonly _decoratedSubCommands?: Command[]
 
   /** Method called when the command errors */
-  onError(ctx: CommandContext, error: Error): any {}
+  onError(_ctx: CommandContext, _error: Error): void {}
 
   /** Method called when there are missing arguments */
-  onMissingArgs(ctx: CommandContext): any {}
+  onMissingArgs(_ctx: CommandContext): void {}
 
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
-  beforeExecute(ctx: CommandContext): boolean | Promise<boolean> {
+  beforeExecute(_ctx: CommandContext): boolean | Promise<boolean> {
     return true
   }
 
   /** Actual command code, which is executed when all checks have passed. */
-  execute(ctx: CommandContext): any {}
+  execute(_ctx: CommandContext): void {}
   /** Method executed after executing command, passes on CommandContext and the value returned by execute too. (optional) */
-  afterExecute(ctx: CommandContext, executeResult: any): any {}
+  afterExecute(_ctx: CommandContext, _executeResult: any): void {}
 
   toString(): string {
     return `Command: ${this.name}${
@@ -154,7 +154,7 @@ export class Command implements CommandOptions {
 
 export class CommandCategory {
   /** Name of the Category. */
-  name: string = ''
+  name = ''
   /** Permissions(s) required by both User and Bot in order to use Category Commands */
   permissions?: string | string[]
   /** Permission(s) required for using Category Commands */
@@ -290,17 +290,17 @@ export class CommandBuilder extends Command {
     return this
   }
 
-  setGuildOnly(value: boolean = true): CommandBuilder {
+  setGuildOnly(value = true): CommandBuilder {
     this.guildOnly = value
     return this
   }
 
-  setNSFW(value: boolean = true): CommandBuilder {
+  setNSFW(value = true): CommandBuilder {
     this.nsfw = value
     return this
   }
 
-  setOwnerOnly(value: boolean = true): CommandBuilder {
+  setOwnerOnly(value = true): CommandBuilder {
     this.ownerOnly = value
     return this
   }
@@ -352,7 +352,7 @@ export class CommandsLoader {
    */
   async load(
     filePath: string,
-    exportName: string = 'default',
+    exportName = 'default',
     onlyRead?: boolean
   ): Promise<Command> {
     const stat = await Deno.stat(filePath).catch(() => undefined)
@@ -363,7 +363,6 @@ export class CommandsLoader {
 
     if (this.#importSeq[filePath] !== undefined) seq = this.#importSeq[filePath]
     const mod = await import(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       'file:///' +
         join(Deno.cwd(), filePath) +
         (seq === undefined ? '' : `#${seq}`)
@@ -380,7 +379,7 @@ export class CommandsLoader {
       if (Cmd instanceof Command) cmd = Cmd
       else cmd = new Cmd()
       if (!(cmd instanceof Command)) throw new Error('failed')
-    } catch (e) {
+    } catch {
       throw new Error(`Failed to load Command from ${filePath}`)
     }
 

@@ -79,29 +79,30 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     this.getGuildPrefix =
       options.getGuildPrefix === undefined
-        ? (id: string) => this.prefix
+      // What the fuck is going on with these id's?
+        ? (_id: string) => this.prefix
         : options.getGuildPrefix
     this.getUserPrefix =
       options.getUserPrefix === undefined
-        ? (id: string) => this.prefix
+        ? (_id: string) => this.prefix
         : options.getUserPrefix
 
     this.getChannelPrefix =
       options.getChannelPrefix === undefined
-        ? (id: string) => this.prefix
+        ? (_id: string) => this.prefix
         : options.getChannelPrefix
 
     this.isUserBlacklisted =
       options.isUserBlacklisted === undefined
-        ? (id: string) => false
+        ? (_id: string) => false
         : options.isUserBlacklisted
     this.isGuildBlacklisted =
       options.isGuildBlacklisted === undefined
-        ? (id: string) => false
+        ? (_id: string) => false
         : options.isGuildBlacklisted
     this.isChannelBlacklisted =
       options.isChannelBlacklisted === undefined
-        ? (id: string) => false
+        ? (_id: string) => false
         : options.isChannelBlacklisted
 
     this.spacesAfterPrefix =
@@ -117,7 +118,7 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     const self = this as any
     if (self._decoratedCommands !== undefined) {
-      Object.values(self._decoratedCommands).forEach((entry: any) => {
+      Object.values<Command>(self._decoratedCommands).forEach((entry) => {
         this.commands.add(entry)
       })
       self._decoratedCommands = undefined
@@ -130,7 +131,7 @@ export class CommandClient extends Client implements CommandClientOptions {
   }
 
   /** Processes a Message to Execute Command. */
-  async processMessage(msg: Message): Promise<any> {
+  async processMessage(msg: Message): Promise<void> {
     if (!this.allowBots && msg.author.bot === true) return
 
     const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
@@ -356,7 +357,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     ) {
       try {
         return await command.onMissingArgs(ctx)
-      } catch (e) {
+      } catch {
         return this.emit('commandMissingArgs', ctx)
       }
     }
@@ -384,7 +385,6 @@ export class CommandClient extends Client implements CommandClientOptions {
  */
 export function command(options?: CommandOptions) {
   return function (target: CommandClient | Extension, name: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = target as any
     if (c._decoratedCommands === undefined) c._decoratedCommands = {}
 
@@ -411,7 +411,6 @@ export function command(options?: CommandOptions) {
  */
 export function subcommand(options?: CommandOptions) {
   return function (target: Command, name: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = target as any
     if (c._decoratedSubCommands === undefined) c._decoratedSubCommands = []
 

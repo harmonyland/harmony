@@ -179,7 +179,7 @@ export class Message extends SnowflakeBase {
   }
 
   /** Edits this message. */
-  async edit(
+  edit(
     content?: string | AllMessageOptions,
     option?: AllMessageOptions
   ): Promise<Message> {
@@ -205,7 +205,7 @@ export class Message extends SnowflakeBase {
   }
 
   /** Creates a Reply to this Message. */
-  async reply(
+  reply(
     content?: string | AllMessageOptions,
     option?: AllMessageOptions
   ): Promise<Message> {
@@ -213,7 +213,7 @@ export class Message extends SnowflakeBase {
   }
 
   /** Deletes the Message. */
-  async delete(): Promise<void> {
+  delete(): Promise<void> {
     return this.client.rest.delete(CHANNEL_MESSAGE(this.channelID, this.id))
   }
 
@@ -221,7 +221,7 @@ export class Message extends SnowflakeBase {
    * Adds a reaction to the message.
    * @param emoji Emoji in string or object
    */
-  async addReaction(emoji: string | Emoji): Promise<void> {
+  addReaction(emoji: string | Emoji): Promise<void> {
     return this.channel.addReaction(this, emoji)
   }
 
@@ -230,14 +230,14 @@ export class Message extends SnowflakeBase {
    * @param emoji Emoji in string or object
    * @param user User or Member or user id
    */
-  async removeReaction(
+  removeReaction(
     emoji: string | Emoji,
     user?: User | Member | string
   ): Promise<void> {
     return this.channel.removeReaction(this, emoji, user)
   }
 
-  async startThread(options: CreateThreadOptions): Promise<ThreadChannel> {
+  startThread(options: CreateThreadOptions): Promise<ThreadChannel> {
     if (this.channel.isGuildText() === true) {
       const chan = this.channel as unknown as GuildTextChannel
       return chan.startThread(options, this)

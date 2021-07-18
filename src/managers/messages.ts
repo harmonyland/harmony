@@ -83,7 +83,6 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
         const res = new Message(
           this.client,
           raw,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           channel as TextChannel,
           author
         )
@@ -94,14 +93,14 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     return result
   }
 
-  async fetch(id: string): Promise<Message> {
-    return await new Promise((resolve, reject) => {
+  fetch(id: string): Promise<Message> {
+    return new Promise((resolve, reject) => {
       this.client.rest
         .get(CHANNEL_MESSAGE(this.channel.id, id))
         .then(async (data) => {
-          await this.set(id, data as MessagePayload)
+          await this.set(id, data)
 
-          let channel: any = await this.client.channels.get<TextChannel>(
+          let channel = await this.client.channels.get(
             this.channel.id
           )
           if (channel === undefined)
@@ -109,7 +108,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
 
           await this.client.users.set(
             data.author.id,
-            (data as MessagePayload).author
+            data.author
           )
 
           const res = (await this.get(data.id)) as Message

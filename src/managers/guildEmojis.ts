@@ -12,7 +12,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   guild: Guild
 
   constructor(client: Client, parent: EmojisManager, guild: Guild) {
-    super(client, parent as any)
+    super(client, parent)
     this.guild = guild
   }
 
@@ -31,7 +31,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     )
   }
 
-  async delete(id: string): Promise<boolean> {
+  delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
   }
 
@@ -60,14 +60,14 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
       data = await fetchAuto(url)
     }
     return await new Promise((resolve, reject) => {
-      let roleIDs: string[] = []
+      let roleIDs: string[] | Role[] = []
       if (roles !== undefined && typeof roles === 'string') roleIDs = [roles]
       else if (roles !== undefined) {
         if (roles?.length === 0)
           reject(new Error('Empty Roles array was provided'))
         if (roles[0] instanceof Role)
-          roleIDs = (roles as any).map((r: Role) => r.id)
-        else roleIDs = roles as string[]
+          roleIDs = (roles as Role[]).map((r) => r.id)
+        else roleIDs = roles
       } else roles = [this.guild.id]
       this.client.rest
         .post(GUILD_EMOJIS(this.guild.id), {
@@ -76,9 +76,9 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
           roles: roleIDs
         })
         .then(async (data) => {
-          const emoji = new Emoji(this.client, data as EmojiPayload)
+          const emoji = new Emoji(this.client, data)
           data.guild_id = this.guild.id
-          await this.set(data.id, data as EmojiPayload)
+          await this.set(data.id, data)
           emoji.guild = this.guild
           resolve(emoji)
         })
@@ -89,15 +89,15 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   async array(): Promise<Emoji[]> {
     const arr = (await this.parent.array()) as Emoji[]
     return arr.filter(
-      (c: any) => c.guild !== undefined && c.guild.id === this.guild.id
-    ) as any
+      (c) => c.guild !== undefined && c.guild.id === this.guild.id
+    )
   }
 
   async flush(): Promise<boolean> {
     const arr = await this.array()
     for (const elem of arr) {
-      const emojiID = elem.id !== null ? elem.id : elem.name
-      this.parent._delete(emojiID as string)
+      const emojiID = elem.id !== null ? elem.id : elem.name!
+      this.parent._delete(emojiID)
     }
     return true
   }

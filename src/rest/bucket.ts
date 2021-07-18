@@ -1,8 +1,6 @@
 // based on https://github.com/discordjs/discord.js/blob/master/src/rest/RequestHandler.js
 // adapted to work with harmony rest manager
 
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-
 import { delay } from '../utils/delay.ts'
 import { DiscordAPIError, HTTPError } from './error.ts'
 import type { RESTManager } from './manager.ts'
@@ -33,8 +31,7 @@ function calculateReset(
 ): number {
   return new Date(Number(reset) * 1000).getTime() - getAPIOffset(serverDate)
 }
-
-let invalidCount = 0
+let invalidCount: number;
 let invalidCountResetTime: number | null = null
 
 export class BucketHandler {
@@ -73,8 +70,8 @@ export class BucketHandler {
     return this.queue.remaining === 0 && !this.limited
   }
 
-  async globalDelayFor(ms: number): Promise<void> {
-    return await new Promise((resolve) => {
+  globalDelayFor(ms: number): Promise<void> {
+    return new Promise((resolve) => {
       this.manager.setTimeout(() => {
         this.manager.globalDelay = null
         resolve()
@@ -90,18 +87,16 @@ export class BucketHandler {
       if (isGlobal) {
         limit = this.manager.globalLimit
         timeout =
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
           Number(this.manager.globalReset) +
           this.manager.restTimeOffset -
           Date.now()
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (!this.manager.globalDelay) {
+          // Why are you assigning `Promise<void>` to `number | null` ??
           this.manager.globalDelay = this.globalDelayFor(timeout) as any
         }
         delayPromise = this.manager.globalDelay
       } else {
         limit = this.limit
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         timeout = this.reset + this.manager.restTimeOffset - Date.now()
         delayPromise = delay(timeout)
       }
@@ -117,7 +112,6 @@ export class BucketHandler {
       await delayPromise
     }
 
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!this.manager.globalReset || this.manager.globalReset < Date.now()) {
       this.manager.globalReset = Date.now() + 1000
       this.manager.globalRemaining = this.manager.globalLimit
@@ -162,7 +156,6 @@ export class BucketHandler {
       let retryAfter: number | null | string = res.headers.get('retry-after')
       retryAfter = retryAfter !== null ? Number(retryAfter) * 1000 : -1
       if (retryAfter > 0) {
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (res.headers.get('x-ratelimit-global')) {
           this.manager.globalRemaining = 0
           this.manager.globalReset = Date.now() + retryAfter
@@ -173,12 +166,10 @@ export class BucketHandler {
     }
 
     if (res.status === 401 || res.status === 403 || res.status === 429) {
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (!invalidCountResetTime || invalidCountResetTime < Date.now()) {
         invalidCountResetTime = Date.now() + 1000 * 60 * 10
         invalidCount = 0
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       invalidCount++
     }
 

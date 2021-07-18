@@ -54,12 +54,12 @@ export class Role extends SnowflakeBase {
   }
 
   /** Delete the Role */
-  async delete(): Promise<Role | undefined> {
+  delete(): Promise<Role | undefined> {
     return this.guild.roles.delete(this)
   }
 
   /** Edit the Role */
-  async edit(options: RoleModifyPayload): Promise<Role> {
+  edit(options: RoleModifyPayload): Promise<Role> {
     return this.guild.roles.edit(this, options)
   }
 

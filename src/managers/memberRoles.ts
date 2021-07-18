@@ -11,7 +11,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
   member: Member
 
   constructor(client: Client, parent: RolesManager, member: Member) {
-    super(client, parent as any)
+    super(client, parent)
     this.member = member
   }
 
@@ -49,9 +49,9 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
     const arr = (await this.parent.array()) as Role[]
     const mem = await this._resolveMemberPayload()
     return arr.filter(
-      (c: any) =>
+      (c) =>
         (mem.roles.includes(c.id) as boolean) || c.id === this.member.guild.id
-    ) as any
+    )
   }
 
   async flush(): Promise<boolean> {

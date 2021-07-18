@@ -30,7 +30,7 @@ export class BitField {
     return this.bitfield === BitField.resolve(this.#flags, bit)
   }
 
-  has(bit: BitFieldResolvable, ...args: any[]): boolean {
+  has(bit: BitFieldResolvable, ..._args: any[]): boolean {
     if (Array.isArray(bit)) return (bit.every as any)((p: any) => this.has(p))
     bit = BitField.resolve(this.#flags, bit)
     return (this.bitfield & bit) === bit

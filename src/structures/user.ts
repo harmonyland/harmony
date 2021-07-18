@@ -94,7 +94,7 @@ export class User extends SnowflakeBase {
     return this.mention
   }
 
-  async createDM(): Promise<DMChannel> {
+  createDM(): Promise<DMChannel> {
     return this.client.createDM(this)
   }
 
@@ -107,7 +107,6 @@ export class User extends SnowflakeBase {
       (await this.createDM().then((chan) =>
         this.client.channels.setUserDM(this.id, chan.id).then(() => chan)
       ))
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     return dm!
   }
 
@@ -125,15 +124,15 @@ export class UserResolvable extends SnowflakeBase implements IResolvable<User> {
     super(client)
   }
 
-  async get(): Promise<User | undefined> {
+  get(): Promise<User | undefined> {
     return this.client.users.get(this.id)
   }
 
-  async fetch(): Promise<User> {
+  fetch(): Promise<User> {
     return this.client.users.fetch(this.id)
   }
 
-  async resolve(): Promise<User | undefined> {
+  resolve(): Promise<User | undefined> {
     return this.client.users.resolve(this.id)
   }
 }

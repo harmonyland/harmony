@@ -31,12 +31,12 @@ export class VoiceChannel extends GuildChannel {
   }
 
   /** Join the Voice Channel */
-  async join(options?: VoiceChannelJoinOptions): Promise<VoiceServerData> {
+  join(options?: VoiceChannelJoinOptions): Promise<VoiceServerData> {
     return this.client.voice.join(this.id, options)
   }
 
   /** Leave the Voice Channel */
-  async leave(): Promise<void> {
+  leave(): Promise<void> {
     return this.client.voice.leave(this.guild)
   }
 
@@ -50,10 +50,10 @@ export class VoiceChannel extends GuildChannel {
     const body: ModifyVoiceChannelPayload = {
       name: options?.name,
       position: options?.position,
-      permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID,
+      "permission_overwrites": options?.permissionOverwrites,
+      "parent_id": options?.parentID,
       bitrate: options?.bitrate,
-      user_limit: options?.userLimit
+      "user_limit": options?.userLimit
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)

@@ -12,7 +12,7 @@ export class RequestQueue {
     return this.promises.length
   }
 
-  async wait(): Promise<any> {
+  wait(): Promise<any> {
     const next =
       this.promises.length !== 0
         ? this.promises[this.promises.length - 1].promise

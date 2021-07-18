@@ -65,8 +65,8 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
     const body: ModifyGuildTextBasedChannelPayload = {
       name: options?.name,
       position: options?.position,
-      permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID,
+      "permission_overwrites": options?.permissionOverwrites,
+      "parent_id": options?.parentID,
       nsfw: options?.nsfw,
       topic: options?.topic
       // rate_limit_per_user: options?.slowmode
@@ -93,7 +93,7 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
       if (list.length < messages) list = (await this.fetchMessages()).array()
       ids = list
         .sort((b, a) => a.createdAt.getTime() - b.createdAt.getTime())
-        .filter((e, i) => i < messages)
+        .filter((_, i) => i < messages)
         .filter(
           (e) =>
             new Date().getTime() - e.createdAt.getTime() <=
@@ -114,20 +114,20 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
   }
 
   /** Create an Invite for this Channel */
-  async createInvite(options?: CreateInviteOptions): Promise<Invite> {
+  createInvite(options?: CreateInviteOptions): Promise<Invite> {
     return this.guild.invites.create(this.id, options)
   }
 
   /** Edit topic of the channel */
-  async setTopic(topic: string): Promise<GuildTextBasedChannel> {
-    return await this.edit({ topic })
+  setTopic(topic: string): Promise<GuildTextBasedChannel> {
+    return this.edit({ topic })
   }
 
   /** Edit category of the channel */
-  async setCategory(
+  setCategory(
     category: CategoryChannel | string
   ): Promise<GuildTextBasedChannel> {
-    return await this.edit({
+    return this.edit({
       parentID: typeof category === 'object' ? category.id : category
     })
   }
@@ -164,11 +164,11 @@ export class GuildTextChannel extends GuildTextBasedChannel {
     const body: ModifyGuildTextChannelPayload = {
       name: options?.name,
       position: options?.position,
-      permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID,
+      "permission_overwrites": options?.permissionOverwrites,
+      "parent_id": options?.parentID,
       nsfw: options?.nsfw,
       topic: options?.topic,
-      rate_limit_per_user: options?.slowmode
+      "rate_limit_per_user": options?.slowmode
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)

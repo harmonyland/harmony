@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/method-signature-style */
 import type { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/mod.ts'
@@ -110,13 +109,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Whether to force new session or not */
   forceNewSession?: boolean
   /** Time till messages to stay cached, in MS. */
-  messageCacheLifetime: number = 3600000
+  messageCacheLifetime = 3600000
   /** Max number of messages to cache per channel. Default 100 */
-  messageCacheMax: number = 100
+  messageCacheMax = 100
   /** Time till messages to stay cached, in MS. */
-  reactionCacheLifetime: number = 3600000
+  reactionCacheLifetime = 3600000
   /** Whether to fetch Uncached Message of Reaction or not? */
-  fetchUncachedReactions: boolean = false
+  fetchUncachedReactions = false
 
   /** Client Properties */
   readonly clientProperties!: ClientProperties
@@ -124,7 +123,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Slash-Commands Management client */
   slash: SlashClient
   /** Whether to fetch Gateway info or not */
-  fetchGatewayInfo: boolean = true
+  fetchGatewayInfo = true
 
   /** Voice Connections Manager */
   readonly voice = new VoiceManager(this)
@@ -235,7 +234,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
           this.token = token
           this.debug('Info', 'Found token in ENV')
         }
-      } catch (e) {}
+      // Should probably have some kind of Warning emitted?
+      } catch {}
     }
 
     const restOptions: RESTOptions = {
@@ -277,7 +277,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Emits debug event */
   debug(tag: string, msg: string): void {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // Should probably be awaited to avoid leaks?
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
@@ -286,7 +286,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     else if (this.token !== undefined) {
       try {
         return atob(this.token.split('.')[0])
-      } catch (e) {
+      } catch {
         return this._id ?? 'unknown'
       }
     } else {
@@ -364,7 +364,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Attempt to Close current Gateway connection and Resume */
   async reconnect(): Promise<Client> {
-    this.gateway.close()
+    await this.gateway.close()
     this.gateway.initWebsocket()
     return this.waitFor('ready', () => true).then(() => this)
   }
@@ -387,7 +387,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     }
   }
 
-  async emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
+  emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
     const collectors: Collector[] = []
     for (const collector of this.collectors.values()) {
       if (collector.event === event) collectors.push(collector)
@@ -395,14 +395,12 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (collectors.length !== 0) {
       this.collectors.forEach((collector) => collector._fire(...args))
     }
-    // TODO(DjDeveloperr): Fix this ts-ignore
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-    // @ts-ignore
+    // @ts-ignore: TODO(DjDeveloperr): Fix this ts-ignore
     return super.emit(event, ...args)
   }
 
   /** Returns an array of voice region objects that can be used when creating servers. */
-  async fetchVoiceRegions(): Promise<VoiceRegion[]> {
+  fetchVoiceRegions(): Promise<VoiceRegion[]> {
     return this.rest.api.voice.regions.get()
   }
 
@@ -428,13 +426,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   }
 
   /** Change Username of the Client User */
-  async setUsername(username: string): Promise<Client> {
-    return await this.editUser({ username })
+  setUsername(username: string): Promise<Client> {
+    return this.editUser({ username })
   }
 
   /** Change Avatar of the Client User */
-  async setAvatar(avatar: string): Promise<Client> {
-    return await this.editUser({ avatar })
+  setAvatar(avatar: string): Promise<Client> {
+    return this.editUser({ avatar })
   }
 
   /** Create a DM Channel with a User */
@@ -455,13 +453,11 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 }
 
 /** Event decorator to create an Event handler from function */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function event(name?: keyof ClientEvents) {
+export function event(name?: keyof ClientEvents): (client: Client | Extension, prop: keyof ClientEvents | string) => void {
   return function (
     client: Client | Extension,
     prop: keyof ClientEvents | string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  ): void {
     const c = client as any
     const listener = (
       client as unknown as {

@@ -7,7 +7,7 @@ import type { Client } from '../client/mod.ts'
  */
 export class GatewayCache {
   client: Client
-  cacheName: string = 'discord_gateway_cache'
+  cacheName = 'discord_gateway_cache'
 
   constructor(client: Client, cacheName?: string) {
     this.client = client

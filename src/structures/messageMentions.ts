@@ -12,7 +12,7 @@ export class MessageMentions {
   users: Collection<string, User> = new Collection()
   roles: Collection<string, Role> = new Collection()
   channels: Collection<string, GuildTextBasedChannel> = new Collection()
-  everyone: boolean = false
+  everyone = false
 
   static EVERYONE_MENTION = /@(everyone|here)/g
   static USER_MENTION = /<@!?(\d{17,19})>/g

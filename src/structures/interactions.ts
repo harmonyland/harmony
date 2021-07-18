@@ -78,7 +78,7 @@ export class InteractionChannel extends SnowflakeBase {
   }
 
   /** Resolve to actual Channel object if present in Cache */
-  async resolve<T = Channel>(): Promise<T | undefined> {
+  resolve<T = Channel>(): Promise<T | undefined> {
     return this.client.channels.get<T>(this.id)
   }
 }
@@ -103,9 +103,9 @@ export class Interaction extends SnowflakeBase {
   /** User object of who invoked Interaction */
   user: User
   /** Whether we have responded to Interaction or not */
-  responded: boolean = false
+  responded = false
   /** Whether response was deferred or not */
-  deferred: boolean = false
+  deferred = false
   _httpRespond?: (d: InteractionResponsePayload) => unknown
   _httpResponded?: boolean
   applicationID: string
@@ -324,7 +324,7 @@ export class Interaction extends SnowflakeBase {
       file: (option as WebhookMessageOptions)?.file,
       files: (option as WebhookMessageOptions)?.files,
       tts: (option as WebhookMessageOptions)?.tts,
-      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
+      "allowed_mentions": (option as WebhookMessageOptions)?.allowedMentions,
       components:
         (option as WebhookMessageOptions)?.components === undefined
           ? undefined

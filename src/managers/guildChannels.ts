@@ -52,7 +52,7 @@ export class GuildChannelsManager extends BaseChildManager<
   }
 
   /** Delete a Guild Channel */
-  async delete(id: string): Promise<boolean> {
+  delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
   }
 
@@ -91,11 +91,11 @@ export class GuildChannelsManager extends BaseChildManager<
           ? options.parent.id
           : options.parent,
       nsfw: options.nsfw
-    })) as unknown as GuildChannelPayload
+    })) as GuildChannelPayload
 
     await this.set(res.id, res)
     const channel = await this.get(res.id)
-    return channel as unknown as GuildChannels
+    return channel as GuildChannels
   }
 
   /** Modify the positions of a set of channel positions for the guild. */

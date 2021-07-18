@@ -233,8 +233,8 @@ export class GuildChannel extends Channel {
     const body: ModifyChannelPayload = {
       name: options?.name,
       position: options?.position,
-      permission_overwrites: options?.permissionOverwrites,
-      parent_id: options?.parentID,
+      "permission_overwrites": options?.permissionOverwrites,
+      "parent_id": options?.parentID,
       nsfw: options?.nsfw
     }
 

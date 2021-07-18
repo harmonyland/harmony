@@ -7,9 +7,9 @@ import type { Message } from './message.ts'
 
 export class MessageReaction extends Base {
   message: Message
-  count: number = 0
+  count = 0
   emoji: Emoji
-  me: boolean = false
+  me = false
   users: ReactionUsersManager
 
   constructor(client: Client, data: Reaction, message: Message, emoji: Emoji) {

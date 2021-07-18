@@ -8,7 +8,6 @@ export const channelUpdate: GatewayEventHandler = async (
 ) => {
   const oldChannel = await gateway.client.channels.get(d.id)
   await gateway.client.channels.set(d.id, d)
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const newChannel = (await gateway.client.channels.get(d.id)) as Channel
 
   if (oldChannel !== undefined) {

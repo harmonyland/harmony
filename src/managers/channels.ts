@@ -21,7 +21,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     super(client, 'channels', Channel)
   }
 
-  async getUserDM(user: User | string): Promise<string | undefined> {
+  getUserDM(user: User | string): Promise<string | undefined> {
     return this.client.cache.get(
       'user_dms',
       typeof user === 'string' ? user : user.id
@@ -43,7 +43,6 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     let guild
     if ('guild_id' in data) {
       guild = await this.client.guilds.get(
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         (data as GuildChannelPayload).guild_id
       )
     }
@@ -61,7 +60,6 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       let guild
       if ('guild_id' in elem) {
         guild = await this.client.guilds.get(
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           (elem as GuildChannelPayload).guild_id
         )
       }
@@ -119,14 +117,14 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       file: option?.file,
       files: option?.files,
       tts: option?.tts,
-      allowed_mentions: option?.allowedMentions,
+      "allowed_mentions": option?.allowedMentions,
       components:
         option?.components !== undefined
           ? typeof option.components === 'function'
             ? option.components
             : transformComponent(option.components)
           : undefined,
-      message_reference:
+      "message_reference":
         option?.reply === undefined
           ? undefined
           : typeof option.reply === 'string'
@@ -151,12 +149,12 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     const resp = await this.client.rest.api.channels[channelID].messages.post(
       payload
     )
-    const chan =
+    const chan: TextChannel =
       typeof channel === 'string'
-        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          (await this.get<TextChannel>(channel))!
+        ?
+          (await this.get(channel))!
         : channel
-    const res = new Message(this.client, resp, chan, this.client.user as any)
+    const res = new Message(this.client, resp, chan, this.client.user as User)
     await res.mentions.fromPayload(resp)
     return res
   }
@@ -200,10 +198,10 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
           : undefined
     })
 
-    const chan =
+    const chan: TextChannel =
       typeof channel === 'string'
-        ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          (await this.get<TextChannel>(channel))!
+        ?
+          (await this.get(channel))!
         : channel
     const res = new Message(this.client, newMsg, chan, this.client.user)
     await res.mentions.fromPayload(newMsg)

@@ -44,17 +44,17 @@ export class MessageReactionsManager extends BaseManager<
     return reaction
   }
 
-  async set(key: string, value: Reaction): Promise<any> {
+  set(key: string, value: Reaction): Promise<void> {
     return this.client.cache.set(
       this.cacheName,
       key,
       value,
       this.client.reactionCacheLifetime
-    )
+    ) as Promise<void>
   }
 
   async array(): Promise<MessageReaction[]> {
-    let arr = await (this.client.cache.array(this.cacheName) as Reaction[])
+    let arr: Reaction[] | undefined = await (this.client.cache.array(this.cacheName))
     if (arr === undefined) arr = []
 
     return await Promise.all(
@@ -68,7 +68,7 @@ export class MessageReactionsManager extends BaseManager<
     )
   }
 
-  async flush(): Promise<any> {
+  async flush(): Promise<boolean> {
     await this.client.cache.deleteCache(`reaction_users:${this.message.id}`)
     return this.client.cache.deleteCache(this.cacheName)
   }

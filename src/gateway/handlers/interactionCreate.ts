@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Guild } from '../../structures/guild.ts'
 import { Member } from '../../structures/member.ts'
 import {
@@ -53,7 +52,6 @@ export const interactionCreate: GatewayEventHandler = async (
           gateway.client,
           d.member!,
           new User(gateway.client, d.member.user),
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           guild!,
           new Permissions(d.member.permissions)
         )
@@ -83,7 +81,7 @@ export const interactionCreate: GatewayEventHandler = async (
       await gateway.client.users.set(id, data as UserPayload)
       resolved.users[id] = (await gateway.client.users.get(
         id
-      )) as unknown as User
+      )) as User
       if (resolved.members[id] !== undefined)
         resolved.users[id].member = resolved.members[id]
     }
@@ -101,12 +99,12 @@ export const interactionCreate: GatewayEventHandler = async (
         )
         permissions = new Permissions(mRoles.map((r) => r.permissions))
       }
-      ;(data as any).user = (d.data as any).resolved.users?.[
+      data.user = (d.data as any).resolved.users?.[
         id
       ] as unknown as UserPayload
       resolved.members[id] = new Member(
         gateway.client,
-        data as any,
+        data,
         resolved.users[id],
         guild as Guild,
         permissions
@@ -122,7 +120,7 @@ export const interactionCreate: GatewayEventHandler = async (
       } else {
         resolved.roles[id] = new Role(
           gateway.client,
-          data as any,
+          data,
           guild as unknown as Guild
         )
       }

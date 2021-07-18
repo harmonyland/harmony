@@ -29,7 +29,7 @@ export class ThreadsManager extends BaseChildManager<
       for (const member of (data as any).members as ThreadMemberPayload[]) {
         await this.client.cache.set(`thread_members:${id}`, member.id, member)
       }
-      ;(data as any).members = undefined
+      (data as any).members = undefined
     }
     await super.set(id, data)
   }

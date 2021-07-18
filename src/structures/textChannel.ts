@@ -44,7 +44,7 @@ export class TextChannel extends Channel {
    * @param option Various other Message options.
    * @param reply Reference to a Message object to reply-to.
    */
-  async send(
+  send(
     content?: string | AllMessageOptions,
     option?: AllMessageOptions,
     reply?: Message
@@ -62,7 +62,7 @@ export class TextChannel extends Channel {
    * @param text New text contents of the Message.
    * @param option Other options to edit the message.
    */
-  async editMessage(
+   editMessage(
     message: Message | string,
     text?: string,
     option?: MessageOptions

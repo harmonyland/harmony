@@ -1,12 +1,12 @@
 import type { SlashCommandHandler } from './slashClient.ts'
 
 export class SlashModule {
-  name: string = ''
+  name = ''
   commands: SlashCommandHandler[] = []
 
   constructor() {
     if ((this as any)._decoratedSlash !== undefined) {
-      ;(this as any).commands = (this as any)._decoratedSlash
+      (this as any).commands = (this as any)._decoratedSlash
     }
   }
 

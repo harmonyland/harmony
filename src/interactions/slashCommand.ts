@@ -126,7 +126,6 @@ function createSlashOption(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class SlashOption {
   static string(data: CreateOptions): SlashCommandOption {
     return createSlashOption(SlashCommandOptionType.STRING, data)

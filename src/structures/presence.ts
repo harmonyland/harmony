@@ -51,7 +51,7 @@ export class Presence extends Base {
 }
 
 interface StatusPayload extends StatusUpdatePayload {
-  client_status?: ClientStatus
+  "client_status"?: ClientStatus
 }
 
 export class ClientPresence {
@@ -105,7 +105,6 @@ export class ClientPresence {
 
   /** Creates Activity Payload */
   createActivity(): ActivityGame[] | null {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     const activity =
       this.activity === undefined
         ? null

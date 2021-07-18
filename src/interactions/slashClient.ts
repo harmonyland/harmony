@@ -39,7 +39,6 @@ export interface SlashOptions {
   publicKey?: string
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type SlashClientEvents = {
   interaction: [Interaction]
   interactionError: [Error]
@@ -61,7 +60,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     this.#token = val
   }
 
-  enabled: boolean = true
+  enabled = true
   commands: SlashCommandsManager
   handlers: SlashCommandHandler[] = []
   readonly rest!: RESTManager
@@ -88,8 +87,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
     this.enabled = options.enabled ?? true
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const client = this.client as any
+    const client: any = this.client
     if (client?._decoratedSlash !== undefined) {
       client._decoratedSlash.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
@@ -249,7 +247,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Verify HTTP based Interaction */
-  async verifyKey(
+  verifyKey(
     rawBody: string | Uint8Array,
     signature: string | Uint8Array,
     timestamp: string | Uint8Array
@@ -283,6 +281,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     if (signature === null || timestamp === null) return false
 
     const rawbody =
+    // We shouldn't use deprecated API's
       req.body instanceof Uint8Array ? req.body : await Deno.readAll(req.body)
     const verify = await this.verifyKey(rawbody, signature, timestamp)
     if (!verify) return false
@@ -294,7 +293,6 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       let res
       if (payload.type === InteractionType.APPLICATION_COMMAND) {
         res = new SlashCommandInteraction(this as any, payload, {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           user: new User(this as any, (payload.member?.user ?? payload.user)!),
           member: payload.member as any,
           guild: payload.guild_id as any,
@@ -309,7 +307,6 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
         })
       } else {
         res = new Interaction(this as any, payload, {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           user: new User(this as any, (payload.member?.user ?? payload.user)!),
           member: payload.member as any,
           guild: payload.guild_id as any,
@@ -383,7 +380,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     req: any,
     res: any,
     next: CallableFunction
-  ): Promise<any> {
+  ): Promise<boolean> {
     const verified = await this.verifyOpineRequest(req)
     if (!verified) return res.setStatus(401).end()
 
@@ -393,7 +390,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   // TODO: create verifyOakMiddleware too
   /** Method to verify Request from Oak server "Context". */
-  async verifyOakRequest(ctx: any): Promise<any> {
+  async verifyOakRequest(ctx: any): Promise<boolean> {
     const signature = ctx.request.headers.get('x-signature-ed25519')
     const timestamp = ctx.request.headers.get('x-signature-timestamp')
     const contentLength = ctx.request.headers.get('content-length')
@@ -418,7 +415,6 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 /** Decorator to create a Slash Command handler */
 export function slash(name?: string, guild?: string) {
   return function (client: Client | SlashClient | SlashModule, prop: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
     if (c._decoratedSlash === undefined) c._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
@@ -436,7 +432,6 @@ export function slash(name?: string, guild?: string) {
 /** Decorator to create a Sub-Slash Command handler */
 export function subslash(parent: string, name?: string, guild?: string) {
   return function (client: Client | SlashModule | SlashClient, prop: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
     if (c._decoratedSlash === undefined) c._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]
@@ -460,7 +455,6 @@ export function groupslash(
   guild?: string
 ) {
   return function (client: Client | SlashModule | SlashClient, prop: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
     if (c._decoratedSlash === undefined) c._decoratedSlash = []
     const item = (client as { [name: string]: any })[prop]

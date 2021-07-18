@@ -93,7 +93,6 @@ export function Option(
 }
 
 /** TSX compiles down to BotUI.createElement */
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class BotUI {
   static createElement<T = any>(
     component: Component<T>,

@@ -63,7 +63,7 @@ export class ExtensionCommands {
 export class Extension {
   client: CommandClient
   /** Name of the Extension */
-  name: string = ''
+  name = ''
   /** Description of the Extension */
   description?: string
   /** Extensions's Commands Manager */
@@ -77,7 +77,7 @@ export class Extension {
     this.client = client
     const self = this as any
     if (self._decoratedCommands !== undefined) {
-      Object.entries(self._decoratedCommands).forEach((entry: any) => {
+      Object.entries<Command>(self._decoratedCommands).forEach((entry) => {
         entry[1].extension = this
         this.commands.add(entry[1])
       })
@@ -88,7 +88,7 @@ export class Extension {
       self._decoratedEvents !== undefined &&
       Object.keys(self._decoratedEvents).length !== 0
     ) {
-      Object.entries(self._decoratedEvents).forEach((entry: any) => {
+      Object.entries<ExtensionEventCallback>(self._decoratedEvents).forEach((entry) => {
         this.listen(entry[0] as keyof ClientEvents, entry[1].bind(this))
       })
       self._decoratedEvents = undefined
@@ -100,7 +100,6 @@ export class Extension {
     if (this.events[event] !== undefined) return false
     else {
       const fn = (...args: any[]): any => {
-        // eslint-disable-next-line standard/no-callback-literal
         cb(this, ...args)
       }
       this.client.on(event, fn)
@@ -136,7 +135,6 @@ export class ExtensionsManager {
 
   /** Loads an Extension onto Command Client */
   load(ext: Extension | typeof Extension): void {
-    // eslint-disable-next-line new-cap
     if (!(ext instanceof Extension)) ext = new ext(this.client)
     if (this.exists(ext.name))
       throw new Error(`Extension with name '${ext.name}' already exists`)
@@ -152,7 +150,6 @@ export class ExtensionsManager {
     extension.commands.deleteAll()
     for (const [k, v] of Object.entries(extension.events)) {
       this.client.off(k as keyof ClientEvents, v)
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete extension.events[k]
     }
     extension.unload()

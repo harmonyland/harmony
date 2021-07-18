@@ -10,7 +10,7 @@ export const messageReactionAdd: GatewayEventHandler = async (
 ) => {
   let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   if (channel === undefined)
-    channel = await gateway.client.channels.fetch<TextChannel>(d.channel_id)
+    channel = await gateway.client.channels.fetch(d.channel_id)
   if (channel === undefined) return
 
   let message = await channel.messages.get(d.message_id)
@@ -37,9 +37,9 @@ export const messageReactionAdd: GatewayEventHandler = async (
       emoji: d.emoji,
       me: d.user_id === gateway.client.user?.id
     })
-    reaction = (await message.reactions.get(
+    reaction = await message.reactions.get(
       emojiID
-    )) as unknown as MessageReaction
+    ) as MessageReaction
   }
 
   const rawUser = (await gateway.client.users.get(

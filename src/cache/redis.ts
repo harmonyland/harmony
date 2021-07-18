@@ -10,7 +10,7 @@ import {
 export class RedisCacheAdapter implements ICacheAdapter {
   _redis: Promise<Redis>
   redis?: Redis
-  ready: boolean = false
+  ready = false
   readonly _expireIntervalTimer: number = 5000
   private _expireInterval?: number
 
@@ -48,7 +48,7 @@ export class RedisCacheAdapter implements ICacheAdapter {
     }, this._expireIntervalTimer)
   }
 
-  async _checkReady(): Promise<void> {
+  private async _checkReady(): Promise<void> {
     if (!this.ready) await this._redis
   }
 
@@ -58,7 +58,7 @@ export class RedisCacheAdapter implements ICacheAdapter {
     if (cache === undefined) return
     try {
       return JSON.parse(cache)
-    } catch (e) {
+    } catch {
       return cache
     }
   }

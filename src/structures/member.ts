@@ -87,7 +87,7 @@ export class Member extends SnowflakeBase {
       roles: data.roles?.map((e) => (typeof e === 'string' ? e : e.id)),
       deaf: data.deaf,
       mute: data.mute,
-      channel_id:
+      "channel_id":
         typeof data.channel === 'string' ? data.channel : data.channel?.id
     }
 
@@ -202,7 +202,7 @@ export class Member extends SnowflakeBase {
    * @param reason Reason for the Ban.
    * @param deleteOldMessages Delete Old Messages? If yes, how much days.
    */
-  async ban(reason?: string, deleteOldMessages?: number): Promise<void> {
+  ban(reason?: string, deleteOldMessages?: number): Promise<void> {
     return this.guild.bans.add(this.id, reason, deleteOldMessages)
   }
 

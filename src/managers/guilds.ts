@@ -6,7 +6,6 @@ import { Role } from '../structures/role.ts'
 import { GUILD, GUILDS, GUILD_PREVIEW } from '../types/endpoint.ts'
 import type {
   GuildPayload,
-  MemberPayload,
   GuildCreateRolePayload,
   GuildCreatePayload,
   GuildCreateChannelPayload,
@@ -29,15 +28,15 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD(id))
-        .then(async (data: any) => {
+        .then(async (data) => {
           await this.set(id, data)
 
           const guild = new Guild(this.client, data)
 
-          if ((data as GuildPayload).members !== undefined) {
+          if (data.members !== undefined) {
             const members = new MembersManager(this.client, guild)
             await members.fromPayload(
-              (data as GuildPayload).members as MemberPayload[]
+              data.members
             )
             guild.members = members
           }
@@ -66,7 +65,6 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
    * @param options Options for creating a guild
    */
   async create(options: GuildCreateOptions): Promise<Guild> {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (options.icon !== undefined && !options.icon.startsWith('data:')) {
       options.icon = await fetchAuto(options.icon)
     }
@@ -81,7 +79,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
       name: options.name,
       region: options.region,
       icon: options.icon,
-      verification_level: options.verificationLevel,
+      "verification_level": options.verificationLevel,
       roles: options.roles?.map((obj) => {
         let result: GuildCreateRolePayload
         if (obj instanceof Role) {
@@ -109,9 +107,9 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
           parent_id: obj.parentID
         })
       ),
-      afk_channel_id: options.afkChannelID,
-      afk_timeout: options.afkTimeout,
-      system_channel_id: options.systemChannelID
+      "afk_channel_id": options.afkChannelID,
+      "afk_timeout": options.afkTimeout,
+      "system_channel_id": options.systemChannelID
     }
 
     const result: GuildPayload = await this.client.rest.post(GUILDS(), body)
@@ -146,14 +144,14 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
   }
 
   /** Sets a value to Cache */
-  async set(key: string, value: GuildPayload): Promise<any> {
+  set(key: string, value: GuildPayload): Promise<void> {
     value = { ...value }
     if ('roles' in value) value.roles = []
     if ('emojis' in value) value.emojis = []
     if ('members' in value) value.members = []
     if ('presences' in value) value.presences = []
     if ('voice_states' in value) value.voice_states = []
-    return this.client.cache.set(this.cacheName, key, value)
+    return this.client.cache.set(this.cacheName, key, value) as Promise<void>
   }
 
   /**
@@ -175,12 +173,11 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
   async edit(
     guild: Guild | string,
     options: GuildModifyOptions,
-    asRaw: boolean = false
+    asRaw = false
   ): Promise<Guild | GuildPayload> {
     if (
       options.icon !== undefined &&
       options.icon !== null &&
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       !options.icon.startsWith('data:')
     ) {
       options.icon = await fetchAuto(options.icon)
@@ -188,7 +185,6 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     if (
       options.splash !== undefined &&
       options.splash !== null &&
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       !options.splash.startsWith('data:')
     ) {
       options.splash = await fetchAuto(options.splash)
@@ -196,7 +192,6 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     if (
       options.banner !== undefined &&
       options.banner !== null &&
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       !options.banner.startsWith('data:')
     ) {
       options.banner = await fetchAuto(options.banner)
@@ -208,19 +203,19 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     const body: GuildModifyPayload = {
       name: options.name,
       region: options.region,
-      verification_level: options.verificationLevel,
-      default_message_notifications: options.defaultMessageNotifications,
-      explicit_content_filter: options.explicitContentFilter,
-      afk_channel_id: options.afkChannelID,
-      afk_timeout: options.afkTimeout,
-      owner_id: options.ownerID,
+      "verification_level": options.verificationLevel,
+      "default_message_notifications": options.defaultMessageNotifications,
+      "explicit_content_filter": options.explicitContentFilter,
+      "afk_channel_id": options.afkChannelID,
+      "afk_timeout": options.afkTimeout,
+      "owner_id": options.ownerID,
       icon: options.icon,
       splash: options.splash,
       banner: options.banner,
-      system_channel_id: options.systemChannelID,
-      rules_channel_id: options.rulesChannelID,
-      public_updates_channel_id: options.publicUpdatesChannelID,
-      preferred_locale: options.preferredLocale
+      "system_channel_id": options.systemChannelID,
+      "rules_channel_id": options.rulesChannelID,
+      "public_updates_channel_id": options.publicUpdatesChannelID,
+      "preferred_locale": options.preferredLocale
     }
 
     const result: GuildPayload = await this.client.rest.patch(

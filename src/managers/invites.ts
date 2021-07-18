@@ -34,7 +34,7 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
   }
 
   /** Fetch an Invite */
-  async fetch(id: string, withCounts: boolean = true): Promise<Invite> {
+  async fetch(id: string, withCounts = true): Promise<Invite> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(`${INVITE(id)}${withCounts ? '?with_counts=true' : ''}`)

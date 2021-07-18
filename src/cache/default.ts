@@ -38,7 +38,6 @@ export class DefaultCacheAdapter implements ICacheAdapter {
   }
 
   deleteCache(cacheName: string): boolean {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     return this.data.delete(cacheName)
   }
 

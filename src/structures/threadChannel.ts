@@ -14,12 +14,12 @@ import { ThreadMembersManager } from '../managers/threadMembers.ts'
 import { Collection } from '../utils/collection.ts'
 
 export class ThreadMetadata extends Base {
-  archived: boolean = false
+  archived = false
   archiver?: UserResolvable
   /** Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
   autoArchiveDuration!: number
   archiveTimestamp!: Date
-  locked: boolean = false
+  locked = false
 
   constructor(client: Client, data: ThreadMetadataPayload) {
     super(client)
@@ -67,11 +67,11 @@ export class ThreadResolvable
     super(client)
   }
 
-  async get(): Promise<ThreadChannel | undefined> {
+  get(): Promise<ThreadChannel | undefined> {
     return this.client.channels.get<ThreadChannel>(this.id)
   }
 
-  async fetch(): Promise<ThreadChannel> {
+  fetch(): Promise<ThreadChannel> {
     return this.client.channels.fetch<ThreadChannel>(this.id)
   }
 
@@ -89,7 +89,7 @@ export class ThreadChannel extends GuildTextBasedChannel {
   members: ThreadMembersManager
 
   constructor(client: Client, data: ThreadChannelPayload, guild: Guild) {
-    super(client, data as any, guild)
+    super(client, data, guild)
     this.readFromData(data)
     this.members = new ThreadMembersManager(client, this)
   }
@@ -147,7 +147,7 @@ export class ThreadChannel extends GuildTextBasedChannel {
   }
 
   /** Not possible to set Thread Channel topic */
-  async setTopic(): Promise<this> {
+  setTopic(): Promise<this> {
     throw new Error('Not possible to set Thread Channel topic')
   }
 }
