@@ -106,22 +106,22 @@ async function parseMention(
   )
   const regexMatches = regex.exec(argsNullable[index]!)
   const tempValue = regexMatches !== null ? regexMatches[0].replace(regex, '$1') : null
-  let temp;
+  let temp
   switch (entry.match) {
-    case "channel":
-      temp = tempValue ? await client.channels.get(tempValue) : entry.defaultValue
+    case 'channel':
+      temp = tempValue !== null ? await client.channels.get(tempValue) : entry.defaultValue
       break
 
-    case "user": 
-      temp = tempValue ? await client.users.get(tempValue) : entry.defaultValue
+    case 'user': 
+      temp = tempValue !== null ? await client.users.get(tempValue) : entry.defaultValue
       break
 
-    case "role":
-      temp = tempValue ? await message.guild?.roles.get(tempValue) : entry.defaultValue;
+    case 'role':
+      temp = tempValue !== null ? await message.guild?.roles.get(tempValue) : entry.defaultValue
       break
   }
 
-  args[entry.name] = temp;
+  args[entry.name] = temp
   argsNullable[index] = null
 }
 
