@@ -1,3 +1,9 @@
+import type { Client } from '../client/client.ts'
+import type { Message } from '../structures/message.ts'
+import type { Guild } from '../structures/guild.ts'
+import type { Role } from '../structures/role.ts'
+import type { User } from '../structures/user.ts'
+
 interface MentionToRegex {
   [key: string]: RegExp
   user: RegExp
@@ -43,12 +49,15 @@ export type Args =
   | ContentArgument
   | RestArgument
 
-export function parseArgs(
+export async function parseArgs(
   commandArgs: Args[] | undefined,
-  messageArgs: string[]
-): Record<string, string | number | boolean> | null {
+  message: Message
+): Promise<Record<
+  string,
+  Guild | User | Role | string | number | boolean
+> | null> {
   if (commandArgs === undefined) return null
-
+  const messageArgs = message.content.split(' ')
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, string | number | boolean> = {}
 
@@ -60,7 +69,13 @@ export function parseArgs(
       case 'user':
       case 'role':
       case 'channel':
-        parseMention(args, entry, messageArgsNullableCopy)
+        await parseMention(
+          args,
+          entry,
+          messageArgsNullableCopy,
+          message.client,
+          message
+        )
         break
       case 'content':
         parseContent(args, entry, messageArgs)
@@ -87,20 +102,45 @@ function parseFlags(
   }
 }
 
-function parseMention(
+async function parseMention(
   args: Record<string, unknown>,
   entry: MentionArgument,
-  argsNullable: Array<string | null>
-): void {
+  argsNullable: Array<string | null>,
+  client: Client,
+  message: Message
+): Promise<void> {
   const regex = mentionToRegex[entry.match]
   const index = argsNullable.findIndex(
     (x) => typeof x === 'string' && regex.test(x)
   )
   const regexMatches = regex.exec(argsNullable[index]!)
-  args[entry.name] =
-    regexMatches !== null
-      ? regexMatches[0].replace(regex, '$1')
-      : entry.defaultValue
+  const tempValue =
+    regexMatches !== null ? regexMatches[0].replace(regex, '$1$2') : null
+  let temp
+  switch (entry.match) {
+    case 'channel':
+      temp =
+        tempValue !== null
+          ? await client.channels.get(tempValue)
+          : entry.defaultValue
+      break
+
+    case 'user':
+      temp =
+        tempValue !== null
+          ? await client.users.get(tempValue)
+          : entry.defaultValue
+      break
+
+    case 'role':
+      temp =
+        tempValue !== null
+          ? await message.guild?.roles.get(tempValue)
+          : entry.defaultValue
+      break
+  }
+
+  args[entry.name] = temp
   argsNullable[index] = null
 }
 
