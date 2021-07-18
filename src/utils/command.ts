@@ -2,6 +2,7 @@ import type { Client } from "../client/client.ts"
 import type { Message } from '../structures/message.ts'
 import type { Guild } from "../structures/guild.ts"
 import type { Role } from "../structures/role.ts"
+import type { User } from "../structures/user.ts"
 
 interface MentionToRegex {
   [key: string]: RegExp
@@ -51,7 +52,7 @@ export type Args =
 export async function parseArgs(
   commandArgs: Args[] | undefined,
   message: Message,
-): Promise<Record<string, Guild | Role | string | number | boolean> | null> {
+): Promise<Record<string, Guild | User | Role | string | number | boolean> | null> {
   if (commandArgs === undefined) return null
   const messageArgs = message.content.split(" ")
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
@@ -104,7 +105,7 @@ async function parseMention(
     (x) => typeof x === 'string' && regex.test(x)
   )
   const regexMatches = regex.exec(argsNullable[index]!)
-  const tempValue = regexMatches !== null ? regexMatches[0].replace(regex, '$1') : null
+  const tempValue = regexMatches !== null ? regexMatches[0].replace(regex, '$1$2') : null
   let temp
   switch (entry.match) {
     case 'channel':
@@ -119,7 +120,7 @@ async function parseMention(
       temp = tempValue !== null ? await message.guild?.roles.get(tempValue) : entry.defaultValue
       break
   }
-
+  
   args[entry.name] = temp
   argsNullable[index] = null
 }
