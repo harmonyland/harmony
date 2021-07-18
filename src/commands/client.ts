@@ -244,7 +244,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       args: parseArgs(command.args, parsed.args),
       argString: parsed.argString,
       message: msg,
-      author: msg.author,
+      author: await msg.guild?.members.fetch(msg.author.id),
       command,
       channel: msg.channel,
       guild: msg.guild
