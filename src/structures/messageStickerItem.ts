@@ -23,5 +23,4 @@ export class MessageStickerItem extends SnowflakeBase {
     this.name = data.name ?? this.name
     this.formatType = data.format_type ?? this.formatType
   }
-
 }
