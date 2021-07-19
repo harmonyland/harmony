@@ -221,7 +221,7 @@ export interface MessagePayload {
   message_reference?: MessageReference
   referenced_message?: MessagePayload
   flags?: number
-  stickers?: MessageStickerPayload[]
+  sticker_items?: MessageStickerItemPayload[]
   interaction?: MessageInteractionPayload
   components?: MessageComponentPayload[]
   thread?: ThreadChannelPayload
@@ -416,14 +416,9 @@ export enum MessageStickerFormatTypes {
   LOTTIE = 3
 }
 
-export interface MessageStickerPayload {
+export interface MessageStickerItemPayload {
   id: string
-  pack_id: string
   name: string
-  description: string
-  tags?: string
-  asset: string
-  preview_asset: string | null
   format_type: MessageStickerFormatTypes
 }
 

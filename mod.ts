@@ -139,7 +139,7 @@ export type {
   MessageApplication,
   MessageFlags,
   MessageStickerFormatTypes,
-  MessageStickerPayload,
+  MessageStickerItemPayload,
   MessageTypes,
   OverwriteAsArg,
   Overwrite,
