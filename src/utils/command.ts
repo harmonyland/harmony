@@ -73,8 +73,7 @@ export async function parseArgs(
           args,
           entry,
           messageArgsNullableCopy,
-          message.client,
-          message
+          message,
         )
         break
       case 'content':
@@ -106,7 +105,6 @@ async function parseMention(
   args: Record<string, unknown>,
   entry: MentionArgument,
   argsNullable: Array<string | null>,
-  client: Client,
   message: Message
 ): Promise<void> {
   const regex = mentionToRegex[entry.match]
@@ -121,14 +119,14 @@ async function parseMention(
     case 'channel':
       temp =
         tempValue !== null
-          ? await client.channels.get(tempValue)
+          ? await message.client.channels.get(tempValue)
           : entry.defaultValue
       break
 
     case 'user':
       temp =
         tempValue !== null
-          ? await client.users.get(tempValue)
+          ? await message.client.users.get(tempValue)
           : entry.defaultValue
       break
 
