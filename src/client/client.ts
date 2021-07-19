@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/method-signature-style */
 import type { User } from '../structures/user.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { Gateway } from '../gateway/mod.ts'
@@ -24,6 +23,12 @@ import { fetchAuto } from '../../deps.ts'
 import type { DMChannel } from '../structures/dmChannel.ts'
 import { Template } from '../structures/template.ts'
 import { VoiceManager } from './voice.ts'
+
+type ValueOf<T> = T[keyof T]
+type EECallBackParams = ValueOf<ClientEvents>[0] |
+  ValueOf<ClientEvents>[1] |
+  ValueOf<ClientEvents>[2] |
+  ValueOf<ClientEvents>[3]
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -110,13 +115,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Whether to force new session or not */
   forceNewSession?: boolean
   /** Time till messages to stay cached, in MS. */
-  messageCacheLifetime: number = 3600000
+  messageCacheLifetime = 3600000
   /** Max number of messages to cache per channel. Default 100 */
-  messageCacheMax: number = 100
+  messageCacheMax = 100
   /** Time till messages to stay cached, in MS. */
-  reactionCacheLifetime: number = 3600000
+  reactionCacheLifetime = 3600000
   /** Whether to fetch Uncached Message of Reaction or not? */
-  fetchUncachedReactions: boolean = false
+  fetchUncachedReactions = false
 
   /** Client Properties */
   readonly clientProperties!: ClientProperties
@@ -124,7 +129,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Slash-Commands Management client */
   slash: SlashClient
   /** Whether to fetch Gateway info or not */
-  fetchGatewayInfo: boolean = true
+  fetchGatewayInfo = true
 
   /** Voice Connections Manager */
   readonly voice = new VoiceManager(this)
@@ -176,6 +181,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   applicationID?: string
   applicationFlags?: number
 
+  _decoratedEvents!: Record<keyof ClientEvents, EECallBackParams> | undefined
+
   constructor(options: ClientOptions = {}) {
     super()
     this._id = options.id
@@ -202,13 +209,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (options.compress !== undefined) this.compress = options.compress
 
     if (
-      (this as any)._decoratedEvents !== undefined &&
-      Object.keys((this as any)._decoratedEvents).length !== 0
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
     ) {
-      Object.entries((this as any)._decoratedEvents).forEach((entry) => {
-        this.on(entry[0] as keyof ClientEvents, (entry as any)[1].bind(this))
-      })
-      ;(this as any)._decoratedEvents = undefined
+      for (const entry of Object.entries<EECallBackParams>(this._decoratedEvents)) {
+        this.on(entry[0] as keyof ClientEvents, entry[1].bind(this))
+      }
+      this._decoratedEvents = undefined
     }
 
     Object.defineProperty(this, 'clientProperties', {
@@ -235,7 +242,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
           this.token = token
           this.debug('Info', 'Found token in ENV')
         }
-      } catch (e) {}
+      // Should probably have some kind of Warning emitted?
+      // deno-lint-ignore no-empty
+      } catch {}
     }
 
     const restOptions: RESTOptions = {
@@ -277,7 +286,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Emits debug event */
   debug(tag: string, msg: string): void {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // This should probably be awaited?
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
@@ -286,7 +295,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     else if (this.token !== undefined) {
       try {
         return atob(this.token.split('.')[0])
-      } catch (e) {
+      } catch {
         return this._id ?? 'unknown'
       }
     } else {
@@ -363,7 +372,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   }
 
   /** Attempt to Close current Gateway connection and Resume */
-  async reconnect(): Promise<Client> {
+  reconnect(): Promise<Client> {
     this.gateway.close()
     this.gateway.initWebsocket()
     return this.waitFor('ready', () => true).then(() => this)
@@ -387,7 +396,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     }
   }
 
-  async emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
+  emit(event: keyof ClientEvents, ...args: EECallBackParams): Promise<void> {
     const collectors: Collector[] = []
     for (const collector of this.collectors.values()) {
       if (collector.event === event) collectors.push(collector)
@@ -395,14 +404,11 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (collectors.length !== 0) {
       this.collectors.forEach((collector) => collector._fire(...args))
     }
-    // TODO(DjDeveloperr): Fix this ts-ignore
-    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-    // @ts-ignore
     return super.emit(event, ...args)
   }
 
   /** Returns an array of voice region objects that can be used when creating servers. */
-  async fetchVoiceRegions(): Promise<VoiceRegion[]> {
+  fetchVoiceRegions(): Promise<VoiceRegion[]> {
     return this.rest.api.voice.regions.get()
   }
 
@@ -444,7 +450,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       recipient_id: id
     })
     await this.channels.set(dmPayload.id, dmPayload)
-    return this.channels.get<DMChannel>(dmPayload.id) as unknown as DMChannel
+    return this.channels.get(dmPayload.id) as Promise<DMChannel>
   }
 
   /** Returns a template object for the given code. */
@@ -455,24 +461,25 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 }
 
 /** Event decorator to create an Event handler from function */
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function event(name?: keyof ClientEvents) {
+export function event(name?: keyof ClientEvents): (
+  client: Client | Extension,
+  prop: keyof ClientEvents | string
+) => void {
   return function (
     client: Client | Extension,
     prop: keyof ClientEvents | string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
+  ): void {
+    const c = client as Client
     const listener = (
       client as unknown as {
-        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
+        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => void
       }
-    )[prop as unknown as keyof ClientEvents]
+    )[prop as keyof ClientEvents]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
 
-    if (c._decoratedEvents === undefined) c._decoratedEvents = {}
-    const key = name === undefined ? prop : name
+    if (c._decoratedEvents === undefined) c._decoratedEvents = {} as Record<keyof ClientEvents, EECallBackParams>
+    const key = (name === undefined ? prop : name) as keyof ClientEvents
 
     c._decoratedEvents[key] = listener
   }

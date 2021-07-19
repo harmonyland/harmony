@@ -4,15 +4,14 @@ import type {
   ChannelPayload,
   GuildChannelPayload
 } from '../../types/channel.ts'
-import type { Guild } from '../../structures/guild.ts'
 
 export const channelCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: ChannelPayload
 ) => {
-  const guild: undefined | Guild =
+  const guild =
     'guild_id' in d
-      ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      ?
         await gateway.client.guilds.get((d as GuildChannelPayload).guild_id)
       : undefined
   const channel = getChannelByType(gateway.client, d, guild)

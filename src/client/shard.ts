@@ -19,7 +19,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
   list: Collection<string, Gateway> = new Collection()
   client: Client
   cachedShardCount?: number
-  queueProcessing: boolean = false
+  queueProcessing = false
   queue: CallableFunction[] = []
 
   get rest(): RESTManager {
@@ -29,7 +29,6 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
   /** Get average ping from all Shards */
   get ping(): number {
     return (
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       this.list.map((e) => e.ping).reduce((p, a) => p + a, 0) / this.list.size
     )
   }
@@ -45,7 +44,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
 
   enqueueIdentify(fn: CallableFunction): ShardManager {
     this.queue.push(fn)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // This promise should be awaited I think
     if (!this.queueProcessing) this.processQueue()
     return this
   }
@@ -133,7 +132,6 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
       shardLoadPromises.push(
         this.client.waitFor('guildsLoaded', (n) => n === i)
       )
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       await this.launch(i, 'hello')
     }
     await Promise.allSettled(shardLoadPromises).then(

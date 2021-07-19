@@ -7,9 +7,9 @@ export const guildCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: GuildPayload
 ) => {
-  const hasGuild: Guild | undefined = await gateway.client.guilds.get(d.id)
+  const hasGuild = await gateway.client.guilds.get(d.id)
   await gateway.client.guilds.set(d.id, d)
-  const guild = (await gateway.client.guilds.get(d.id)) as unknown as Guild
+  const guild = (await gateway.client.guilds.get(d.id)) as Guild
 
   if (d.members !== undefined) await guild.members.fromPayload(d.members)
 

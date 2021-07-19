@@ -63,7 +63,7 @@ export class ExtensionCommands {
 export class Extension {
   client: CommandClient
   /** Name of the Extension */
-  name: string = ''
+  name = ''
   /** Description of the Extension */
   description?: string
   /** Extensions's Commands Manager */
@@ -71,27 +71,27 @@ export class Extension {
   /** Sub-Prefix to be used for ALL of Extension's Commands. */
   subPrefix?: string
   /** Events registered by this Extension */
-  events: { [name: string]: (...args: any[]) => {} } = {}
-
+  events: Record<string, (...args: []) => void> = {};
+  _decoratedCommands: Record<string, Command> | undefined
+  _decoratedEvents: Record<string, ExtensionEventCallback> | undefined
   constructor(client: CommandClient) {
     this.client = client
-    const self = this as any
-    if (self._decoratedCommands !== undefined) {
-      Object.entries(self._decoratedCommands).forEach((entry: any) => {
+    if (this._decoratedCommands !== undefined) {
+      Object.entries(this._decoratedCommands).forEach((entry) => {
         entry[1].extension = this
         this.commands.add(entry[1])
       })
-      self._decoratedCommands = undefined
+      this._decoratedCommands = undefined
     }
 
     if (
-      self._decoratedEvents !== undefined &&
-      Object.keys(self._decoratedEvents).length !== 0
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
     ) {
-      Object.entries(self._decoratedEvents).forEach((entry: any) => {
+      Object.entries(this._decoratedEvents).forEach((entry) => {
         this.listen(entry[0] as keyof ClientEvents, entry[1].bind(this))
       })
-      self._decoratedEvents = undefined
+      this._decoratedEvents = undefined
     }
   }
 
@@ -99,8 +99,7 @@ export class Extension {
   listen(event: keyof ClientEvents, cb: ExtensionEventCallback): boolean {
     if (this.events[event] !== undefined) return false
     else {
-      const fn = (...args: any[]): any => {
-        // eslint-disable-next-line standard/no-callback-literal
+      const fn = (...args: unknown[]): void => {
         cb(this, ...args)
       }
       this.client.on(event, fn)
@@ -110,9 +109,9 @@ export class Extension {
   }
 
   /** Method called upon loading of an Extension */
-  load(): any {}
+  load(): void {}
   /** Method called upon unloading of an Extension */
-  unload(): any {}
+  unload(): void {}
 }
 
 /** Extensions Manager for CommandClient */
@@ -136,7 +135,6 @@ export class ExtensionsManager {
 
   /** Loads an Extension onto Command Client */
   load(ext: Extension | typeof Extension): void {
-    // eslint-disable-next-line new-cap
     if (!(ext instanceof Extension)) ext = new ext(this.client)
     if (this.exists(ext.name))
       throw new Error(`Extension with name '${ext.name}' already exists`)
@@ -152,7 +150,6 @@ export class ExtensionsManager {
     extension.commands.deleteAll()
     for (const [k, v] of Object.entries(extension.events)) {
       this.client.off(k as keyof ClientEvents, v)
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete extension.events[k]
     }
     extension.unload()

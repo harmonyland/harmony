@@ -11,8 +11,7 @@ export const messageCreate: GatewayEventHandler = async (
   let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   // Fetch the channel if not cached
   if (channel === undefined)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
+    channel = await gateway.client.channels.fetch(d.channel_id)
   if (channel === undefined) return
   await channel.messages.set(d.id, d)
   const user = new User(gateway.client, d.author)

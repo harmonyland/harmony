@@ -107,7 +107,6 @@ export class VoiceManager extends HarmonyEventEmitter<{
     const id = typeof guildOrID === 'string' ? guildOrID : guildOrID.id
     const guild = await this.client.guilds.get(id)
     if (guild === undefined) throw new Error('Guild not cached')
-    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
     const vcs = await guild.voiceStates.get(this.client.user?.id!)
     if (vcs === undefined) throw new Error('Not in Voice Channel')
 

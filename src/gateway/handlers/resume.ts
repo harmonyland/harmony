@@ -5,7 +5,7 @@ import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const resume: GatewayEventHandler = async (
   gateway: Gateway,
-  d: Resume
+  _d: Resume
 ) => {
   gateway.debug(`Session Resumed!`)
   gateway.client.emit('resumed', gateway.shards?.[0] ?? 0)

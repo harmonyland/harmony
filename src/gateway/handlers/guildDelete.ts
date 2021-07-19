@@ -1,4 +1,3 @@
-import { Guild } from '../../structures/guild.ts'
 import { GuildPayload } from '../../types/guild.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
@@ -8,7 +7,7 @@ export const guildDelete: GatewayEventHandler = async (
 ) => {
   // It will be removed anyway if its deleted
   await gateway.client.guilds.set(d.id, d)
-  const guild: Guild | undefined = await gateway.client.guilds.get(d.id)
+  const guild = await gateway.client.guilds.get(d.id)
   if ('unavailable' in d) {
     gateway.client.emit('guildUnavailable', guild)
     return

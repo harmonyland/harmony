@@ -1,5 +1,4 @@
 import { Emoji } from '../../structures/emoji.ts'
-import { Guild } from '../../structures/guild.ts'
 import { EmojiPayload } from '../../types/emoji.ts'
 import { GuildEmojiUpdatePayload } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
@@ -8,7 +7,7 @@ export const guildEmojiUpdate: GatewayEventHandler = async (
   gateway: Gateway,
   d: GuildEmojiUpdatePayload
 ) => {
-  const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
+  const guild = await gateway.client.guilds.get(d.guild_id)
   if (guild !== undefined) {
     const emojis = await guild.emojis.collection()
     const deleted: Emoji[] = []

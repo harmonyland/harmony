@@ -19,7 +19,6 @@ export interface CollectorOptions {
   timeout?: number
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type CollectorEvents = {
   start: []
   end: []
@@ -28,12 +27,12 @@ export type CollectorEvents = {
 
 export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   client?: Client
-  private _started: boolean = false
+  private _started = false
   event: string
   filter: CollectorFilter = () => true
   collected: Collection<string, any[]> = new Collection()
   max?: number
-  deinitOnEnd: boolean = false
+  deinitOnEnd = false
   timeout?: number
   private _timer?: number
 
@@ -145,7 +144,6 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   async wait(timeout?: number): Promise<Collector> {
     if (timeout === undefined) timeout = this.timeout ?? 0
     return await new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (!timeout)
         throw new Error(
           'Timeout is required parameter if not given in CollectorOptions'

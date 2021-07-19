@@ -1,12 +1,11 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import { Guild } from '../../structures/guild.ts'
 import { GuildMemberChunkPayload } from '../../types/gateway.ts'
 
 export const guildMembersChunk: GatewayEventHandler = async (
   gateway: Gateway,
   d: GuildMemberChunkPayload
 ) => {
-  const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id)
+  const guild = await gateway.client.guilds.get(d.guild_id)
   // Weird case, shouldn't happen
   if (guild === undefined) return
 

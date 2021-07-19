@@ -31,9 +31,8 @@ export interface VoiceStateOptions {
 
 export const RECONNECT_REASON = 'harmony-reconnect'
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type GatewayTypedEvents = {
-  [name in GatewayEvents]: [any]
+  [name in GatewayEvents]: [unknown]
 } & {
   connect: []
   ping: [number]
@@ -68,7 +67,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   cache: GatewayCache
   private timedIdentify: number | null = null
   shards?: number[]
-  ping: number = 0
+  ping = 0
 
   _guildsToBeLoaded?: number
   _guildsLoaded?: number
@@ -114,12 +113,13 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.heartbeat()
         }, this.heartbeatInterval)
 
+        // This should probably be awaited?
         this.emit('hello')
         if (!this.initialized) {
           this.initialized = true
           this.enqueueIdentify(this.client.forceNewSession)
         } else {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          // This should probably be awaited?
           this.sendResume()
         }
         break
@@ -143,9 +143,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.sessionID = undefined
           this.sequenceID = undefined
         }
-        this.timedIdentify = setTimeout(async () => {
+        this.timedIdentify = setTimeout(() => {
           this.timedIdentify = null
-          this.enqueueIdentify(!(d as boolean))
+          this.enqueueIdentify(d)
         }, 5000)
         break
 
@@ -156,7 +156,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           await this.cache.set(`seq_${this.shards?.join('-') ?? '0'}`, s)
         }
         if (t !== null && t !== undefined) {
-          this.emit(t as any, d)
+          this.emit(t, d)
           this.client.emit('raw', t, d, this.shardID)
 
           const handler = gatewayHandlers[t]
@@ -293,6 +293,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     )
     error.name = 'ErrorEvent'
     console.error(error)
+    // These should probably be awaited?
     this.emit('error', error, event)
     this.client.emit('gatewayError', event, this.shards)
   }
@@ -454,7 +455,6 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.emit('init')
     this.debug('Initializing WebSocket...')
     this.websocket = new WebSocket(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `${Constants.DISCORD_GATEWAY_URL}/?v=${Constants.DISCORD_API_VERSION}&encoding=json`,
       []
     )
@@ -465,7 +465,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.websocket.onerror = this.onerror.bind(this) as any
   }
 
-  closeGateway(code: number = 1000, reason?: string): void {
+  closeGateway(code = 1000, reason?: string): void {
     this.debug(
       `Closing with code ${code}${
         reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''
@@ -509,7 +509,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     } else {
       this.debug('Found dead connection, reconnecting...')
       clearInterval(this.heartbeatIntervalID)
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      // This should probably be awaited?
       this.reconnect()
       return
     }
