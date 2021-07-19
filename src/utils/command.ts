@@ -50,13 +50,13 @@ export type Args =
 
 export async function parseArgs(
   commandArgs: Args[] | undefined,
+  messageArgs: string[],
   message: Message
 ): Promise<Record<
   string,
   Guild | User | Role | string | number | boolean
 > | null> {
   if (commandArgs === undefined) return null
-  const messageArgs = message.content.split(' ')
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, string | number | boolean> = {}
 
