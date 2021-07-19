@@ -43,11 +43,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
 
   enqueueIdentify(fn: CallableFunction): ShardManager {
     this.queue.push(fn)
-    // Should probably be awaited to avoid leaks?
-    if (!this.queueProcessing) this.processQueue()
-    return this
   }
-
   private async processQueue(): Promise<void> {
     if (this.queueProcessing || this.queue.length === 0) return
     this.queueProcessing = true
@@ -131,7 +127,6 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
       shardLoadPromises.push(
         this.client.waitFor('guildsLoaded', (n) => n === i)
       )
-      // Shard manager get's loaded but not used?
       await this.launch(i, 'hello')
     }
     await Promise.allSettled(shardLoadPromises).then(

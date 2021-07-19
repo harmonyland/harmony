@@ -103,7 +103,7 @@ export class Command implements CommandOptions {
   ownerOnly?: boolean
   subCommands?: Command[]
 
-  declare readonly _decoratedSubCommands?: Command[]
+  _decoratedSubCommands?: Command[]
 
   /** Method called when the command errors */
   onError(_ctx: CommandContext, _error: Error): void {}
@@ -119,7 +119,7 @@ export class Command implements CommandOptions {
   /** Actual command code, which is executed when all checks have passed. */
   execute(_ctx: CommandContext): void {}
   /** Method executed after executing command, passes on CommandContext and the value returned by execute too. (optional) */
-  afterExecute(_ctx: CommandContext, _executeResult: any): void {}
+  afterExecute<T>(_ctx: CommandContext, _executeResult: T): void {}
 
   toString(): string {
     return `Command: ${this.name}${
@@ -138,7 +138,7 @@ export class Command implements CommandOptions {
     ) {
       if (this.subCommands === undefined) this.subCommands = []
       const commands = this._decoratedSubCommands
-      delete (this as any)._decoratedSubCommands
+      delete this._decoratedSubCommands
       Object.defineProperty(this, '_decoratedSubCommands', {
         value: commands,
         enumerable: false
@@ -305,12 +305,12 @@ export class CommandBuilder extends Command {
     return this
   }
 
-  onBeforeExecute(fn: (ctx: CommandContext) => boolean | any): CommandBuilder {
+  onBeforeExecute(fn: (ctx: CommandContext) => boolean | Promise<boolean>): CommandBuilder {
     this.beforeExecute = fn
     return this
   }
 
-  onExecute(fn: (ctx: CommandContext) => any): CommandBuilder {
+  onExecute(fn: (ctx: CommandContext) => void): CommandBuilder {
     this.execute = fn
     return this
   }

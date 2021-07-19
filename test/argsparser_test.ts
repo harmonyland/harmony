@@ -132,7 +132,11 @@ Deno.test({
   only: false,
   name: 'parse command arguments 1 (assertEquals)',
   fn: async () => {
-    const result = await parseArgs(commandArgs1, message1 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs1,
+      message1.content.split(' '),
+      message1 as unknown as Message
+    )
     assertEquals(result, expectedResult1)
   },
   sanitizeOps: true,
@@ -151,7 +155,11 @@ const expectedResult2 = {
 Deno.test({
   name: 'parse command arguments 2 (assertEquals)',
   fn: async () => {
-    const result = await parseArgs(commandArgs1, message2 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs1,
+      message2.content.split(' '),
+      message2 as unknown as Message
+    )
     assertEquals(result, expectedResult2)
   },
   sanitizeOps: true,
@@ -171,7 +179,11 @@ const expectedResult3 = {
 Deno.test({
   name: 'parse command arguments default value (assertNotEquals)',
   fn: async () => {
-    const result = await parseArgs(commandArgs1, message3 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs1,
+      message3.content.split(' '),
+      message3 as unknown as Message
+    )
     // eslint-disable-next-line
     assertNotEquals(result!.permaban, expectedResult3.permaban)
 
@@ -201,7 +213,11 @@ const expectedResult4 = {
 Deno.test({
   name: 'parse command arguments mentions (assertEquals)',
   fn: async () => {
-    const result = await parseArgs(commandArgs2, message4 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs2,
+      message4.content.split(' '),
+      message4 as unknown as Message
+    )
     assertEquals(result, expectedResult4)
   },
   sanitizeOps: true,
@@ -216,7 +232,11 @@ const message5 = new FakeMessage(
 Deno.test({
   name: "parse command arguments with ID's (assertEquals)",
   fn: async () => {
-    const result = await parseArgs(commandArgs2, message5 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs2,
+      message5.content.split(' '),
+      message5 as unknown as Message
+    )
     assertEquals(result, expectedResult4)
   },
   sanitizeOps: true,
@@ -233,7 +253,11 @@ const expectedResult6 = {
 Deno.test({
   name: 'parse command arguments, rest match default',
   fn: async () => {
-    const result = await parseArgs(commandArgs3, message6 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs3,
+      message6.content.split(' '),
+      message6 as unknown as Message
+    )
     assertEquals(result, expectedResult6)
   }
 })
@@ -247,7 +271,11 @@ const expectedResult7 = {
 Deno.test({
   name: 'parse command arguments, match content filter',
   fn: async () => {
-    const result = await parseArgs(commandArgs4, message7 as unknown as Message)
+    const result = await parseArgs(
+      commandArgs4,
+      message7.content.split(' '),
+      message7 as unknown as Message
+    )
     assertEquals(result, expectedResult7)
   }
 })

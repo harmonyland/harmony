@@ -1,4 +1,3 @@
-import type { Client } from '../client/client.ts'
 import type { Message } from '../structures/message.ts'
 import type { Guild } from '../structures/guild.ts'
 import type { Role } from '../structures/role.ts'
@@ -51,13 +50,13 @@ export type Args =
 
 export async function parseArgs(
   commandArgs: Args[] | undefined,
+  messageArgs: string[],
   message: Message
 ): Promise<Record<
   string,
   Guild | User | Role | string | number | boolean
 > | null> {
   if (commandArgs === undefined) return null
-  const messageArgs = message.content.split(' ')
   const messageArgsNullableCopy: Array<string | null> = [...messageArgs]
   const args: Record<string, string | number | boolean> = {}
 
@@ -69,13 +68,7 @@ export async function parseArgs(
       case 'user':
       case 'role':
       case 'channel':
-        await parseMention(
-          args,
-          entry,
-          messageArgsNullableCopy,
-          message.client,
-          message
-        )
+        await parseMention(args, entry, messageArgsNullableCopy, message)
         break
       case 'content':
         parseContent(args, entry, messageArgs)
@@ -106,7 +99,6 @@ async function parseMention(
   args: Record<string, unknown>,
   entry: MentionArgument,
   argsNullable: Array<string | null>,
-  client: Client,
   message: Message
 ): Promise<void> {
   const regex = mentionToRegex[entry.match]
@@ -121,14 +113,14 @@ async function parseMention(
     case 'channel':
       temp =
         tempValue !== null
-          ? await client.channels.get(tempValue)
+          ? await message.client.channels.get(tempValue)
           : entry.defaultValue
       break
 
     case 'user':
       temp =
         tempValue !== null
-          ? await client.users.get(tempValue)
+          ? await message.client.users.get(tempValue)
           : entry.defaultValue
       break
 

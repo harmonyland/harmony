@@ -24,6 +24,12 @@ import type { DMChannel } from '../structures/dmChannel.ts'
 import { Template } from '../structures/template.ts'
 import { VoiceManager } from './voice.ts'
 
+type ValueOf<T> = T[keyof T]
+type EECallBackParams = ValueOf<ClientEvents>[0] |
+  ValueOf<ClientEvents>[1] |
+  ValueOf<ClientEvents>[2] |
+  ValueOf<ClientEvents>[3]
+
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
   os?: 'darwin' | 'windows' | 'linux' | 'custom_os' | string
@@ -175,6 +181,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   applicationID?: string
   applicationFlags?: number
 
+  _decoratedEvents!: Record<keyof ClientEvents, EECallBackParams> | undefined
+
   constructor(options: ClientOptions = {}) {
     super()
     this._id = options.id
@@ -201,13 +209,13 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (options.compress !== undefined) this.compress = options.compress
 
     if (
-      (this as any)._decoratedEvents !== undefined &&
-      Object.keys((this as any)._decoratedEvents).length !== 0
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
     ) {
-      Object.entries((this as any)._decoratedEvents).forEach((entry) => {
-        this.on(entry[0] as keyof ClientEvents, (entry as any)[1].bind(this))
-      })
-      ;(this as any)._decoratedEvents = undefined
+      for (const entry of Object.entries<EECallBackParams>(this._decoratedEvents)) {
+        this.on(entry[0] as keyof ClientEvents, entry[1].bind(this))
+      }
+      this._decoratedEvents = undefined
     }
 
     Object.defineProperty(this, 'clientProperties', {
@@ -235,6 +243,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
           this.debug('Info', 'Found token in ENV')
         }
       // Should probably have some kind of Warning emitted?
+      // deno-lint-ignore no-empty
       } catch {}
     }
 
@@ -277,7 +286,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Emits debug event */
   debug(tag: string, msg: string): void {
-    // Should probably be awaited to avoid leaks?
+    // This should probably be awaited?
     this.emit('debug', `[${tag}] ${msg}`)
   }
 
@@ -387,7 +396,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     }
   }
 
-  emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
+  emit(event: keyof ClientEvents, ...args: EECallBackParams): Promise<void> {
     const collectors: Collector[] = []
     for (const collector of this.collectors.values()) {
       if (collector.event === event) collectors.push(collector)
@@ -395,7 +404,6 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     if (collectors.length !== 0) {
       this.collectors.forEach((collector) => collector._fire(...args))
     }
-    // @ts-ignore: TODO(DjDeveloperr): Fix this ts-ignore
     return super.emit(event, ...args)
   }
 
@@ -442,7 +450,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       recipient_id: id
     })
     await this.channels.set(dmPayload.id, dmPayload)
-    return this.channels.get<DMChannel>(dmPayload.id) as unknown as DMChannel
+    return this.channels.get(dmPayload.id) as Promise<DMChannel>
   }
 
   /** Returns a template object for the given code. */
@@ -453,22 +461,25 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 }
 
 /** Event decorator to create an Event handler from function */
-export function event(name?: keyof ClientEvents): (client: Client | Extension, prop: keyof ClientEvents | string) => void {
+export function event(name?: keyof ClientEvents): (
+  client: Client | Extension,
+  prop: keyof ClientEvents | string
+) => void {
   return function (
     client: Client | Extension,
     prop: keyof ClientEvents | string
   ): void {
-    const c = client as any
+    const c = client as Client
     const listener = (
       client as unknown as {
-        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
+        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => void
       }
-    )[prop as unknown as keyof ClientEvents]
+    )[prop as keyof ClientEvents]
     if (typeof listener !== 'function')
       throw new Error('@event decorator requires a function')
 
-    if (c._decoratedEvents === undefined) c._decoratedEvents = {}
-    const key = name === undefined ? prop : name
+    if (c._decoratedEvents === undefined) c._decoratedEvents = {} as Record<keyof ClientEvents, EECallBackParams>
+    const key = (name === undefined ? prop : name) as keyof ClientEvents
 
     c._decoratedEvents[key] = listener
   }

@@ -34,8 +34,8 @@ export class BaseManager<T, T2> extends Base {
   }
 
   /** Sets a value to Cache */
-  set(key: string, value: T): Promise<void> {
-    return this.client.cache.set(this.cacheName, key, value) as Promise<void>
+  async set(key: string, value: T): Promise<void> {
+    return this.client.cache.set(this.cacheName, key, value)
   }
 
   /** Deletes a key from Cache */

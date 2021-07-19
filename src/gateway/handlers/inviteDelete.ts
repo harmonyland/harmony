@@ -1,14 +1,12 @@
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
-import { Guild } from '../../structures/guild.ts'
 import { InviteDeletePayload } from '../../types/gateway.ts'
 import { PartialInvitePayload } from '../../types/invite.ts'
-import { Channel } from '../../structures/channel.ts'
 
 export const inviteDelete: GatewayEventHandler = async (
   gateway: Gateway,
   d: InviteDeletePayload
 ) => {
-  const guild: Guild | undefined = await gateway.client.guilds.get(d.guild_id!)
+  const guild = await gateway.client.guilds.get(d.guild_id!)
 
   // Weird case, shouldn't happen
   if (guild === undefined) return
@@ -20,7 +18,7 @@ export const inviteDelete: GatewayEventHandler = async (
   if (cachedInvite === undefined) {
     const uncachedInvite: PartialInvitePayload = {
       guild: cachedGuild,
-      channel: cachedChannel as Channel,
+      channel: cachedChannel!,
       code: d.code
     }
     return gateway.client.emit('inviteDeleteUncached', uncachedInvite)

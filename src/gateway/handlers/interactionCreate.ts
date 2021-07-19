@@ -94,19 +94,20 @@ export const interactionCreate: GatewayEventHandler = async (
       if (roles !== undefined) {
         const mRoles = roles.filter(
           (r) =>
-            ((data as any)?.roles?.includes(r.id) as boolean) ||
+            (data?.roles?.includes(r.id)) ||
             r.id === guild?.id
         )
         permissions = new Permissions(mRoles.map((r) => r.permissions))
       }
       data.user = (d.data as any).resolved.users?.[
         id
-      ] as unknown as UserPayload
+      ]
       resolved.members[id] = new Member(
         gateway.client,
         data,
         resolved.users[id],
-        guild as Guild,
+        // This guild can be undefined because of the if statement on line 94
+        guild!,
         permissions
       )
     }
@@ -115,13 +116,14 @@ export const interactionCreate: GatewayEventHandler = async (
       (d.data as InteractionApplicationCommandData).resolved?.roles ?? {}
     )) {
       if (guild !== undefined) {
-        await guild.roles.set(id, data as RolePayload)
-        resolved.roles[id] = (await guild.roles.get(id)) as unknown as Role
+        await guild.roles.set(id, data)
+        resolved.roles[id] = await guild.roles.get(id) as Role
       } else {
         resolved.roles[id] = new Role(
           gateway.client,
           data,
-          guild as unknown as Guild
+          // This guild is always undefined because of the if else on line 118-121
+          guild!
         )
       }
     }
@@ -131,14 +133,14 @@ export const interactionCreate: GatewayEventHandler = async (
     )) {
       resolved.channels[id] = new InteractionChannel(
         gateway.client,
-        data as InteractionChannelPayload
+        data
       )
     }
   }
 
   let message: Message | undefined
   if (d.message !== undefined) {
-    const channel = (await gateway.client.channels.get<TextChannel>(
+    const channel: TextChannel = (await gateway.client.channels.get(
       d.message.channel_id
     ))!
     message = new Message(

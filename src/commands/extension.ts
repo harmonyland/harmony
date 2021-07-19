@@ -71,27 +71,27 @@ export class Extension {
   /** Sub-Prefix to be used for ALL of Extension's Commands. */
   subPrefix?: string
   /** Events registered by this Extension */
-  events: { [name: string]: (...args: any[]) => {} } = {}
-
+  events: Record<string, (...args: []) => void> = {};
+  _decoratedCommands: Record<string, Command> | undefined
+  _decoratedEvents: Record<string, ExtensionEventCallback> | undefined
   constructor(client: CommandClient) {
     this.client = client
-    const self = this as any
-    if (self._decoratedCommands !== undefined) {
-      Object.entries<Command>(self._decoratedCommands).forEach((entry) => {
+    if (this._decoratedCommands !== undefined) {
+      Object.entries(this._decoratedCommands).forEach((entry) => {
         entry[1].extension = this
         this.commands.add(entry[1])
       })
-      self._decoratedCommands = undefined
+      this._decoratedCommands = undefined
     }
 
     if (
-      self._decoratedEvents !== undefined &&
-      Object.keys(self._decoratedEvents).length !== 0
+      this._decoratedEvents !== undefined &&
+      Object.keys(this._decoratedEvents).length !== 0
     ) {
-      Object.entries<ExtensionEventCallback>(self._decoratedEvents).forEach((entry) => {
+      Object.entries(this._decoratedEvents).forEach((entry) => {
         this.listen(entry[0] as keyof ClientEvents, entry[1].bind(this))
       })
-      self._decoratedEvents = undefined
+      this._decoratedEvents = undefined
     }
   }
 
@@ -99,7 +99,7 @@ export class Extension {
   listen(event: keyof ClientEvents, cb: ExtensionEventCallback): boolean {
     if (this.events[event] !== undefined) return false
     else {
-      const fn = (...args: any[]): any => {
+      const fn = (...args: unknown[]): void => {
         cb(this, ...args)
       }
       this.client.on(event, fn)
@@ -109,9 +109,9 @@ export class Extension {
   }
 
   /** Method called upon loading of an Extension */
-  load(): any {}
+  load(): void {}
   /** Method called upon unloading of an Extension */
-  unload(): any {}
+  unload(): void {}
 }
 
 /** Extensions Manager for CommandClient */

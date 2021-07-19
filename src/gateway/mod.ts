@@ -32,7 +32,7 @@ export interface VoiceStateOptions {
 export const RECONNECT_REASON = 'harmony-reconnect'
 
 export type GatewayTypedEvents = {
-  [name in GatewayEvents]: [any]
+  [name in GatewayEvents]: [unknown]
 } & {
   connect: []
   ping: [number]
@@ -67,7 +67,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   cache: GatewayCache
   private timedIdentify: number | null = null
   shards?: number[]
-  ping: number = 0
+  ping = 0
 
   _guildsToBeLoaded?: number
   _guildsLoaded?: number
@@ -113,11 +113,13 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.heartbeat()
         }, this.heartbeatInterval)
 
+        // This should probably be awaited?
         this.emit('hello')
         if (!this.initialized) {
           this.initialized = true
           this.enqueueIdentify(this.client.forceNewSession)
         } else {
+          // This should probably be awaited?
           this.sendResume()
         }
         break
@@ -291,8 +293,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     )
     error.name = 'ErrorEvent'
     console.error(error)
-    await this.emit('error', error, event)
-    await this.client.emit('gatewayError', event, this.shards)
+    // These should probably be awaited?
+    this.emit('error', error, event)
+    this.client.emit('gatewayError', event, this.shards)
   }
 
   private enqueueIdentify(forceNew?: boolean): void {
@@ -506,6 +509,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     } else {
       this.debug('Found dead connection, reconnecting...')
       clearInterval(this.heartbeatIntervalID)
+      // This should probably be awaited?
       this.reconnect()
       return
     }

@@ -70,6 +70,7 @@ export class CommandClient extends Client implements CommandClientOptions {
   extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
+  _decoratedCommands!: Record<string, Command> | undefined
 
   constructor(options: CommandClientOptions) {
     super(options)
@@ -116,12 +117,11 @@ export class CommandClient extends Client implements CommandClientOptions {
     this.caseSensitive =
       options.caseSensitive === undefined ? false : options.caseSensitive
 
-    const self = this as any
-    if (self._decoratedCommands !== undefined) {
-      Object.values<Command>(self._decoratedCommands).forEach((entry) => {
+    if (this._decoratedCommands !== undefined) {
+      Object.values(this._decoratedCommands).forEach((entry) => {
         this.commands.add(entry)
       })
-      self._decoratedCommands = undefined
+      this._decoratedCommands = undefined
     }
 
     this.on(
@@ -173,12 +173,12 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (usedPrefix === undefined && this.mentionPrefix) mentionPrefix = true
 
     if (mentionPrefix) {
-      if (msg.content.startsWith(this.user?.mention as string) === true)
-        usedPrefix = this.user?.mention as string
+      if (msg.content.startsWith(this.user?.mention!) === true)
+        usedPrefix = this.user?.mention!
       else if (
-        msg.content.startsWith(this.user?.nickMention as string) === true
+        msg.content.startsWith(this.user?.nickMention!) === true
       )
-        usedPrefix = this.user?.nickMention as string
+        usedPrefix = this.user?.nickMention!
       else return
     }
 
@@ -242,7 +242,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       name: parsed.name,
       prefix,
       rawArgs: parsed.args,
-      args: await parseArgs(command.args, msg),
+      args: await parseArgs(command.args, parsed.args, msg),
       argString: parsed.argString,
       message: msg,
       author: msg.author,
@@ -283,7 +283,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (
       command.nsfw === true &&
       (msg.guild === undefined ||
-        (msg.channel as unknown as GuildTextBasedChannel).nsfw !== true)
+        (msg.channel as GuildTextBasedChannel).nsfw !== true)
     )
       return this.emit('commandNSFW', ctx)
 
@@ -385,7 +385,7 @@ export class CommandClient extends Client implements CommandClientOptions {
  */
 export function command(options?: CommandOptions) {
   return function (target: CommandClient | Extension, name: string) {
-    const c = target as any
+    const c = target as any;
     if (c._decoratedCommands === undefined) c._decoratedCommands = {}
 
     const prop = c[name]

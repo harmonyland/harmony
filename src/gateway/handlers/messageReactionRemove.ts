@@ -8,7 +8,7 @@ export const messageReactionRemove: GatewayEventHandler = async (
 ) => {
   let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   if (channel === undefined)
-    channel = await gateway.client.channels.fetch<TextChannel>(d.channel_id)
+    channel = await gateway.client.channels.fetch(d.channel_id)
   if (channel === undefined) return
 
   let message = await channel.messages.get(d.message_id)
@@ -27,8 +27,8 @@ export const messageReactionRemove: GatewayEventHandler = async (
     } else return
   }
 
-  const emojiID = (d.emoji.id !== null ? d.emoji.id : d.emoji.name) as string
-  const reaction = await message.reactions.get(emojiID)
+  const emojiID = d.emoji.id !== null ? d.emoji.id : d.emoji.name
+  const reaction = await message.reactions.get(emojiID!)
   if (reaction === undefined) return
 
   reaction.users._delete(d.user_id)
