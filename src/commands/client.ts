@@ -241,7 +241,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       name: parsed.name,
       prefix,
       rawArgs: parsed.args,
-      args: await parseArgs(command.args, msg),
+      args: await parseArgs(command.args, parsed.args, msg),
       argString: parsed.argString,
       message: msg,
       author: msg.author,
