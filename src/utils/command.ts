@@ -1,4 +1,3 @@
-import type { Client } from '../client/client.ts'
 import type { Message } from '../structures/message.ts'
 import type { Guild } from '../structures/guild.ts'
 import type { Role } from '../structures/role.ts'
@@ -69,12 +68,7 @@ export async function parseArgs(
       case 'user':
       case 'role':
       case 'channel':
-        await parseMention(
-          args,
-          entry,
-          messageArgsNullableCopy,
-          message,
-        )
+        await parseMention(args, entry, messageArgsNullableCopy, message)
         break
       case 'content':
         parseContent(args, entry, messageArgs)
