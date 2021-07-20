@@ -22,7 +22,7 @@ import type {
 } from './guildTextChannel.ts'
 import type { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
-import { MessageSticker } from './messageSticker.ts'
+import { MessageStickerItem } from './messageStickerItem.ts'
 import type { Emoji } from './emoji.ts'
 import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'
@@ -70,7 +70,7 @@ export class Message extends SnowflakeBase {
   application?: MessageApplication
   messageReference?: MessageReference
   flags?: number
-  stickers?: MessageSticker[]
+  stickerItems?: MessageStickerItem[]
   interaction?: MessageInteraction
   createdTimestamp: Date
   components: MessageComponentData[] = []
@@ -110,10 +110,10 @@ export class Message extends SnowflakeBase {
     this.messageReference = data.message_reference
     this.flags = data.flags ?? 0
     this.channel = channel
-    this.stickers =
-      data.stickers !== undefined
-        ? data.stickers.map(
-            (payload) => new MessageSticker(this.client, payload)
+    this.stickerItems =
+      data.sticker_items !== undefined
+        ? data.sticker_items.map(
+            (payload) => new MessageStickerItem(this.client, payload)
           )
         : undefined
     this.interaction =
@@ -145,12 +145,12 @@ export class Message extends SnowflakeBase {
     this.application = data.application ?? this.application
     this.messageReference = data.message_reference ?? this.messageReference
     this.flags = data.flags ?? this.flags
-    this.stickers =
-      data.stickers !== undefined
-        ? data.stickers.map(
-            (payload) => new MessageSticker(this.client, payload)
+    this.stickerItems =
+      data.sticker_items !== undefined
+        ? data.sticker_items.map(
+            (payload) => new MessageStickerItem(this.client, payload)
           )
-        : this.stickers
+        : this.stickerItems
     this.interaction =
       data.interaction === undefined
         ? this.interaction

@@ -56,10 +56,10 @@ client.on('channelUpdate', (b: EveryChannelTypes, a: EveryChannelTypes) => {
 
 client.on('messageCreate', async (msg: Message) => {
   if (msg.author.bot === true) return
-  if (msg.stickers !== undefined) {
+  if (msg.stickerItems !== undefined) {
     console.log(
-      `${msg.author.tag}: (Sticker)${msg.stickers.map(
-        (sticker) => `Name: ${sticker.name}, Tags: ${sticker.tags}`
+      `${msg.author.tag}: (Sticker)${msg.stickerItems.map(
+        (sticker) => `Name: ${sticker.name}`
       )}`
     )
   } else {
