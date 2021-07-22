@@ -294,6 +294,24 @@ client.on('messageCreate', async (msg: Message) => {
         })
       }, 1000)
     })
+  } else if (msg.content === '!pin') {
+    await msg.pinMessage()
+    msg.channel.send('Done!')
+  } else if (msg.content.startsWith('!unpin') === true) {
+    const [, ...ids] = msg.content.split(' ')
+    if (ids.length === 0) {
+      msg.channel.send('Please specify a message ID!')
+      return
+    }
+
+    for (const id of ids) {
+      await msg.channel.unpinMessage(id)
+    }
+
+    msg.channel.send('Done!')
+  } else if (msg.content === '!getPins') {
+    const pins = await msg.channel.getPinnedMessages()
+    msg.channel.send(`Pinned messages: ${pins.map((pin) => pin.id).join('\n')}`)
   }
 })
 

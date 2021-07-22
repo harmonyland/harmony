@@ -7,12 +7,14 @@ import type { User } from '../structures/user.ts'
 import type {
   ChannelPayload,
   GuildChannelPayload,
-  MessageOptions
+  MessageOptions,
+  MessagePayload
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import getChannelByType from '../utils/channel.ts'
 import { BaseManager } from './base.ts'
 import { transformComponent } from '../utils/components.ts'
+import { Collection } from '../utils/collection.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
@@ -208,6 +210,55 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     const res = new Message(this.client, newMsg, chan, this.client.user)
     await res.mentions.fromPayload(newMsg)
     return res
+  }
+
+  async getPinnedMessages(
+    channel: string | TextChannel
+  ): Promise<Collection<string, Message>> {
+    const res = new Collection<string, Message>()
+    const channelID = typeof channel === 'string' ? channel : channel.id
+    const channelStruct =
+      typeof channel === 'string'
+        ? await this.get<TextChannel>(channelID)
+        : channel
+
+    if (channelStruct === undefined) {
+      throw new Error(`Channel ${channelID} not found.`)
+    }
+
+    const pins: MessagePayload[] = await this.client.rest.api.channels[
+      channelID
+    ].pins.get()
+
+    for (const pin of pins) {
+      await channelStruct.messages.set(pin.id, pin)
+      const msg = (await channelStruct.messages.get(
+        pin.id
+      )) as unknown as Message
+      res.set(msg.id, msg)
+    }
+
+    return res
+  }
+
+  async pinMessage(
+    channel: string | TextChannel,
+    message: string | Message
+  ): Promise<void> {
+    const channelID = typeof channel === 'string' ? channel : channel.id
+    const messageID = typeof message === 'string' ? message : message.id
+
+    await this.client.rest.api.channels[channelID].pins[messageID].put()
+  }
+
+  async unpinMessage(
+    channel: string | TextChannel,
+    message: string | Message
+  ): Promise<void> {
+    const channelID = typeof channel === 'string' ? channel : channel.id
+    const messageID = typeof message === 'string' ? message : message.id
+
+    await this.client.rest.api.channels[channelID].pins[messageID].delete()
   }
 
   /** Get cache size for messages. Returns total messages cache size if channel param is not given */

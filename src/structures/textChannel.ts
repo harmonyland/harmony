@@ -169,6 +169,18 @@ export class TextChannel extends Channel {
     return res
   }
 
+  async getPinnedMessages(): Promise<Collection<string, Message>> {
+    return this.client.channels.getPinnedMessages(this)
+  }
+
+  async pinMessage(message: string | Message): Promise<void> {
+    return this.client.channels.pinMessage(this, message)
+  }
+
+  async unpinMessage(message: string | Message): Promise<void> {
+    return this.client.channels.unpinMessage(this, message)
+  }
+
   /** Trigger the typing indicator. NOT recommended to be used by bots unless you really want to. */
   async triggerTyping(): Promise<TextChannel> {
     await this.client.rest.api.channels[this.id].typing.post()
