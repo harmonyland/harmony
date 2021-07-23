@@ -61,10 +61,10 @@ export class SlashCommandInteraction extends Interaction {
   option<T>(name: string): T {
     let options = this.options
     while (
-      options.length === 1 
-      && (
-        options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP
-        || options[0].type === SlashCommandOptionType.SUB_COMMAND
+      options.length === 1 &&
+      (
+        options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP ||
+        options[0].type === SlashCommandOptionType.SUB_COMMAND
       )
     ) {
       options = options[0].options ?? []
