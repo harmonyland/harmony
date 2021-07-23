@@ -59,6 +59,16 @@ export class SlashCommandInteraction extends Interaction {
 
   /** Get an option by name */
   option<T>(name: string): T {
+    let options = this.options
+    while (
+      options.length === 1 
+      && (
+        options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP
+        || options[0].type === SlashCommandOptionType.SUB_COMMAND
+      )
+    ) {
+      options = options[0].options ?? []
+    }
     const op = this.options.find((e) => e.name === name)
     if (op === undefined || op.value === undefined) return undefined as any
     if (op.type === SlashCommandOptionType.USER) {
