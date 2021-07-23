@@ -243,6 +243,14 @@ export class Message extends SnowflakeBase {
       return chan.startThread(options, this)
     } else throw new Error('Threads can only be made in Guild Text Channels')
   }
+
+  async pinMessage(): Promise<void> {
+    return this.client.channels.pinMessage(this.channel, this)
+  }
+
+  async unpinMessage(): Promise<void> {
+    return this.client.channels.unpinMessage(this.channel, this)
+  }
 }
 
 /** Message Attachment that can be sent while Creating Message */
