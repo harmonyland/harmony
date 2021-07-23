@@ -65,8 +65,10 @@ export class SlashCommandInteraction extends Interaction {
       (options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP ||
         options[0].type === SlashCommandOptionType.SUB_COMMAND)
     ) {
+      console.log('strip', options[0].type)
       options = options[0].options ?? []
     }
+    console.log('option(' + name + ') ->', options)
     const op = this.options.find((e) => e.name === name)
     if (op === undefined || op.value === undefined) return undefined as any
     if (op.type === SlashCommandOptionType.USER) {
