@@ -58,7 +58,8 @@ export enum SlashCommandOptionType {
   USER = 6,
   CHANNEL = 7,
   ROLE = 8,
-  MENTIONABLE = 9
+  MENTIONABLE = 9,
+  NUMBER = 10
 }
 
 export interface SlashCommandOptionBase<
