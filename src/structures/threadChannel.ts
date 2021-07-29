@@ -105,7 +105,7 @@ export class ThreadChannel extends GuildTextBasedChannel {
         ? new ThreadMember(this.client, data.member)
         : undefined
     this.slowmode = data.rate_limit_per_user ?? this.slowmode
-    this.owner = new UserResolvable(this.client, data.owner_id) ?? this.owner_id
+    this.owner = new UserResolvable(this.client, data.owner_id) ?? this.owner
   }
 
   readFromData(data: any): this {
