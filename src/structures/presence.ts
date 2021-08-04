@@ -97,9 +97,12 @@ export class ClientPresence {
     return {
       afk: this.afk === undefined ? false : this.afk,
       activities: this.createActivity() ?? [],
-      since: this.since === undefined 
-        ? (this.status === 'idle' ? Date.now() : null) 
-        : this.since,
+      since:
+        this.since === undefined
+          ? this.status === 'idle'
+            ? Date.now()
+            : null
+          : this.since,
       status: this.status === undefined ? 'online' : this.status
       // client_status: this.clientStatus
     }
