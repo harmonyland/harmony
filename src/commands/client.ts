@@ -355,7 +355,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       (parsed.args.length === 0 || parsed.args.length < command.args.length)
     ) {
       try {
-        return await command.onMissingArgs(ctx)
+        return command.onMissingArgs(ctx)
       } catch (e) {
         return this.emit('commandMissingArgs', ctx)
       }

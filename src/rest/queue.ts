@@ -27,7 +27,7 @@ export class RequestQueue {
       promise
     })
 
-    return next
+    return await next
   }
 
   shift(): void {
