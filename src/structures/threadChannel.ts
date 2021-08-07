@@ -87,6 +87,8 @@ export class ThreadChannel extends GuildTextBasedChannel {
   messageCount!: number
   member?: ThreadMember
   members: ThreadMembersManager
+  slowmode: number = 0
+  owner!: UserResolvable
 
   constructor(client: Client, data: ThreadChannelPayload, guild: Guild) {
     super(client, data as any, guild)
@@ -102,11 +104,35 @@ export class ThreadChannel extends GuildTextBasedChannel {
       data.member !== undefined
         ? new ThreadMember(this.client, data.member)
         : undefined
+    this.slowmode = data.rate_limit_per_user ?? this.slowmode
+    this.owner = new UserResolvable(this.client, data.owner_id) ?? this.owner
   }
 
   readFromData(data: any): this {
     super.readFromData(data)
     this._readFromData(data)
+    return this
+  }
+
+  /** Edit the Guild Thread Channel */
+  async edit(options: {
+    slowmode?: number
+    name?: string
+    autoArchiveDuration?: number
+    archived?: boolean
+    locked?: boolean
+  }): Promise<ThreadChannel> {
+    const body = {
+      name: options.name,
+      auto_archive_duration: options.autoArchiveDuration,
+      rate_limit_per_user: options.slowmode,
+      locked: options.locked,
+      archived: options.archived
+    }
+
+    const resp = await this.client.rest.api.channels[this.id].patch(body)
+
+    this.readFromData(resp)
     return this
   }
 

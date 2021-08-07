@@ -44,6 +44,8 @@ export interface ThreadChannelPayload
   member_count: number
   member?: ThreadMemberPayload
   thread_metadata: ThreadMetadataPayload
+  rate_limit_per_user: number
+  owner_id: string
 }
 
 export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
