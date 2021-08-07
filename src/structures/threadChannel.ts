@@ -115,15 +115,13 @@ export class ThreadChannel extends GuildTextBasedChannel {
   }
 
   /** Edit the Guild Thread Channel */
-  async edit(
-    options: { 
-      slowmode?: number,
-      name?: string,
-      autoArchiveDuration?: number,
-      archived?: boolean,
-      locked?: boolean
-    }
-  ): Promise<ThreadChannel> {
+  async edit(options: {
+    slowmode?: number
+    name?: string
+    autoArchiveDuration?: number
+    archived?: boolean
+    locked?: boolean
+  }): Promise<ThreadChannel> {
     const body = {
       name: options.name,
       auto_archive_duration: options.autoArchiveDuration,
@@ -132,7 +130,7 @@ export class ThreadChannel extends GuildTextBasedChannel {
       archived: options.archived
     }
 
-    const resp = await this.client.rest.patch(CHANNEL(this.id), body)
+    const resp = await this.client.rest.api.channels[this.id].patch(body)
 
     this.readFromData(resp)
     return this
