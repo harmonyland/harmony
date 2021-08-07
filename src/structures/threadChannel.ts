@@ -114,6 +114,30 @@ export class ThreadChannel extends GuildTextBasedChannel {
     return this
   }
 
+  /** Edit the Guild Thread Channel */
+  async edit(
+    options: { 
+      slowmode?: number,
+      name?: string,
+      autoArchiveDuration?: number,
+      archived?: boolean,
+      locked?: boolean
+    }
+  ): Promise<ThreadChannel> {
+    const body = {
+      name: options.name,
+      auto_archive_duration: options.autoArchiveDuration,
+      rate_limit_per_user: options.slowmode,
+      locked: options.locked,
+      archived: options.archived
+    }
+
+    const resp = await this.client.rest.patch(CHANNEL(this.id), body)
+
+    this.readFromData(resp)
+    return this
+  }
+
   async join(): Promise<this> {
     await this.client.rest.endpoints.joinThread(this.id)
     return this
