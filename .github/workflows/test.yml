@@ -1,0 +1,27 @@
+name: Test
+
+on:
+  push:
+    branches: [v3]
+  pull_request:
+    branches: [v3]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        deno: ['v1.x', 'canary']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Deno
+        uses: denoland/setup-deno@main
+        with:
+          deno-version: ${{ matrix.deno }}
+
+      - name: Test
+        run: deno run mod.ts
