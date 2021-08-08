@@ -231,12 +231,6 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     const cmd =
       this._getCommand(interaction as SlashCommandInteraction) ??
       this.getHandlers().find((e) => e.name === '*')
-    if (cmd?.group !== undefined)
-      (interaction as SlashCommandInteraction).data.options =
-        (interaction as SlashCommandInteraction).data.options[0].options ?? []
-    if (cmd?.parent !== undefined)
-      (interaction as SlashCommandInteraction).data.options =
-        (interaction as SlashCommandInteraction).data.options[0].options ?? []
 
     if (cmd === undefined) return
 
