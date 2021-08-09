@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "check": {
+      "desc": "Type-checks the code",
+      "cmd": "deno run mod.ts"
+    },
+    "fmt": {
+      "desc": "Formats code",
+      "cmd": "deno fmt"
+    },
+    "lint": {
+      "desc": "Lints code",
+      "cmd": "deno lint"
+    },
+    "pre-commit": {
+      "cmd": [
+        "vr fmt",
+        "vr lint",
+        "vr check"
+      ],
+      "gitHook": "pre-commit"
+    }
+  }
+}
