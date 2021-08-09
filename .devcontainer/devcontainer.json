@@ -1,0 +1,14 @@
+{
+  "name": "Harmony",
+  "dockerFile": "Dockerfile",
+  "settings": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "denoland.vscode-deno",
+    "deno.enable": true,
+    "deno.lint": true
+  },
+  "extensions": [
+    "denoland.vscode-deno",
+    "ms-azuretools.vscode-docker"
+  ]
+}
