@@ -5,7 +5,7 @@ export enum MessageComponentType {
   Button = 2,
   /** Dropdown menu, Deprecated, use SELECT instead */
   Select = 3,
-  
+
   /** Container or row of components */
   ACTION_ROW = 1,
   /** A clickable button */
