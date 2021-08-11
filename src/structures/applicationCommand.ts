@@ -55,17 +55,9 @@ export class ApplicationCommandInteraction extends Interaction {
     return this.data.name
   }
 
+  /** Application Command options. Sub Command (and Group) nesting is stripped off for this */
   get options(): InteractionApplicationCommandOption[] {
-    return this.data.options ?? []
-  }
-
-  get targetID(): string | undefined {
-    return this.data.target_id
-  }
-
-  /** Get an option by name */
-  option<T>(name: string): T {
-    let options = this.options
+    let options = this.options ?? []
     while (
       options.length === 1 &&
       (options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP ||
@@ -73,6 +65,38 @@ export class ApplicationCommandInteraction extends Interaction {
     ) {
       options = options[0].options ?? []
     }
+    return options
+  }
+
+  /** Gets sub command name from options */
+  get subCommand(): string | undefined {
+    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND) return this.data.options[0].name
+    else if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP && this.data.options[0].options?.[0].type === SlashCommandOptionType.SUB_COMMAND) return this.data.options[0].options[0].name
+  }
+
+  /** Gets sub command group name from options */
+  get subCommandGroup(): string | undefined {
+    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP) return this.data.options[0].name
+  }
+
+  /** Target ID. Only valid for Context Menu commands */
+  get targetID(): string | undefined {
+    return this.data.target_id
+  }
+
+  /** Target User object. Only valid for User Context Menu commands */
+  get targetUser(): User | undefined {
+    return this.targetID ? this.resolved.users[this.targetID] : undefined
+  }
+
+  /** Target Message object. Only valid for Message Context Menu commands */
+  get targetMessage(): Message | undefined {
+    return this.targetID ? this.resolved.messages[this.targetID] : undefined
+  }
+
+  /** Get an option by name */
+  option<T>(name: string): T {
+    const options = this.options
     const op = options.find((e) => e.name === name)
     if (op === undefined || op.value === undefined) return undefined as any
     if (op.type === SlashCommandOptionType.USER) {
