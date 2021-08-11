@@ -8,7 +8,10 @@ import {
   InteractionResponsePayload,
   InteractionType
 } from '../types/interactions.ts'
-import { SlashCommandOptionType } from '../types/applicationCommand.ts'
+import {
+  ApplicationCommandType,
+  SlashCommandOptionType
+} from '../types/applicationCommand.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { SlashModule } from './slashModule.ts'
@@ -18,16 +21,21 @@ import { HarmonyEventEmitter } from '../utils/events.ts'
 import { encodeText, decodeText } from '../utils/encoding.ts'
 import { SlashCommandsManager } from './slashCommand.ts'
 
-export type SlashCommandHandlerCallback = (
+export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
 ) => unknown
-export interface SlashCommandHandler {
+export interface ApplicationCommandHandler {
   name: string
+  type?: ApplicationCommandType
   guild?: string
   parent?: string
   group?: string
-  handler: SlashCommandHandlerCallback
+  handler: ApplicationCommandHandlerCallback
 }
+
+// Deprecated
+export type { ApplicationCommandHandlerCallback as SlashCommandHandlerCallback }
+export type { ApplicationCommandHandler as SlashCommandHandler }
 
 /** Options for SlashClient */
 export interface SlashOptions {
@@ -63,7 +71,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   enabled: boolean = true
   commands: SlashCommandsManager
-  handlers: SlashCommandHandler[] = []
+  handlers: ApplicationCommandHandler[] = []
   readonly rest!: RESTManager
   modules: SlashModule[] = []
   publicKey?: string
@@ -131,8 +139,9 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Adds a new Slash Command Handler */
   handle(
-    cmd: string | SlashCommandHandler,
-    handler?: SlashCommandHandlerCallback
+    cmd: string | ApplicationCommandHandler,
+    handler?: ApplicationCommandHandlerCallback,
+    type?: ApplicationCommandType
   ): SlashClient {
     const handle = {
       name: typeof cmd === 'string' ? cmd : cmd.name,
@@ -140,10 +149,16 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       ...(typeof cmd === 'string' ? {} : cmd)
     }
 
+    if (type !== undefined) {
+      handle.type = type
+    }
+
     if (handle.handler === undefined)
       throw new Error('Invalid usage. Handler function not provided')
 
     if (
+      (handle.type === undefined ||
+        handle.type === ApplicationCommandType.CHAT_INPUT) &&
       typeof handle.name === 'string' &&
       handle.name.includes(' ') &&
       handle.parent === undefined &&
@@ -172,7 +187,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Get all Handlers. Including Slash Modules */
-  getHandlers(): SlashCommandHandler[] {
+  getHandlers(): ApplicationCommandHandler[] {
     let res = this.handlers
     for (const mod of this.modules) {
       if (mod === undefined) continue
@@ -190,12 +205,21 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   /** Get Handler for an Interaction. Supports nested sub commands and sub command groups. */
   private _getCommand(
     i: ApplicationCommandInteraction
-  ): SlashCommandHandler | undefined {
+  ): ApplicationCommandHandler | undefined {
     return this.getHandlers().find((e) => {
+      if (
+        (e.type === ApplicationCommandType.MESSAGE ||
+          e.type === ApplicationCommandType.USER) &&
+        i.targetID !== undefined &&
+        i.name === e.name
+      ) {
+        return true
+      }
+
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
-          ? i.options
+          ? i.data.options
               .find(
                 (o) =>
                   o.name === e.group &&
@@ -205,7 +229,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
           : true
       const subMatched =
         e.group === undefined && e.parent !== undefined
-          ? i.options.find(
+          ? i.data.options.find(
               (o) =>
                 o.name === e.name &&
                 o.type === SlashCommandOptionType.SUB_COMMAND
