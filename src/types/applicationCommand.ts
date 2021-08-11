@@ -31,13 +31,15 @@ export interface InteractionApplicationCommandResolvedPayload {
 }
 
 export interface InteractionApplicationCommandData {
-  /** Name of the Slash Command */
+  /** Name of the Application Command */
   name: string
-  /** Unique ID of the Slash Command */
+  /** Unique ID of the Application Command */
   id: string
+  /** Type of the Application Command */
+  type: ApplicationCommandType
   /** Options (arguments) sent with Interaction */
   options: InteractionApplicationCommandOption[]
-  /** Resolved data for options in Slash Command */
+  /** Resolved data for options/targets in Application Command */
   resolved?: InteractionApplicationCommandResolvedPayload
   /** Target ID if Command was targeted to something through Context Menu, for example User, Message, etc. */
   target_id?: string
@@ -55,13 +57,21 @@ export enum SlashCommandOptionType {
   SUB_COMMAND = 1,
   /** A sub command group that is present in root command's options */
   SUB_COMMAND_GROUP = 2,
+  /** String option type */
   STRING = 3,
+  /** Integer option type */
   INTEGER = 4,
+  /** Boolean option type */
   BOOLEAN = 5,
+  /** User option type */
   USER = 6,
+  /** Channel option type */
   CHANNEL = 7,
+  /** Role option type */
   ROLE = 8,
+  /** Union of User and Role option type */
   MENTIONABLE = 9,
+  /** Number option tyoe, similar to JS Number. Can be both integer and float */
   NUMBER = 10
 }
 

@@ -27,7 +27,7 @@ import {
 } from '../../types/applicationCommand.ts'
 import { Message } from '../../structures/message.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
-import { MessagePayload } from "../../types/channel.ts";
+import { MessagePayload } from '../../types/channel.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -142,7 +142,9 @@ export const interactionCreate: GatewayEventHandler = async (
     for (const [id, data] of Object.entries(
       (d.data as InteractionApplicationCommandData).resolved?.messages ?? {}
     )) {
-      const channel = await gateway.client.channels.get<TextChannel>(data.channel_id)
+      const channel = await gateway.client.channels.get<TextChannel>(
+        data.channel_id
+      )
       await channel?.messages.set(data.id, data)
       await gateway.client.users.set(data.author.id, data.author)
       resolved.messages[id] = new Message(

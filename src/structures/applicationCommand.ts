@@ -17,7 +17,7 @@ import {
   InteractionChannel,
   Interaction
 } from './interactions.ts'
-import type { Message } from "./message.ts";
+import type { Message } from './message.ts'
 
 export interface InteractionApplicationCommandResolved {
   users: Dict<InteractionUser>

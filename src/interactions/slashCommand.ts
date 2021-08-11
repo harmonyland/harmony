@@ -1,7 +1,7 @@
 import { RESTManager } from '../rest/manager.ts'
 import type { Guild } from '../structures/guild.ts'
 import {
-ApplicationCommandType,
+  ApplicationCommandType,
   GuildSlashCommandPermissions,
   GuildSlashCommmandPermissionsPartial,
   GuildSlashCommmandPermissionsPayload,
