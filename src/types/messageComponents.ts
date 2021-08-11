@@ -1,10 +1,17 @@
 export enum MessageComponentType {
-  /** Container or row of components */
+  /** Container or row of components. Deprecated, use ACTION_ROW instead */
   ActionRow = 1,
-  /** A clickable button */
+  /** A clickable button. Deprecated, use BUTTON instead */
   Button = 2,
+  /** Dropdown menu, Deprecated, use SELECT instead */
+  Select = 3,
+  
+  /** Container or row of components */
+  ACTION_ROW = 1,
+  /** A clickable button */
+  BUTTON = 2,
   /** Dropdown menu */
-  Select = 3
+  SELECT = 3
 }
 
 export enum ButtonStyle {
