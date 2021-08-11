@@ -2,13 +2,14 @@ import { Interaction } from './src/structures/interactions.ts'
 import {
   SlashCommandsManager,
   SlashClient,
-  SlashCommandHandlerCallback,
-  SlashCommandHandler
+  ApplicationCommandHandler,
+  ApplicationCommandHandlerCallback
 } from './src/interactions/mod.ts'
 import {
   InteractionResponseType,
   InteractionType
 } from './src/types/interactions.ts'
+import { ApplicationCommandType } from './src/types/applicationCommand.ts'
 
 export interface DeploySlashInitOptions {
   env?: boolean
@@ -128,14 +129,16 @@ export function init(options: DeploySlashInitOptions): void {
  * @param handler Handler function (required if previous argument was command name)
  */
 export function handle(
-  cmd: string | SlashCommandHandler,
-  handler?: SlashCommandHandlerCallback
+  cmd: string | ApplicationCommandHandler,
+  handler?: ApplicationCommandHandlerCallback,
+  type?: ApplicationCommandType | keyof typeof ApplicationCommandType
 ): void {
   if (client === undefined)
     throw new Error('Slash Client not initialized. Call `init` first')
-  client.handle(cmd, handler)
+  client.handle(cmd, handler, type)
 }
 
+/** Listen for Interactions Event */
 export function interactions(cb: (i: Interaction) => any): void {
   client.on('interaction', cb)
 }

@@ -137,10 +137,24 @@ export class Interaction extends SnowflakeBase {
     this.message = others.message
   }
 
+  /**
+   * @deprecated Use isApplicationCommand instead
+   */
   isSlashCommand(): this is ApplicationCommandInteraction {
     return this.type === InteractionType.APPLICATION_COMMAND
   }
 
+  /** Checks whether the Interaction is Ping (HTTP only) */
+  isPing(): boolean {
+    return this.type === InteractionType.PING
+  }
+
+  /** Checks whether the Interaction is Application Command */
+  isApplicationCommand(): this is ApplicationCommandInteraction {
+    return this.type === InteractionType.APPLICATION_COMMAND
+  }
+
+  /** Checks whether the Interaction is Message Component */
   isMessageComponent(): this is MessageComponentInteraction {
     return this.type === InteractionType.MESSAGE_COMPONENT
   }

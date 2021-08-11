@@ -141,7 +141,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   handle(
     cmd: string | ApplicationCommandHandler,
     handler?: ApplicationCommandHandlerCallback,
-    type?: ApplicationCommandType
+    type?: ApplicationCommandType | keyof typeof ApplicationCommandType
   ): SlashClient {
     const handle = {
       name: typeof cmd === 'string' ? cmd : cmd.name,
@@ -150,7 +150,8 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
     }
 
     if (type !== undefined) {
-      handle.type = type
+      handle.type =
+        typeof type === 'string' ? ApplicationCommandType[type] : type
     }
 
     if (handle.handler === undefined)
