@@ -70,13 +70,20 @@ export class ApplicationCommandInteraction extends Interaction {
 
   /** Gets sub command name from options */
   get subCommand(): string | undefined {
-    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND) return this.data.options[0].name
-    else if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP && this.data.options[0].options?.[0].type === SlashCommandOptionType.SUB_COMMAND) return this.data.options[0].options[0].name
+    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND)
+      return this.data.options[0].name
+    else if (
+      this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP &&
+      this.data.options[0].options?.[0].type ===
+        SlashCommandOptionType.SUB_COMMAND
+    )
+      return this.data.options[0].options[0].name
   }
 
   /** Gets sub command group name from options */
   get subCommandGroup(): string | undefined {
-    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP) return this.data.options[0].name
+    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP)
+      return this.data.options[0].name
   }
 
   /** Target ID. Only valid for Context Menu commands */
@@ -86,12 +93,16 @@ export class ApplicationCommandInteraction extends Interaction {
 
   /** Target User object. Only valid for User Context Menu commands */
   get targetUser(): User | undefined {
-    return this.targetID ? this.resolved.users[this.targetID] : undefined
+    return this.targetID !== undefined
+      ? this.resolved.users[this.targetID]
+      : undefined
   }
 
   /** Target Message object. Only valid for Message Context Menu commands */
   get targetMessage(): Message | undefined {
-    return this.targetID ? this.resolved.messages[this.targetID] : undefined
+    return this.targetID !== undefined
+      ? this.resolved.messages[this.targetID]
+      : undefined
   }
 
   /** Get an option by name */
