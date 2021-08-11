@@ -141,11 +141,12 @@ export function interactions(cb: (i: Interaction) => any): void {
 }
 
 export { commands, client }
-export * from './src/types/slashCommands.ts'
+export * from './src/types/applicationCommand.ts'
 export * from './src/types/interactions.ts'
-export * from './src/structures/slash.ts'
+export * from './src/structures/applicationCommand.ts'
 export * from './src/interactions/mod.ts'
 export * from './src/types/channel.ts'
 export * from './src/structures/interactions.ts'
 export * from './src/structures/message.ts'
 export * from './src/structures/embed.ts'
+export * from './src/types/messageComponents.ts'

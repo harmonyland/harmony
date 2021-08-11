@@ -4,7 +4,7 @@ import {
   InteractionApplicationCommandData,
   InteractionApplicationCommandOption,
   SlashCommandOptionType
-} from '../types/slashCommands.ts'
+} from '../types/applicationCommand.ts'
 import type { Dict } from '../utils/dict.ts'
 import type { Guild } from './guild.ts'
 import type { GuildTextChannel } from './guildTextChannel.ts'
@@ -17,15 +17,17 @@ import {
   InteractionChannel,
   Interaction
 } from './interactions.ts'
+import type { Message } from "./message.ts";
 
 export interface InteractionApplicationCommandResolved {
   users: Dict<InteractionUser>
   members: Dict<Member>
   channels: Dict<InteractionChannel>
   roles: Dict<Role>
+  messages: Dict<Message>
 }
 
-export class SlashCommandInteraction extends Interaction {
+export class ApplicationCommandInteraction extends Interaction {
   /** Data sent with Interaction. Only applies to Application Command */
   data: InteractionApplicationCommandData
   /** Resolved data for Snowflakes in Slash Command Arguments */
@@ -57,6 +59,10 @@ export class SlashCommandInteraction extends Interaction {
     return this.data.options ?? []
   }
 
+  get targetID(): string | undefined {
+    return this.data.target_id
+  }
+
   /** Get an option by name */
   option<T>(name: string): T {
     let options = this.options
@@ -81,3 +87,9 @@ export class SlashCommandInteraction extends Interaction {
     else return op.value
   }
 }
+
+/**
+ * Deprecated, use ApplicationCommandInteraction instead
+ * @deprecated
+ */
+export { ApplicationCommandInteraction as SlashCommandInteraction }

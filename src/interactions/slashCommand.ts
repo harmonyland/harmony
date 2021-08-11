@@ -1,6 +1,7 @@
 import { RESTManager } from '../rest/manager.ts'
 import type { Guild } from '../structures/guild.ts'
 import {
+ApplicationCommandType,
   GuildSlashCommandPermissions,
   GuildSlashCommmandPermissionsPartial,
   GuildSlashCommmandPermissionsPayload,
@@ -14,7 +15,7 @@ import {
   SlashCommandPermission,
   SlashCommandPermissionPayload,
   SlashCommandPermissionType
-} from '../types/slashCommands.ts'
+} from '../types/applicationCommand.ts'
 import { Collection } from '../utils/collection.ts'
 import type { SlashClient, SlashCommandHandlerCallback } from './slashClient.ts'
 
@@ -23,7 +24,8 @@ export class SlashCommand {
   id: string
   applicationID: string
   name: string
-  description: string
+  type: ApplicationCommandType
+  description?: string
   defaultPermission = true
   options: SlashCommandOption[]
   guild?: Guild
@@ -38,6 +40,7 @@ export class SlashCommand {
     this.id = data.id
     this.applicationID = data.application_id
     this.name = data.name
+    this.type = data.type ?? ApplicationCommandType.CHAT_INPUT
     this.description = data.description
     this.options = data.options ?? []
     this.guild = guild

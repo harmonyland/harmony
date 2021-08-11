@@ -1,14 +1,14 @@
 import {
-  SlashCommandInteraction,
+  ApplicationCommandInteraction,
   InteractionApplicationCommandResolved
-} from '../structures/slash.ts'
+} from '../structures/applicationCommand.ts'
 import { Interaction } from '../structures/interactions.ts'
 import {
   InteractionPayload,
   InteractionResponsePayload,
   InteractionType
 } from '../types/interactions.ts'
-import { SlashCommandOptionType } from '../types/slashCommands.ts'
+import { SlashCommandOptionType } from '../types/applicationCommand.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { SlashModule } from './slashModule.ts'
@@ -19,7 +19,7 @@ import { encodeText, decodeText } from '../utils/encoding.ts'
 import { SlashCommandsManager } from './slashCommand.ts'
 
 export type SlashCommandHandlerCallback = (
-  interaction: SlashCommandInteraction
+  interaction: ApplicationCommandInteraction
 ) => unknown
 export interface SlashCommandHandler {
   name: string
@@ -189,7 +189,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Get Handler for an Interaction. Supports nested sub commands and sub command groups. */
   private _getCommand(
-    i: SlashCommandInteraction
+    i: ApplicationCommandInteraction
   ): SlashCommandHandler | undefined {
     return this.getHandlers().find((e) => {
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
@@ -222,21 +222,21 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Process an incoming Interaction */
   private async _process(
-    interaction: Interaction | SlashCommandInteraction
+    interaction: Interaction | ApplicationCommandInteraction
   ): Promise<void> {
     if (!this.enabled) return
 
     if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
     const cmd =
-      this._getCommand(interaction as SlashCommandInteraction) ??
+      this._getCommand(interaction as ApplicationCommandInteraction) ??
       this.getHandlers().find((e) => e.name === '*')
 
     if (cmd === undefined) return
 
     await this.emit('interaction', interaction)
     try {
-      await cmd.handler(interaction as SlashCommandInteraction)
+      await cmd.handler(interaction as ApplicationCommandInteraction)
     } catch (e) {
       await this.emit('interactionError', e)
     }
@@ -287,7 +287,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       // TODO: Maybe fix all this hackery going on here?
       let res
       if (payload.type === InteractionType.APPLICATION_COMMAND) {
-        res = new SlashCommandInteraction(this as any, payload, {
+        res = new ApplicationCommandInteraction(this as any, payload, {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           user: new User(this as any, (payload.member?.user ?? payload.user)!),
           member: payload.member as any,

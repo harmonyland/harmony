@@ -1,5 +1,5 @@
 import { SlashClient } from '../src/interactions/slashClient.ts'
-import { SlashCommandPartial } from '../src/types/slashCommands.ts'
+import { SlashCommandPartial } from '../src/types/applicationCommand.ts'
 import { TOKEN, GUILD } from './config.ts'
 
 export const slash = new SlashClient({ token: TOKEN })

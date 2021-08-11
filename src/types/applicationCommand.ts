@@ -1,5 +1,5 @@
 import type { Dict } from '../utils/dict.ts'
-import type { ChannelTypes } from './channel.ts'
+import type { ChannelTypes, MessagePayload } from './channel.ts'
 import type { MemberPayload } from './guild.ts'
 import type { RolePayload } from './role.ts'
 import type { UserPayload } from './user.ts'
@@ -27,6 +27,7 @@ export interface InteractionApplicationCommandResolvedPayload {
   members?: Dict<MemberPayload>
   channels?: Dict<InteractionChannelPayload>
   roles?: Dict<RolePayload>
+  messages?: Dict<MessagePayload>
 }
 
 export interface InteractionApplicationCommandData {
@@ -38,6 +39,8 @@ export interface InteractionApplicationCommandData {
   options: InteractionApplicationCommandOption[]
   /** Resolved data for options in Slash Command */
   resolved?: InteractionApplicationCommandResolvedPayload
+  /** Target ID if Command was targeted to something through Context Menu, for example User, Message, etc. */
+  target_id?: string
 }
 
 export interface SlashCommandChoice {
@@ -93,14 +96,25 @@ export interface SlashCommandOption
     SlashCommandOptionType | keyof typeof SlashCommandOptionType
   > {}
 
+export enum ApplicationCommandType {
+  /** Slash Command which user types in Chat Input */
+  CHAT_INPUT = 1,
+  /** Command triggered from the User Context Menu */
+  USER = 2,
+  /** Command triggered from the Message Content Menu */
+  MESSAGE = 3
+}
+
 /** Represents the Slash Command (Application Command) payload sent for creating/[bulk] editing. */
 export interface SlashCommandPartialBase<T = SlashCommandOptionPayload> {
-  /** Name of the Slash Command */
+  /** Name of the Application Command */
   name: string
-  /** Description of the Slash Command */
-  description: string
-  /** Options (arguments, sub commands or group) of the Slash Command */
+  /** Description of the Slash Command. Not applicable to Context Menu commands. */
+  description?: string
+  /** Options (arguments, sub commands or group) of the Slash Command. Not applicable to Context Menu commands. */
   options?: T[]
+  /** Type of the Application Command */
+  type?: ApplicationCommandType
 }
 
 export interface SlashCommandPartialPayload extends SlashCommandPartialBase {
@@ -119,6 +133,8 @@ export interface SlashCommandPayload extends SlashCommandPartialPayload {
   /** Application ID */
   application_id: string
   default_permission: boolean
+  type: ApplicationCommandType
+  options: SlashCommandOptionPayload[]
 }
 
 export enum SlashCommandPermissionType {

@@ -22,7 +22,7 @@ import {
 import {
   InteractionApplicationCommandData,
   InteractionChannelPayload
-} from '../types/slashCommands.ts'
+} from '../types/applicationCommand.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
 import { Channel } from './channel.ts'
@@ -33,7 +33,7 @@ import { Member } from './member.ts'
 import { Message, MessageAttachment } from './message.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
-import type { SlashCommandInteraction } from './slash.ts'
+import type { ApplicationCommandInteraction } from './applicationCommand.ts'
 import type { MessageComponentInteraction } from './messageComponents.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
@@ -137,7 +137,7 @@ export class Interaction extends SnowflakeBase {
     this.message = others.message
   }
 
-  isSlashCommand(): this is SlashCommandInteraction {
+  isSlashCommand(): this is ApplicationCommandInteraction {
     return this.type === InteractionType.APPLICATION_COMMAND
   }
 

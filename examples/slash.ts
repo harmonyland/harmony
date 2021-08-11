@@ -3,7 +3,7 @@ import {
   GatewayIntents,
   event,
   slash,
-  SlashCommandInteraction,
+  ApplicationCommandInteraction,
   SlashCommandOptionType
 } from '../mod.ts'
 
@@ -32,7 +32,7 @@ export class MyClient extends Client {
   }
 
   @slash()
-  ping(d: SlashCommandInteraction): void {
+  ping(d: ApplicationCommandInteraction): void {
     const arg = d.option<string | undefined>('pingarg')
     d.reply(`Pong! You typed: ${arg !== undefined ? arg : 'nothing'}`)
   }

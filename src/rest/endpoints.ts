@@ -38,7 +38,7 @@ import type { InteractionResponsePayload } from '../types/interactions.ts'
 import type {
   SlashCommandPartial,
   SlashCommandPayload
-} from '../types/slashCommands.ts'
+} from '../types/applicationCommand.ts'
 import type { TemplatePayload } from '../types/template.ts'
 import type { UserPayload } from '../types/user.ts'
 import type { VoiceRegion } from '../types/voice.ts'

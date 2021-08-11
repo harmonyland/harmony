@@ -10,11 +10,11 @@ import {
   Collection,
   GuildTextChannel,
   slash,
-  SlashCommandInteraction
+  ApplicationCommandInteraction
 } from '../mod.ts'
 import { LL_IP, LL_PASS, LL_PORT, TOKEN } from './config.ts'
 import { Manager, Player } from 'https://deno.land/x/lavadeno/mod.ts'
-// import { SlashCommandOptionType } from '../types/slash.ts'
+// import { SlashCommandOptionType } from '../types/applicationCommand.ts'
 
 export const nodes = [
   {
@@ -58,12 +58,12 @@ class MyClient extends CommandClient {
   }
 
   @subslash('cmd', 'sub-cmd-no-grp')
-  subCmdNoGroup(d: SlashCommandInteraction): void {
+  subCmdNoGroup(d: ApplicationCommandInteraction): void {
     d.respond({ content: 'sub-cmd-no-group worked' })
   }
 
   @groupslash('cmd', 'sub-cmd-group', 'sub-cmd')
-  subCmdGroup(d: SlashCommandInteraction): void {
+  subCmdGroup(d: ApplicationCommandInteraction): void {
     d.respond({ content: 'sub-cmd-group worked' })
   }
 
@@ -79,7 +79,7 @@ class MyClient extends CommandClient {
   }
 
   @slash()
-  run(d: SlashCommandInteraction): void {
+  run(d: ApplicationCommandInteraction): void {
     console.log(d.name)
   }
 
