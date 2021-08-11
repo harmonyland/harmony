@@ -263,6 +263,9 @@ export function transformSlashCommand(
     cmd.default_permission = cmd.defaultPermission
     delete cmd.defaultPermission
   }
+  if (typeof cmd.type === 'string') {
+    cmd.type = ApplicationCommandType[cmd.type]
+  }
   if (typeof cmd.options === 'object' && Array.isArray(cmd.options)) {
     cmd.options = cmd.options.map(transformSlashCommandOption)
   }

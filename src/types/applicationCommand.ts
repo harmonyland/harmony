@@ -116,7 +116,7 @@ export enum ApplicationCommandType {
 }
 
 /** Represents the Slash Command (Application Command) payload sent for creating/[bulk] editing. */
-export interface SlashCommandPartialBase<T = SlashCommandOptionPayload> {
+export interface SlashCommandPartialBase<T = SlashCommandOptionPayload, T2 = ApplicationCommandType> {
   /** Name of the Application Command */
   name: string
   /** Description of the Slash Command. Not applicable to Context Menu commands. */
@@ -124,7 +124,7 @@ export interface SlashCommandPartialBase<T = SlashCommandOptionPayload> {
   /** Options (arguments, sub commands or group) of the Slash Command. Not applicable to Context Menu commands. */
   options?: T[]
   /** Type of the Application Command */
-  type?: ApplicationCommandType
+  type?: T2
 }
 
 export interface SlashCommandPartialPayload extends SlashCommandPartialBase {
@@ -132,7 +132,7 @@ export interface SlashCommandPartialPayload extends SlashCommandPartialBase {
 }
 
 export interface SlashCommandPartial
-  extends SlashCommandPartialBase<SlashCommandOption> {
+  extends SlashCommandPartialBase<SlashCommandOption, ApplicationCommandType | keyof typeof ApplicationCommandType> {
   defaultPermission?: boolean
 }
 
