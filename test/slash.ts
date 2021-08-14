@@ -1,6 +1,6 @@
 import { Client, Intents, event, slash } from '../mod.ts'
 import { ApplicationCommandInteraction } from '../src/structures/applicationCommand.ts'
-import { SlashCommandOptionType as Type } from '../src/types/applicationCommand.ts'
+import { ApplicationCommandOptionType as Type } from '../src/types/applicationCommand.ts'
 import { TOKEN, GUILD } from './config.ts'
 
 export class MyClient extends Client {

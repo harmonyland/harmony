@@ -8,7 +8,7 @@ export interface InteractionApplicationCommandOption {
   /** Option name */
   name: string
   /** Type of Option */
-  type: SlashCommandOptionType
+  type: ApplicationCommandOptionType
   /** Value of the option */
   value?: any
   /** Sub options */
@@ -45,14 +45,16 @@ export interface InteractionApplicationCommandData {
   target_id?: string
 }
 
-export interface SlashCommandChoice {
+export interface ApplicationCommandChoice {
   /** (Display) name of the Choice */
   name: string
   /** Actual value to be sent in Interaction Slash Command Data */
   value: any
 }
 
-export enum SlashCommandOptionType {
+export type { ApplicationCommandChoice as SlashCommandChoice }
+
+export enum ApplicationCommandOptionType {
   /** A sub command that is either a part of a root command or Sub Command Group */
   SUB_COMMAND = 1,
   /** A sub command group that is present in root command's options */
@@ -75,9 +77,11 @@ export enum SlashCommandOptionType {
   NUMBER = 10
 }
 
-export interface SlashCommandOptionBase<
+export { ApplicationCommandOptionType as SlashCommandOptionType }
+
+export interface ApplicationCommandOptionBase<
   T = any,
-  OptionType = SlashCommandOptionType
+  OptionType = ApplicationCommandOptionType
 > {
   /** Name of the option. */
   name: string
@@ -89,22 +93,28 @@ export interface SlashCommandOptionBase<
   required?: boolean
   default?: boolean
   /** Optional choices out of which User can choose value */
-  choices?: SlashCommandChoice[]
+  choices?: ApplicationCommandChoice[]
   /** Nested options for Sub-Command or Sub-Command-Groups */
   options?: T[]
 }
 
-export interface SlashCommandOptionPayload
-  extends SlashCommandOptionBase<
-    SlashCommandOptionPayload,
-    SlashCommandOptionType
+export type { ApplicationCommandOptionBase as SlashCommandOptionBase }
+
+export interface ApplicationCommandOptionPayload
+  extends ApplicationCommandOptionBase<
+    ApplicationCommandOptionPayload,
+    ApplicationCommandOptionType
   > {}
 
-export interface SlashCommandOption
-  extends SlashCommandOptionBase<
-    SlashCommandOption,
-    SlashCommandOptionType | keyof typeof SlashCommandOptionType
+export type { ApplicationCommandOptionPayload as SlashCommandOptionPayload }
+
+export interface ApplicationCommandOption
+  extends ApplicationCommandOptionBase<
+    ApplicationCommandOption,
+    ApplicationCommandOptionType | keyof typeof ApplicationCommandOptionType
   > {}
+
+export type { ApplicationCommandOption as SlashCommandOption }
 
 export enum ApplicationCommandType {
   /** Slash Command which user types in Chat Input */
@@ -116,8 +126,8 @@ export enum ApplicationCommandType {
 }
 
 /** Represents the Slash Command (Application Command) payload sent for creating/[bulk] editing. */
-export interface SlashCommandPartialBase<
-  T = SlashCommandOptionPayload,
+export interface ApplicationCommandPartialBase<
+  T = ApplicationCommandOptionPayload,
   T2 = ApplicationCommandType
 > {
   /** Name of the Application Command */
@@ -130,66 +140,96 @@ export interface SlashCommandPartialBase<
   type?: T2
 }
 
-export interface SlashCommandPartialPayload extends SlashCommandPartialBase {
+export type { ApplicationCommandPartialBase as SlashCommandPartialBase }
+
+export interface ApplicationCommandPartialPayload
+  extends ApplicationCommandPartialBase {
   default_permission?: boolean
 }
 
-export interface SlashCommandPartial
-  extends SlashCommandPartialBase<
-    SlashCommandOption,
+export type { ApplicationCommandPartialPayload as SlashCommandPartialPayload }
+
+export interface ApplicationCommandPartial
+  extends ApplicationCommandPartialBase<
+    ApplicationCommandOption,
     ApplicationCommandType | keyof typeof ApplicationCommandType
   > {
   defaultPermission?: boolean
 }
 
-/** Represents a fully qualified Slash Command (Application Command) payload. */
-export interface SlashCommandPayload extends SlashCommandPartialPayload {
-  /** ID of the Slash Command */
+export type { ApplicationCommandPartial as SlashCommandPartial }
+
+/** Represents a fully qualified Application Command payload. */
+export interface ApplicationCommandPayload
+  extends ApplicationCommandPartialPayload {
+  /** ID of the Application Command */
   id: string
   /** Application ID */
   application_id: string
+  guild_id?: string
   default_permission: boolean
   type: ApplicationCommandType
-  options: SlashCommandOptionPayload[]
+  options: ApplicationCommandOptionPayload[]
 }
 
-export enum SlashCommandPermissionType {
+export type { ApplicationCommandPayload as SlashCommandPayload }
+
+export enum ApplicationCommandPermissionType {
   ROLE = 1,
   USER = 2
 }
 
-export interface GuildSlashCommmandPermissionsBase<
-  T = SlashCommandPermissionPayload
+export { ApplicationCommandPermissionType as SlashCommandPermissionType }
+
+export interface GuildApplicationCommmandPermissionsBase<
+  T = ApplicationCommandPermissionPayload
 > {
   id: string
   permissions: T[]
 }
 
-export interface GuildSlashCommmandPermissionsPartial
-  extends GuildSlashCommmandPermissionsBase<SlashCommandPermission> {}
+export type { GuildApplicationCommmandPermissionsBase as GuildSlashCommandPermissionsBase }
 
-export interface GuildSlashCommmandPermissionsPayload
-  extends GuildSlashCommmandPermissionsBase {
+export interface GuildApplicationCommmandPermissionsPartial
+  extends GuildApplicationCommmandPermissionsBase<ApplicationCommandPermission> {}
+
+export type { GuildApplicationCommmandPermissionsPartial as GuildSlashCommmandPermissionsPartial }
+
+export interface GuildApplicationCommmandPermissionsPayload
+  extends GuildApplicationCommmandPermissionsBase {
   application_id: string
   guild_id: string
 }
 
-export interface GuildSlashCommandPermissions
-  extends GuildSlashCommmandPermissionsPartial {
+export type { GuildApplicationCommmandPermissionsPayload as GuildSlashCommmandPermissionsPayload }
+
+export interface GuildApplicationCommandPermissions
+  extends GuildApplicationCommmandPermissionsPartial {
   applicationID: string
   guildID: string
 }
 
-export interface SlashCommandPermissionBase<T = SlashCommandPermissionType> {
+export type { GuildApplicationCommandPermissions as GuildSlashCommandPermissions }
+
+export interface ApplicationCommandPermissionBase<
+  T = ApplicationCommandPermissionType
+> {
   id: string
   type: T
   permission: boolean
 }
 
-export interface SlashCommandPermission
-  extends SlashCommandPermissionBase<
-    SlashCommandPermissionType | keyof typeof SlashCommandPermissionType
+export type { ApplicationCommandPermissionBase as SlashCommandPermissionBase }
+
+export interface ApplicationCommandPermission
+  extends ApplicationCommandPermissionBase<
+    | ApplicationCommandPermissionType
+    | keyof typeof ApplicationCommandPermissionType
   > {}
 
-export interface SlashCommandPermissionPayload
-  extends SlashCommandPermissionBase {}
+export type { ApplicationCommandPermission as SlashCommandPermission }
+
+export interface ApplicationCommandPermissionPayload
+  extends ApplicationCommandPermissionBase {}
+
+export type { ApplicationCommandPermissionPayload as SlashCommandPermissionPayload }

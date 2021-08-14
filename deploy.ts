@@ -1,7 +1,7 @@
 import { Interaction } from './src/structures/interactions.ts'
 import {
-  SlashCommandsManager,
-  SlashClient,
+  ApplicationCommandsManager,
+  InteractionsClient,
   ApplicationCommandHandler,
   ApplicationCommandHandlerCallback
 } from './src/interactions/mod.ts'
@@ -19,9 +19,9 @@ export interface DeploySlashInitOptions {
 }
 
 /** Current Slash Client being used to handle commands */
-let client: SlashClient
+let client: InteractionsClient
 /** Manage Slash Commands right in Deploy */
-let commands: SlashCommandsManager
+let commands: ApplicationCommandsManager
 
 /**
  * Initialize Slash Commands Handler for [Deno Deploy](https://deno.com/deploy).
@@ -59,7 +59,7 @@ export function init(options: DeploySlashInitOptions): void {
   if (options.publicKey === undefined)
     throw new Error('Public Key not provided')
 
-  client = new SlashClient({
+  client = new InteractionsClient({
     token: options.token,
     publicKey: options.publicKey
   })

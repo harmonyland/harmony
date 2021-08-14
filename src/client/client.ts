@@ -11,7 +11,7 @@ import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
 import type { Extension } from '../commands/extension.ts'
-import { SlashClient } from '../interactions/slashClient.ts'
+import { InteractionsClient } from '../interactions/client.ts'
 import { ShardManager } from './shard.ts'
 import { Application } from '../structures/application.ts'
 import { Invite } from '../structures/invite.ts'
@@ -121,8 +121,10 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Client Properties */
   readonly clientProperties!: ClientProperties
 
-  /** Slash-Commands Management client */
-  slash: SlashClient
+  /** Interactions Client */
+  interactions: InteractionsClient
+  /** @deprecated Alias to Interactions client in `client.interactions`, use original property instead */
+  slash: InteractionsClient
   /** Whether to fetch Gateway info or not */
   fetchGatewayInfo: boolean = true
 
@@ -249,7 +251,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       Object.assign(restOptions, options.restOptions)
     this.rest = new RESTManager(restOptions)
 
-    this.slash = new SlashClient({
+    this.slash = this.interactions = new InteractionsClient({
       id: () => this.getEstimatedID(),
       client: this,
       enabled: options.enableSlash

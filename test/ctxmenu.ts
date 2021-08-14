@@ -8,7 +8,7 @@ const client = new harmony.Client({
 
 client.on('interactionCreate', (d) => {})
 
-client.slash.handle(
+client.interactions.handle(
   'View Embeds JSON',
   (d) => {
     return d.reply(
@@ -19,7 +19,7 @@ client.slash.handle(
   'MESSAGE'
 )
 
-client.slash.handle(
+client.interactions.handle(
   'View User JSON',
   (d) => {
     const user = d.targetUser!
@@ -36,15 +36,15 @@ client.slash.handle(
   'USER'
 )
 
-client.slash.handle('ping', (d) => {
+client.interactions.handle('ping', (d) => {
   return d.reply('Pong!', { ephemeral: true })
 })
 
-client.slash.handle('test test', (d) => {
+client.interactions.handle('test test', (d) => {
   return d.reply('Test worked!', { ephemeral: true })
 })
 
-client.slash.commands.bulkEdit(
+client.interactions.commands.bulkEdit(
   [
     {
       name: 'ping',

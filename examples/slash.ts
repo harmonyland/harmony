@@ -4,7 +4,7 @@ import {
   event,
   slash,
   ApplicationCommandInteraction,
-  SlashCommandOptionType
+  ApplicationCommandOptionType
 } from '../mod.ts'
 
 export class MyClient extends Client {
@@ -23,7 +23,7 @@ export class MyClient extends Client {
               name: 'pingarg',
               description: 'Again literally pingArg',
               required: false,
-              type: SlashCommandOptionType.STRING
+              type: ApplicationCommandOptionType.STRING
             }
           ]
         }

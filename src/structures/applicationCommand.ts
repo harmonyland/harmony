@@ -3,7 +3,7 @@ import { InteractionPayload } from '../types/interactions.ts'
 import {
   InteractionApplicationCommandData,
   InteractionApplicationCommandOption,
-  SlashCommandOptionType
+  ApplicationCommandOptionType
 } from '../types/applicationCommand.ts'
 import type { Dict } from '../utils/dict.ts'
 import type { Guild } from './guild.ts'
@@ -60,8 +60,8 @@ export class ApplicationCommandInteraction extends Interaction {
     let options = this.options ?? []
     while (
       options.length === 1 &&
-      (options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP ||
-        options[0].type === SlashCommandOptionType.SUB_COMMAND)
+      (options[0].type === ApplicationCommandOptionType.SUB_COMMAND_GROUP ||
+        options[0].type === ApplicationCommandOptionType.SUB_COMMAND)
     ) {
       options = options[0].options ?? []
     }
@@ -70,19 +70,23 @@ export class ApplicationCommandInteraction extends Interaction {
 
   /** Gets sub command name from options */
   get subCommand(): string | undefined {
-    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND)
+    if (this.data.options[0].type === ApplicationCommandOptionType.SUB_COMMAND)
       return this.data.options[0].name
     else if (
-      this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP &&
+      this.data.options[0].type ===
+        ApplicationCommandOptionType.SUB_COMMAND_GROUP &&
       this.data.options[0].options?.[0].type ===
-        SlashCommandOptionType.SUB_COMMAND
+        ApplicationCommandOptionType.SUB_COMMAND
     )
       return this.data.options[0].options[0].name
   }
 
   /** Gets sub command group name from options */
   get subCommandGroup(): string | undefined {
-    if (this.data.options[0].type === SlashCommandOptionType.SUB_COMMAND_GROUP)
+    if (
+      this.data.options[0].type ===
+      ApplicationCommandOptionType.SUB_COMMAND_GROUP
+    )
       return this.data.options[0].name
   }
 
@@ -110,14 +114,14 @@ export class ApplicationCommandInteraction extends Interaction {
     const options = this.options
     const op = options.find((e) => e.name === name)
     if (op === undefined || op.value === undefined) return undefined as any
-    if (op.type === SlashCommandOptionType.USER) {
+    if (op.type === ApplicationCommandOptionType.USER) {
       const u: InteractionUser = this.resolved.users[op.value] as any
       if (this.resolved.members[op.value] !== undefined)
         u.member = this.resolved.members[op.value]
       return u as any
-    } else if (op.type === SlashCommandOptionType.ROLE)
+    } else if (op.type === ApplicationCommandOptionType.ROLE)
       return this.resolved.roles[op.value] as any
-    else if (op.type === SlashCommandOptionType.CHANNEL)
+    else if (op.type === ApplicationCommandOptionType.CHANNEL)
       return this.resolved.channels[op.value] as any
     else return op.value
   }

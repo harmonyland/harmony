@@ -1,5 +1,5 @@
-import { SlashCommand } from '../../interactions/slashCommand.ts'
-import { ApplicationCommandPayload } from '../../types/gateway.ts'
+import { ApplicationCommand } from '../../interactions/applicationCommand.ts'
+import { ApplicationCommandPayload } from '../../types/applicationCommand.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const applicationCommandDelete: GatewayEventHandler = async (
@@ -10,6 +10,11 @@ export const applicationCommandDelete: GatewayEventHandler = async (
     d.guild_id === undefined
       ? undefined
       : await gateway.client.guilds.get(d.guild_id)
-  const cmd = new SlashCommand(gateway.client.slash.commands, d, guild)
+  const cmd = new ApplicationCommand(
+    gateway.client.interactions.commands,
+    d,
+    guild
+  )
   gateway.client.emit('slashCommandDelete', cmd)
+  gateway.client.emit('applicationCommandDelete', cmd)
 }

@@ -52,7 +52,7 @@ import { Template } from './template.ts'
 import { DiscordAPIError } from '../rest/mod.ts'
 import type { ImageFormats, ImageSize } from '../types/cdn.ts'
 import { ImageURL } from './cdn.ts'
-import type { GuildSlashCommandsManager } from '../interactions/slashCommand.ts'
+import type { GuildApplicationCommandsManager } from '../interactions/applicationCommand.ts'
 import { toCamelCase } from '../utils/snakeCase.ts'
 import { ThreadsManager } from '../managers/threads.ts'
 
@@ -193,7 +193,7 @@ export class Guild extends SnowflakeBase {
   approximatePresenceCount?: number
   bans: GuildBans
   nsfw?: boolean
-  commands: GuildSlashCommandsManager
+  commands: GuildApplicationCommandsManager
   threads: ThreadsManager
 
   /** Get Shard ID of Guild on which it is */
@@ -219,7 +219,7 @@ export class Guild extends SnowflakeBase {
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
-    this.commands = this.client.slash.commands.for(this)
+    this.commands = this.client.interactions.commands.for(this)
   }
 
   readFromData(data: GuildPayload): void {

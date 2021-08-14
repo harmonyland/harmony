@@ -1,8 +1,8 @@
-import { SlashClient } from '../mod.ts'
+import { InteractionsClient } from '../mod.ts'
 import { SLASH_ID, SLASH_PUB_KEY, SLASH_TOKEN } from './config.ts'
 import { listenAndServe } from './deps.ts'
 
-const slash = new SlashClient({
+const slash = new InteractionsClient({
   id: SLASH_ID,
   token: SLASH_TOKEN,
   publicKey: SLASH_PUB_KEY

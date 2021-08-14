@@ -1,4 +1,4 @@
-export * from './slashClient.ts'
-export * from './slashModule.ts'
-export * from './slashCommand.ts'
+export * from './client.ts'
+export * from './commandModule.ts'
+export * from './applicationCommand.ts'
 export * from './tsxComponents.ts'
