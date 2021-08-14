@@ -11,7 +11,6 @@ import type {
   ClientStatus
 } from './presence.ts'
 import type { RolePayload } from './role.ts'
-import type { SlashCommandPayload } from './slashCommands.ts'
 import type { UserPayload } from './user.ts'
 
 /**
@@ -354,8 +353,4 @@ export interface TypingStartPayload {
 export interface TypingStartGuildData {
   guild: Guild
   member: Member
-}
-
-export interface ApplicationCommandPayload extends SlashCommandPayload {
-  guild_id?: string
 }

@@ -19,7 +19,7 @@ if (commands.size !== 1) {
           name: 'pingarg',
           description: 'Again literally pingArg',
           required: false,
-          type: deploy.SlashCommandOptionType.STRING
+          type: deploy.ApplicationCommandOptionType.STRING
         }
       ]
     }

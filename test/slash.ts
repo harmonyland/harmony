@@ -1,6 +1,6 @@
 import { Client, Intents, event, slash } from '../mod.ts'
-import { SlashCommandInteraction } from '../src/structures/slash.ts'
-import { SlashCommandOptionType as Type } from '../src/types/slashCommands.ts'
+import { ApplicationCommandInteraction } from '../src/structures/applicationCommand.ts'
+import { ApplicationCommandOptionType as Type } from '../src/types/applicationCommand.ts'
 import { TOKEN, GUILD } from './config.ts'
 
 export class MyClient extends Client {
@@ -63,7 +63,7 @@ export class MyClient extends Client {
     this.slash.commands.bulkEdit([])
   }
 
-  @slash() test(d: SlashCommandInteraction): void {
+  @slash() test(d: ApplicationCommandInteraction): void {
     console.log(d.resolved)
   }
 

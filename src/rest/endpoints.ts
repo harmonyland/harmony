@@ -36,9 +36,9 @@ import type {
 import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
 import type { InteractionResponsePayload } from '../types/interactions.ts'
 import type {
-  SlashCommandPartial,
-  SlashCommandPayload
-} from '../types/slashCommands.ts'
+  ApplicationCommandPartial,
+  ApplicationCommandPayload
+} from '../types/applicationCommand.ts'
 import type { TemplatePayload } from '../types/template.ts'
 import type { UserPayload } from '../types/user.ts'
 import type { VoiceRegion } from '../types/voice.ts'
@@ -136,14 +136,14 @@ export class RESTEndpoints {
    */
   async getGlobalApplicationCommands(
     applicationId: string
-  ): Promise<SlashCommandPayload> {
+  ): Promise<ApplicationCommandPayload> {
     return this.rest.get(`/applications/${applicationId}/commands`)
   }
 
   async createGlobalApplicationCommand(
     applicationId: string,
     payload: any
-  ): Promise<SlashCommandPayload> {
+  ): Promise<ApplicationCommandPayload> {
     return this.rest.post(`/applications/${applicationId}/commands`, payload)
   }
 
@@ -153,15 +153,15 @@ export class RESTEndpoints {
   async getGlobalApplicationCommand(
     applicationId: string,
     commandId: string
-  ): Promise<SlashCommandPayload[]> {
+  ): Promise<ApplicationCommandPayload[]> {
     return this.rest.get(`/applications/${applicationId}/commands/${commandId}`)
   }
 
   async editGlobalApplicationCommand(
     applicationId: string,
     commandId: string,
-    payload: SlashCommandPartial
-  ): Promise<SlashCommandPayload> {
+    payload: ApplicationCommandPartial
+  ): Promise<ApplicationCommandPayload> {
     return this.rest.patch(
       `/applications/${applicationId}/commands/${commandId}`,
       payload
@@ -186,7 +186,7 @@ export class RESTEndpoints {
   async getGuildApplicationCommands(
     applicationId: string,
     guildId: string
-  ): Promise<SlashCommandPayload[]> {
+  ): Promise<ApplicationCommandPayload[]> {
     return this.rest.get(
       `/applications/${applicationId}/guilds/${guildId}/commands`
     )
@@ -197,16 +197,16 @@ export class RESTEndpoints {
    */
   async bulkOverwriteGlobalApplicationCommands(
     applicationId: string,
-    payload: SlashCommandPartial[]
-  ): Promise<SlashCommandPayload[]> {
+    payload: ApplicationCommandPartial[]
+  ): Promise<ApplicationCommandPayload[]> {
     return this.rest.put(`/applications/${applicationId}/commands`, payload)
   }
 
   async createGuildApplicationCommand(
     applicationId: string,
     guildId: string,
-    payload: SlashCommandPartial
-  ): Promise<SlashCommandPayload> {
+    payload: ApplicationCommandPartial
+  ): Promise<ApplicationCommandPayload> {
     return this.rest.post(
       `/applications/${applicationId}/guilds/${guildId}/commands`,
       payload
@@ -220,7 +220,7 @@ export class RESTEndpoints {
     applicationId: string,
     guildId: string,
     commandId: string
-  ): Promise<SlashCommandPayload> {
+  ): Promise<ApplicationCommandPayload> {
     return this.rest.get(
       `/applications/${applicationId}/guilds/${guildId}/commands/${commandId}`
     )
@@ -230,8 +230,8 @@ export class RESTEndpoints {
     applicationId: string,
     guildId: string,
     commandId: string,
-    payload: SlashCommandPartial
-  ): Promise<SlashCommandPayload> {
+    payload: ApplicationCommandPartial
+  ): Promise<ApplicationCommandPayload> {
     return this.rest.patch(
       `/applications/${applicationId}/guilds/${guildId}/commands/${commandId}`,
       payload
@@ -257,8 +257,8 @@ export class RESTEndpoints {
   async bulkOverwriteGuildApplicationCommands(
     applicationId: string,
     guildId: string,
-    payload: SlashCommandPartial
-  ): Promise<SlashCommandPayload[]> {
+    payload: ApplicationCommandPartial
+  ): Promise<ApplicationCommandPayload[]> {
     return this.rest.put(
       `/applications/${applicationId}/guilds/${guildId}/commands`,
       payload

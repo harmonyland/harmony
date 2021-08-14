@@ -1,14 +1,15 @@
 import { Interaction } from './src/structures/interactions.ts'
 import {
-  SlashCommandsManager,
-  SlashClient,
-  SlashCommandHandlerCallback,
-  SlashCommandHandler
+  ApplicationCommandsManager,
+  InteractionsClient,
+  ApplicationCommandHandler,
+  ApplicationCommandHandlerCallback
 } from './src/interactions/mod.ts'
 import {
   InteractionResponseType,
   InteractionType
 } from './src/types/interactions.ts'
+import { ApplicationCommandType } from './src/types/applicationCommand.ts'
 
 export interface DeploySlashInitOptions {
   env?: boolean
@@ -18,9 +19,9 @@ export interface DeploySlashInitOptions {
 }
 
 /** Current Slash Client being used to handle commands */
-let client: SlashClient
+let client: InteractionsClient
 /** Manage Slash Commands right in Deploy */
-let commands: SlashCommandsManager
+let commands: ApplicationCommandsManager
 
 /**
  * Initialize Slash Commands Handler for [Deno Deploy](https://deno.com/deploy).
@@ -58,7 +59,7 @@ export function init(options: DeploySlashInitOptions): void {
   if (options.publicKey === undefined)
     throw new Error('Public Key not provided')
 
-  client = new SlashClient({
+  client = new InteractionsClient({
     token: options.token,
     publicKey: options.publicKey
   })
@@ -128,24 +129,27 @@ export function init(options: DeploySlashInitOptions): void {
  * @param handler Handler function (required if previous argument was command name)
  */
 export function handle(
-  cmd: string | SlashCommandHandler,
-  handler?: SlashCommandHandlerCallback
+  cmd: string | ApplicationCommandHandler,
+  handler?: ApplicationCommandHandlerCallback,
+  type?: ApplicationCommandType | keyof typeof ApplicationCommandType
 ): void {
   if (client === undefined)
     throw new Error('Slash Client not initialized. Call `init` first')
-  client.handle(cmd, handler)
+  client.handle(cmd, handler, type)
 }
 
+/** Listen for Interactions Event */
 export function interactions(cb: (i: Interaction) => any): void {
   client.on('interaction', cb)
 }
 
 export { commands, client }
-export * from './src/types/slashCommands.ts'
+export * from './src/types/applicationCommand.ts'
 export * from './src/types/interactions.ts'
-export * from './src/structures/slash.ts'
+export * from './src/structures/applicationCommand.ts'
 export * from './src/interactions/mod.ts'
 export * from './src/types/channel.ts'
 export * from './src/structures/interactions.ts'
 export * from './src/structures/message.ts'
 export * from './src/structures/embed.ts'
+export * from './src/types/messageComponents.ts'

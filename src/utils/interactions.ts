@@ -1,10 +1,10 @@
 import { InteractionType, MessageComponentInteraction } from '../../mod.ts'
 import { Interaction } from '../structures/interactions.ts'
-import { SlashCommandInteraction } from '../structures/slash.ts'
+import { ApplicationCommandInteraction } from '../structures/applicationCommand.ts'
 
-export function isSlashCommandInteraction(
+export function isApplicationCommandInteraction(
   d: Interaction
-): d is SlashCommandInteraction {
+): d is ApplicationCommandInteraction {
   return d.type === InteractionType.APPLICATION_COMMAND
 }
 

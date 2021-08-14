@@ -1,8 +1,8 @@
-import { SlashClient } from '../src/interactions/slashClient.ts'
-import { SlashCommandPartial } from '../src/types/slashCommands.ts'
+import { InteractionsClient } from '../src/interactions/client.ts'
+import { SlashCommandPartial } from '../src/types/applicationCommand.ts'
 import { TOKEN, GUILD } from './config.ts'
 
-export const slash = new SlashClient({ token: TOKEN })
+export const slash = new InteractionsClient({ token: TOKEN })
 
 console.log(slash.modules)
 

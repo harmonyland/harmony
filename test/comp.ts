@@ -5,7 +5,7 @@ import {
   ButtonStyle,
   Client,
   MessageComponents,
-  SlashCommandPartial
+  ApplicationCommandPartial
 } from '../mod.ts'
 import { MessageComponentType } from '../src/types/messageComponents.ts'
 import { TOKEN } from './config.ts'
@@ -44,7 +44,7 @@ client.on('messageCreate', (msg) => {
   }
 })
 
-client.slash.handle('button', (d) => {
+client.interactions.handle('button', (d) => {
   d.reply({
     content: 'Button Components',
     flags: 64,
@@ -95,7 +95,7 @@ client.slash.handle('button', (d) => {
   })
 })
 
-client.slash.handle('select', (d) => {
+client.interactions.handle('select', (d) => {
   d.reply('Select Component', {
     components: new MessageComponents().row((e) =>
       e.select({
@@ -109,7 +109,7 @@ client.slash.handle('select', (d) => {
   })
 })
 
-client.slash.handle('test', (d) => {
+client.interactions.handle('test', (d) => {
   d.reply('Hmm', { ephemeral: true }).then(() => {
     setTimeout(() => {
       d.deleteResponse()
@@ -117,7 +117,7 @@ client.slash.handle('test', (d) => {
   })
 })
 
-const commands: SlashCommandPartial[] = [
+const commands: ApplicationCommandPartial[] = [
   {
     name: 'button',
     description: 'Sends Button component'
@@ -133,9 +133,9 @@ const commands: SlashCommandPartial[] = [
 ]
 
 const GUILD = '837903552570720307'
-const current = await client.slash.commands.guild(GUILD)
+const current = await client.interactions.commands.guild(GUILD)
 
-await client.slash.commands.bulkEdit(
+await client.interactions.commands.bulkEdit(
   commands.map((e: any) => {
     let c
     if ((c = current.find((c) => c.id === e.id))) {

@@ -67,7 +67,7 @@ import type { GuildChannels } from '../../types/guild.ts'
 import { applicationCommandCreate } from './applicationCommandCreate.ts'
 import { applicationCommandDelete } from './applicationCommandDelete.ts'
 import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
-import type { SlashCommand } from '../../interactions/slashCommand.ts'
+import type { ApplicationCommand } from '../../interactions/applicationCommand.ts'
 import type {
   ThreadChannel,
   ThreadMember
@@ -432,9 +432,12 @@ export type ClientEvents = {
   guildMemberUpdateUncached: [member: Member]
   guildMemberRemoveUncached: [member: Member]
   channelUpdateUncached: [channel: GuildChannels]
-  slashCommandCreate: [cmd: SlashCommand]
-  slashCommandUpdate: [cmd: SlashCommand]
-  slashCommandDelete: [cmd: SlashCommand]
+  applicationCommandCreate: [cmd: ApplicationCommand]
+  applicationCommandUpdate: [cmd: ApplicationCommand]
+  applicationCommandDelete: [cmd: ApplicationCommand]
+  slashCommandCreate: [cmd: ApplicationCommand]
+  slashCommandUpdate: [cmd: ApplicationCommand]
+  slashCommandDelete: [cmd: ApplicationCommand]
   commandOwnerOnly: [ctx: CommandContext]
   commandGuildOnly: [ctx: CommandContext]
   commandDmOnly: [ctx: CommandContext]

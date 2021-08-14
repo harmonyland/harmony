@@ -8,7 +8,7 @@ import {
   InteractionMessageComponentData,
   MessageComponentData
 } from './messageComponents.ts'
-import type { InteractionApplicationCommandData } from './slashCommands.ts'
+import type { InteractionApplicationCommandData } from './applicationCommand.ts'
 import type { UserPayload } from './user.ts'
 
 export enum InteractionType {

@@ -1,43 +1,49 @@
 import { RESTManager } from '../rest/manager.ts'
 import type { Guild } from '../structures/guild.ts'
 import {
-  GuildSlashCommandPermissions,
+  ApplicationCommandType,
+  GuildApplicationCommandPermissions,
   GuildSlashCommmandPermissionsPartial,
   GuildSlashCommmandPermissionsPayload,
-  SlashCommandChoice,
-  SlashCommandOption,
-  SlashCommandOptionPayload,
-  SlashCommandOptionType,
-  SlashCommandPartial,
-  SlashCommandPartialPayload,
-  SlashCommandPayload,
-  SlashCommandPermission,
-  SlashCommandPermissionPayload,
-  SlashCommandPermissionType
-} from '../types/slashCommands.ts'
+  ApplicationCommandChoice,
+  ApplicationCommandOption,
+  ApplicationCommandOptionPayload,
+  ApplicationCommandOptionType,
+  ApplicationCommandPartial,
+  ApplicationCommandPartialPayload,
+  ApplicationCommandPayload,
+  ApplicationCommandPermission,
+  ApplicationCommandPermissionPayload,
+  ApplicationCommandPermissionType
+} from '../types/applicationCommand.ts'
 import { Collection } from '../utils/collection.ts'
-import type { SlashClient, SlashCommandHandlerCallback } from './slashClient.ts'
+import type {
+  InteractionsClient,
+  ApplicationCommandHandlerCallback
+} from './client.ts'
 
-export class SlashCommand {
-  slash: SlashCommandsManager
+export class ApplicationCommand {
+  slash: ApplicationCommandsManager
   id: string
   applicationID: string
   name: string
-  description: string
+  type: ApplicationCommandType
+  description?: string
   defaultPermission = true
-  options: SlashCommandOption[]
+  options: ApplicationCommandOption[]
   guild?: Guild
   guildID?: string
 
   constructor(
-    manager: SlashCommandsManager,
-    data: SlashCommandPayload,
+    manager: ApplicationCommandsManager,
+    data: ApplicationCommandPayload,
     guild?: Guild
   ) {
     this.slash = manager
     this.id = data.id
     this.applicationID = data.application_id
     this.name = data.name
+    this.type = data.type ?? ApplicationCommandType.CHAT_INPUT
     this.description = data.description
     this.options = data.options ?? []
     this.guild = guild
@@ -48,14 +54,14 @@ export class SlashCommand {
     await this.slash.delete(this.id, this.guildID)
   }
 
-  async edit(data: SlashCommandPartial): Promise<void> {
+  async edit(data: ApplicationCommandPartial): Promise<void> {
     await this.slash.edit(this.id, data, this.guildID)
   }
 
   async setPermissions(
-    data: SlashCommandPermission[],
+    data: ApplicationCommandPermission[],
     guild?: Guild | string
-  ): Promise<GuildSlashCommandPermissions> {
+  ): Promise<GuildApplicationCommandPermissions> {
     const guildID =
       this.guildID ??
       (typeof guild === 'string'
@@ -70,7 +76,7 @@ export class SlashCommand {
 
   async getPermissions(
     guild?: Guild | string
-  ): Promise<GuildSlashCommandPermissions> {
+  ): Promise<GuildApplicationCommandPermissions> {
     const guildID =
       this.guildID ??
       (typeof guild === 'string'
@@ -85,9 +91,9 @@ export class SlashCommand {
 
   /** Create a handler for this Slash Command */
   handle(
-    func: SlashCommandHandlerCallback,
+    func: ApplicationCommandHandlerCallback,
     options?: { parent?: string; group?: string }
-  ): SlashCommand {
+  ): this {
     this.slash.slash.handle({
       name: this.name,
       parent: options?.parent,
@@ -102,14 +108,14 @@ export class SlashCommand {
 export interface CreateOptions {
   name: string
   description?: string
-  options?: Array<SlashCommandOption | SlashOptionCallable>
-  choices?: Array<SlashCommandChoice | string>
+  options?: Array<ApplicationCommandOption | SlashOptionCallable>
+  choices?: Array<ApplicationCommandChoice | string>
 }
 
 function createSlashOption(
-  type: SlashCommandOptionType,
+  type: ApplicationCommandOptionType,
   data: CreateOptions
-): SlashCommandOption {
+): ApplicationCommandOption {
   return {
     name: data.name,
     type,
@@ -126,63 +132,70 @@ function createSlashOption(
   }
 }
 
+export { ApplicationCommand as SlashCommand }
+
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class SlashOption {
-  static string(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.STRING, data)
+  static string(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.STRING, data)
   }
 
-  static bool(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.BOOLEAN, data)
+  static bool(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.BOOLEAN, data)
   }
 
-  static subCommand(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.SUB_COMMAND, data)
+  static subCommand(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.SUB_COMMAND, data)
   }
 
-  static subCommandGroup(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.SUB_COMMAND_GROUP, data)
+  static subCommandGroup(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(
+      ApplicationCommandOptionType.SUB_COMMAND_GROUP,
+      data
+    )
   }
 
-  static role(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.ROLE, data)
+  static role(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.ROLE, data)
   }
 
-  static channel(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.CHANNEL, data)
+  static channel(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.CHANNEL, data)
   }
 
-  static user(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.USER, data)
+  static user(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.USER, data)
   }
 
-  static number(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.INTEGER, data)
+  static number(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.INTEGER, data)
   }
 
-  static mentionable(data: CreateOptions): SlashCommandOption {
-    return createSlashOption(SlashCommandOptionType.MENTIONABLE, data)
+  static mentionable(data: CreateOptions): ApplicationCommandOption {
+    return createSlashOption(ApplicationCommandOptionType.MENTIONABLE, data)
   }
 }
 
-export type SlashOptionCallable = (o: typeof SlashOption) => SlashCommandOption
+export type SlashOptionCallable = (
+  o: typeof SlashOption
+) => ApplicationCommandOption
 
 export type SlashBuilderOptionsData =
-  | Array<SlashCommandOption | SlashOptionCallable>
+  | Array<ApplicationCommandOption | SlashOptionCallable>
   | {
       [name: string]:
         | {
             description: string
-            type: SlashCommandOptionType
-            options?: SlashCommandOption[]
-            choices?: SlashCommandChoice[]
+            type: ApplicationCommandOptionType
+            options?: ApplicationCommandOption[]
+            choices?: ApplicationCommandChoice[]
           }
         | SlashOptionCallable
     }
 
 function buildOptionsArray(
   options: SlashBuilderOptionsData
-): SlashCommandOption[] {
+): ApplicationCommandOption[] {
   return Array.isArray(options)
     ? options.map((op) => (typeof op === 'function' ? op(SlashOption) : op))
     : Object.entries(options).map((entry) =>
@@ -194,7 +207,7 @@ function buildOptionsArray(
 
 /** Slash Command Builder */
 export class SlashBuilder {
-  data: SlashCommandPartial
+  data: ApplicationCommandPartial
 
   constructor(
     name?: string,
@@ -218,7 +231,7 @@ export class SlashBuilder {
     return this
   }
 
-  option(option: SlashOptionCallable | SlashCommandOption): SlashBuilder {
+  option(option: SlashOptionCallable | ApplicationCommandOption): SlashBuilder {
     if (this.data.options === undefined) this.data.options = []
     this.data.options.push(
       typeof option === 'function' ? option(SlashOption) : option
@@ -231,7 +244,7 @@ export class SlashBuilder {
     return this
   }
 
-  export(): SlashCommandPartial {
+  export(): ApplicationCommandPartial {
     if (this.data.name === '') {
       throw new Error('Name was not provided in Slash Builder')
     }
@@ -239,59 +252,64 @@ export class SlashBuilder {
   }
 }
 
-export function transformSlashCommandOption(
-  _data: SlashCommandOption
-): SlashCommandOptionPayload {
+export function transformApplicationCommandOption(
+  _data: ApplicationCommandOption
+): ApplicationCommandOptionPayload {
   const data = { ...(_data as any) }
   if (typeof data.type === 'string') {
-    data.type = SlashCommandOptionType[data.type.toUpperCase()]
+    data.type = ApplicationCommandOptionType[data.type.toUpperCase()]
   }
   if (typeof data.options === 'object' && Array.isArray(data.options)) {
-    data.options = data.options.map(transformSlashCommandOption)
+    data.options = data.options.map(transformApplicationCommandOption)
   }
   return data
 }
 
-export function transformSlashCommand(
-  _cmd: SlashCommandPartial
-): SlashCommandPartialPayload {
+export function transformApplicationCommand(
+  _cmd: ApplicationCommandPartial
+): ApplicationCommandPartialPayload {
   const cmd = { ...(_cmd as any) }
   if (cmd.defaultPermission !== undefined) {
     cmd.default_permission = cmd.defaultPermission
     delete cmd.defaultPermission
   }
+  if (typeof cmd.type === 'string') {
+    cmd.type = ApplicationCommandType[cmd.type]
+  }
   if (typeof cmd.options === 'object' && Array.isArray(cmd.options)) {
-    cmd.options = cmd.options.map(transformSlashCommandOption)
+    cmd.options = cmd.options.map(transformApplicationCommandOption)
   }
   return cmd
 }
 
-export function transformSlashCommandPermission(
-  data: SlashCommandPermission
-): SlashCommandPermissionPayload {
+export function transformApplicationCommandPermission(
+  data: ApplicationCommandPermission
+): ApplicationCommandPermissionPayload {
   data = { ...data }
   if (typeof data.type === 'string') {
     data.type =
-      SlashCommandPermissionType[
-        data.type.toUpperCase() as keyof typeof SlashCommandPermissionType
+      ApplicationCommandPermissionType[
+        data.type.toUpperCase() as keyof typeof ApplicationCommandPermissionType
       ]
   }
-  return data as unknown as SlashCommandPermissionPayload
+  return data as unknown as ApplicationCommandPermissionPayload
 }
 
-export function transformSlashCommandPermissions(
+export function transformApplicationCommandPermissions(
   _data: GuildSlashCommmandPermissionsPartial
 ): GuildSlashCommmandPermissionsPayload {
   const data = { ...(_data as any) }
   if (typeof data.permissions === 'object' && Array.isArray(data.permissions)) {
-    data.permissions = data.permissions.map(transformSlashCommandPermission)
+    data.permissions = data.permissions.map(
+      transformApplicationCommandPermission
+    )
   }
   return data
 }
 
-export function transformSlashCommandPermissionsPayload(
+export function transformApplicationCommandPermissionsPayload(
   _data: GuildSlashCommmandPermissionsPayload
-): GuildSlashCommandPermissions {
+): GuildApplicationCommandPermissions {
   const data = { ...(_data as any) }
   data.applicationID = data.application_id
   data.guildID = data.guild_id
@@ -300,11 +318,11 @@ export function transformSlashCommandPermissionsPayload(
   return data
 }
 
-export class SlashCommandPermissionsManager {
-  readonly slash!: SlashClient
+export class ApplicationCommandPermissionsManager {
+  readonly slash!: InteractionsClient
   readonly rest!: RESTManager
 
-  constructor(client: SlashClient, public guildID?: string) {
+  constructor(client: InteractionsClient, public guildID?: string) {
     Object.defineProperty(this, 'slash', { value: client, enumerable: false })
     Object.defineProperty(this, 'rest', {
       enumerable: false,
@@ -313,60 +331,62 @@ export class SlashCommandPermissionsManager {
   }
 
   /** Get an array of all Slash Commands (of current Client) Permissions in a Guild */
-  async all(guild?: Guild | string): Promise<GuildSlashCommandPermissions[]> {
+  async all(
+    guild?: Guild | string
+  ): Promise<GuildApplicationCommandPermissions[]> {
     guild = guild ?? this.guildID
     if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands.permissions.get()
-    return data.map(transformSlashCommandPermissionsPayload)
+    return data.map(transformApplicationCommandPermissionsPayload)
   }
 
   /** Get slash command permissions for a specific command */
   async get(
-    cmd: string | SlashCommand,
+    cmd: string | ApplicationCommand,
     guild: Guild | string
-  ): Promise<GuildSlashCommandPermissions> {
+  ): Promise<GuildApplicationCommandPermissions> {
     guild = guild ?? this.guildID
     if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands[typeof cmd === 'object' ? cmd.id : cmd].permissions.get()
-    return transformSlashCommandPermissionsPayload(data)
+    return transformApplicationCommandPermissionsPayload(data)
   }
 
   /** Sets permissions of a Slash Command in a Guild */
   async set(
-    cmd: string | SlashCommand,
-    permissions: SlashCommandPermission[],
+    cmd: string | ApplicationCommand,
+    permissions: ApplicationCommandPermission[],
     guild: Guild | string
-  ): Promise<GuildSlashCommandPermissions> {
+  ): Promise<GuildApplicationCommandPermissions> {
     guild = guild ?? this.guildID
     if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands[typeof cmd === 'object' ? cmd.id : cmd].permissions.put({
-      permissions: permissions.map(transformSlashCommandPermission)
+      permissions: permissions.map(transformApplicationCommandPermission)
     })
-    return transformSlashCommandPermissionsPayload(data)
+    return transformApplicationCommandPermissionsPayload(data)
   }
 
   /** Sets permissions of multiple Slash Commands in a Guild with just one call */
   async bulkEdit(
     permissions: GuildSlashCommmandPermissionsPartial[],
     guild?: Guild | string
-  ): Promise<GuildSlashCommandPermissions[]> {
+  ): Promise<GuildApplicationCommandPermissions[]> {
     guild = guild ?? this.guildID
     if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
     ].commands.permissions.patch(
-      permissions.map(transformSlashCommandPermissions)
+      permissions.map(transformApplicationCommandPermissions)
     )
-    return data.map(transformSlashCommandPermissionsPayload)
+    return data.map(transformApplicationCommandPermissionsPayload)
   }
 
-  async *[Symbol.asyncIterator](): AsyncIterableIterator<GuildSlashCommandPermissions> {
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<GuildApplicationCommandPermissions> {
     const arr = await this.all()
     const { readable, writable } = new TransformStream()
     const writer = writable.getWriter()
@@ -376,13 +396,15 @@ export class SlashCommandPermissionsManager {
   }
 }
 
-/** Manages Slash Commands, allows fetching/modifying/deleting/creating Slash Commands. */
-export class SlashCommandsManager {
-  readonly slash!: SlashClient
-  readonly rest!: RESTManager
-  readonly permissions!: SlashCommandPermissionsManager
+export { ApplicationCommandPermissionsManager as SlashCommandPermissionsManager }
 
-  constructor(client: SlashClient) {
+/** Manages Slash Commands, allows fetching/modifying/deleting/creating Slash Commands. */
+export class ApplicationCommandsManager {
+  readonly slash!: InteractionsClient
+  readonly rest!: RESTManager
+  readonly permissions!: ApplicationCommandPermissionsManager
+
+  constructor(client: InteractionsClient) {
     Object.defineProperty(this, 'slash', { value: client, enumerable: false })
     Object.defineProperty(this, 'rest', {
       enumerable: false,
@@ -390,21 +412,21 @@ export class SlashCommandsManager {
     })
     Object.defineProperty(this, 'permissions', {
       enumerable: false,
-      value: new SlashCommandPermissionsManager(this.slash)
+      value: new ApplicationCommandPermissionsManager(this.slash)
     })
   }
 
   /** Get all Global Slash Commands */
-  async all(): Promise<Collection<string, SlashCommand>> {
-    const col = new Collection<string, SlashCommand>()
+  async all(): Promise<Collection<string, ApplicationCommand>> {
+    const col = new Collection<string, ApplicationCommand>()
 
     const res = (await this.rest.api.applications[
       this.slash.getID()
-    ].commands.get()) as SlashCommandPayload[]
+    ].commands.get()) as ApplicationCommandPayload[]
     if (!Array.isArray(res)) return col
 
     for (const raw of res) {
-      const cmd = new SlashCommand(this, raw)
+      const cmd = new ApplicationCommand(this, raw)
       col.set(raw.id, cmd)
     }
 
@@ -414,12 +436,12 @@ export class SlashCommandsManager {
   /** Get a Guild's Slash Commands */
   async guild(
     guild: Guild | string
-  ): Promise<Collection<string, SlashCommand>> {
-    const col = new Collection<string, SlashCommand>()
+  ): Promise<Collection<string, ApplicationCommand>> {
+    const col = new Collection<string, ApplicationCommand>()
 
     const res = (await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
-    ].commands.get()) as SlashCommandPayload[]
+    ].commands.get()) as ApplicationCommandPayload[]
     if (!Array.isArray(res)) return col
 
     const _guild =
@@ -428,7 +450,7 @@ export class SlashCommandsManager {
         : await this.slash.client?.guilds.get(guild)
 
     for (const raw of res) {
-      const cmd = new SlashCommand(this, raw, _guild)
+      const cmd = new ApplicationCommand(this, raw, _guild)
       cmd.guildID = typeof guild === 'string' ? guild : guild.id
       col.set(raw.id, cmd)
     }
@@ -436,15 +458,15 @@ export class SlashCommandsManager {
     return col
   }
 
-  for(guild: Guild | string): GuildSlashCommandsManager {
-    return new GuildSlashCommandsManager(this.slash, guild)
+  for(guild: Guild | string): GuildApplicationCommandsManager {
+    return new GuildApplicationCommandsManager(this.slash, guild)
   }
 
   /** Create a Slash Command (global or Guild) */
   async create(
-    data: SlashCommandPartial,
+    data: ApplicationCommandPartial,
     guild?: Guild | string
-  ): Promise<SlashCommand> {
+  ): Promise<ApplicationCommand> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands
@@ -452,7 +474,7 @@ export class SlashCommandsManager {
             typeof guild === 'string' ? guild : guild.id
           ].commands
 
-    const payload = await route.post(transformSlashCommand(data))
+    const payload = await route.post(transformApplicationCommand(data))
 
     const _guild =
       typeof guild === 'object'
@@ -461,7 +483,7 @@ export class SlashCommandsManager {
         ? undefined
         : await this.slash.client?.guilds.get(guild)
 
-    const cmd = new SlashCommand(this, payload, _guild)
+    const cmd = new ApplicationCommand(this, payload, _guild)
     cmd.guildID =
       typeof guild === 'string' || guild === undefined ? guild : guild.id
 
@@ -471,9 +493,9 @@ export class SlashCommandsManager {
   /** Edit a Slash Command (global or Guild) */
   async edit(
     id: string,
-    data: SlashCommandPartial,
+    data: ApplicationCommandPartial,
     guild?: Guild | string
-  ): Promise<SlashCommand> {
+  ): Promise<ApplicationCommand> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
@@ -481,11 +503,11 @@ export class SlashCommandsManager {
             typeof guild === 'string' ? guild : guild.id
           ].commands[id]
 
-    const d = await route.patch(transformSlashCommand(data))
+    const d = await route.patch(transformApplicationCommand(data))
     const _guild =
       (await this.slash.client?.guilds.get(d.guild_id)) ??
       (typeof guild === 'object' ? guild : undefined)
-    const cmd = new SlashCommand(this, d, _guild)
+    const cmd = new ApplicationCommand(this, d, _guild)
     if ('guild_id' in d) cmd.guildID = d.guildID
     return cmd
   }
@@ -494,7 +516,7 @@ export class SlashCommandsManager {
   async delete(
     id: string,
     guild?: Guild | string
-  ): Promise<SlashCommandsManager> {
+  ): Promise<ApplicationCommandsManager> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
@@ -507,7 +529,7 @@ export class SlashCommandsManager {
   }
 
   /** Get a Slash Command (global or Guild) */
-  async get(id: string, guild?: Guild | string): Promise<SlashCommand> {
+  async get(id: string, guild?: Guild | string): Promise<ApplicationCommand> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands[id]
@@ -524,14 +546,14 @@ export class SlashCommandsManager {
         ? undefined
         : await this.slash.client?.guilds.get(guild)
 
-    return new SlashCommand(this, data, _guild)
+    return new ApplicationCommand(this, data, _guild)
   }
 
   /** Bulk Edit Global or Guild Slash Commands */
   async bulkEdit(
-    cmds: Array<SlashCommandPartial & { id?: string }>,
+    cmds: Array<ApplicationCommandPartial & { id?: string }>,
     guild?: Guild | string
-  ): Promise<Collection<string, SlashCommand>> {
+  ): Promise<Collection<string, ApplicationCommand>> {
     const route =
       guild === undefined
         ? this.rest.api.applications[this.slash.getID()].commands
@@ -539,8 +561,8 @@ export class SlashCommandsManager {
             typeof guild === 'string' ? guild : guild.id
           ].commands
 
-    const d = await route.put(cmds.map(transformSlashCommand))
-    const col = new Collection<string, SlashCommand>()
+    const d = await route.put(cmds.map(transformApplicationCommand))
+    const col = new Collection<string, ApplicationCommand>()
 
     const _guild =
       typeof guild === 'object'
@@ -550,7 +572,7 @@ export class SlashCommandsManager {
         : undefined
 
     for (const raw of d) {
-      const cmd = new SlashCommand(this, raw, _guild)
+      const cmd = new ApplicationCommand(this, raw, _guild)
       cmd.guildID = _guild?.id
       cmd.guild = _guild
       col.set(raw.id, cmd)
@@ -559,7 +581,7 @@ export class SlashCommandsManager {
     return col
   }
 
-  async *[Symbol.asyncIterator](): AsyncIterableIterator<SlashCommand> {
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<ApplicationCommand> {
     const arr = await this.all()
     const { readable, writable } = new TransformStream()
     const writer = writable.getWriter()
@@ -569,16 +591,18 @@ export class SlashCommandsManager {
   }
 }
 
-export class GuildSlashCommandsManager {
-  readonly slash!: SlashClient
-  readonly guild!: Guild | string
-  readonly permissions: SlashCommandPermissionsManager
+export { ApplicationCommandsManager as SlashCommandsManager }
 
-  private get commands(): SlashCommandsManager {
+export class GuildApplicationCommandsManager {
+  readonly slash!: InteractionsClient
+  readonly guild!: Guild | string
+  readonly permissions: ApplicationCommandPermissionsManager
+
+  private get commands(): ApplicationCommandsManager {
     return this.slash.commands
   }
 
-  constructor(slash: SlashClient, guild: Guild | string) {
+  constructor(slash: InteractionsClient, guild: Guild | string) {
     Object.defineProperty(this, 'slash', {
       enumerable: false,
       value: slash
@@ -587,40 +611,43 @@ export class GuildSlashCommandsManager {
       enumerable: false,
       value: guild
     })
-    this.permissions = new SlashCommandPermissionsManager(
+    this.permissions = new ApplicationCommandPermissionsManager(
       this.slash,
       typeof guild === 'object' ? guild.id : guild
     )
   }
 
-  async get(id: string): Promise<SlashCommand> {
+  async get(id: string): Promise<ApplicationCommand> {
     return await this.commands.get(id, this.guild)
   }
 
-  async delete(id: string): Promise<GuildSlashCommandsManager> {
+  async delete(id: string): Promise<GuildApplicationCommandsManager> {
     await this.commands.delete(id, this.guild)
     return this
   }
 
-  async all(): Promise<Collection<string, SlashCommand>> {
+  async all(): Promise<Collection<string, ApplicationCommand>> {
     return await this.commands.guild(this.guild)
   }
 
   async bulkEdit(
-    commands: Array<SlashCommandPartial & { id?: string }>
-  ): Promise<Collection<string, SlashCommand>> {
+    commands: Array<ApplicationCommandPartial & { id?: string }>
+  ): Promise<Collection<string, ApplicationCommand>> {
     return await this.commands.bulkEdit(commands, this.guild)
   }
 
-  async create(cmd: SlashCommandPartial): Promise<SlashCommand> {
+  async create(cmd: ApplicationCommandPartial): Promise<ApplicationCommand> {
     return await this.commands.create(cmd, this.guild)
   }
 
-  async edit(id: string, cmd: SlashCommandPartial): Promise<SlashCommand> {
+  async edit(
+    id: string,
+    cmd: ApplicationCommandPartial
+  ): Promise<ApplicationCommand> {
     return await this.commands.edit(id, cmd, this.guild)
   }
 
-  async *[Symbol.asyncIterator](): AsyncIterableIterator<SlashCommand> {
+  async *[Symbol.asyncIterator](): AsyncIterableIterator<ApplicationCommand> {
     const arr = await this.all()
     const { readable, writable } = new TransformStream()
     const writer = writable.getWriter()
@@ -629,3 +656,5 @@ export class GuildSlashCommandsManager {
     yield* readable
   }
 }
+
+export { GuildApplicationCommandsManager as GuildSlashCommandsManager }

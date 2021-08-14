@@ -47,7 +47,7 @@ export interface CommandClientOptions extends ClientOptions {
 /**
  * Harmony Client with extended functionality for Message based Commands parsing and handling.
  *
- * See SlashClient (`Client#slash`) for more info about Slash Commands.
+ * See InteractionsClient (`Client#slash`) for more info about Slash Commands.
  */
 export class CommandClient extends Client implements CommandClientOptions {
   prefix: string | string[]

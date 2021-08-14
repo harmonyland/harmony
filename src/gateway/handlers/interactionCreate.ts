@@ -3,8 +3,8 @@ import { Guild } from '../../structures/guild.ts'
 import { Member } from '../../structures/member.ts'
 import {
   InteractionApplicationCommandResolved,
-  SlashCommandInteraction
-} from '../../structures/slash.ts'
+  ApplicationCommandInteraction
+} from '../../structures/applicationCommand.ts'
 import { MessageComponentInteraction } from '../../structures/messageComponents.ts'
 import {
   Interaction,
@@ -24,9 +24,10 @@ import { RolePayload } from '../../types/role.ts'
 import {
   InteractionApplicationCommandData,
   InteractionChannelPayload
-} from '../../types/slashCommands.ts'
+} from '../../types/applicationCommand.ts'
 import { Message } from '../../structures/message.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
+import { MessagePayload } from '../../types/channel.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -73,7 +74,8 @@ export const interactionCreate: GatewayEventHandler = async (
     users: {},
     channels: {},
     members: {},
-    roles: {}
+    roles: {},
+    messages: {}
   }
 
   if ((d.data as InteractionApplicationCommandData)?.resolved !== undefined) {
@@ -136,6 +138,22 @@ export const interactionCreate: GatewayEventHandler = async (
         data as InteractionChannelPayload
       )
     }
+
+    for (const [id, data] of Object.entries(
+      (d.data as InteractionApplicationCommandData).resolved?.messages ?? {}
+    )) {
+      const channel = await gateway.client.channels.get<TextChannel>(
+        data.channel_id
+      )
+      await channel?.messages.set(data.id, data)
+      await gateway.client.users.set(data.author.id, data.author)
+      resolved.messages[id] = new Message(
+        gateway.client,
+        data as MessagePayload,
+        channel!,
+        (await gateway.client.users.get(data.author.id))!
+      )
+    }
   }
 
   let message: Message | undefined
@@ -143,6 +161,7 @@ export const interactionCreate: GatewayEventHandler = async (
     const channel = (await gateway.client.channels.get<TextChannel>(
       d.message.channel_id
     ))!
+    await gateway.client.users.set(d.message.author.id, d.message.author)
     message = new Message(
       gateway.client,
       d.message,
@@ -155,7 +174,7 @@ export const interactionCreate: GatewayEventHandler = async (
 
   let interaction
   if (d.type === InteractionType.APPLICATION_COMMAND) {
-    interaction = new SlashCommandInteraction(gateway.client, d, {
+    interaction = new ApplicationCommandInteraction(gateway.client, d, {
       member,
       guild,
       channel,

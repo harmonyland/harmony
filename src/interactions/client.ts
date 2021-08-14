@@ -1,35 +1,43 @@
 import {
-  SlashCommandInteraction,
+  ApplicationCommandInteraction,
   InteractionApplicationCommandResolved
-} from '../structures/slash.ts'
+} from '../structures/applicationCommand.ts'
 import { Interaction } from '../structures/interactions.ts'
 import {
   InteractionPayload,
   InteractionResponsePayload,
   InteractionType
 } from '../types/interactions.ts'
-import { SlashCommandOptionType } from '../types/slashCommands.ts'
+import {
+  ApplicationCommandType,
+  ApplicationCommandOptionType
+} from '../types/applicationCommand.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
-import { SlashModule } from './slashModule.ts'
+import { ApplicationCommandsModule } from './commandModule.ts'
 import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
 import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { encodeText, decodeText } from '../utils/encoding.ts'
-import { SlashCommandsManager } from './slashCommand.ts'
+import { ApplicationCommandsManager } from './applicationCommand.ts'
 
-export type SlashCommandHandlerCallback = (
-  interaction: SlashCommandInteraction
+export type ApplicationCommandHandlerCallback = (
+  interaction: ApplicationCommandInteraction
 ) => unknown
-export interface SlashCommandHandler {
+export interface ApplicationCommandHandler {
   name: string
+  type?: ApplicationCommandType
   guild?: string
   parent?: string
   group?: string
-  handler: SlashCommandHandlerCallback
+  handler: ApplicationCommandHandlerCallback
 }
 
-/** Options for SlashClient */
+// Deprecated
+export type { ApplicationCommandHandlerCallback as SlashCommandHandlerCallback }
+export type { ApplicationCommandHandler as SlashCommandHandler }
+
+/** Options for InteractionsClient */
 export interface SlashOptions {
   id?: string | (() => string)
   client?: Client
@@ -40,14 +48,14 @@ export interface SlashOptions {
 }
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-export type SlashClientEvents = {
+export type InteractionsClientEvents = {
   interaction: [Interaction]
   interactionError: [Error]
   ping: []
 }
 
 /** Slash Client represents an Interactions Client which can be used without Harmony Client. */
-export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
+export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEvents> {
   id: string | (() => string)
   client?: Client
 
@@ -62,10 +70,10 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   enabled: boolean = true
-  commands: SlashCommandsManager
-  handlers: SlashCommandHandler[] = []
+  commands: ApplicationCommandsManager
+  handlers: ApplicationCommandHandler[] = []
   readonly rest!: RESTManager
-  modules: SlashModule[] = []
+  modules: ApplicationCommandsModule[] = []
   publicKey?: string
 
   constructor(options: SlashOptions) {
@@ -90,16 +98,16 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const client = this.client as any
-    if (client?._decoratedSlash !== undefined) {
-      client._decoratedSlash.forEach((e: any) => {
+    if (client?._decoratedAppCmd !== undefined) {
+      client._decoratedAppCmd.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
     }
 
     const self = this as any
-    if (self._decoratedSlash !== undefined) {
-      self._decoratedSlash.forEach((e: any) => {
+    if (self._decoratedAppCmd !== undefined) {
+      self._decoratedAppCmd.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
         self.handlers.push(e)
       })
@@ -122,7 +130,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       async (interaction) => await this._process(interaction)
     )
 
-    this.commands = new SlashCommandsManager(this)
+    this.commands = new ApplicationCommandsManager(this)
   }
 
   getID(): string {
@@ -131,19 +139,27 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Adds a new Slash Command Handler */
   handle(
-    cmd: string | SlashCommandHandler,
-    handler?: SlashCommandHandlerCallback
-  ): SlashClient {
+    cmd: string | ApplicationCommandHandler,
+    handler?: ApplicationCommandHandlerCallback,
+    type?: ApplicationCommandType | keyof typeof ApplicationCommandType
+  ): InteractionsClient {
     const handle = {
       name: typeof cmd === 'string' ? cmd : cmd.name,
       ...(handler !== undefined ? { handler } : {}),
       ...(typeof cmd === 'string' ? {} : cmd)
     }
 
+    if (type !== undefined) {
+      handle.type =
+        typeof type === 'string' ? ApplicationCommandType[type] : type
+    }
+
     if (handle.handler === undefined)
       throw new Error('Invalid usage. Handler function not provided')
 
     if (
+      (handle.type === undefined ||
+        handle.type === ApplicationCommandType.CHAT_INPUT) &&
       typeof handle.name === 'string' &&
       handle.name.includes(' ') &&
       handle.parent === undefined &&
@@ -166,13 +182,13 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 
   /** Load a Slash Module */
-  loadModule(module: SlashModule): SlashClient {
+  loadModule(module: ApplicationCommandsModule): InteractionsClient {
     this.modules.push(module)
     return this
   }
 
   /** Get all Handlers. Including Slash Modules */
-  getHandlers(): SlashCommandHandler[] {
+  getHandlers(): ApplicationCommandHandler[] {
     let res = this.handlers
     for (const mod of this.modules) {
       if (mod === undefined) continue
@@ -189,26 +205,35 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Get Handler for an Interaction. Supports nested sub commands and sub command groups. */
   private _getCommand(
-    i: SlashCommandInteraction
-  ): SlashCommandHandler | undefined {
+    i: ApplicationCommandInteraction
+  ): ApplicationCommandHandler | undefined {
     return this.getHandlers().find((e) => {
+      if (
+        (e.type === ApplicationCommandType.MESSAGE ||
+          e.type === ApplicationCommandType.USER) &&
+        i.targetID !== undefined &&
+        i.name === e.name
+      ) {
+        return true
+      }
+
       const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
-          ? i.options
+          ? i.data.options
               .find(
                 (o) =>
                   o.name === e.group &&
-                  o.type === SlashCommandOptionType.SUB_COMMAND_GROUP
+                  o.type === ApplicationCommandOptionType.SUB_COMMAND_GROUP
               )
               ?.options?.find((o) => o.name === e.name) !== undefined
           : true
       const subMatched =
         e.group === undefined && e.parent !== undefined
-          ? i.options.find(
+          ? i.data.options.find(
               (o) =>
                 o.name === e.name &&
-                o.type === SlashCommandOptionType.SUB_COMMAND
+                o.type === ApplicationCommandOptionType.SUB_COMMAND
             ) !== undefined
           : true
       const nameMatched1 = e.name === i.name
@@ -222,21 +247,21 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
 
   /** Process an incoming Interaction */
   private async _process(
-    interaction: Interaction | SlashCommandInteraction
+    interaction: Interaction | ApplicationCommandInteraction
   ): Promise<void> {
     if (!this.enabled) return
 
     if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
 
     const cmd =
-      this._getCommand(interaction as SlashCommandInteraction) ??
+      this._getCommand(interaction as ApplicationCommandInteraction) ??
       this.getHandlers().find((e) => e.name === '*')
 
     if (cmd === undefined) return
 
     await this.emit('interaction', interaction)
     try {
-      await cmd.handler(interaction as SlashCommandInteraction)
+      await cmd.handler(interaction as ApplicationCommandInteraction)
     } catch (e) {
       await this.emit('interactionError', e)
     }
@@ -287,7 +312,7 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
       // TODO: Maybe fix all this hackery going on here?
       let res
       if (payload.type === InteractionType.APPLICATION_COMMAND) {
-        res = new SlashCommandInteraction(this as any, payload, {
+        res = new ApplicationCommandInteraction(this as any, payload, {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           user: new User(this as any, (payload.member?.user ?? payload.user)!),
           member: payload.member as any,
@@ -409,17 +434,22 @@ export class SlashClient extends HarmonyEventEmitter<SlashClientEvents> {
   }
 }
 
+export { InteractionsClient as SlashClient }
+
 /** Decorator to create a Slash Command handler */
 export function slash(name?: string, guild?: string) {
-  return function (client: Client | SlashClient | SlashModule, prop: string) {
+  return function (
+    client: Client | InteractionsClient | ApplicationCommandsModule,
+    prop: string
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
-    if (c._decoratedSlash === undefined) c._decoratedSlash = []
+    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
       throw new Error('@slash decorator requires a function')
     } else
-      c._decoratedSlash.push({
+      c._decoratedAppCmd.push({
         name: name ?? prop,
         guild,
         handler: item
@@ -429,15 +459,18 @@ export function slash(name?: string, guild?: string) {
 
 /** Decorator to create a Sub-Slash Command handler */
 export function subslash(parent: string, name?: string, guild?: string) {
-  return function (client: Client | SlashModule | SlashClient, prop: string) {
+  return function (
+    client: Client | ApplicationCommandsModule | InteractionsClient,
+    prop: string
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
-    if (c._decoratedSlash === undefined) c._decoratedSlash = []
+    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
       throw new Error('@subslash decorator requires a function')
     } else
-      c._decoratedSlash.push({
+      c._decoratedAppCmd.push({
         parent,
         name: name ?? prop,
         guild,
@@ -453,19 +486,64 @@ export function groupslash(
   name?: string,
   guild?: string
 ) {
-  return function (client: Client | SlashModule | SlashClient, prop: string) {
+  return function (
+    client: Client | ApplicationCommandsModule | InteractionsClient,
+    prop: string
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const c = client as any
-    if (c._decoratedSlash === undefined) c._decoratedSlash = []
+    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
     const item = (client as { [name: string]: any })[prop]
     if (typeof item !== 'function') {
       throw new Error('@groupslash decorator requires a function')
     } else
-      c._decoratedSlash.push({
+      c._decoratedAppCmd.push({
         group,
         parent,
         name: name ?? prop,
         guild,
+        handler: item
+      })
+  }
+}
+
+/** Decorator to create a Message Context Menu Command handler */
+export function messageContextMenu(name?: string) {
+  return function (
+    client: Client | InteractionsClient | ApplicationCommandsModule,
+    prop: string
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = client as any
+    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@messageContextMenu decorator requires a function')
+    } else
+      c._decoratedAppCmd.push({
+        name: name ?? prop,
+        type: 3,
+        handler: item
+      })
+  }
+}
+
+/** Decorator to create a User Context Menu Command handler */
+export function userContextMenu(name?: string) {
+  return function (
+    client: Client | InteractionsClient | ApplicationCommandsModule,
+    prop: string
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const c = client as any
+    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
+    const item = (client as { [name: string]: any })[prop]
+    if (typeof item !== 'function') {
+      throw new Error('@userContextMenu decorator requires a function')
+    } else
+      c._decoratedAppCmd.push({
+        name: name ?? prop,
+        type: 3,
         handler: item
       })
   }
