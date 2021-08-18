@@ -2,6 +2,7 @@ import type { Client } from '../client/mod.ts'
 import type {
   MessageStickerFormatTypes,
   MessageStickerItemPayload,
+  MessageStickerPackPayload,
   MessageStickerPayload,
   MessageStickerType
 } from '../types/channel.ts'
@@ -53,5 +54,28 @@ export class MessageSticker extends SnowflakeBase {
     this.user =
       data.user === undefined ? undefined : new User(this.client, data.user)
     this.sortValue = data.sort_value ?? this.sortValue
+  }
+}
+
+export class MessageStickerPack extends SnowflakeBase {
+  stickers!: MessageSticker[]
+  name!: string
+  skuID!: string
+  coverStickerID?: string
+  description!: string
+  bannerAssetID?: string
+
+  constructor(client: Client, data: MessageStickerPackPayload) {
+    super(client, data)
+    this.readFromData(data)
+  }
+
+  readFromData(data: MessageStickerPackPayload): void {
+    this.stickers = data.stickers.map((e) => new MessageSticker(this.client, e))
+    this.name = data.name ?? this.name
+    this.skuID = data.sku_id ?? this.skuID
+    this.coverStickerID = data.cover_sticker_id ?? this.coverStickerID
+    this.description = data.description ?? this.description
+    this.bannerAssetID = data.banner_asset_id ?? this.bannerAssetID
   }
 }
