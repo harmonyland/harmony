@@ -55,6 +55,7 @@ import { ImageURL } from './cdn.ts'
 import type { GuildApplicationCommandsManager } from '../interactions/applicationCommand.ts'
 import { toCamelCase } from '../utils/snakeCase.ts'
 import { ThreadsManager } from '../managers/threads.ts'
+import { GuildStickersManager } from '../managers/guildStickers.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -195,6 +196,7 @@ export class Guild extends SnowflakeBase {
   nsfw?: boolean
   commands: GuildApplicationCommandsManager
   threads: ThreadsManager
+  stickers: GuildStickersManager
 
   /** Get Shard ID of Guild on which it is */
   get shardID(): number {
@@ -219,6 +221,7 @@ export class Guild extends SnowflakeBase {
     this.roles = new RolesManager(this.client, this)
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
+    this.stickers = new GuildStickersManager(this.client, this)
     this.commands = this.client.interactions.commands.for(this)
   }
 

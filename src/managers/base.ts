@@ -93,6 +93,11 @@ export class BaseManager<T, T2> extends Base {
     return (await this.client.cache.size(this.cacheName)) ?? 0
   }
 
+  /** Gets all keys in the cache (mostly snowflakes) */
+  async keys(): Promise<string[]> {
+    return (await this.client.cache.keys(this.cacheName)) ?? []
+  }
+
   [Deno.customInspect](): string {
     return `Manager(${this.cacheName})`
   }
