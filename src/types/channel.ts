@@ -453,6 +453,22 @@ export interface MessageStickerPackPayload {
   banner_asset_id?: string
 }
 
+export interface ModifyGuildStickerOptions {
+  /** Name of the sticker (2-30 characters) */
+  name: string
+  /** Description of the sticker (empty or 2-100 characters) */
+  description: string
+  /** The Discord name of a unicode emoji representing the sticker's expression (2-200 characters) */
+  tags: string
+  /** Optional Audit Log reason */
+  reason?: string
+}
+
+export interface CreateGuildStickerOptions extends ModifyGuildStickerOptions {
+  /** The sticker file to upload, must be a PNG, APNG, or Lottie JSON file, max 500 KB */
+  file: Blob | Uint8Array
+}
+
 export interface MessageInteractionPayload {
   id: string
   type: InteractionType
