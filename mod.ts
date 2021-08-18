@@ -111,7 +111,8 @@ export type {
 export {
   ChannelTypes,
   OverwriteType,
-  OverrideType
+  OverrideType,
+  MessageTypes
 } from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
