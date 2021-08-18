@@ -141,7 +141,6 @@ export type {
   MessageFlags,
   MessageStickerFormatTypes,
   MessageStickerItemPayload,
-  MessageTypes,
   OverwriteAsArg,
   Overwrite,
   EmbedVideo,
