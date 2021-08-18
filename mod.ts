@@ -140,6 +140,9 @@ export type {
   MessageFlags,
   MessageStickerFormatTypes,
   MessageStickerItemPayload,
+  MessageStickerType,
+  MessageStickerPayload,
+  MessageStickerPackPayload,
   MessageTypes,
   OverwriteAsArg,
   Overwrite,
@@ -219,3 +222,4 @@ export type {
 export * from './src/structures/threadChannel.ts'
 export * from './src/structures/resolvable.ts'
 export * from './src/utils/channelTypes.ts'
+export * from './src/structures/messageSticker.ts'

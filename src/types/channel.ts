@@ -435,7 +435,6 @@ export interface MessageStickerPayload {
   name: string
   description: string | null
   tags: string
-  // asset: string /** deprecated */
   type: MessageStickerType
   format_type: MessageStickerFormatTypes
   available?: boolean
@@ -451,7 +450,7 @@ export interface MessageStickerPackPayload {
   sku_id: string
   cover_sticker_id?: string
   description: string
-  banner_asset_id: string
+  banner_asset_id?: string
 }
 
 export interface MessageInteractionPayload {
