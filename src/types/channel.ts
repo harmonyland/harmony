@@ -418,10 +418,40 @@ export enum MessageStickerFormatTypes {
   LOTTIE = 3
 }
 
+export enum MessageStickerType {
+  STANDARD = 1,
+  GUILD = 2
+}
+
 export interface MessageStickerItemPayload {
   id: string
   name: string
   format_type: MessageStickerFormatTypes
+}
+
+export interface MessageStickerPayload {
+  id: string
+  pack_id?: string
+  name: string
+  description: string | null
+  tags: string
+  // asset: string /** deprecated */
+  type: MessageStickerType
+  format_type: MessageStickerFormatTypes
+  available?: boolean
+  guild_id?: string
+  user?: UserPayload
+  sort_value?: number
+}
+
+export interface MessageStickerPackPayload {
+  id: string
+  stickers: MessageStickerPayload[]
+  name: string
+  sku_id: string
+  cover_sticker_id?: string
+  description: string
+  banner_asset_id: string
 }
 
 export interface MessageInteractionPayload {
