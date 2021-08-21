@@ -1487,7 +1487,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   }
 
   /** Returns the list of sticker packs available to Nitro subscribers. */
-  async getStickerPacks(): Promise<MessageStickerPackPayload> {
+  async getStickerPacks(): Promise<MessageStickerPackPayload[]> {
     return this.rest.get(`/sticker-packs`).then((e) => e.sticker_packs)
   }
 
@@ -1530,7 +1530,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async modifyGuildSticker(
     guildID: string,
     stickerID: string,
-    options: ModifyGuildStickerOptions
+    options: Partial<ModifyGuildStickerOptions>
   ): Promise<MessageStickerPayload> {
     return this.rest.request(
       'post',

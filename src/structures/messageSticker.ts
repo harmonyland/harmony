@@ -4,7 +4,8 @@ import type {
   MessageStickerItemPayload,
   MessageStickerPackPayload,
   MessageStickerPayload,
-  MessageStickerType
+  MessageStickerType,
+  ModifyGuildStickerOptions
 } from '../types/channel.ts'
 import { SnowflakeBase } from './base.ts'
 import { User } from './user.ts'
@@ -54,6 +55,22 @@ export class MessageSticker extends SnowflakeBase {
     this.user =
       data.user === undefined ? undefined : new User(this.client, data.user)
     this.sortValue = data.sort_value ?? this.sortValue
+  }
+
+  /** Edit the Sticker */
+  async edit(options: Partial<ModifyGuildStickerOptions>): Promise<this> {
+    if (this.guildID === undefined)
+      throw new Error('Only Guild Stickers can be edited')
+    const { id } = await this.client.stickers.edit(this.guildID, this, options)
+    this.readFromData((await this.client.stickers._get(id))!)
+    return this
+  }
+
+  /** Delete the Sticker */
+  async delete(reason?: string): Promise<boolean> {
+    if (this.guildID === undefined)
+      throw new Error('Only Guild Stickers can be deleted')
+    return this.client.stickers.delete(this.guildID, this, reason)
   }
 }
 

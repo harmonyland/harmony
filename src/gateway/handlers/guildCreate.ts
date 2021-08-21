@@ -33,7 +33,8 @@ export const guildCreate: GatewayEventHandler = async (
   if (d.voice_states !== undefined)
     await guild.voiceStates.fromPayload(d.voice_states)
 
-  if (d.stickers !== undefined) await guild.stickers.fromPayload(d.stickers)
+  if (d.stickers !== undefined)
+    await gateway.client.stickers.fromPayload(d.stickers)
 
   for (const emojiPayload of d.emojis) {
     if (emojiPayload.id === null) continue
