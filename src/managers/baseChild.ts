@@ -72,6 +72,10 @@ export class BaseChildManager<T, T2> extends Base {
     return this.parent.size()
   }
 
+  async keys(): Promise<string[]> {
+    return this.parent.keys()
+  }
+
   [Deno.customInspect](): string {
     return `ChildManager(${this.cacheName})`
   }

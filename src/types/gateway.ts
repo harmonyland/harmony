@@ -54,7 +54,9 @@ export enum GatewayIntents {
   GUILDS = 1 << 0,
   GUILD_MEMBERS = 1 << 1,
   GUILD_BANS = 1 << 2,
+  /** @deprecated Use GUILD_EMOJIS_AND_STICKERS instead */
   GUILD_EMOJIS = 1 << 3,
+  GUILD_EMOJIS_AND_STICKERS = 1 << 3,
   GUILD_INTEGRATIONS = 1 << 4,
   GUILD_WEBHOOKS = 1 << 5,
   GUILD_INVITES = 1 << 6,
@@ -82,6 +84,7 @@ export enum GatewayEvents {
   Guild_Ban_Add = 'GUILD_BAN_ADD',
   Guild_Ban_Remove = 'GUILD_BAN_REMOVE',
   Guild_Emojis_Update = 'GUILD_EMOJIS_UPDATE',
+  Guild_Stickers_Update = 'GUILD_STICKERS_UPDATE',
   Guild_Integrations_Update = 'GUILD_INTEGRATIONS_UPDATE',
   Guild_Member_Add = 'GUILD_MEMBER_ADD',
   Guild_Member_Remove = 'GUILD_MEMBER_REMOVE',

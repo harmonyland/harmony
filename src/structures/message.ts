@@ -22,7 +22,7 @@ import type {
 } from './guildTextChannel.ts'
 import type { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
-import { MessageStickerItem } from './messageStickerItem.ts'
+import { MessageStickerItem } from './messageSticker.ts'
 import type { Emoji } from './emoji.ts'
 import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'

@@ -78,6 +78,8 @@ import { threadUpdate } from './threadUpdate.ts'
 import { threadMembersUpdate } from './threadMembersUpdate.ts'
 import { threadMemberUpdate } from './threadMemberUpdate.ts'
 import { threadListSync } from './threadListSync.ts'
+import { guildStickersUpdate } from './guildStickersUpdate.ts'
+import { MessageSticker } from '../../structures/messageSticker.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -128,7 +130,8 @@ export const gatewayHandlers: {
   THREAD_UPDATE: threadUpdate,
   THREAD_LIST_SYNC: threadListSync,
   THREAD_MEMBERS_UPDATE: threadMembersUpdate,
-  THREAD_MEMBER_UPDATE: threadMemberUpdate
+  THREAD_MEMBER_UPDATE: threadMemberUpdate,
+  GUILD_STICKERS_UPDATE: guildStickersUpdate
 }
 
 export interface VoiceServerUpdateData {
@@ -219,6 +222,9 @@ export type ClientEvents = {
    * @param after Emoji object after update
    */
   guildEmojiUpdate: [before: Emoji, after: Emoji]
+  guildStickerAdd: [sticker: MessageSticker]
+  guildStickerDelete: [sticker: MessageSticker]
+  guildStickerUpdate: [before: MessageSticker, after: MessageSticker]
   /**
    * Guild's Integrations were updated
    * @param guild The Guild object
@@ -229,6 +235,7 @@ export type ClientEvents = {
    * @param guild The Guild object
    */
   guildEmojisUpdate: [guild: Guild]
+  guildStickersUpdate: [guild: Guild, allStickers: MessageSticker[]]
   /**
    * A new Member has joined a Guild
    * @param member The Member object

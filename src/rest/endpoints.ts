@@ -1,6 +1,7 @@
 import type { ApplicationPayload } from '../types/application.ts'
 import type {
   ChannelPayload,
+  CreateGuildStickerOptions,
   CreateMessagePayload,
   CreateThreadPayload,
   CreateWebhookMessageBasePayload,
@@ -8,6 +9,9 @@ import type {
   EditMessagePayload,
   FollowedChannel,
   MessagePayload,
+  MessageStickerPackPayload,
+  MessageStickerPayload,
+  ModifyGuildStickerOptions,
   OverwritePayload,
   ThreadChannelPayload,
   ThreadMemberPayload
@@ -1475,5 +1479,83 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /** Returns array of thread members objects that are members of the thread. */
   async getThreadMembers(channelId: string): Promise<ThreadMemberPayload[]> {
     return this.rest.get(`/channels/${channelId}/thread-members`)
+  }
+
+  /** Returns a sticker object for the given sticker ID. */
+  async getSticker(stickerID: string): Promise<MessageStickerPayload> {
+    return this.rest.get(`/stickers/${stickerID}`)
+  }
+
+  /** Returns the list of sticker packs available to Nitro subscribers. */
+  async getStickerPacks(): Promise<MessageStickerPackPayload[]> {
+    return this.rest.get(`/sticker-packs`).then((e) => e.sticker_packs)
+  }
+
+  /** Returns an array of sticker objects for the given guild. Includes user fields if the bot has the MANAGE_EMOJIS_AND_STICKERS permission. */
+  async getGuildStickers(guildID: string): Promise<MessageStickerPayload[]> {
+    return this.rest.get(`/guilds/${guildID}/stickers`)
+  }
+
+  /** Returns a sticker object for the given guild and sticker IDs. Includes the user field if the bot has the MANAGE_EMOJIS_AND_STICKERS permission. */
+  async getGuildSticker(
+    guildID: string,
+    stickerID: string
+  ): Promise<MessageStickerPayload> {
+    return this.rest.get(`/guilds/${guildID}/stickers/${stickerID}`)
+  }
+
+  /** Create a new sticker for the guild. Send a multipart/form-data body. Requires the MANAGE_EMOJIS_AND_STICKERS permission. Returns the new sticker object on success. */
+  async createGuildSticker(
+    guildID: string,
+    options: CreateGuildStickerOptions
+  ): Promise<MessageStickerPayload> {
+    const data = new FormData()
+    data.append('name', options.name)
+    data.append('description', options.description)
+    data.append('tags', options.tags)
+    data.append(
+      'file',
+      options.file instanceof Uint8Array
+        ? new Blob([options.file])
+        : options.file
+    )
+
+    return this.rest.request('post', `/guilds/${guildID}/stickers`, {
+      data,
+      reason: options.reason
+    })
+  }
+
+  /** Modify the given sticker. Requires the MANAGE_EMOJIS_AND_STICKERS permission. Returns the updated sticker object on success. */
+  async modifyGuildSticker(
+    guildID: string,
+    stickerID: string,
+    options: Partial<ModifyGuildStickerOptions>
+  ): Promise<MessageStickerPayload> {
+    return this.rest.request(
+      'post',
+      `/guilds/${guildID}/stickers/${stickerID}`,
+      {
+        data: {
+          name: options.name,
+          description: options.description,
+          tags: options.tags
+        },
+        reason: options.reason
+      }
+    )
+  }
+
+  /** Delete the given sticker. Requires the MANAGE_EMOJIS_AND_STICKERS permission. Returns 204 No Content on success. */
+  async deleteGuildSticker(
+    guildID: string,
+    stickerID: string,
+    reason?: string
+  ): Promise<void> {
+    return this.rest.request(
+      'delete',
+      `/guilds/${guildID}/stickers/${stickerID}`,
+      { reason }
+    )
   }
 }

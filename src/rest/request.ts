@@ -107,6 +107,8 @@ export class APIRequest {
         )
         form.append('payload_json', JSON.stringify(body))
         body = form
+      } else if (body !== undefined && body instanceof FormData) {
+        contentType = 'multipart/form-data'
       } else if (body !== undefined) {
         contentType = 'application/json'
         body = JSON.stringify(body)

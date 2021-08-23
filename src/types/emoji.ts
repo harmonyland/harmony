@@ -9,6 +9,7 @@ export interface EmojiPayload {
   managed?: boolean
   animated?: boolean
   available?: boolean
+  guild_id?: string
 }
 
 export interface CreateEmojiPayload {

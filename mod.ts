@@ -116,44 +116,7 @@ export {
 } from './src/types/channel.ts'
 export type { ApplicationPayload } from './src/types/application.ts'
 export type { ImageFormats, ImageSize } from './src/types/cdn.ts'
-export type {
-  OverwriteAsOptions,
-  OverwritePayload,
-  Attachment,
-  AllowedMentionType,
-  AllowedMentionsPayload,
-  ChannelMention,
-  ChannelPayload,
-  FollowedChannel,
-  GuildNewsChannelPayload,
-  GuildCategoryChannelPayload,
-  GuildChannelPayload,
-  GuildTextChannelPayload,
-  GuildVoiceChannelPayload,
-  GroupDMChannelPayload,
-  MessageOptions,
-  MessagePayload,
-  MessageInteractionPayload,
-  MessageReference,
-  MessageActivity,
-  MessageActivityTypes,
-  MessageApplication,
-  MessageFlags,
-  MessageStickerFormatTypes,
-  MessageStickerItemPayload,
-  OverwriteAsArg,
-  Overwrite,
-  EmbedVideo,
-  EditMessagePayload,
-  EmbedAuthor,
-  EmbedField,
-  EmbedFooter,
-  EmbedImage,
-  EmbedProvider,
-  EmbedThumbnail,
-  EmbedTypes,
-  EmbedPayload
-} from './src/types/channel.ts'
+export * from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
 export type {
@@ -219,3 +182,4 @@ export type {
 export * from './src/structures/threadChannel.ts'
 export * from './src/structures/resolvable.ts'
 export * from './src/utils/channelTypes.ts'
+export * from './src/structures/messageSticker.ts'

@@ -13,8 +13,8 @@ export class EmojisManager extends BaseManager<EmojiPayload, Emoji> {
     const raw = await this._get(key)
     if (raw === undefined) return
     const emoji = new this.DataType(this.client, raw)
-    if ((raw as any).guild_id !== undefined) {
-      const guild = await this.client.guilds.get((raw as any).guild_id)
+    if (raw.guild_id !== undefined) {
+      const guild = await this.client.guilds.get(raw.guild_id)
       if (guild !== undefined) emoji.guild = guild
     }
     return emoji

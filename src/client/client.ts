@@ -24,6 +24,7 @@ import { fetchAuto } from '../../deps.ts'
 import type { DMChannel } from '../structures/dmChannel.ts'
 import { Template } from '../structures/template.ts'
 import { VoiceManager } from './voice.ts'
+import { StickersManager } from '../managers/stickers.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -139,6 +140,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   readonly channels: ChannelsManager = new ChannelsManager(this)
   /** Channels Manager, providing cache interface to Channels */
   readonly emojis: EmojisManager = new EmojisManager(this)
+  /** Stickers Manager, providing cache interface to (Guild) Stickers and API interfacing */
+  readonly stickers: StickersManager = new StickersManager(this)
 
   /** Last READY timestamp */
   upSince?: Date

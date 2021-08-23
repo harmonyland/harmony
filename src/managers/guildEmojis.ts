@@ -101,4 +101,13 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     }
     return true
   }
+
+  async keys(): Promise<string[]> {
+    const result = []
+    for (const raw of (await this.client.cache.array(this.parent.cacheName)) ??
+      []) {
+      if (raw.guild_id === this.guild.id) result.push(raw.id)
+    }
+    return result
+  }
 }

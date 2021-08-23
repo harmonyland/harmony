@@ -418,10 +418,55 @@ export enum MessageStickerFormatTypes {
   LOTTIE = 3
 }
 
+export enum MessageStickerType {
+  STANDARD = 1,
+  GUILD = 2
+}
+
 export interface MessageStickerItemPayload {
   id: string
   name: string
   format_type: MessageStickerFormatTypes
+}
+
+export interface MessageStickerPayload {
+  id: string
+  pack_id?: string
+  name: string
+  description: string | null
+  tags: string
+  type: MessageStickerType
+  format_type: MessageStickerFormatTypes
+  available?: boolean
+  guild_id?: string
+  user?: UserPayload
+  sort_value?: number
+}
+
+export interface MessageStickerPackPayload {
+  id: string
+  stickers: MessageStickerPayload[]
+  name: string
+  sku_id: string
+  cover_sticker_id?: string
+  description: string
+  banner_asset_id?: string
+}
+
+export interface ModifyGuildStickerOptions {
+  /** Name of the sticker (2-30 characters) */
+  name: string
+  /** Description of the sticker (empty or 2-100 characters) */
+  description: string
+  /** The Discord name of a unicode emoji representing the sticker's expression (2-200 characters) */
+  tags: string
+  /** Optional Audit Log reason */
+  reason?: string
+}
+
+export interface CreateGuildStickerOptions extends ModifyGuildStickerOptions {
+  /** The sticker file to upload, must be a PNG, APNG, or Lottie JSON file, max 500 KB */
+  file: Blob | Uint8Array
 }
 
 export interface MessageInteractionPayload {
