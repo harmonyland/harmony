@@ -6,6 +6,14 @@
 <a href=https://discord.gg/harmony>
   <img src="https://img.shields.io/discord/783319033205751809.svg?label=Discord&logo=Discord&colorB=7289da&style=for-the-badge" alt="Support">
  </a>
+<a href="https://github.com/harmonyland/harmony/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/harmonyland/harmony">
+ </a>
+<a href="https://github.com/harmonyland/harmony/network"><img alt="GitHub forks" src="https://img.shields.io/github/forks/harmonyland/harmony">
+ </a>
+<a href="https://github.com/harmonyland/harmony/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/harmonyland/harmony">
+ </a>
+<a href="https://github.com/harmonyland/harmony/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/harmonyland/harmony">
+ </a>
 </p>
 <br>
 
