@@ -57,7 +57,7 @@ export class ApplicationCommandInteraction extends Interaction {
 
   /** Application Command options. Sub Command (and Group) nesting is stripped off for this */
   get options(): InteractionApplicationCommandOption[] {
-    let options = this.options ?? []
+    let options = this.data.options ?? []
     while (
       options.length === 1 &&
       (options[0].type === ApplicationCommandOptionType.SUB_COMMAND_GROUP ||
