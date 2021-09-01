@@ -64,9 +64,6 @@ import type { CommandContext } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
 import type { GuildChannels } from '../../types/guild.ts'
-import { applicationCommandCreate } from './applicationCommandCreate.ts'
-import { applicationCommandDelete } from './applicationCommandDelete.ts'
-import { applicationCommandUpdate } from './applicationCommandUpdate.ts'
 import type { ApplicationCommand } from '../../interactions/applicationCommand.ts'
 import type {
   ThreadChannel,
@@ -85,9 +82,6 @@ export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
 } = {
   READY: ready,
-  APPLICATION_COMMAND_CREATE: applicationCommandCreate,
-  APPLICATION_COMMAND_DELETE: applicationCommandDelete,
-  APPLICATION_COMMAND_UPDATE: applicationCommandUpdate,
   RECONNECT: reconnect,
   RESUMED: resume,
   CHANNEL_CREATE: channelCreate,
@@ -439,12 +433,6 @@ export type ClientEvents = {
   guildMemberUpdateUncached: [member: Member]
   guildMemberRemoveUncached: [member: Member]
   channelUpdateUncached: [channel: GuildChannels]
-  applicationCommandCreate: [cmd: ApplicationCommand]
-  applicationCommandUpdate: [cmd: ApplicationCommand]
-  applicationCommandDelete: [cmd: ApplicationCommand]
-  slashCommandCreate: [cmd: ApplicationCommand]
-  slashCommandUpdate: [cmd: ApplicationCommand]
-  slashCommandDelete: [cmd: ApplicationCommand]
   commandOwnerOnly: [ctx: CommandContext]
   commandGuildOnly: [ctx: CommandContext]
   commandDmOnly: [ctx: CommandContext]
