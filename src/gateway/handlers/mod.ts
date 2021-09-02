@@ -64,7 +64,6 @@ import type { CommandContext } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
 import type { GuildChannels } from '../../types/guild.ts'
-import type { ApplicationCommand } from '../../interactions/applicationCommand.ts'
 import type {
   ThreadChannel,
   ThreadMember
