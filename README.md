@@ -17,4 +17,4 @@
 
 Harmony source code is released under [Apache v2 License](./LICENSE)
 
-Copyright 2020-present (c) Harmony Develoeprs
+Copyright 2020-present (c) Harmony Developers
