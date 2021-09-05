@@ -62,17 +62,17 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
     return true
   }
 
-  async add(role: string | Role): Promise<boolean> {
+  async add(role: string | Role, reason?: string): Promise<boolean> {
     const res = await this.client.rest.put(
       GUILD_MEMBER_ROLE(
         this.member.guild.id,
         this.member.id,
         typeof role === 'string' ? role : role.id
       ),
+      { reason },
       undefined,
       undefined,
-      undefined,
-      true
+      { reason }
     )
 
     return res.response.status === 204
