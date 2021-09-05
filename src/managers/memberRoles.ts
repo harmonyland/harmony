@@ -72,6 +72,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
       { reason },
       undefined,
       undefined,
+      true,
       { reason }
     )
 
