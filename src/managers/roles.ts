@@ -25,7 +25,7 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
   /** Fetch All Guild Roles */
   async fetchAll(): Promise<Role[]> {
     return await new Promise((resolve, reject) => {
-      this.client.rest.api.guilds[this.guild.id].roles.get
+      this.client.rest.api.guilds[this.guild.id].roles.get()
         .then(async (data: RolePayload[]) => {
           const roles: Role[] = []
           for (const raw of data) {
