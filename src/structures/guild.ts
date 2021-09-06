@@ -118,12 +118,12 @@ export class GuildBans extends Base {
     const res = await this.client.rest.put(
       GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id),
       {
-        reason,
         delete_message_days: deleteMessagesDays
       },
       undefined,
       null,
-      true
+      true,
+      { reason }
     )
     if (res.response.status !== 204) throw new Error('Failed to Add Guild Ban')
   }
@@ -131,18 +131,19 @@ export class GuildBans extends Base {
   /**
    * Unbans (removes ban from) a User.
    * @param user User to unban, ID or User object.
+   * @param reason Reason for the Unban.
    */
-  async remove(user: string | User): Promise<boolean> {
-    const res = await this.client.rest.delete(
+  async remove(user: string | User, reason?: string): Promise<boolean> {
+    await this.client.rest.delete(
       GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id),
       undefined,
       undefined,
-      null,
-      true
+      undefined,
+      undefined,
+      { reason }
     )
 
-    if (res.response.status !== 204) return false
-    else return true
+    return true
   }
 }
 

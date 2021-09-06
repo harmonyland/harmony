@@ -135,6 +135,14 @@ export class APIRequest {
           : `${this.rest.tokenType} ${this.rest.token}`.trim()
     }
 
+    // TODO: Remove once https://github.com/denoland/deno/issues/11920 is fixed
+    if (
+      (this.method === 'post' || this.method === 'put') &&
+      (body === undefined || body === null)
+    ) {
+      headers['Content-Length'] = '0'
+    }
+
     if (contentType !== undefined) headers['Content-Type'] = contentType
 
     const init: RequestInit = {
