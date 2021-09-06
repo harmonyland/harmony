@@ -1,3 +1,5 @@
+// deno-lint-ignore-file camelcase no-empty-interface
+
 export enum EmbedType {
   RICH = "rich",
   IMAGE = "image",

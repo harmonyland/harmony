@@ -1,3 +1,4 @@
+// deno-lint-ignore-file camelcase no-empty-interface
 // Thread channels are seperated to a different file.
 import { ChannelPayload, TextChannelPayload } from "./base.ts";
 

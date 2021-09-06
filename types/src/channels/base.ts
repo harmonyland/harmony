@@ -1,3 +1,4 @@
+// deno-lint-ignore-file camelcase
 export enum ChannelType {
   GUILD_TEXT = 0,
   DM = 1,
