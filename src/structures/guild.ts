@@ -133,16 +133,11 @@ export class GuildBans extends Base {
    * @param user User to unban, ID or User object.
    */
   async remove(user: string | User): Promise<boolean> {
-    const res = await this.client.rest.delete(
-      GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id),
-      undefined,
-      undefined,
-      null,
-      true
+    await this.client.rest.delete(
+      GUILD_BAN(this.guild.id, typeof user === 'string' ? user : user.id)
     )
 
-    if (res.response.status !== 204) return false
-    else return true
+    return true
   }
 }
 

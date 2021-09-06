@@ -187,9 +187,8 @@ export class Webhook {
 
   /** Deletes the Webhook. */
   async delete(): Promise<boolean> {
-    const resp = await this.rest.delete(this.url, undefined, 0, undefined, true)
-    if (resp.response.status !== 204) return false
-    else return true
+    await this.rest.delete(this.url)
+    return true
   }
 
   async editMessage(

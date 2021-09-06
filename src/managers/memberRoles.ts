@@ -63,35 +63,27 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
   }
 
   async add(role: string | Role, reason?: string): Promise<boolean> {
-    const res = await this.client.rest.put(
+    await this.client.rest.put(
       GUILD_MEMBER_ROLE(
         this.member.guild.id,
         this.member.id,
         typeof role === 'string' ? role : role.id
       ),
-      { reason },
-      undefined,
-      undefined,
-      true,
       { reason }
     )
 
-    return res.response.status === 204
+    return true
   }
 
   async remove(role: string | Role): Promise<boolean> {
-    const res = await this.client.rest.delete(
+    await this.client.rest.delete(
       GUILD_MEMBER_ROLE(
         this.member.guild.id,
         this.member.id,
         typeof role === 'string' ? role : role.id
-      ),
-      undefined,
-      undefined,
-      undefined,
-      true
+      )
     )
 
-    return res.response.status === 204
+    return true
   }
 }
