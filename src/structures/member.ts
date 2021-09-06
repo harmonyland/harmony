@@ -183,12 +183,9 @@ export class Member extends SnowflakeBase {
    * Kicks the member.
    */
   async kick(reason?: string): Promise<boolean> {
-    await this.client.rest.delete(
-      GUILD_MEMBER(this.guild.id, this.id),
-      {
-        reason
-      }
-    )
+    await this.client.rest.delete(GUILD_MEMBER(this.guild.id, this.id), {
+      reason
+    })
     return true
   }
 

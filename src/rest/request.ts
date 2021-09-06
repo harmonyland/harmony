@@ -136,7 +136,10 @@ export class APIRequest {
     }
 
     // TODO: Remove once https://github.com/denoland/deno/issues/11920 is fixed
-    if ((this.method === 'post' || this.method === 'put') && (body === undefined || body === null)) {
+    if (
+      (this.method === 'post' || this.method === 'put') &&
+      (body === undefined || body === null)
+    ) {
       headers['Content-Length'] = '0'
     }
 
