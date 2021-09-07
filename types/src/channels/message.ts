@@ -1,7 +1,15 @@
 // deno-lint-ignore-file camelcase
 
+import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
+
+export interface ChannelMentionPayload {
+  id: string;
+  guild_id: string;
+  type: ChannelType;
+  name: string;
+}
 
 export interface AttachmentPayload {
   id: string;
@@ -95,7 +103,7 @@ export interface Message {
   mention_everyone: boolean;
   // mentions: UserPayload[];
   mention_roles: string[];
-  mention_channels?: string[];
+  mention_channels?: ChannelMentionPayload[];
   attachments: AttachmentPayload[];
   embeds: EmbedPayload[];
   reactions?: ReactionPayload[];

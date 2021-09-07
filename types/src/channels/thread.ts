@@ -20,4 +20,7 @@ export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
   message_count: number;
   member_count: number;
   thread_metadata: ThreadMetadataPayload;
+  member: ThreadMemberPayload;
+  default_auto_archive_duration: number;
+  permissions: string;
 }
