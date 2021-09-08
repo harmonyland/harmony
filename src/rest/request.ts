@@ -133,8 +133,8 @@ export class APIRequest {
         this.rest.token === undefined
           ? undefined
           : `${this.rest.tokenType} ${
-              typeof this.rest.token === 'string' 
-                ? this.rest.token 
+              typeof this.rest.token === 'string'
+                ? this.rest.token
                 : this.rest.token()
             }`.trim()
     }
