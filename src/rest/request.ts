@@ -132,7 +132,9 @@ export class APIRequest {
       Authorization:
         this.rest.token === undefined
           ? undefined
-          : `${this.rest.tokenType} ${this.rest.token}`.trim()
+          : `${this.rest.tokenType} ${
+              typeof this.rest.token === 'string' ? this.rest.token : this.rest.token()
+            }`.trim()
     }
 
     // TODO: Remove once https://github.com/denoland/deno/issues/11920 is fixed
