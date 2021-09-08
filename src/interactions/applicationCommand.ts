@@ -380,7 +380,7 @@ export class ApplicationCommandPermissionsManager {
     if (guild === undefined) throw new Error('Guild argument not provided')
     const data = await this.rest.api.applications[this.slash.getID()].guilds[
       typeof guild === 'string' ? guild : guild.id
-    ].commands.permissions.patch(
+    ].commands.permissions.put(
       permissions.map(transformApplicationCommandPermissions)
     )
     return data.map(transformApplicationCommandPermissionsPayload)
