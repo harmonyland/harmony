@@ -66,7 +66,10 @@ export class Webhook {
     this.applicationID = data.application_id
 
     if (rest !== undefined) this.rest = rest
-    else if (client !== undefined) this.rest = client.rest
+    else if (client !== undefined) {
+      this.client = client
+      this.rest = client.rest
+    }
     else this.rest = new RESTManager()
   }
 
