@@ -206,9 +206,8 @@ export class Member extends SnowflakeBase {
   }
 
   async manageable(by?: Member): Promise<boolean> {
-    by = by ?? await this.guild.me()
-    if (this.id === this.guild.ownerID || this.id === by.id)
-      return false
+    by = by ?? (await this.guild.me())
+    if (this.id === this.guild.ownerID || this.id === by.id) return false
     if (this.guild.ownerID === by.id) return true
     const highestBy = (await by.roles.array()).sort(
       (b, a) => a.position - b.position
@@ -222,14 +221,14 @@ export class Member extends SnowflakeBase {
   async bannable(by?: Member): Promise<boolean> {
     const manageable = await this.manageable(by)
     if (!manageable) return false
-    const me = by ?? await this.guild.me()
+    const me = by ?? (await this.guild.me())
     return me.permissions.has('BAN_MEMBERS')
   }
 
   async kickable(by?: Member): Promise<boolean> {
     const manageable = await this.manageable(by)
     if (!manageable) return false
-    const me = by ?? await this.guild.me()
+    const me = by ?? (await this.guild.me())
     return me.permissions.has('KICK_MEMBERS')
   }
 }
