@@ -69,8 +69,7 @@ export class Webhook {
     else if (client !== undefined) {
       this.client = client
       this.rest = client.rest
-    }
-    else this.rest = new RESTManager()
+    } else this.rest = new RESTManager()
   }
 
   private fromPayload(data: WebhookPayload): Webhook {
