@@ -1,4 +1,6 @@
 // deno-lint-ignore-file camelcase
+
+// https://discord.com/developers/docs/resources/channel#channel-object-channel-types
 export enum ChannelType {
   GUILD_TEXT = 0,
   DM = 1,
@@ -13,6 +15,7 @@ export enum ChannelType {
   GUILD_STAGE_VOICE = 13,
 }
 
+// https://discord.com/developers/docs/resources/channel#channel-object
 export interface ChannelPayload {
   id: string;
   type: ChannelType;

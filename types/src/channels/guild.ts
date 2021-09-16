@@ -2,11 +2,13 @@
 // Thread channels are seperated to a different file.
 import { ChannelPayload, TextChannelPayload } from "./base.ts";
 
+// https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure
 export enum OverwriteType {
   ROLE = 0,
   MEMBER = 1,
 }
 
+// https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure
 export interface OverwritePayload {
   id: string;
   type: OverwriteType;
@@ -23,6 +25,7 @@ export interface GuildChannelPayload extends ChannelPayload {
   parent_id: string | null;
 }
 
+// https://discord.com/developers/docs/resources/channel#channel-object-example-guild-text-channel
 export interface GuildTextChannelPayload
   extends GuildChannelPayload, TextChannelPayload {
   rate_limit_per_user: number;
@@ -30,13 +33,16 @@ export interface GuildTextChannelPayload
   default_auto_archive_duration: number;
 }
 
+// https://discord.com/developers/docs/resources/channel#channel-object-example-guild-news-channel
 export type GuildNewsChannelPayload = GuildTextChannelPayload;
 
+// https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes
 export enum VideoQualityModes {
   AUTO = 1,
   FULL = 2,
 }
 
+// https://discord.com/developers/docs/resources/channel#channel-object-example-guild-voice-channel
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: number;
   user_limit: number;
@@ -44,6 +50,8 @@ export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   video_quality_mode: VideoQualityModes;
 }
 
+// https://discord.com/developers/docs/resources/channel#channel-object-example-channel-category
 export type CategoryPayload = GuildChannelPayload;
 
+// https://discord.com/developers/docs/resources/channel#channel-object-example-store-channel
 export type GuildStoreChannel = GuildChannelPayload;

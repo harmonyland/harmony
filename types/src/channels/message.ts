@@ -4,6 +4,7 @@ import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
 
+// https://discord.com/developers/docs/resources/channel#channel-mention-object-channel-mention-structure
 export interface ChannelMentionPayload {
   id: string;
   guild_id: string;
@@ -11,6 +12,7 @@ export interface ChannelMentionPayload {
   name: string;
 }
 
+// https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure
 export interface AttachmentPayload {
   id: string;
   filename: string;
@@ -22,12 +24,14 @@ export interface AttachmentPayload {
   width?: number;
 }
 
+// https://discord.com/developers/docs/resources/channel#reaction-object-reaction-structure
 export interface ReactionPayload {
   count: number;
   me: boolean;
   // emoji: EmojiPayload;
 }
 
+// https://discord.com/developers/docs/resources/channel#message-object-message-types
 export enum MessageType {
   DEFAULT = 0,
   RECIPIENT_ADD = 1,
@@ -53,6 +57,7 @@ export enum MessageType {
   GUILD_INVITE_REMINDER = 22,
 }
 
+// https://discord.com/developers/docs/resources/channel#message-object-message-activity-types
 export enum MessageActivityType {
   JOIN = 1,
   SPECTATE = 2,
@@ -60,11 +65,13 @@ export enum MessageActivityType {
   JOIN_REQUEST = 5,
 }
 
+// https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
 export interface MessageActivityPayload {
   type: MessageActivityType;
   party_id?: string;
 }
 
+// https://discord.com/developers/docs/resources/channel#message-reference-object
 export interface MessageReferencePayload {
   message_id?: string;
   channel_id?: string;
@@ -72,6 +79,7 @@ export interface MessageReferencePayload {
   fail_if_not_exists?: string;
 }
 
+// https://discord.com/developers/docs/resources/channel#message-object-message-flags
 export enum MessageFlags {
   CROSSPOSTED = 1,
   IS_CROSSPOST = 2,
@@ -83,13 +91,7 @@ export enum MessageFlags {
   LOADING = 128,
 }
 
-export interface MessageInteractionPayload {
-  id: string;
-  // type: InteractionType;
-  name: string;
-  // user: UserPayload;
-}
-
+// https://discord.com/developers/docs/resources/channel#message-object-message-structure
 export interface Message {
   id: string;
   channel_id: string;
@@ -117,7 +119,7 @@ export interface Message {
   message_reference?: MessageReferencePayload;
   flags?: MessageFlags;
   referenced_message?: Message | null;
-  interaction?: MessageInteractionPayload;
+  // interaction?: MessageInteractionPayload;
   thread?: GuildThreadChannelPayload;
   // components?: MessageComponentPayload[];
   // sticker_items?: StickerItemPayload[];
