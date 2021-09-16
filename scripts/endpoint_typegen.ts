@@ -137,8 +137,18 @@ for (const _ in endpoints) {
   }\n`;
 }
 
+const TYPES_FILE = new URL("../types/src/endpoints.ts", import.meta.url);
 await Deno.writeTextFile(
-  new URL("../types/src/endpoints.ts", import.meta.url),
+  TYPES_FILE,
   types,
 );
+
+await $(
+  "deno",
+  "fmt",
+  "-c",
+  new URL("../Deno.jsonc", import.meta.url).pathname,
+  TYPES_FILE.pathname,
+);
+
 console.log("Generated Endpoint Types!");

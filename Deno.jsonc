@@ -3,5 +3,11 @@
     "rules": {
       "exclude": ["camelCase"]
     }
+  },
+
+  "fmt": {
+    "files": {
+      "exclude": ["./scripts/api_docs"]
+    }
   }
 }
