@@ -1,4 +1,4 @@
-// deno-lint-ignore-file camelcase no-empty-interface
+// deno-lint-ignore-file camelcase
 
 export enum EmbedType {
   RICH = "rich",
@@ -23,7 +23,7 @@ export interface EmbedImagePayload {
   width?: number;
 }
 
-export interface EmbedThumbnailPayload extends EmbedImagePayload {}
+export type EmbedThumbnailPayload = EmbedImagePayload;
 
 export interface EmbedProviderPayload {
   name?: string;

@@ -1,4 +1,4 @@
-// deno-lint-ignore-file camelcase no-empty-interface
+// deno-lint-ignore-file camelcase
 // Thread channels are seperated to a different file.
 import { ChannelPayload, TextChannelPayload } from "./base.ts";
 
@@ -30,7 +30,7 @@ export interface GuildTextChannelPayload
   default_auto_archive_duration: number;
 }
 
-export interface GuildNewsChannelPayload extends GuildTextChannelPayload {}
+export type GuildNewsChannelPayload = GuildTextChannelPayload;
 
 export enum VideoQualityModes {
   AUTO = 1,
@@ -44,6 +44,6 @@ export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   video_quality_mode: VideoQualityModes;
 }
 
-export interface CategoryPayload extends GuildChannelPayload {}
+export type CategoryPayload = GuildChannelPayload;
 
-export interface GuildStoreChannel extends GuildChannelPayload {}
+export type GuildStoreChannel = GuildChannelPayload;
