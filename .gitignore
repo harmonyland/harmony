@@ -1,3 +1,4 @@
 .vscode/
-.idea/
+scripts/api_docs
 .DS_Store
+.idea/

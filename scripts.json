@@ -2,15 +2,15 @@
   "scripts": {
     "check": {
       "desc": "Type-checks the code",
-      "cmd": "deno run mod.ts"
+      "cmd": "deno run -c Deno.jsonc mod.ts"
     },
     "fmt": {
       "desc": "Formats code",
-      "cmd": "deno fmt"
+      "cmd": "deno fmt -c Deno.jsonc"
     },
     "lint": {
       "desc": "Lints code",
-      "cmd": "deno lint"
+      "cmd": "deno lint -c Deno.jsonc"
     },
     "pre-commit": {
       "cmd": [
