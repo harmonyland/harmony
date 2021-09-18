@@ -442,6 +442,7 @@ export type ClientEvents = {
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
+  error: [error: Error]
 
   threadCreate: [thread: ThreadChannel]
   threadDelete: [thread: ThreadChannel]

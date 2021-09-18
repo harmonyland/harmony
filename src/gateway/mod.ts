@@ -163,9 +163,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
 
           if (handler !== undefined && d !== null) {
             try {
-              handler(this, d)
+              await handler(this, d)
             } catch (e) {
-              console.error(`Internal error in Shard ${this.shardID}: ${e}`)
+              this.client.emit('error', e)
             }
           }
         }
