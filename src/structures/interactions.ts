@@ -40,6 +40,8 @@ interface WebhookMessageOptions extends MessageOptions {
   embeds?: Array<Embed | EmbedPayload>
   name?: string
   avatar?: string
+  flags?: number
+  ephemeral?: boolean
 }
 
 type AllWebhookMessageOptions = string | WebhookMessageOptions
@@ -339,6 +341,11 @@ export class Interaction extends SnowflakeBase {
       files: (option as WebhookMessageOptions)?.files,
       tts: (option as WebhookMessageOptions)?.tts,
       allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
+      flags:
+        ((option as WebhookMessageOptions)?.flags ?? 0)
+        | (option as WebhookMessageOptions)?.ephemeral === true
+          ? 64
+          : 0,
       components:
         (option as WebhookMessageOptions)?.components === undefined
           ? undefined
