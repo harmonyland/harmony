@@ -8,7 +8,7 @@ export const messageCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: MessagePayload
 ) => {
-  let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
+  const channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   // Fetch the channel if not cached.
   // Commented out right now as it causes some undefined behavior.
   // if (channel === undefined)

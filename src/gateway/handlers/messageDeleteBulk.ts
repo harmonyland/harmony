@@ -8,7 +8,7 @@ export const messageDeleteBulk: GatewayEventHandler = async (
   gateway: Gateway,
   d: MessageDeleteBulkPayload
 ) => {
-  let channel = await gateway.client.channels.get<GuildTextBasedChannel>(
+  const channel = await gateway.client.channels.get<GuildTextBasedChannel>(
     d.channel_id
   )
   // Fetch the channel if not cached
