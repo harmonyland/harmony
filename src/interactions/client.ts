@@ -437,7 +437,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   /** Fetch Application of the Client (if Token is present) */
   async fetchApplication(): Promise<Application> {
     const app = await this.rest.api.oauth2.applications['@me'].get()
-    return new Application(this, app)
+    return new Application(this.client!, app)
   }
 }
 
