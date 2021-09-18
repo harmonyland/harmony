@@ -20,6 +20,7 @@ import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { encodeText, decodeText } from '../utils/encoding.ts'
 import { ApplicationCommandsManager } from './applicationCommand.ts'
+import { Application } from '../structures/application.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
@@ -431,6 +432,12 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     const verified = await this.verifyKey(body, signature, timestamp)
     if (!verified) return false
     return true
+  }
+  
+  /** Fetch Application of the Client (if Token is present) */
+  async fetchApplication(): Promise<Application> {
+    const app = await this.rest.api.oauth2.applications['@me'].get()
+    return new Application(this, app)
   }
 }
 
