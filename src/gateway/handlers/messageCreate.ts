@@ -9,10 +9,11 @@ export const messageCreate: GatewayEventHandler = async (
   d: MessagePayload
 ) => {
   let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
-  // Fetch the channel if not cached
-  if (channel === undefined)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
+  // Fetch the channel if not cached.
+  // Commented out right now as it causes some undefined behavior.
+  // if (channel === undefined)
+  //   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  //   channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
   if (channel === undefined) return
   await channel.messages.set(d.id, d)
   const user = new User(gateway.client, d.author)
