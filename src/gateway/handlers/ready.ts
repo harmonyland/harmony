@@ -1,12 +1,15 @@
 import { User } from '../../structures/user.ts'
-import type { Ready } from '../../types/gateway.ts'
+import { GatewayIntents, Ready } from '../../types/gateway.ts'
 import type { Gateway, GatewayEventHandler } from '../mod.ts'
 
 export const ready: GatewayEventHandler = async (
   gateway: Gateway,
   d: Ready
 ) => {
-  gateway._guildsToBeLoaded = d.guilds.length
+  gateway._guildsToBeLoaded =
+    gateway.client.intents!.includes(GatewayIntents.GUILDS) === true
+      ? d.guilds.length
+      : 0
   gateway._guildsLoaded = 0
   gateway.client.upSince = new Date()
 

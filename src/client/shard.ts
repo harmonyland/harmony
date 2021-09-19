@@ -152,6 +152,12 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     return this
   }
 
+  destroy(): void {
+    this.list.forEach((shard) => {
+      shard.destroy()
+    })
+  }
+
   get(id: number): Gateway | undefined {
     return this.list.get(id.toString())
   }

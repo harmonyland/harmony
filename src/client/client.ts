@@ -273,11 +273,18 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   }
 
   /** Changes Presence of Client */
-  setPresence(presence: ClientPresence | ClientActivity | ActivityGame): void {
+  setPresence(
+    presence: ClientPresence | ClientActivity | ActivityGame,
+    onlyInShards: number[] = []
+  ): void {
     if (presence instanceof ClientPresence) {
       this.presence = presence
     } else this.presence = new ClientPresence(presence)
-    this.gateway?.sendPresence(this.presence.create())
+    this.shards.list.forEach((shard) => {
+      if (onlyInShards.length !== 0 && onlyInShards.includes(shard.shardID))
+        return
+      shard.sendPresence(this.presence.create())
+    })
   }
 
   /** Emits debug event */
@@ -361,7 +368,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     this.gateway.sessionID = undefined
     await this.gateway.cache.delete('seq')
     await this.gateway.cache.delete('session_id')
-    this.gateway.close()
+    this.shards.destroy()
     this.user = undefined
     this.upSince = undefined
     return this

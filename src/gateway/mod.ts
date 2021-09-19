@@ -30,6 +30,7 @@ export interface VoiceStateOptions {
 }
 
 export const RECONNECT_REASON = 'harmony-reconnect'
+export const DESTROY_REASON = 'harmony-destroy'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type GatewayTypedEvents = {
@@ -225,9 +226,17 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   private async onclose({ reason, code }: CloseEvent): Promise<void> {
+    if (this.destroyed) return
+    if (this.#destroyCalled) {
+      this.#destroyComplete = true
+      this.debug(`Shard destroyed`)
+      return
+    }
+
     if (reason === RECONNECT_REASON) return
+
     this.emit('close', code, reason)
-    this.debug(`Connection Closed with code: ${code}`)
+    this.debug(`Connection Closed with code: ${code} ${reason}`)
 
     switch (code) {
       case GatewayCloseCodes.UNKNOWN_ERROR:
@@ -437,6 +446,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   async reconnect(forceNew?: boolean): Promise<void> {
+    if (this.#destroyCalled) return
+
     this.emit('reconnecting')
     this.debug('Reconnecting... (force new: ' + String(forceNew) + ')')
 
@@ -451,6 +462,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   initWebsocket(): void {
+    if (this.#destroyCalled) return
+
     this.emit('init')
     this.debug('Initializing WebSocket...')
     this.websocket = new WebSocket(
@@ -472,6 +485,24 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       }`
     )
     return this.websocket?.close(code, reason)
+  }
+
+  #destroyCalled = false
+  #destroyComplete = false
+
+  get destroyed(): boolean {
+    return this.#destroyCalled && this.#destroyComplete
+  }
+
+  destroy(): void {
+    this.debug('Destroying Shard')
+    this.#destroyCalled = true
+
+    if (this.heartbeatIntervalID !== undefined) {
+      clearInterval(this.heartbeatIntervalID)
+      this.heartbeatIntervalID = undefined
+    }
+    this.closeGateway(1000, DESTROY_REASON)
   }
 
   send(data: GatewayResponse): boolean {
@@ -504,6 +535,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   heartbeat(): void {
+    if (this.destroyed) return
+
     if (this.heartbeatServerResponded) {
       this.heartbeatServerResponded = false
     } else {
