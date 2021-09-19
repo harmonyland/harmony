@@ -30,7 +30,9 @@
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
-You can also check(not import) the module in https://nest.land/package/harmony (link for importing is in the site).
+We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.1.3`.
+
+You can also import the module [from nest.land](https://nest.land/package/harmony) (note: import URL is not same as package one).
 
 For a quick example, run this:
 
