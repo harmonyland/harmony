@@ -24,7 +24,8 @@ import { Application } from '../structures/application.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
-) => unknown
+) => any // Any to include both sync and async return types
+
 export interface ApplicationCommandHandler {
   name: string
   type?: ApplicationCommandType
@@ -97,10 +98,11 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     this.enabled = options.enabled ?? true
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const client = this.client as any
+    const client = this.client as Client & {
+      _decoratedAppCmd: ApplicationCommandHandler[]
+    }
     if (client?._decoratedAppCmd !== undefined) {
-      client._decoratedAppCmd.forEach((e: any) => {
+      client._decoratedAppCmd.forEach((e) => {
         e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
@@ -178,7 +180,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       handle.parent = sub === undefined ? undefined : root
     }
 
-    this.handlers.push(handle as any)
+    this.handlers.push(handle as ApplicationCommandHandler)
     return this
   }
 
@@ -443,116 +445,3 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 }
 
 export { InteractionsClient as SlashClient }
-
-/** Decorator to create a Slash Command handler */
-export function slash(name?: string, guild?: string) {
-  return function (
-    client: Client | InteractionsClient | ApplicationCommandsModule,
-    prop: string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
-    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
-    const item = (client as { [name: string]: any })[prop]
-    if (typeof item !== 'function') {
-      throw new Error('@slash decorator requires a function')
-    } else
-      c._decoratedAppCmd.push({
-        name: name ?? prop,
-        guild,
-        handler: item
-      })
-  }
-}
-
-/** Decorator to create a Sub-Slash Command handler */
-export function subslash(parent: string, name?: string, guild?: string) {
-  return function (
-    client: Client | ApplicationCommandsModule | InteractionsClient,
-    prop: string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
-    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
-    const item = (client as { [name: string]: any })[prop]
-    if (typeof item !== 'function') {
-      throw new Error('@subslash decorator requires a function')
-    } else
-      c._decoratedAppCmd.push({
-        parent,
-        name: name ?? prop,
-        guild,
-        handler: item
-      })
-  }
-}
-
-/** Decorator to create a Grouped Slash Command handler */
-export function groupslash(
-  parent: string,
-  group: string,
-  name?: string,
-  guild?: string
-) {
-  return function (
-    client: Client | ApplicationCommandsModule | InteractionsClient,
-    prop: string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
-    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
-    const item = (client as { [name: string]: any })[prop]
-    if (typeof item !== 'function') {
-      throw new Error('@groupslash decorator requires a function')
-    } else
-      c._decoratedAppCmd.push({
-        group,
-        parent,
-        name: name ?? prop,
-        guild,
-        handler: item
-      })
-  }
-}
-
-/** Decorator to create a Message Context Menu Command handler */
-export function messageContextMenu(name?: string) {
-  return function (
-    client: Client | InteractionsClient | ApplicationCommandsModule,
-    prop: string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
-    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
-    const item = (client as { [name: string]: any })[prop]
-    if (typeof item !== 'function') {
-      throw new Error('@messageContextMenu decorator requires a function')
-    } else
-      c._decoratedAppCmd.push({
-        name: name ?? prop,
-        type: 3,
-        handler: item
-      })
-  }
-}
-
-/** Decorator to create a User Context Menu Command handler */
-export function userContextMenu(name?: string) {
-  return function (
-    client: Client | InteractionsClient | ApplicationCommandsModule,
-    prop: string
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
-    if (c._decoratedAppCmd === undefined) c._decoratedAppCmd = []
-    const item = (client as { [name: string]: any })[prop]
-    if (typeof item !== 'function') {
-      throw new Error('@userContextMenu decorator requires a function')
-    } else
-      c._decoratedAppCmd.push({
-        name: name ?? prop,
-        type: 3,
-        handler: item
-      })
-  }
-}
