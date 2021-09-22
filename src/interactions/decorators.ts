@@ -9,7 +9,7 @@ import { ApplicationCommandInteraction } from '../structures/applicationCommand.
 import { GatewayIntents } from '../types/gateway.ts'
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
-type DecoratedAppExt = {
+interface DecoratedAppExt {
   _decoratedAppCmd?: ApplicationCommandHandler[]
 }
 
@@ -26,16 +26,16 @@ type CommandValidationCondition = (
   i: ApplicationCommandInteraction
 ) => boolean | Promise<boolean>
 
-type CommandValidation = {
+interface CommandValidation {
   condition: CommandValidationCondition
   action?: string | ApplicationCommandHandlerCallback
 }
 
-type WrappedApplicationCommand = (
+type ApplicationCommandDecorator = (
   _client: ApplicationCommandClientExt,
   _prop: string,
   desc: TypedPropertyDescriptor<ApplicationCommandHandlerCallback>
-) => TypedPropertyDescriptor<ApplicationCommandHandlerCallback> | void
+) => void
 
 /**
  * Wraps the command handler with a validation function.
@@ -46,7 +46,7 @@ type WrappedApplicationCommand = (
 function wrapConditionApplicationCommandHandler(
   desc: TypedPropertyDescriptor<ApplicationCommandHandlerCallback>,
   validation: CommandValidation
-) {
+): ApplicationCommandHandlerCallback {
   if (typeof desc.value !== 'function') {
     throw new Error('The decorator requires a function')
   }
@@ -59,9 +59,9 @@ function wrapConditionApplicationCommandHandler(
   ) {
     if (!(await condition(i))) {
       // condition not met
-      if (typeof action == 'string') {
+      if (typeof action === 'string') {
         i.reply(action)
-      } else if (typeof action == 'function') {
+      } else if (typeof action === 'function') {
         action(i)
       }
       return
@@ -74,7 +74,7 @@ function wrapConditionApplicationCommandHandler(
 export function slash(
   name?: string,
   guild?: string
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
@@ -97,7 +97,7 @@ export function subslash(
   parent: string,
   name?: string,
   guild?: string
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
@@ -122,7 +122,7 @@ export function groupslash(
   group: string,
   name?: string,
   guild?: string
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
@@ -143,7 +143,7 @@ export function groupslash(
 }
 
 /** Decorator to create a Message Context Menu Command handler */
-export function messageContextMenu(name?: string): WrappedApplicationCommand {
+export function messageContextMenu(name?: string): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
@@ -163,7 +163,7 @@ export function messageContextMenu(name?: string): WrappedApplicationCommand {
 }
 
 /** Decorator to create a User Context Menu Command handler */
-export function userContextMenu(name?: string): WrappedApplicationCommand {
+export function userContextMenu(name?: string): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
@@ -187,13 +187,13 @@ export function userContextMenu(name?: string): WrappedApplicationCommand {
  * @param action message or function called when the condition is not met
  * @returns wrapped function
  */
-export function isInGuild(message: string): WrappedApplicationCommand
+export function isInGuild(message: string): ApplicationCommandDecorator
 export function isInGuild(
   callback: ApplicationCommandHandlerCallback
-): WrappedApplicationCommand
+): ApplicationCommandDecorator
 export function isInGuild(
   action: string | ApplicationCommandHandlerCallback
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     _client: ApplicationCommandClient,
     _prop: string,
@@ -206,7 +206,6 @@ export function isInGuild(
       action
     }
     desc.value = wrapConditionApplicationCommandHandler(desc, validation)
-    return desc
   }
 }
 
@@ -216,13 +215,15 @@ export function isInGuild(
  * @param action message or function called when the condition is not met
  * @returns wrapped function
  */
-export function isBotInVoiceChannel(message: string): WrappedApplicationCommand
+export function isBotInVoiceChannel(
+  message: string
+): ApplicationCommandDecorator
 export function isBotInVoiceChannel(
   callback: ApplicationCommandHandlerCallback
-): WrappedApplicationCommand
+): ApplicationCommandDecorator
 export function isBotInVoiceChannel(
   action: string | ApplicationCommandHandlerCallback
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     _client: ApplicationCommandClient,
     _prop: string,
@@ -230,15 +231,14 @@ export function isBotInVoiceChannel(
   ) {
     const validation: CommandValidation = {
       condition: async (i: ApplicationCommandInteraction) => {
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (!i.client.intents?.includes(GatewayIntents.GUILD_VOICE_STATES)) {
           const err =
             '@isBotInVoiceChannel: GatewayIntents.GUILD_VOICE_STATES needs to be set.'
           console.error(err)
           throw new Error(err)
         }
-        return Boolean(
-          i.guild && (await i.guild.voiceStates.get(i.client.user!.id))
-        )
+        return Boolean(await i.guild?.voiceStates.get(i.client.user!.id))
       },
       action
     }
@@ -252,33 +252,34 @@ export function isBotInVoiceChannel(
  * @param action message or function called when the condition is not met
  * @returns wrapped function
  */
-export function isUserInVoiceChannel(message: string): WrappedApplicationCommand
+export function isUserInVoiceChannel(
+  message: string
+): ApplicationCommandDecorator
 export function isUserInVoiceChannel(
   callback: ApplicationCommandHandlerCallback
-): WrappedApplicationCommand
+): ApplicationCommandDecorator
 export function isUserInVoiceChannel(
   action: string | ApplicationCommandHandlerCallback
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     _client: ApplicationCommandClient,
     _prop: string,
     desc: TypedPropertyDescriptor<ApplicationCommandHandlerCallback>
   ) {
     const validation: CommandValidation = {
-      condition: async (i: ApplicationCommandInteraction) => {
+      condition: async (i: ApplicationCommandInteraction): Promise<boolean> => {
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (!i.client.intents?.includes(GatewayIntents.GUILD_VOICE_STATES)) {
           const err =
             '@isUserInVoiceChannel: GatewayIntents.GUILD_VOICE_STATES needs to be set.'
           console.error(err)
           throw new Error(err)
         }
-        return Boolean(i.guild && (await i.guild.voiceStates.get(i.user.id)))
+        return Boolean(await i.guild?.voiceStates.get(i.client.user!.id))
       },
       action
     }
     desc.value = wrapConditionApplicationCommandHandler(desc, validation)
-
-    return desc
   }
 }
 
@@ -291,15 +292,15 @@ export function isUserInVoiceChannel(
 export function customValidation(
   condition: CommandValidationCondition,
   action: string
-): WrappedApplicationCommand
+): ApplicationCommandDecorator
 export function customValidation(
   condition: CommandValidationCondition,
   action: ApplicationCommandHandlerCallback
-): WrappedApplicationCommand
+): ApplicationCommandDecorator
 export function customValidation(
   condition: CommandValidationCondition,
   action: string | ApplicationCommandHandlerCallback
-): WrappedApplicationCommand {
+): ApplicationCommandDecorator {
   return function (
     _client: ApplicationCommandClient,
     _prop: string,
@@ -309,7 +310,5 @@ export function customValidation(
       condition,
       action
     })
-
-    return desc
   }
 }

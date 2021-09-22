@@ -98,11 +98,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     this.enabled = options.enabled ?? true
 
-    const client = this.client as Client & {
-      _decoratedAppCmd: ApplicationCommandHandler[]
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const client = this.client as any
     if (client?._decoratedAppCmd !== undefined) {
-      client._decoratedAppCmd.forEach((e) => {
+      client._decoratedAppCmd.forEach((e: any) => {
         e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
