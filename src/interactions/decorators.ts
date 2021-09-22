@@ -275,7 +275,7 @@ export function isUserInVoiceChannel(
           console.error(err)
           throw new Error(err)
         }
-        return Boolean(await i.guild?.voiceStates.get(i.client.user!.id))
+        return Boolean(await i.guild?.voiceStates.get(i.user.id))
       },
       action
     }
