@@ -170,6 +170,7 @@ export const interactionCreate: GatewayEventHandler = async (
         ? new User(gateway.client, d.message.author)
         : undefined)! // skip author for now since ephemeral messages don't have it
     )
+    await message.mentions.fromPayload(d.message)
   }
 
   let interaction
