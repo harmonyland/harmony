@@ -7,7 +7,7 @@ import type { Client } from '../client/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
 import { ApplicationCommandInteraction } from '../structures/applicationCommand.ts'
 import { GatewayIntents } from '../types/gateway.ts'
-import { ApplicationCommandType } from "../../mod.ts";
+import { ApplicationCommandType } from '../../mod.ts'
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
 interface DecoratedAppExt {
