@@ -7,6 +7,7 @@ import type { Client } from '../client/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
 import { ApplicationCommandInteraction } from '../structures/applicationCommand.ts'
 import { GatewayIntents } from '../types/gateway.ts'
+import { ApplicationCommandType } from "../../mod.ts";
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
 interface DecoratedAppExt {
@@ -156,7 +157,7 @@ export function messageContextMenu(name?: string): ApplicationCommandDecorator {
     } else
       client._decoratedAppCmd.push({
         name: name ?? prop,
-        type: 3,
+        type: ApplicationCommandType.MESSAGE,
         handler: desc.value
       })
   }
@@ -176,7 +177,7 @@ export function userContextMenu(name?: string): ApplicationCommandDecorator {
     } else
       client._decoratedAppCmd.push({
         name: name ?? prop,
-        type: 3,
+        type: ApplicationCommandType.USER,
         handler: desc.value
       })
   }
@@ -291,11 +292,11 @@ export function isUserInVoiceChannel(
  */
 export function customValidation(
   condition: CommandValidationCondition,
-  action: string
+  message: string
 ): ApplicationCommandDecorator
 export function customValidation(
   condition: CommandValidationCondition,
-  action: ApplicationCommandHandlerCallback
+  callback: ApplicationCommandHandlerCallback
 ): ApplicationCommandDecorator
 export function customValidation(
   condition: CommandValidationCondition,
