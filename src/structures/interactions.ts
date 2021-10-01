@@ -37,7 +37,6 @@ import type { ApplicationCommandInteraction } from './applicationCommand.ts'
 import type { MessageComponentInteraction } from './messageComponents.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
-  embeds?: Array<Embed | EmbedPayload>
   name?: string
   avatar?: string
   flags?: number
