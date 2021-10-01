@@ -260,13 +260,10 @@ export function transformApplicationCommandOption(
   if (typeof data.type === 'string') {
     data.type = ApplicationCommandOptionType[data.type.toUpperCase()]
   }
-  if (typeof data.options === 'object' && Array.isArray(data.options)) {
+  if (Array.isArray(data.options)) {
     data.options = data.options.map(transformApplicationCommandOption)
   }
-  if (
-    typeof data.channelTypes === 'object' &&
-    Array.isArray(data.channelTypes)
-  ) {
+  if (Array.isArray(data.channelTypes)) {
     data.channel_types = data.channelTypes.map(
       (e: ApplicationCommandOption['channelTypes']) =>
         typeof e === 'string' ? ChannelTypes[e] : e
