@@ -1,0 +1,19 @@
+{
+  "name": "Harmony",
+  "extensions": [
+    "denoland.vscode-deno",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ],
+  "settings": {
+    "deno.path": "/deno/bin/deno",
+    "deno.enable": true,
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "build": {
+    "dockerfile": "./Dockerfile"
+  },
+  "postCreateCommand": "deno cache mod.ts"
+}
