@@ -25,6 +25,7 @@ import type { DMChannel } from '../structures/dmChannel.ts'
 import { Template } from '../structures/template.ts'
 import { VoiceManager } from './voice.ts'
 import { StickersManager } from '../managers/stickers.ts'
+import { createOAuthURL, OAuthURLOptions } from '../utils/oauthURL.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -463,6 +464,18 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   async fetchTemplate(code: string): Promise<Template> {
     const payload = await this.rest.api.guilds.templates[code].get()
     return new Template(this, payload)
+  }
+
+  /** Creates an OAuth2 URL */
+  createOAuthURL(options: Omit<OAuthURLOptions, 'clientID'>): string {
+    return createOAuthURL(
+      Object.assign(
+        {
+          clientID: this.getEstimatedID()
+        },
+        options
+      )
+    )
   }
 }
 

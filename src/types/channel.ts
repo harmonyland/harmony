@@ -245,7 +245,9 @@ export interface AllowedMentionsPayload {
 export interface MessageOptions {
   content?: string
   tts?: boolean
-  embed?: Embed
+  /** @deprecated Use `embeds` instead */
+  embed?: Embed | EmbedPayload
+  embeds?: Array<Embed | EmbedPayload>
   file?: MessageAttachment
   files?: MessageAttachment[]
   allowedMentions?: AllowedMentionsPayload

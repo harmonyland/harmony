@@ -16,7 +16,7 @@ import { BaseManager } from './base.ts'
 import { transformComponent } from '../utils/components.ts'
 import { Collection } from '../utils/collection.ts'
 
-export type AllMessageOptions = MessageOptions | Embed
+export type AllMessageOptions = MessageOptions | Embed | Embed[]
 
 export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   constructor(client: Client) {
@@ -113,10 +113,16 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
         embed: option
       }
     }
+    if (Array.isArray(option)) {
+      option = {
+        embeds: option
+      }
+    }
 
     const payload = {
       content: content ?? option?.content,
       embed: option?.embed,
+      embeds: option?.embeds,
       file: option?.file,
       files: option?.files,
       tts: option?.tts,
@@ -187,7 +193,8 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       typeof message === 'string' ? message : message.id
     ].patch({
       content: text ?? option?.content,
-      embed: option?.embed !== undefined ? option.embed.toJSON() : undefined,
+      embed: option?.embed !== undefined ? option.embed : undefined,
+      embeds: option?.embeds,
       // Cannot upload new files with Message
       // file: option?.file,
       tts: option?.tts,

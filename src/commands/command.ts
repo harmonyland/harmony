@@ -320,27 +320,22 @@ export class CommandBuilder extends Command {
     return this
   }
 
-  onBeforeExecute(
-    fn: (
-      ctx: CommandContext
-    ) => boolean | Promise<boolean> | unknown | Promise<unknown>
+  onBeforeExecute<T extends CommandContext = CommandContext>(
+    fn: (ctx: T) => boolean | Promise<boolean> | unknown | Promise<unknown>
   ): CommandBuilder {
     this.beforeExecute = fn
     return this
   }
 
-  onExecute(
-    fn: (ctx: CommandContext) => unknown | Promise<unknown>
+  onExecute<T extends CommandContext = CommandContext>(
+    fn: (ctx: T) => unknown | Promise<unknown>
   ): CommandBuilder {
     this.execute = fn
     return this
   }
 
-  onAfterExecute(
-    fn: <T>(
-      ctx: CommandContext,
-      executeResult?: T
-    ) => unknown | Promise<unknown>
+  onAfterExecute<T extends CommandContext = CommandContext>(
+    fn: <T2>(ctx: T, executeResult?: T2) => unknown | Promise<unknown>
   ): CommandBuilder {
     this.afterExecute = fn
     return this

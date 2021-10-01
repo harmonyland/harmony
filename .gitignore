@@ -111,6 +111,7 @@ yarn.lock
 src/test/config.ts
 test/config.ts
 .vscode
+test/data/*
 
 # macOS is shit xD
 **/.DS_Store

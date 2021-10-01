@@ -1,6 +1,6 @@
 // https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags
 
-export const PermissionFlags: { [key: string]: bigint } = {
+export const PermissionFlags = {
   CREATE_INSTANT_INVITE: 1n << 0n,
   KICK_MEMBERS: 1n << 1n,
   BAN_MEMBERS: 1n << 2n,
@@ -46,4 +46,4 @@ export const PermissionFlags: { [key: string]: bigint } = {
   USE_PUBLIC_THREADS: 1n << 35n,
   USE_PRIVATE_THREADS: 1n << 36n,
   USE_EXTERNAL_STICKERS: 1n << 37n
-}
+} as const
