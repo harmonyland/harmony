@@ -34,7 +34,7 @@ export const DESTROY_REASON = 'harmony-destroy'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type GatewayTypedEvents = {
-  [name in GatewayEvents]: unknown[]
+  [name in GatewayEvents]: [unknown]
 } & {
   connect: []
   ping: [number]
