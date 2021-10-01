@@ -1098,8 +1098,11 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Creates a template for the guild. Requires the `MANAGE_GUILD` permission. Returns the created [template](#DOCS_RESOURCES_TEMPLATE/template-object) object on success.
    */
-  async createGuildTemplate(guildId: string): Promise<TemplatePayload> {
-    return this.rest.post(`/guilds/${guildId}/templates`)
+  async createGuildTemplate(
+    guildId: string,
+    payload: { name: string; description?: string | null }
+  ): Promise<TemplatePayload> {
+    return this.rest.post(`/guilds/${guildId}/templates`, payload)
   }
 
   /**
