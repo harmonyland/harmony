@@ -256,7 +256,7 @@ export class SlashBuilder {
 export function transformApplicationCommandOption(
   _data: ApplicationCommandOption
 ): ApplicationCommandOptionPayload {
-  const data = { ...(_data as unknown as Record<string, unknown>) }
+  const data: Record<string, unknown> = { ..._data }
   if (typeof data.type === 'string') {
     data.type =
       ApplicationCommandOptionType[
@@ -279,7 +279,7 @@ export function transformApplicationCommandOption(
 export function transformApplicationCommand(
   _cmd: ApplicationCommandPartial
 ): ApplicationCommandPartialPayload {
-  const cmd = { ...(_cmd as unknown as Record<string, unknown>) }
+  const cmd: Record<string, unknown> = { ..._cmd }
   if (cmd.defaultPermission !== undefined) {
     cmd.default_permission = cmd.defaultPermission
     delete cmd.defaultPermission
@@ -310,7 +310,7 @@ export function transformApplicationCommandPermission(
 export function transformApplicationCommandPermissions(
   _data: GuildSlashCommmandPermissionsPartial
 ): GuildSlashCommmandPermissionsPayload {
-  const data = { ...(_data as unknown as Record<string, unknown>) }
+  const data = { ..._data }
   if (typeof data.permissions === 'object' && Array.isArray(data.permissions)) {
     data.permissions = data.permissions.map(
       transformApplicationCommandPermission
@@ -322,7 +322,7 @@ export function transformApplicationCommandPermissions(
 export function transformApplicationCommandPermissionsPayload(
   _data: GuildSlashCommmandPermissionsPayload
 ): GuildApplicationCommandPermissions {
-  const data = { ...(_data as unknown as Record<string, unknown>) }
+  const data: Record<string, unknown> = { ..._data }
   data.applicationID = data.application_id
   data.guildID = data.guild_id
   delete data.application_id
