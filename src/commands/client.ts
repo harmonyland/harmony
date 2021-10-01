@@ -211,7 +211,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (parsed === undefined) return
     const command = this.commands.fetch(parsed)
 
-    if (command === undefined) return this.emit("commandNotFound", msg, parsed)
+    if (command === undefined) return this.emit('commandNotFound', msg, parsed)
     const category =
       command.category !== undefined
         ? this.categories.get(command.category)
