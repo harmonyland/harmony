@@ -305,18 +305,22 @@ export class CommandBuilder extends Command {
     return this
   }
 
-  onBeforeExecute(fn: (ctx: CommandContext) => boolean | any): CommandBuilder {
+  onBeforeExecute<T extends CommandContext = CommandContext>(
+    fn: (ctx: T) => boolean | any
+  ): CommandBuilder {
     this.beforeExecute = fn
     return this
   }
 
-  onExecute(fn: (ctx: CommandContext) => any): CommandBuilder {
+  onExecute<T extends CommandContext = CommandContext>(
+    fn: (ctx: T) => any
+  ): CommandBuilder {
     this.execute = fn
     return this
   }
 
-  onAfterExecute(
-    fn: (ctx: CommandContext, executeResult?: any) => any
+  onAfterExecute<T extends CommandContext = CommandContext>(
+    fn: (ctx: T, executeResult?: any) => any
   ): CommandBuilder {
     this.afterExecute = fn
     return this
