@@ -10,7 +10,7 @@ export interface OAuthURLOptions {
     | string
     | bigint
     | Permissions
-    | (keyof typeof PermissionFlags | bigint)[]
+    | Array<keyof typeof PermissionFlags | bigint>
   redirectURI?: string
 }
 
