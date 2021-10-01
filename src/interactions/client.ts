@@ -256,7 +256,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   }
 
   /** Process an incoming Interaction */
-  private async _process(
+  async _process(
     interaction: Interaction | ApplicationCommandInteraction
   ): Promise<void> {
     if (!this.enabled) return
