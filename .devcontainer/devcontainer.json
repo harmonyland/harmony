@@ -1,0 +1,5 @@
+{
+    "name": "Harmony",
+    "extensions": ["denoland.vscode-deno", "esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+    "postCreateCommand": "sh scripts/setup.sh"
+}
