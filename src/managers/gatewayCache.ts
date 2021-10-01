@@ -15,8 +15,7 @@ export class GatewayCache {
   }
 
   async get<T>(key: string): Promise<undefined | T> {
-    const result = await this.client.cache.get(this.cacheName, key)
-    return result as T
+    return this.client.cache.get<T>(this.cacheName, key)
   }
 
   async set<T>(key: string, value: T): Promise<void> {
