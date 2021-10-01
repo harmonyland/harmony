@@ -14,5 +14,6 @@
   },
   "build": {
     "dockerfile": "./Dockerfile"
-  }
+  },
+  "postCreateCommand": "deno cache mod.ts"
 }
