@@ -16,6 +16,7 @@ import {
   ApplicationCommandPermissionPayload,
   ApplicationCommandPermissionType
 } from '../types/applicationCommand.ts'
+import { ChannelTypes } from '../types/channel.ts'
 import { Collection } from '../utils/collection.ts'
 import type {
   InteractionsClient,
@@ -259,8 +260,15 @@ export function transformApplicationCommandOption(
   if (typeof data.type === 'string') {
     data.type = ApplicationCommandOptionType[data.type.toUpperCase()]
   }
-  if (typeof data.options === 'object' && Array.isArray(data.options)) {
+  if (Array.isArray(data.options)) {
     data.options = data.options.map(transformApplicationCommandOption)
+  }
+  if (Array.isArray(data.channelTypes)) {
+    data.channel_types = data.channelTypes.map(
+      (e: ApplicationCommandOption['channelTypes']) =>
+        typeof e === 'string' ? ChannelTypes[e] : e
+    )
+    delete data.channel_types
   }
   return data
 }

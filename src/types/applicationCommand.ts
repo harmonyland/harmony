@@ -104,7 +104,9 @@ export interface ApplicationCommandOptionPayload
   extends ApplicationCommandOptionBase<
     ApplicationCommandOptionPayload,
     ApplicationCommandOptionType
-  > {}
+  > {
+  channel_types?: ChannelTypes[]
+}
 
 export type { ApplicationCommandOptionPayload as SlashCommandOptionPayload }
 
@@ -112,7 +114,9 @@ export interface ApplicationCommandOption
   extends ApplicationCommandOptionBase<
     ApplicationCommandOption,
     ApplicationCommandOptionType | keyof typeof ApplicationCommandOptionType
-  > {}
+  > {
+  channelTypes?: Array<ChannelTypes | keyof typeof ChannelTypes>
+}
 
 export type { ApplicationCommandOption as SlashCommandOption }
 
