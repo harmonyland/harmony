@@ -2,7 +2,9 @@ import { Collection } from '../utils/collection.ts'
 import type { Client } from '../client/client.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 
-export type CollectorFilter = (...args: unknown[]) => boolean | Promise<boolean>
+// Note: need to keep anys here for compatibility
+
+export type CollectorFilter = (...args: any[]) => boolean | Promise<boolean>
 
 export interface CollectorOptions {
   /** Event name to listen for */
@@ -23,11 +25,11 @@ export interface CollectorOptions {
 export type CollectorEvents = {
   start: []
   end: []
-  collect: unknown[]
+  collect: any[]
 }
 
 export class Collector<
-  T extends unknown[] = unknown[]
+  T extends unknown[] = any[]
 > extends HarmonyEventEmitter<CollectorEvents> {
   client?: Client
   private _started: boolean = false
