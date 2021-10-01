@@ -60,7 +60,7 @@ import type {
 } from '../../utils/channel.ts'
 import { interactionCreate } from './interactionCreate.ts'
 import type { Interaction } from '../../structures/interactions.ts'
-import type { CommandContext } from '../../commands/command.ts'
+import type { CommandContext, ParsedCommand } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
 import type { GuildChannels } from '../../types/guild.ts'
@@ -441,6 +441,7 @@ export type ClientEvents = {
   commandMissingArgs: [ctx: CommandContext]
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
+  commandNotFound: [msg: Message, parsedCmd: ParsedCommand]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
   error: [error: Error]
 
