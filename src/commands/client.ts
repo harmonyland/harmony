@@ -44,6 +44,13 @@ export interface CommandClientOptions extends ClientOptions {
   caseSensitive?: boolean
 }
 
+export type CommandContextMiddleware<T extends CommandContext> = (
+  ctx: T,
+  next: () => unknown | Promise<unknown>
+) => unknown | Promise<unknown>
+
+export type CommandContextMiddlewareNext = () => unknown | Promise<unknown>
+
 /**
  * Harmony Client with extended functionality for Message based Commands parsing and handling.
  *
@@ -70,6 +77,8 @@ export class CommandClient extends Client implements CommandClientOptions {
   extensions: ExtensionsManager = new ExtensionsManager(this)
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
+
+  middlewares = new Array<CommandContextMiddleware<CommandContext>>()
 
   constructor(options: CommandClientOptions) {
     super(options)
@@ -127,6 +136,20 @@ export class CommandClient extends Client implements CommandClientOptions {
       'messageCreate',
       async (msg: Message) => await this.processMessage(msg)
     )
+  }
+
+  /**
+   * Adds a Middleware Function to Command Client to pre-process all Commands,
+   * and can even modify the Context to include additional properties, methods, etc.
+   *
+   * @param middleware Middleware function
+   * @returns Command Client
+   */
+  use<T extends CommandContext>(middleware: CommandContextMiddleware<T>): this {
+    this.middlewares.push(
+      middleware as CommandContextMiddleware<CommandContext>
+    )
+    return this
   }
 
   /** Processes a Message to Execute Command. */
@@ -361,20 +384,35 @@ export class CommandClient extends Client implements CommandClientOptions {
       }
     }
 
-    try {
-      this.emit('commandUsed', ctx)
-      const beforeExecute = await command.beforeExecute(ctx)
-      if (beforeExecute === false) return
-
-      const result = await command.execute(ctx)
-      await command.afterExecute(ctx, result)
-    } catch (e) {
+    const lastNext = async (): Promise<void> => {
       try {
-        await command.onError(ctx, e)
+        this.emit('commandUsed', ctx)
+        const beforeExecute = await command.beforeExecute(ctx)
+        if (beforeExecute === false) return
+
+        const result = await command.execute(ctx)
+        await command.afterExecute(ctx, result)
       } catch (e) {
+        try {
+          await command.onError(ctx, e)
+        } catch (e) {
+          this.emit('commandError', ctx, e)
+        }
         this.emit('commandError', ctx, e)
       }
-      this.emit('commandError', ctx, e)
+    }
+
+    if (this.middlewares.length === 0) await lastNext()
+    else {
+      const createNext = (index: number): CommandContextMiddlewareNext => {
+        const fn = this.middlewares[index + 1] ?? lastNext
+        return () => fn(ctx, createNext(index + 1))
+      }
+
+      const middleware = this.middlewares[0]
+      const next = createNext(0)
+
+      await middleware(ctx, next)
     }
   }
 }
