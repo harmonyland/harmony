@@ -2,6 +2,7 @@ export interface SimplifiedError {
   [name: string]: string[]
 }
 
+// It's a deeply nested object just let it be like this
 export function simplifyAPIError(errors: any): SimplifiedError {
   const res: SimplifiedError = {}
   function fmt(obj: any, acum: string = ''): void {

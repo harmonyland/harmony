@@ -16,7 +16,7 @@ export class GuildChannelVoiceStatesManager extends BaseChildManager<
     parent: GuildVoiceStatesManager,
     channel: VoiceChannel
   ) {
-    super(client, parent as any)
+    super(client, parent)
     this.channel = channel
   }
 
@@ -30,14 +30,14 @@ export class GuildChannelVoiceStatesManager extends BaseChildManager<
     return (
       (await this.client.cache.size(
         this.parent.cacheName,
-        (d) => d.channel_id === this.channel.id
+        (d: VoiceStatePayload) => d.channel_id === this.channel.id
       )) ?? 0
     )
   }
 
   async array(): Promise<VoiceState[]> {
     const arr = (await this.parent.array()) as VoiceState[]
-    return arr.filter((c: any) => c.channel?.id === this.channel.id) as any
+    return arr.filter((c) => c.channel?.id === this.channel.id)
   }
 
   async fromPayload(d: VoiceStatePayload[]): Promise<void> {

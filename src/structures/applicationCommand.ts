@@ -113,16 +113,17 @@ export class ApplicationCommandInteraction extends Interaction {
   option<T>(name: string): T {
     const options = this.options
     const op = options.find((e) => e.name === name)
-    if (op === undefined || op.value === undefined) return undefined as any
+    if (op === undefined || op.value === undefined)
+      return undefined as unknown as T
     if (op.type === ApplicationCommandOptionType.USER) {
-      const u: InteractionUser = this.resolved.users[op.value] as any
+      const u: InteractionUser = this.resolved.users[op.value]
       if (this.resolved.members[op.value] !== undefined)
         u.member = this.resolved.members[op.value]
-      return u as any
+      return u as unknown as T
     } else if (op.type === ApplicationCommandOptionType.ROLE)
-      return this.resolved.roles[op.value] as any
+      return this.resolved.roles[op.value] as unknown as T
     else if (op.type === ApplicationCommandOptionType.CHANNEL)
-      return this.resolved.channels[op.value] as any
+      return this.resolved.channels[op.value] as unknown as T
     else return op.value
   }
 }

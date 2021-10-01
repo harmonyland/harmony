@@ -2,7 +2,7 @@ import {
   ApplicationCommandInteraction,
   InteractionApplicationCommandResolved
 } from '../structures/applicationCommand.ts'
-import { Interaction } from '../structures/interactions.ts'
+import { Interaction, InteractionChannel } from '../structures/interactions.ts'
 import {
   InteractionPayload,
   InteractionResponsePayload,
@@ -10,7 +10,8 @@ import {
 } from '../types/interactions.ts'
 import {
   ApplicationCommandType,
-  ApplicationCommandOptionType
+  ApplicationCommandOptionType,
+  InteractionApplicationCommandData
 } from '../types/applicationCommand.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
@@ -21,6 +22,14 @@ import { HarmonyEventEmitter } from '../utils/events.ts'
 import { encodeText, decodeText } from '../utils/encoding.ts'
 import { ApplicationCommandsManager } from './applicationCommand.ts'
 import { Application } from '../structures/application.ts'
+import { Member } from '../structures/member.ts'
+import { Guild } from '../structures/guild.ts'
+import { GuildPayload } from '../types/guild.ts'
+import { Channel } from '../structures/channel.ts'
+import { TextChannel } from '../structures/textChannel.ts'
+import { Role } from '../structures/role.ts'
+import { Message } from '../structures/message.ts'
+import { MessageComponentInteraction } from '../structures/messageComponents.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
@@ -178,7 +187,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       handle.parent = sub === undefined ? undefined : root
     }
 
-    this.handlers.push(handle as any)
+    this.handlers.push(handle as ApplicationCommandHandler)
     return this
   }
 
@@ -285,7 +294,13 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     return edverify(signature, fullBody, this.publicKey).catch(() => false)
   }
 
-  /** Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction. **Data present in Interaction returned by this method is very different from actual typings as there is no real `Client` behind the scenes to cache things.** */
+  /**
+   * Verify [Deno Std HTTP Server Request](https://deno.land/std/http/server.ts) and return Interaction.
+   *
+   * **Data present in Interaction returned by this method is very different from actual typings
+   * as there is no real `Client` behind the scenes to cache things.**
+   *
+   */
   async verifyServerRequest(req: {
     headers: Headers
     method: string
@@ -293,7 +308,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     respond: (options: {
       status?: number
       headers?: Headers
-      body?: any
+      body?: BodyInit
     }) => Promise<void>
   }): Promise<false | Interaction> {
     if (req.method.toLowerCase() !== 'post') return false
@@ -310,33 +325,129 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     try {
       const payload: InteractionPayload = JSON.parse(decodeText(rawbody))
 
-      // TODO: Maybe fix all this hackery going on here?
+      // Note: there's a lot of hacks going on here.
+
+      const client = this as unknown as Client
+
       let res
+
+      const channel =
+        payload.channel_id !== undefined
+          ? (new Channel(client, {
+              id: payload.channel_id!,
+              type: 0
+            }) as unknown as TextChannel)
+          : undefined
+
+      const user = new User(client, (payload.member?.user ?? payload.user)!)
+
+      const guild =
+        payload.guild_id !== undefined
+          ? // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            new Guild(client, {
+              id: payload.guild_id!,
+              unavailable: true
+            } as GuildPayload)
+          : undefined
+
+      const member =
+        payload.member !== undefined
+          ? // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            new Member(client, payload.member, user, guild!)
+          : undefined
+
       if (payload.type === InteractionType.APPLICATION_COMMAND) {
-        res = new ApplicationCommandInteraction(this as any, payload, {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          user: new User(this as any, (payload.member?.user ?? payload.user)!),
-          member: payload.member as any,
-          guild: payload.guild_id as any,
-          channel: payload.channel_id as any,
-          resolved: ((payload.data as any)
-            ?.resolved as unknown as InteractionApplicationCommandResolved) ?? {
-            users: {},
-            members: {},
-            roles: {},
-            channels: {}
-          }
+        const resolved: InteractionApplicationCommandResolved = {
+          users: {},
+          members: {},
+          roles: {},
+          channels: {},
+          messages: {}
+        }
+
+        for (const [id, data] of Object.entries(
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (payload.data as InteractionApplicationCommandData).resolved?.users ??
+            {}
+        )) {
+          resolved.users[id] = new User(client, data)
+        }
+
+        for (const [id, data] of Object.entries(
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (payload.data as InteractionApplicationCommandData).resolved
+            ?.members ?? {}
+        )) {
+          resolved.members[id] = new Member(
+            client,
+            data,
+            resolved.users[id],
+            undefined as unknown as Guild
+          )
+        }
+
+        for (const [id, data] of Object.entries(
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (payload.data as InteractionApplicationCommandData).resolved?.roles ??
+            {}
+        )) {
+          resolved.roles[id] = new Role(
+            client,
+            data,
+            undefined as unknown as Guild
+          )
+        }
+
+        for (const [id, data] of Object.entries(
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (payload.data as InteractionApplicationCommandData).resolved
+            ?.channels ?? {}
+        )) {
+          resolved.channels[id] = new InteractionChannel(client, data)
+        }
+
+        for (const [id, data] of Object.entries(
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (payload.data as InteractionApplicationCommandData).resolved
+            ?.messages ?? {}
+        )) {
+          resolved.messages[id] = new Message(
+            client,
+            data,
+            data.channel_id as unknown as TextChannel,
+            new User(client, data.author)
+          )
+        }
+
+        res = new ApplicationCommandInteraction(client, payload, {
+          user,
+          member,
+          guild,
+          channel,
+          resolved
+        })
+      } else if (payload.type === InteractionType.MESSAGE_COMPONENT) {
+        res = new MessageComponentInteraction(client, payload, {
+          channel,
+          guild,
+          member,
+          user,
+          message: new Message(
+            client,
+            payload.message!,
+            payload.message!.channel_id as unknown as TextChannel,
+            new User(client, payload.message!.author)
+          )
         })
       } else {
-        res = new Interaction(this as any, payload, {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          user: new User(this as any, (payload.member?.user ?? payload.user)!),
-          member: payload.member as any,
-          guild: payload.guild_id as any,
-          channel: payload.channel_id as any
+        res = new Interaction(client, payload, {
+          user,
+          member,
+          guild,
+          channel
         })
       }
-      await this.emit('interaction', res)
+
       res._httpRespond = async (d: InteractionResponsePayload | FormData) =>
         await req.respond({
           status: 200,
@@ -346,6 +457,8 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
           }),
           body: d instanceof FormData ? d : JSON.stringify(d)
         })
+
+      await this.emit('interaction', res)
 
       return res
     } catch (e) {
@@ -381,7 +494,12 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     })
   }
 
-  async verifyOpineRequest(req: any): Promise<boolean> {
+  async verifyOpineRequest<
+    T extends {
+      headers: Headers
+      body: Deno.Reader
+    }
+  >(req: T): Promise<boolean> {
     const signature = req.headers.get('x-signature-ed25519')
     const timestamp = req.headers.get('x-signature-timestamp')
     const contentLength = req.headers.get('content-length')
@@ -399,13 +517,21 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   }
 
   /** Middleware to verify request in Opine framework. */
-  async verifyOpineMiddleware(
-    req: any,
-    res: any,
-    next: CallableFunction
-  ): Promise<any> {
+  async verifyOpineMiddleware<
+    Req extends {
+      headers: Headers
+      body: Deno.Reader
+    },
+    Res extends {
+      setStatus: (code: number) => Res
+      end: () => Res
+    }
+  >(req: Req, res: Res, next: CallableFunction): Promise<boolean> {
     const verified = await this.verifyOpineRequest(req)
-    if (!verified) return res.setStatus(401).end()
+    if (!verified) {
+      res.setStatus(401).end()
+      return false
+    }
 
     await next()
     return true
@@ -413,7 +539,15 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
   // TODO: create verifyOakMiddleware too
   /** Method to verify Request from Oak server "Context". */
-  async verifyOakRequest(ctx: any): Promise<any> {
+  async verifyOakRequest<
+    T extends {
+      request: {
+        headers: Headers
+        hasBody: boolean
+        body: () => { value: Promise<Uint8Array> }
+      }
+    }
+  >(ctx: T): Promise<boolean> {
     const signature = ctx.request.headers.get('x-signature-ed25519')
     const timestamp = ctx.request.headers.get('x-signature-timestamp')
     const contentLength = ctx.request.headers.get('content-length')
@@ -422,7 +556,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       signature === null ||
       timestamp === null ||
       contentLength === null ||
-      ctx.request.hasBody !== true
+      !ctx.request.hasBody
     ) {
       return false
     }

@@ -4,6 +4,7 @@ import { Snowflake } from '../utils/snowflake.ts'
 export class Base {
   client!: Client
 
+  // any is for untyped JSON here too.
   constructor(client: Client, _data?: any) {
     Object.defineProperty(this, 'client', { value: client, enumerable: false })
   }

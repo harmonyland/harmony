@@ -9,14 +9,15 @@ import type { RESTManager } from './manager.ts'
 import { RequestQueue } from './queue.ts'
 import { APIRequest } from './request.ts'
 
-function parseResponse(res: Response, raw: boolean): any {
+// It returns JSON objects which are untyped so
+async function parseResponse(res: Response, raw: boolean): Promise<any> {
   let result
   if (res.status === 204) result = Promise.resolve(undefined)
   else if (
     res.headers.get('content-type')?.startsWith('application/json') === true
   )
     result = res.json()
-  else result = res.arrayBuffer().then((e) => new Uint8Array(e))
+  else result = await res.arrayBuffer().then((e) => new Uint8Array(e))
 
   if (raw) {
     return { response: res, body: result }
@@ -45,13 +46,16 @@ export class BucketHandler {
 
   constructor(public manager: RESTManager) {}
 
+  // Returns Response (untyped JSON)
   async push(request: APIRequest): Promise<any> {
     await this.queue.wait()
+    let res
     try {
-      return await this.execute(request)
+      res = await this.execute(request)
     } finally {
       this.queue.shift()
     }
+    return res
   }
 
   get globalLimited(): boolean {
@@ -94,9 +98,8 @@ export class BucketHandler {
           Number(this.manager.globalReset) +
           this.manager.restTimeOffset -
           Date.now()
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        if (!this.manager.globalDelay) {
-          this.manager.globalDelay = this.globalDelayFor(timeout) as any
+        if (typeof this.manager.globalDelay !== 'number') {
+          this.manager.globalDelay = this.globalDelayFor(timeout)
         }
         delayPromise = this.manager.globalDelay
       } else {
@@ -183,7 +186,7 @@ export class BucketHandler {
     }
 
     if (res.ok === true) {
-      return parseResponse(res, request.options.rawResponse ?? false)
+      return await parseResponse(res, request.options.rawResponse ?? false)
     }
 
     if (res.status >= 400 && res.status < 500) {

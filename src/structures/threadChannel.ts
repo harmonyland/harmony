@@ -91,7 +91,7 @@ export class ThreadChannel extends GuildTextBasedChannel {
   owner!: UserResolvable
 
   constructor(client: Client, data: ThreadChannelPayload, guild: Guild) {
-    super(client, data as any, guild)
+    super(client, data, guild)
     this.readFromData(data)
     this.members = new ThreadMembersManager(client, this)
   }
@@ -108,7 +108,7 @@ export class ThreadChannel extends GuildTextBasedChannel {
     this.owner = new UserResolvable(this.client, data.owner_id) ?? this.owner
   }
 
-  readFromData(data: any): this {
+  readFromData(data: ThreadChannelPayload): this {
     super.readFromData(data)
     this._readFromData(data)
     return this

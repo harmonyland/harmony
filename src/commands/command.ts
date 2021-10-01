@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-return */
 import type { Guild } from '../structures/guild.ts'
 import type { Message } from '../structures/message.ts'
 import type { TextChannel } from '../structures/textChannel.ts'
@@ -106,20 +107,34 @@ export class Command implements CommandOptions {
   declare readonly _decoratedSubCommands?: Command[]
 
   /** Method called when the command errors */
-  onError(ctx: CommandContext, error: Error): any {}
+  onError(ctx: CommandContext, error: Error): unknown | Promise<unknown> {
+    return
+  }
 
   /** Method called when there are missing arguments */
-  onMissingArgs(ctx: CommandContext): any {}
+  onMissingArgs(ctx: CommandContext): unknown | Promise<unknown> {
+    return
+  }
 
   /** Method executed before executing actual command. Returns bool value - whether to continue or not (optional) */
-  beforeExecute(ctx: CommandContext): boolean | Promise<boolean> {
+  beforeExecute(
+    ctx: CommandContext
+  ): boolean | Promise<boolean> | unknown | Promise<unknown> {
     return true
   }
 
   /** Actual command code, which is executed when all checks have passed. */
-  execute(ctx: CommandContext): any {}
+  execute(ctx: CommandContext): unknown | Promise<unknown> {
+    return
+  }
+
   /** Method executed after executing command, passes on CommandContext and the value returned by execute too. (optional) */
-  afterExecute(ctx: CommandContext, executeResult: any): any {}
+  afterExecute<T>(
+    ctx: CommandContext,
+    executeResult: T
+  ): unknown | Promise<unknown> {
+    return
+  }
 
   toString(): string {
     return `Command: ${this.name}${
@@ -138,7 +153,7 @@ export class Command implements CommandOptions {
     ) {
       if (this.subCommands === undefined) this.subCommands = []
       const commands = this._decoratedSubCommands
-      delete (this as any)._decoratedSubCommands
+      delete (this as unknown as Record<string, unknown>)._decoratedSubCommands
       Object.defineProperty(this, '_decoratedSubCommands', {
         value: commands,
         enumerable: false
@@ -305,18 +320,27 @@ export class CommandBuilder extends Command {
     return this
   }
 
-  onBeforeExecute(fn: (ctx: CommandContext) => boolean | any): CommandBuilder {
+  onBeforeExecute(
+    fn: (
+      ctx: CommandContext
+    ) => boolean | Promise<boolean> | unknown | Promise<unknown>
+  ): CommandBuilder {
     this.beforeExecute = fn
     return this
   }
 
-  onExecute(fn: (ctx: CommandContext) => any): CommandBuilder {
+  onExecute(
+    fn: (ctx: CommandContext) => unknown | Promise<unknown>
+  ): CommandBuilder {
     this.execute = fn
     return this
   }
 
   onAfterExecute(
-    fn: (ctx: CommandContext, executeResult?: any) => any
+    fn: <T>(
+      ctx: CommandContext,
+      executeResult?: T
+    ) => unknown | Promise<unknown>
   ): CommandBuilder {
     this.afterExecute = fn
     return this

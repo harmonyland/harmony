@@ -7,6 +7,7 @@ export interface RequestOptions {
   headers?: { [name: string]: string }
   query?: { [name: string]: string }
   files?: MessageAttachment[]
+  // Untyped JSON
   data?: any
   reason?: string
   rawResponse?: boolean
@@ -79,7 +80,7 @@ export class APIRequest {
       Array.isArray(options.data?.files)
     ) {
       if (_files === undefined) _files = []
-      options.data?.files.forEach((file: any) => {
+      options.data?.files.forEach((file: MessageAttachment) => {
         _files!.push(file)
       })
     }
@@ -92,7 +93,7 @@ export class APIRequest {
 
   async execute(): Promise<Response> {
     let contentType: string | undefined
-    let body: any
+    let body: BodyInit | undefined
     if (
       this.method === 'post' ||
       this.method === 'put' ||
@@ -125,7 +126,7 @@ export class APIRequest {
       ? this.path
       : `${this.rest.apiURL}/v${this.rest.version}${this.path}`
 
-    const headers: any = {
+    const headers: Record<string, string | undefined> = {
       'User-Agent':
         this.rest.userAgent ??
         `DiscordBot (harmony, https://github.com/harmonyland/harmony)`,

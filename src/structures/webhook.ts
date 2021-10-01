@@ -4,7 +4,7 @@ import type { MessageOptions } from '../types/channel.ts'
 import type { UserPayload } from '../types/user.ts'
 import type { WebhookPayload } from '../types/webhook.ts'
 import { Embed } from './embed.ts'
-import { Message } from './message.ts'
+import { Message, MessageAttachment } from './message.ts'
 import type { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { fetchAuto } from '../../deps.ts'
@@ -110,7 +110,7 @@ export class Webhook {
         embeds: [option]
       }
 
-    const payload: any = {
+    const payload = {
       content: text,
       embeds:
         (option as WebhookMessageOptions)?.embed !== undefined
@@ -120,7 +120,9 @@ export class Webhook {
           : undefined,
       file: (option as WebhookMessageOptions)?.file,
       tts: (option as WebhookMessageOptions)?.tts,
-      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions
+      allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
+      username: undefined as undefined | string,
+      avatar_url: undefined as undefined | string
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {
@@ -198,7 +200,7 @@ export class Webhook {
     data: {
       content?: string
       embeds?: Embed[]
-      file?: any
+      file?: MessageAttachment
       allowed_mentions?: {
         parse?: string
         roles?: string[]

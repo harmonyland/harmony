@@ -12,7 +12,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   guild: Guild
 
   constructor(client: Client, parent: EmojisManager, guild: Guild) {
-    super(client, parent as any)
+    super(client, parent)
     this.guild = guild
   }
 
@@ -26,7 +26,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     return (
       (await this.client.cache.size(
         this.parent.cacheName,
-        (d) => d.guild_id === this.guild.id
+        (d: EmojiPayload) => d.guild_id === this.guild.id
       )) ?? 0
     )
   }
@@ -66,7 +66,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
         if (roles?.length === 0)
           reject(new Error('Empty Roles array was provided'))
         if (roles[0] instanceof Role)
-          roleIDs = (roles as any).map((r: Role) => r.id)
+          roleIDs = roles.map((r) => (typeof r === 'string' ? r : r.id))
         else roleIDs = roles as string[]
       } else roles = [this.guild.id]
       this.client.rest
@@ -87,10 +87,10 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   }
 
   async array(): Promise<Emoji[]> {
-    const arr = (await this.parent.array()) as Emoji[]
+    const arr = await this.parent.array()
     return arr.filter(
-      (c: any) => c.guild !== undefined && c.guild.id === this.guild.id
-    ) as any
+      (c) => c.guild !== undefined && c.guild.id === this.guild.id
+    )
   }
 
   async flush(): Promise<boolean> {
@@ -104,9 +104,9 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
 
   async keys(): Promise<string[]> {
     const result = []
-    for (const raw of (await this.client.cache.array(this.parent.cacheName)) ??
-      []) {
-      if (raw.guild_id === this.guild.id) result.push(raw.id)
+    for (const raw of ((await this.client.cache.array(this.parent.cacheName)) ??
+      []) as EmojiPayload[]) {
+      if (raw.guild_id === this.guild.id) result.push(raw.id!)
     }
     return result
   }

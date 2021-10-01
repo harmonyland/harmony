@@ -25,11 +25,11 @@ export class BaseChildManager<T, T2> extends Base {
     return this.parent.set(key, value)
   }
 
-  async delete(_: string): Promise<any> {
+  async delete(_: string): Promise<boolean> {
     return false
   }
 
-  async array(): Promise<any> {
+  async array(): Promise<T2[]> {
     return this.parent.array()
   }
 
@@ -38,8 +38,7 @@ export class BaseChildManager<T, T2> extends Base {
     if (arr === undefined) return new Collection()
     const collection = new Collection()
     for (const elem of arr) {
-      // any is required here. Else you would need ts-ignore or expect-error.
-      collection.set((elem as any).id, elem)
+      collection.set((elem as unknown as { id: string }).id, elem)
     }
     return collection
   }

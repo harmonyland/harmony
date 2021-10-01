@@ -30,7 +30,7 @@ export class ThreadMembersManager extends BaseManager<
       this.cacheName
     ) as ThreadMemberPayload[])
     if (arr === undefined) return []
-    const result: any[] = []
+    const result = []
     for (const elem of arr) {
       result.push(new ThreadMember(this.client, elem))
     }

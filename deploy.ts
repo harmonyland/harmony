@@ -23,6 +23,10 @@ let client: InteractionsClient
 /** Manage Slash Commands right in Deploy */
 let commands: ApplicationCommandsManager
 
+interface InteractionClientExt {
+  _process: (d: Interaction) => Promise<void>
+}
+
 /**
  * Initialize Slash Commands Handler for [Deno Deploy](https://deno.com/deploy).
  * Easily create Serverless Slash Commands on the fly.
@@ -94,7 +98,7 @@ export function init(options: DeploySlashInitOptions): void {
         return
       }
 
-      await (client as any)._process(d)
+      await (client as unknown as InteractionClientExt)._process(d)
     } catch (e) {
       await client.emit('interactionError', e)
     }
@@ -139,7 +143,9 @@ export function handle(
 }
 
 /** Listen for Interactions Event */
-export function interactions(cb: (i: Interaction) => any): void {
+export function interactions(
+  cb: (i: Interaction) => unknown | Promise<unknown>
+): void {
   client.on('interaction', cb)
 }
 

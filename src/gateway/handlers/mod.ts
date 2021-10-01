@@ -392,6 +392,8 @@ export type ClientEvents = {
    */
   debug: [message: string]
 
+  // This event uses any because payload is literally JSON object
+  // sent by Discord. unknown breaks a lot of things.
   /**
    * Raw event which gives you access to raw events DISPATCH'd from Gateway
    * @param evt Event name string

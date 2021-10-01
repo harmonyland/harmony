@@ -34,7 +34,7 @@ export const DESTROY_REASON = 'harmony-destroy'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type GatewayTypedEvents = {
-  [name in GatewayEvents]: [any]
+  [name in GatewayEvents]: unknown[]
 } & {
   connect: []
   ping: [number]
@@ -157,7 +157,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           await this.cache.set(`seq_${this.shards?.join('-') ?? '0'}`, s)
         }
         if (t !== null && t !== undefined) {
-          this.emit(t as any, d)
+          this.emit(t as keyof GatewayTypedEvents, d)
           this.client.emit('raw', t, d, this.shardID)
 
           const handler = gatewayHandlers[t]
@@ -325,7 +325,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       const sessionIDCached = await this.cache.get(
         `session_id_${this.shards?.join('-') ?? '0'}`
       )
-      if (sessionIDCached !== undefined) {
+      if (typeof sessionIDCached === 'string') {
         this.debug(`Found Cached SessionID: ${sessionIDCached}`)
         this.sessionID = sessionIDCached
         return await this.sendResume()
@@ -375,7 +375,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         `seq_${this.shards?.join('-') ?? '0'}`
       )
       if (cached !== undefined)
-        this.sequenceID = typeof cached === 'string' ? parseInt(cached) : cached
+        this.sequenceID =
+          typeof cached === 'string' ? parseInt(cached) : (cached as number)
     }
     const resumePayload = {
       op: GatewayOpcodes.RESUME,
@@ -475,7 +476,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.websocket.onopen = this.onopen.bind(this)
     this.websocket.onmessage = this.onmessage.bind(this)
     this.websocket.onclose = this.onclose.bind(this)
-    this.websocket.onerror = this.onerror.bind(this) as any
+    this.websocket.onerror = this.onerror.bind(
+      this
+    ) as unknown as WebSocket['onerror']
   }
 
   closeGateway(code: number = 1000, reason?: string): void {
@@ -551,4 +554,6 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 }
 
+// There's a lot of not assignable errors and all when using unknown,
+// so I'll stick with any here.
 export type GatewayEventHandler = (gateway: Gateway, d: any) => void

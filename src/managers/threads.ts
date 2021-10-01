@@ -24,12 +24,15 @@ export class ThreadsManager extends BaseChildManager<
     super(client, parent as any)
   }
 
-  async set(id: string, data: ThreadChannelPayload): Promise<void> {
+  async set(
+    id: string,
+    data: ThreadChannelPayload & { members?: ThreadMemberPayload[] }
+  ): Promise<void> {
     if ('members' in data) {
-      for (const member of (data as any).members as ThreadMemberPayload[]) {
+      for (const member of data.members as ThreadMemberPayload[]) {
         await this.client.cache.set(`thread_members:${id}`, member.id, member)
       }
-      ;(data as any).members = undefined
+      data.members = undefined
     }
     await super.set(id, data)
   }

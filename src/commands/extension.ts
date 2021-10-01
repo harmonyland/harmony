@@ -3,7 +3,11 @@ import { Command } from './command.ts'
 import { CommandClient } from './client.ts'
 import type { ClientEvents } from '../gateway/handlers/mod.ts'
 
-export type ExtensionEventCallback = (ext: Extension, ...args: any[]) => any
+// Breaking change if we change to unknown
+export type ExtensionEventCallback = <T extends any[] = any[], T2 = any>(
+  ext: Extension,
+  ...args: T
+) => T2
 
 /** Extension Commands Manager */
 export class ExtensionCommands {
@@ -71,7 +75,7 @@ export class Extension {
   /** Sub-Prefix to be used for ALL of Extension's Commands. */
   subPrefix?: string
   /** Events registered by this Extension */
-  events: { [name: string]: (...args: any[]) => {} } = {}
+  events: { [name: string]: (...args: unknown[]) => unknown } = {}
 
   constructor(client: CommandClient) {
     this.client = client
@@ -99,7 +103,7 @@ export class Extension {
   listen(event: keyof ClientEvents, cb: ExtensionEventCallback): boolean {
     if (this.events[event] !== undefined) return false
     else {
-      const fn = (...args: any[]): any => {
+      const fn = (...args: unknown[]): void => {
         // eslint-disable-next-line standard/no-callback-literal
         cb(this, ...args)
       }
@@ -110,9 +114,16 @@ export class Extension {
   }
 
   /** Method called upon loading of an Extension */
-  load(): any {}
+  load(): unknown | Promise<unknown> {
+    // eslint-disable-next-line no-useless-return
+    return
+  }
+
   /** Method called upon unloading of an Extension */
-  unload(): any {}
+  unload(): unknown | Promise<unknown> {
+    // eslint-disable-next-line no-useless-return
+    return
+  }
 }
 
 /** Extensions Manager for CommandClient */

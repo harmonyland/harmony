@@ -2,6 +2,9 @@ import type { Client } from '../client/mod.ts'
 import { Base } from '../structures/base.ts'
 import { Collection } from '../utils/collection.ts'
 
+// unknown does not work here.
+type TDataType<T, T2> = new (client: Client, raw: T, ...args: any[]) => T2
+
 /**
  * Managers handle caching data. And also some REST Methods as required.
  *
@@ -11,9 +14,9 @@ export class BaseManager<T, T2> extends Base {
   /** Caches Name or Key used to differentiate caches */
   cacheName: string
   /** Which data type does this cache have */
-  DataType: any
+  DataType: TDataType<T, T2>
 
-  constructor(client: Client, cacheName: string, DataType: any) {
+  constructor(client: Client, cacheName: string, DataType: TDataType<T, T2>) {
     super(client)
     this.cacheName = cacheName
     this.DataType = DataType
@@ -32,8 +35,8 @@ export class BaseManager<T, T2> extends Base {
   }
 
   /** Sets a value to Cache */
-  async set(key: string, value: T): Promise<any> {
-    return this.client.cache.set(this.cacheName, key, value)
+  async set(key: string, value: T): Promise<void> {
+    await this.client.cache.set(this.cacheName, key, value)
   }
 
   /** Deletes a key from Cache */
@@ -41,11 +44,15 @@ export class BaseManager<T, T2> extends Base {
     return this.client.cache.delete(this.cacheName, key)
   }
 
+  // any for backward compatibility and args: unknown[] for allowing
+  // extending classes to extend number of arguments required.
+  async delete(key: string, ...args: unknown[]): Promise<any> {}
+
   /** Gets an Array of values from Cache */
   async array(): Promise<T2[]> {
     let arr = await (this.client.cache.array(this.cacheName) as T[])
     if (arr === undefined) arr = []
-    return arr.map((e) => new this.DataType(this.client, e)) as any
+    return arr.map((e) => new this.DataType(this.client, e))
   }
 
   /** Gets a Collection of values from Cache */
@@ -84,8 +91,8 @@ export class BaseManager<T, T2> extends Base {
   }
 
   /** Deletes everything from Cache */
-  flush(): any {
-    return this.client.cache.deleteCache(this.cacheName)
+  async flush(): Promise<void> {
+    await this.client.cache.deleteCache(this.cacheName)
   }
 
   /** Gets number of values stored in Cache */
