@@ -154,6 +154,7 @@ export class CommandClient extends Client implements CommandClientOptions {
 
   /** Processes a Message to Execute Command. */
   async processMessage(msg: Message): Promise<any> {
+    let commandNotFound = false;
     if (!this.allowBots && msg.author.bot === true) return
 
     const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
@@ -211,7 +212,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (parsed === undefined) return
     const command = this.commands.fetch(parsed)
 
-    if (command === undefined) return
+    if (command === undefined) return this.emit("commandNotFound", msg, parsed)
     const category =
       command.category !== undefined
         ? this.categories.get(command.category)
