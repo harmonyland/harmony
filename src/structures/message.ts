@@ -49,23 +49,23 @@ export class MessageInteraction extends SnowflakeBase {
 
 export class Message extends SnowflakeBase {
   id: string
-  channelID: string
-  channel: TextChannel
+  channelID!: string
+  channel!: TextChannel
   guildID?: string
   guild?: Guild
   author: User
   member?: Member
-  content: string
+  content!: string
   editedTimestamp?: Date
-  tts: boolean
+  tts!: boolean
   mentions: MessageMentions
-  attachments: Attachment[]
-  embeds: Embed[]
+  attachments!: Attachment[]
+  embeds!: Embed[]
   reactions: MessageReactionsManager
   nonce?: string | number
-  pinned: boolean
+  pinned!: boolean
   webhookID?: string
-  type: number
+  type!: number
   activity?: MessageActivity
   application?: MessageApplication
   messageReference?: MessageReference
@@ -87,43 +87,12 @@ export class Message extends SnowflakeBase {
   ) {
     super(client)
     this.id = data.id
-    this.channelID = data.channel_id
-    this.guildID = data.guild_id
     this.author = author
-    this.content = data.content
-    this.createdTimestamp = new Date(data.timestamp)
-    this.editedTimestamp =
-      data.edited_timestamp === undefined
-        ? undefined
-        : new Date(data.edited_timestamp)
-    this.tts = data.tts
     this.mentions = new MessageMentions(this.client, this)
-    this.attachments = data.attachments
-    this.embeds = (data.embeds ?? []).map((v) => new Embed(v))
     this.reactions = new MessageReactionsManager(this.client, this)
-    this.nonce = data.nonce
-    this.pinned = data.pinned
-    this.webhookID = data.webhook_id
-    this.type = data.type
-    this.activity = data.activity
-    this.application = data.application
-    this.messageReference = data.message_reference
-    this.flags = data.flags ?? 0
-    this.channel = channel
-    this.stickerItems =
-      data.sticker_items !== undefined
-        ? data.sticker_items.map(
-            (payload) => new MessageStickerItem(this.client, payload)
-          )
-        : undefined
-    this.interaction =
-      data.interaction === undefined
-        ? undefined
-        : new MessageInteraction(this.client, data.interaction)
-    this.components =
-      data.components === undefined
-        ? []
-        : transformComponentPayload(data.components)
+    this.createdTimestamp = new Date(data.timestamp)
+
+    this.readFromData(data)
   }
 
   readFromData(data: MessagePayload): void {

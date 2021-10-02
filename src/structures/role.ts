@@ -10,34 +10,20 @@ import { User } from './user.ts'
 export class Role extends SnowflakeBase {
   id: string
   guild: Guild
-  name: string
-  color: number
-  hoist: boolean
-  position: number
-  permissions: Permissions
-  managed: boolean
-  mentionable: boolean
+  name!: string
+  color!: number
+  hoist!: boolean
+  position!: number
+  permissions!: Permissions
+  managed!: boolean
+  mentionable!: boolean
   tags?: RoleTags
 
   constructor(client: Client, data: RolePayload, guild: Guild) {
     super(client, data)
     this.id = data.id
     this.guild = guild
-    this.name = data.name
-    this.color = data.color
-    this.hoist = data.hoist
-    this.position = data.position
-    this.permissions = new Permissions(data.permissions)
-    this.managed = data.managed
-    this.mentionable = data.mentionable
-    this.tags =
-      data.tags !== undefined
-        ? {
-            botID: data.tags?.bot_id,
-            integrationID: data.tags?.integration_id,
-            premiumSubscriber: 'premium_subscriber' in (data.tags ?? {})
-          }
-        : undefined
+    this.readFromData(data)
   }
 
   readFromData(data: RolePayload): void {
@@ -51,6 +37,14 @@ export class Role extends SnowflakeBase {
         : this.permissions
     this.managed = data.managed ?? this.managed
     this.mentionable = data.mentionable ?? this.mentionable
+    this.tags =
+      data.tags !== undefined
+        ? {
+            botID: data.tags?.bot_id,
+            integrationID: data.tags?.integration_id,
+            premiumSubscriber: 'premium_subscriber' in (data.tags ?? {})
+          }
+        : undefined
   }
 
   /** Delete the Role */

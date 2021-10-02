@@ -28,8 +28,7 @@ export class TextChannel extends Channel {
   constructor(client: Client, data: TextChannelPayload) {
     super(client, data)
     this.messages = new MessagesManager(this.client, this)
-    this.lastMessageID = data.last_message_id
-    this.lastPinTimestamp = data.last_pin_timestamp
+    this.readFromData(data)
   }
 
   readFromData(data: TextChannelPayload): void {

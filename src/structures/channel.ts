@@ -46,17 +46,17 @@ import { TextChannel } from '../structures/textChannel.ts'
 import type { ThreadChannel } from '../structures/threadChannel.ts'
 
 export class Channel extends SnowflakeBase {
-  type: ChannelTypes
-  id: string
+  type!: ChannelTypes
+
   static cacheName = 'channel'
+
   get mention(): string {
     return `<#${this.id}>`
   }
 
   constructor(client: Client, data: ChannelPayload) {
     super(client, data)
-    this.type = data.type
-    this.id = data.id
+    this.readFromData(data)
   }
 
   readFromData(data: ChannelPayload): void {

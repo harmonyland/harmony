@@ -50,7 +50,7 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
     guild: Guild
   ) {
     super(client, data, guild)
-    this.topic = data.topic
+    this.readFromData(data)
   }
 
   readFromData(data: GuildTextBasedChannelPayload): void {
@@ -139,12 +139,12 @@ export const checkGuildTextBasedChannel = (
   GUILD_TEXT_BASED_CHANNEL_TYPES.includes(channel.type)
 
 export class GuildTextChannel extends GuildTextBasedChannel {
-  slowmode: number
+  slowmode!: number
   threads: ChannelThreadsManager
 
   constructor(client: Client, data: GuildTextChannelPayload, guild: Guild) {
     super(client, data, guild)
-    this.slowmode = data.rate_limit_per_user
+    this.readFromData(data)
     this.threads = new ChannelThreadsManager(
       this.client,
       this.guild.threads,

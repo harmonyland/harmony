@@ -12,8 +12,8 @@ import { IResolvable } from './resolvable.ts'
 
 export class User extends SnowflakeBase {
   id: string
-  username: string
-  discriminator: string
+  username!: string
+  discriminator!: string
   avatar?: string
   bot?: boolean
   system?: boolean
@@ -21,7 +21,7 @@ export class User extends SnowflakeBase {
   locale?: string
   verified?: boolean
   email?: string
-  flags: UserFlagsManager
+  flags!: UserFlagsManager
   /**
    * Nitro type of the User.
    *
@@ -30,7 +30,7 @@ export class User extends SnowflakeBase {
    * 2 = Regular Nitro
    */
   premiumType?: 0 | 1 | 2
-  publicFlags: UserFlagsManager
+  publicFlags!: UserFlagsManager
 
   get tag(): string {
     return `${this.username}#${this.discriminator}`
@@ -47,7 +47,7 @@ export class User extends SnowflakeBase {
   avatarURL(format: ImageFormats = 'png', size: ImageSize = 512): string {
     return this.avatar != null
       ? `${ImageURL(USER_AVATAR(this.id, this.avatar), format, size)}`
-      : `${DEFAULT_USER_AVATAR(String(Number(this.discriminator) % 5))}.png`
+      : this.defaultAvatarURL
   }
 
   get defaultAvatarURL(): string {
@@ -57,18 +57,7 @@ export class User extends SnowflakeBase {
   constructor(client: Client, data: UserPayload) {
     super(client, data)
     this.id = data.id
-    this.username = data.username
-    this.discriminator = data.discriminator
-    this.avatar = data.avatar
-    this.bot = data.bot
-    this.system = data.system
-    this.mfaEnabled = data.mfa_enabled
-    this.locale = data.locale
-    this.verified = data.verified
-    this.email = data.email
-    this.flags = new UserFlagsManager(data.flags)
-    this.premiumType = data.premium_type
-    this.publicFlags = new UserFlagsManager(data.public_flags)
+    this.readFromData(data)
   }
 
   readFromData(data: UserPayload): void {

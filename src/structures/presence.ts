@@ -23,10 +23,10 @@ export enum ActivityTypes {
 export class Presence extends Base {
   user: User
   guild: Guild
-  status: StatusType
+  status!: StatusType
   // TODO: Maybe a new structure for this?
-  activities: ActivityPayload[]
-  clientStatus: ClientStatus
+  activities!: ActivityPayload[]
+  clientStatus!: ClientStatus
 
   constructor(
     client: Client,
@@ -37,9 +37,7 @@ export class Presence extends Base {
     super(client, data)
     this.user = user
     this.guild = guild
-    this.status = data.status
-    this.activities = data.activities
-    this.clientStatus = data.client_status
+    this.fromPayload(data)
   }
 
   fromPayload(data: PresenceUpdatePayload): Presence {
