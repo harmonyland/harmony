@@ -157,6 +157,12 @@ const DEFAULT_USER_AVATAR = (iconID: string): string =>
   `${Constants.DISCORD_CDN_URL}/embed/avatars/${iconID}`
 const USER_AVATAR = (userID: string, iconID: string): string =>
   `${Constants.DISCORD_CDN_URL}/avatars/${userID}/${iconID}`
+const GUILD_MEMBER_AVATAR = (
+  guildID: string,
+  userID: string,
+  iconID: string
+): string =>
+  `${Constants.DISCORD_CDN_URL}/guilds/${guildID}/users/${userID}/avatars/${iconID}`
 const APPLICATION_ASSET = (applicationID: string, assetID: string): string =>
   `${Constants.DISCORD_CDN_URL}/app-icons/${applicationID}/${assetID}`
 const ACHIEVEMENT_ICON = (
@@ -281,6 +287,7 @@ export {
   GUILD_BANNER,
   DEFAULT_USER_AVATAR,
   USER_AVATAR,
+  GUILD_MEMBER_AVATAR,
   APPLICATION_ASSET,
   ACHIEVEMENT_ICON,
   TEAM_ICON,

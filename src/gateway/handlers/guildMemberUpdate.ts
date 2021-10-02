@@ -19,6 +19,7 @@ export const guildMemberUpdate: GatewayEventHandler = async (
     roles: d.roles,
     joined_at: d.joined_at,
     nick: d.nick,
+    avatar: d.avatar,
     premium_since: d.premium_since,
     deaf: member?.deaf ?? false,
     mute: member?.mute ?? false

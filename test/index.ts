@@ -312,6 +312,12 @@ client.on('messageCreate', async (msg: Message) => {
   } else if (msg.content === '!getPins') {
     const pins = await msg.channel.getPinnedMessages()
     msg.channel.send(`Pinned messages: ${pins.map((pin) => pin.id).join('\n')}`)
+  } else if (msg.content === '!avatar') {
+    if (msg.member) {
+      msg.channel.send(msg.member.avatarURL())
+    } else {
+      msg.channel.send(msg.author.avatarURL())
+    }
   }
 })
 
