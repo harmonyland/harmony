@@ -1,6 +1,6 @@
 import { MemberRolesManager } from '../managers/memberRoles.ts'
 import type { Client } from '../client/mod.ts'
-import { GUILD_MEMBER } from '../types/endpoint.ts'
+import { GUILD_MEMBER, GUILD_MEMBER_AVATAR } from '../types/endpoint.ts'
 import type { MemberPayload } from '../types/guild.ts'
 import { Permissions } from '../utils/permissions.ts'
 import { SnowflakeBase } from './base.ts'
@@ -8,6 +8,8 @@ import type { Guild } from './guild.ts'
 import type { VoiceChannel } from './guildVoiceChannel.ts'
 import type { Role } from './role.ts'
 import type { User } from './user.ts'
+import { ImageURL } from './cdn.ts'
+import type { ImageSize, ImageFormats } from '../types/cdn.ts'
 
 export interface MemberData {
   nick?: string | null
@@ -21,6 +23,7 @@ export class Member extends SnowflakeBase {
   id: string
   user: User
   nick: string | null
+  avatar: string | null
   roles: MemberRolesManager
   joinedAt: string
   premiumSince?: string
@@ -40,6 +43,7 @@ export class Member extends SnowflakeBase {
     this.id = data.user.id
     this.user = user
     this.nick = data.nick
+    this.avatar = data.avatar
     this.guild = guild
     this.roles = new MemberRolesManager(this.client, this.guild.roles, this)
     this.joinedAt = data.joined_at
@@ -60,6 +64,7 @@ export class Member extends SnowflakeBase {
 
   readFromData(data: MemberPayload): void {
     this.nick = data.nick ?? this.nick
+    this.avatar = data.avatar ?? this.avatar
     this.joinedAt = data.joined_at ?? this.joinedAt
     this.premiumSince = data.premium_since ?? this.premiumSince
     this.deaf = data.deaf ?? this.deaf
@@ -230,5 +235,15 @@ export class Member extends SnowflakeBase {
     if (!manageable) return false
     const me = by ?? (await this.guild.me())
     return me.permissions.has('KICK_MEMBERS')
+  }
+
+  avatarURL(format: ImageFormats = 'png', size: ImageSize = 512): string {
+    return this.avatar !== null && this.avatar !== undefined
+      ? `${ImageURL(
+          GUILD_MEMBER_AVATAR(this.guild.id, this.user.id, this.avatar),
+          format,
+          size
+        )}`
+      : this.user.avatarURL(format, size)
   }
 }
