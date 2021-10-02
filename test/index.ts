@@ -313,7 +313,7 @@ client.on('messageCreate', async (msg: Message) => {
     const pins = await msg.channel.getPinnedMessages()
     msg.channel.send(`Pinned messages: ${pins.map((pin) => pin.id).join('\n')}`)
   } else if (msg.content === '!avatar') {
-    if (msg.member) {
+    if (msg.member !== undefined) {
       msg.channel.send(msg.member.avatarURL())
     } else {
       msg.channel.send(msg.author.avatarURL())
