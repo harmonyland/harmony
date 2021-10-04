@@ -318,7 +318,7 @@ client.on('messageCreate', async (msg: Message) => {
     } else {
       msg.channel.send(msg.author.avatarURL())
     }
-  } else if (msg.content.startsWith('!roleIcon')) {
+  } else if (msg.content.startsWith('!roleIcon') === true) {
     const size = msg.mentions.roles.size
     const role = msg.mentions.roles.first()
     const icon = role?.roleIcon()
