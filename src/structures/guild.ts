@@ -148,7 +148,6 @@ export class GuildBans extends Base {
 }
 
 export class Guild extends SnowflakeBase {
-  id: string
   name?: string
   icon?: string
   splash?: string
@@ -175,7 +174,7 @@ export class Guild extends SnowflakeBase {
   rulesChannelID?: string
   joinedAt?: string
   large?: boolean
-  unavailable: boolean
+  unavailable = false
   memberCount?: number
   voiceStates: GuildVoiceStatesManager
   members: MembersManager
@@ -206,9 +205,9 @@ export class Guild extends SnowflakeBase {
 
   constructor(client: Client, data: GuildPayload) {
     super(client, data)
-    this.id = data.id
-    this.unavailable = data.unavailable ?? false
+
     this.readFromData(data)
+
     this.bans = new GuildBans(client, this)
     this.members = new MembersManager(this.client, this)
     this.voiceStates = new GuildVoiceStatesManager(client, this)

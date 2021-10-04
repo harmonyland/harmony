@@ -16,8 +16,8 @@ import type {
 } from '../client/voice.ts'
 
 export class VoiceChannel extends GuildChannel {
-  bitrate: string
-  userLimit: number
+  bitrate!: string
+  userLimit!: number
   voiceStates = new GuildChannelVoiceStatesManager(
     this.client,
     this.guild.voiceStates,
@@ -26,8 +26,7 @@ export class VoiceChannel extends GuildChannel {
 
   constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
     super(client, data, guild)
-    this.bitrate = data.bitrate
-    this.userLimit = data.user_limit
+    this.readFromData(data)
   }
 
   /** Join the Voice Channel */

@@ -20,15 +20,14 @@ export interface MemberData {
 }
 
 export class Member extends SnowflakeBase {
-  id: string
   user: User
-  nick: string | null
-  avatar: string | null
+  nick!: string | null
+  avatar!: string | null
   roles: MemberRolesManager
-  joinedAt: string
+  joinedAt!: string
   premiumSince?: string
-  deaf: boolean
-  mute: boolean
+  deaf!: boolean
+  mute!: boolean
   guild: Guild
   permissions: Permissions
 
@@ -41,15 +40,10 @@ export class Member extends SnowflakeBase {
   ) {
     super(client)
     this.id = data.user.id
+    this.readFromData(data)
     this.user = user
-    this.nick = data.nick
-    this.avatar = data.avatar
     this.guild = guild
     this.roles = new MemberRolesManager(this.client, this.guild.roles, this)
-    this.joinedAt = data.joined_at
-    this.premiumSince = data.premium_since
-    this.deaf = data.deaf
-    this.mute = data.mute
     if (perms !== undefined) this.permissions = perms
     else this.permissions = new Permissions(Permissions.DEFAULT)
   }

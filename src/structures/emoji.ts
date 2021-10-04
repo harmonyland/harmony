@@ -11,7 +11,7 @@ import { User } from './user.ts'
 
 /** Guild Emoji Object */
 export class Emoji extends Base {
-  id: string | null
+  id!: string | null
 
   get snowflake(): Snowflake | null {
     return this.id === null ? null : new Snowflake(this.id)
@@ -21,7 +21,7 @@ export class Emoji extends Base {
     return this.snowflake === null ? null : new Date(this.snowflake.timestamp)
   }
 
-  name: string | null
+  name!: string | null
   roles?: string[]
   user?: User
   guild?: Guild
@@ -46,14 +46,7 @@ export class Emoji extends Base {
 
   constructor(client: Client, data: EmojiPayload) {
     super(client, data)
-    this.id = data.id
-    this.name = data.name
-    if (data.user !== undefined) this.user = new User(this.client, data.user)
-    this.roles = data.roles
-    this.requireColons = data.require_colons
-    this.managed = data.managed
-    this.animated = data.animated
-    this.available = data.available
+    this.readFromData(data)
   }
 
   /**

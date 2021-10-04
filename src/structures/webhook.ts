@@ -31,10 +31,10 @@ export interface WebhookEditOptions {
 /** Webhook follows different way of instantiation */
 export class Webhook {
   client?: Client
-  id: string
-  type: 1 | 2
+  id!: string
+  type!: 1 | 2
   guildID?: string
-  channelID: string
+  channelID!: string
   user?: User
   userRaw?: UserPayload
   name?: string
@@ -50,21 +50,7 @@ export class Webhook {
   }
 
   constructor(data: WebhookPayload, client?: Client, rest?: RESTManager) {
-    this.id = data.id
-    this.type = data.type
-    this.channelID = data.channel_id
-    this.guildID = data.guild_id
-    this.user =
-      data.user === undefined || client === undefined
-        ? undefined
-        : new User(client, data.user)
-    if (data.user !== undefined && client === undefined)
-      this.userRaw = data.user
-    this.name = data.name
-    this.avatar = data.avatar
-    this.token = data.token
-    this.applicationID = data.application_id
-
+    this.fromPayload(data)
     if (rest !== undefined) this.rest = rest
     else if (client !== undefined) {
       this.client = client
@@ -72,7 +58,7 @@ export class Webhook {
     } else this.rest = new RESTManager()
   }
 
-  private fromPayload(data: WebhookPayload): Webhook {
+  private fromPayload(data: WebhookPayload): this {
     this.id = data.id
     this.type = data.type
     this.channelID = data.channel_id
