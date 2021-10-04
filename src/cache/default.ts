@@ -4,13 +4,13 @@ import type { ICacheAdapter } from './adapter.ts'
 /** Default Cache Adapter for in-memory caching. */
 export class DefaultCacheAdapter implements ICacheAdapter {
   // we're using Map here because we don't utilize Collection's methods
-  data = new Map<string, Collection<string, any>>()
+  data = new Map<string, Collection<string, unknown>>()
 
-  get(cacheName: string, key: string): any {
-    return this.data.get(cacheName)?.get(key)
+  get<T>(cacheName: string, key: string): T | undefined {
+    return this.data.get(cacheName)?.get(key) as T | undefined
   }
 
-  set(cacheName: string, key: string, value: any, expire?: number): void {
+  set<T>(cacheName: string, key: string, value: T, expire?: number): void {
     let cache = this.data.get(cacheName)
     if (cache === undefined) {
       cache = new Collection()
@@ -33,8 +33,8 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     return deleted
   }
 
-  array(cacheName: string): any[] | undefined {
-    return this.data.get(cacheName)?.array()
+  array<T>(cacheName: string): T[] | undefined {
+    return this.data.get(cacheName)?.array() as T[] | undefined
   }
 
   deleteCache(cacheName: string): boolean {
@@ -42,13 +42,15 @@ export class DefaultCacheAdapter implements ICacheAdapter {
     return this.data.delete(cacheName)
   }
 
-  size(
+  size<T>(
     cacheName: string,
-    filter?: (payload: any) => boolean
+    filter?: (payload: T) => boolean
   ): number | undefined {
     const cache = this.data.get(cacheName)
     if (cache === undefined) return
-    return filter !== undefined ? cache.filter(filter).size : cache.size
+    return filter !== undefined
+      ? cache.filter(filter as (value: unknown, key: string) => boolean).size
+      : cache.size
   }
 
   keys(cacheName: string): string[] | undefined {

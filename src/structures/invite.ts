@@ -2,14 +2,14 @@ import type { Client } from '../client/mod.ts'
 import type { ChannelPayload } from '../types/channel.ts'
 import { INVITE } from '../types/endpoint.ts'
 import type { GuildPayload } from '../types/guild.ts'
-import type { InvitePayload } from '../types/invite.ts'
+import type { InviteMetadataPayload, InvitePayload } from '../types/invite.ts'
 import type { UserPayload } from '../types/user.ts'
 import { Base } from './base.ts'
 
 export class Invite extends Base {
-  code: string
+  code!: string
   guild?: GuildPayload
-  channel: ChannelPayload
+  channel!: ChannelPayload
   inviter?: UserPayload
   targetUser?: UserPayload
   targetUserType?: number
@@ -42,22 +42,12 @@ export class Invite extends Base {
     return this.link
   }
 
-  constructor(client: Client, data: InvitePayload) {
+  constructor(
+    client: Client,
+    data: InvitePayload & Partial<InviteMetadataPayload>
+  ) {
     super(client)
-    this.code = data.code
-    this.guild = data.guild
-    this.channel = data.channel
-    this.inviter = data.inviter
-    this.targetUser = data.target_user
-    this.targetUserType = data.target_user_type
-    this.approximateMemberCount = data.approximate_member_count
-    this.approximatePresenceCount = data.approximate_presence_count
-
-    this.uses = (data as any).uses
-    this.maxUses = (data as any).maxUses
-    this.maxAge = (data as any).maxAge
-    this.temporary = (data as any).temporary
-    this.createdAtTimestamp = (data as any).createdAtTimestamp
+    this.readFromData(data)
   }
 
   /** Delete an invite. Requires the MANAGE_CHANNELS permission on the channel this invite belongs to, or MANAGE_GUILD to remove any invite across the guild. Returns an invite object on success. Fires a Invite Delete Gateway event. */
@@ -66,7 +56,7 @@ export class Invite extends Base {
     return new Invite(this.client, res)
   }
 
-  readFromData(data: InvitePayload): void {
+  readFromData(data: InvitePayload & Partial<InviteMetadataPayload>): void {
     this.code = data.code ?? this.code
     this.guild = data.guild ?? this.guild
     this.channel = data.channel ?? this.channel
@@ -78,11 +68,13 @@ export class Invite extends Base {
     this.approximatePresenceCount =
       data.approximate_presence_count ?? this.approximatePresenceCount
 
-    this.uses = (data as any).uses ?? this.uses
-    this.maxUses = (data as any).maxUses ?? this.maxUses
-    this.maxAge = (data as any).maxAge ?? this.maxAge
-    this.temporary = (data as any).temporary ?? this.temporary
+    this.uses = data.uses ?? this.uses
+    this.maxUses = data.max_uses ?? this.maxUses
+    this.maxAge = data.max_age ?? this.maxAge
+    this.temporary = data.temporary ?? this.temporary
     this.createdAtTimestamp =
-      (data as any).createdAtTimestamp ?? this.createdAtTimestamp
+      (data.created_at === undefined
+        ? undefined
+        : new Date(data.created_at).toISOString()) ?? this.createdAtTimestamp
   }
 }

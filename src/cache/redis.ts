@@ -3,7 +3,8 @@ import { ICacheAdapter } from './adapter.ts'
 import {
   connect,
   Redis,
-  RedisConnectOptions
+  RedisConnectOptions,
+  RedisValue
 } from 'https://deno.land/x/redis@v0.22.0/mod.ts'
 
 /** Redis Cache Adapter for using Redis as a cache-provider. */
@@ -52,28 +53,30 @@ export class RedisCacheAdapter implements ICacheAdapter {
     if (!this.ready) await this._redis
   }
 
-  async get(cacheName: string, key: string): Promise<string | undefined> {
+  async get<T>(cacheName: string, key: string): Promise<T | undefined> {
     await this._checkReady()
     const cache = await this.redis?.hget(cacheName, key)
     if (cache === undefined) return
     try {
-      return JSON.parse(cache)
+      return JSON.parse(cache) as T
     } catch (e) {
-      return cache
+      return cache as unknown as T
     }
   }
 
-  async set(
+  async set<T>(
     cacheName: string,
     key: string,
-    value: any,
+    value: T,
     expire?: number
   ): Promise<void> {
     await this._checkReady()
     await this.redis?.hset(
       cacheName,
       key,
-      typeof value === 'object' ? JSON.stringify(value) : value
+      typeof value === 'object'
+        ? JSON.stringify(value)
+        : (value as unknown as RedisValue)
     )
     if (expire !== undefined) {
       await this.redis?.hset(
@@ -93,7 +96,7 @@ export class RedisCacheAdapter implements ICacheAdapter {
     return ((await this.redis?.hdel(cacheName, ...keys)) ?? 0) === keys.length
   }
 
-  async array(cacheName: string): Promise<any[] | undefined> {
+  async array<T>(cacheName: string): Promise<T[] | undefined> {
     await this._checkReady()
     const data = await this.redis?.hvals(cacheName)
     return data?.map((e: string) => JSON.parse(e))

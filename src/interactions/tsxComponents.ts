@@ -15,6 +15,8 @@ export type ButtonStyleName =
   | 'red'
   | 'green'
 
+// Note: Believe me `any`s in here are for good.
+
 export interface Element<T = any> {
   type: ElementType
   props: T

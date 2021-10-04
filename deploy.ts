@@ -94,7 +94,7 @@ export function init(options: DeploySlashInitOptions): void {
         return
       }
 
-      await (client as any)._process(d)
+      await client._process(d)
     } catch (e) {
       await client.emit('interactionError', e)
     }
@@ -139,7 +139,9 @@ export function handle(
 }
 
 /** Listen for Interactions Event */
-export function interactions(cb: (i: Interaction) => any): void {
+export function interactions(
+  cb: (i: Interaction) => unknown | Promise<unknown>
+): void {
   client.on('interaction', cb)
 }
 

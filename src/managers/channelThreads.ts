@@ -10,20 +10,24 @@ import type {
   CreateThreadOptions,
   GuildTextChannel
 } from '../structures/guildTextChannel.ts'
-import type { Message } from '../../mod.ts'
+import type { BaseManager, Message } from '../../mod.ts'
 
 export class ChannelThreadsManager extends BaseChildManager<
   ThreadChannelPayload,
   ThreadChannel
 > {
   channel: GuildTextChannel
+  declare parent: BaseManager<ThreadChannelPayload, ThreadChannel>
 
   constructor(
     client: Client,
     parent: ThreadsManager,
     channel: GuildTextChannel
   ) {
-    super(client, parent as any)
+    super(
+      client,
+      parent as unknown as BaseManager<ThreadChannelPayload, ThreadChannel>
+    )
     this.channel = channel
   }
 
@@ -37,15 +41,13 @@ export class ChannelThreadsManager extends BaseChildManager<
   async delete(id: string | ThreadChannel): Promise<boolean> {
     const v = typeof id === 'string' ? id : id.id
     if ((await this.get(v))?.parentID !== this.channel.id) return false
-    // my IDE is giving error idk why
-    return (this.parent as any).delete(id)
+    await this.parent.delete(typeof id === 'string' ? id : id.id)
+    return true
   }
 
   async array(): Promise<ThreadChannel[]> {
-    const arr = (await this.parent.array()) as ThreadChannel[]
-    return arr.filter(
-      (c: ThreadChannel) => c.parentID === this.channel.id
-    ) as any
+    const arr = await this.parent.array()
+    return arr.filter((c) => c.parentID === this.channel.id)
   }
 
   async flush(): Promise<boolean> {

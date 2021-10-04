@@ -68,7 +68,7 @@ export class RESTEndpoints {
   /**
    * Gets entitlements for a given user. You can use this on your game backend to check entitlements of an arbitrary user, or perhaps in an administrative panel for your support team.
    */
-  async getEntitlements(applicationId: string): Promise<any> {
+  async getEntitlements(applicationId: string): Promise<unknown> {
     return this.rest.get(`/applications/${applicationId}/entitlements`)
   }
 
@@ -78,7 +78,7 @@ export class RESTEndpoints {
   async getEntitlement(
     applicationId: string,
     entitlementId: string
-  ): Promise<any> {
+  ): Promise<unknown> {
     return this.rest.get(
       `/applications/${applicationId}/entitlements/${entitlementId}`
     )
@@ -87,7 +87,7 @@ export class RESTEndpoints {
   /**
    * Get all SKUs for an application.
    */
-  async getSKUs(applicationId: string): Promise<any> {
+  async getSKUs(applicationId: string): Promise<unknown> {
     return this.rest.get(`/applications/${applicationId}/skus`)
   }
 
@@ -97,8 +97,8 @@ export class RESTEndpoints {
   async consumeSKU(
     applicationId: string,
     entitlementId: string,
-    payload: any
-  ): Promise<any> {
+    payload: unknown
+  ): Promise<unknown> {
     return this.rest.post(
       `/applications/${applicationId}/entitlements/${entitlementId}/consume`,
       payload
@@ -111,7 +111,7 @@ export class RESTEndpoints {
   async deleteTestEntitlement(
     applicationId: string,
     entitlementId: string
-  ): Promise<any> {
+  ): Promise<unknown> {
     return this.rest.delete(
       `/applications/${applicationId}/entitlements/${entitlementId}`
     )
@@ -123,15 +123,18 @@ export class RESTEndpoints {
   async createPurchaseDiscount(
     skuId: string,
     userId: string,
-    payload: any
-  ): Promise<any> {
+    payload: unknown
+  ): Promise<unknown> {
     return this.rest.put(`/store/skus/${skuId}/discounts/${userId}`, payload)
   }
 
   /**
    * Deletes the currently active discount on the given SKU for the given user. You **do not need** to call this after a user has made a discounted purchase; successful discounted purchases will automatically remove the discount for that user for subsequent purchases.
    */
-  async deletePurchaseDiscount(skuId: string, userId: string): Promise<any> {
+  async deletePurchaseDiscount(
+    skuId: string,
+    userId: string
+  ): Promise<unknown> {
     return this.rest.delete(`/store/skus/${skuId}/discounts/${userId}`)
   }
 
@@ -146,7 +149,7 @@ export class RESTEndpoints {
 
   async createGlobalApplicationCommand(
     applicationId: string,
-    payload: any
+    payload: unknown
   ): Promise<ApplicationCommandPayload> {
     return this.rest.post(`/applications/${applicationId}/commands`, payload)
   }
@@ -276,7 +279,7 @@ export class RESTEndpoints {
     interactionId: string,
     interactionToken: string,
     payload: InteractionResponsePayload
-  ): Promise<any> {
+  ): Promise<void> {
     return this.rest.post(
       `/interactions/${interactionId}/${interactionToken}/callback`,
       payload
@@ -290,7 +293,7 @@ export class RESTEndpoints {
     applicationId: string,
     interactionToken: string,
     payload: CreateWebhookMessageBasePayload
-  ): Promise<any> {
+  ): Promise<MessagePayload> {
     return this.rest.patch(
       `/webhooks/${applicationId}/${interactionToken}/messages/@original`,
       payload
@@ -316,7 +319,7 @@ export class RESTEndpoints {
     applicationId: string,
     interactionToken: string,
     payload: CreateWebhookMessageBasePayload
-  ): Promise<any> {
+  ): Promise<MessagePayload> {
     return this.rest.post(
       `/webhooks/${applicationId}/${interactionToken}`,
       payload
@@ -331,7 +334,7 @@ export class RESTEndpoints {
     interactionToken: string,
     messageId: string,
     payload: CreateWebhookMessageBasePayload
-  ): Promise<any> {
+  ): Promise<MessagePayload> {
     return this.rest.patch(
       `/webhooks/${applicationId}/${interactionToken}/messages/${messageId}`,
       payload
@@ -523,7 +526,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
     channelId: string,
     messageId: string,
     emoji: string
-  ): Promise<any> {
+  ): Promise<void> {
     return this.rest.delete(
       `/channels/${channelId}/messages/${messageId}/reactions/${emoji}`
     )
@@ -652,7 +655,10 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Adds a recipient to a Group DM using their access token
    */
-  async groupDmAddRecipient(channelId: string, userId: string): Promise<any> {
+  async groupDmAddRecipient(
+    channelId: string,
+    userId: string
+  ): Promise<unknown> {
     return this.rest.put(`/channels/${channelId}/recipients/${userId}`)
   }
 
@@ -821,7 +827,10 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Adds a user to the guild, provided you have a valid oauth2 access token for the user with the `guilds.join` scope. Returns a 201 Created with the [guild member](#DOCS_RESOURCES_GUILD/guild-member-object) as the body, or 204 No Content if the user is already a member of the guild. Fires a [Guild Member Add](#DOCS_TOPICS_GATEWAY/guild-member-add) Gateway event.
    * For guilds with [Membership Screening](#DOCS_RESOURCES_GUILD/membership-screening-object) enabled, this endpoint will default to adding new members as `pending` in the [guild member object](#DOCS_RESOURCES_GUILD/guild-member-object). Members that are `pending` will have to complete membership screening before they become full members that can talk.
    */
-  async addGuildMember(guildId: string, userId: string): Promise<any> {
+  async addGuildMember(
+    guildId: string,
+    userId: string
+  ): Promise<MemberPayload | undefined> {
     return this.rest.put(`/guilds/${guildId}/members/${userId}`)
   }
 
@@ -842,7 +851,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async modifyCurrentUserNick(
     guildId: string,
     payload: { nick?: string | null }
-  ): Promise<any> {
+  ): Promise<string> {
     return this.rest.patch(`/guilds/${guildId}/members/@me/nick`, payload)
   }
 
@@ -933,7 +942,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async modifyGuildRolePositions(
     guildId: string,
     payload: Array<{ id: string; position: number }>
-  ): Promise<any> {
+  ): Promise<RolePayload[]> {
     return this.rest.patch(`/guilds/${guildId}/roles`, payload)
   }
 
@@ -970,7 +979,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async beginGuildPrune(
     guildId: string,
     payload: GuildBeginPrunePayload
-  ): Promise<any> {
+  ): Promise<void> {
     return this.rest.post(`/guilds/${guildId}/prune`, payload)
   }
 
@@ -1024,6 +1033,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
     return this.rest.patch(`/guilds/${guildId}/widget`, payload)
   }
 
+  // It's type is not specified in docs, so I'll use any.
   /**
    * Returns the widget for the guild.
    */
@@ -1074,7 +1084,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async createGuildFromTemplate(
     templateCode: string,
     payload: Partial<GuildPayload>
-  ): Promise<any> {
+  ): Promise<GuildPayload> {
     return this.rest.post(`/guilds/templates/${templateCode}`, payload)
   }
 
@@ -1090,7 +1100,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    */
   async createGuildTemplate(
     guildId: string,
-    payload: any
+    payload: { name: string; description?: string | null }
   ): Promise<TemplatePayload> {
     return this.rest.post(`/guilds/${guildId}/templates`, payload)
   }
@@ -1194,7 +1204,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   /**
    * Returns a list of [connection](#DOCS_RESOURCES_USER/connection-object) objects. Requires the `connections` OAuth2 scope.
    */
-  async getUserConnections(): Promise<any> {
+  async getUserConnections(): Promise<unknown[]> {
     return this.rest.get(`/users/@me/connections`)
   }
 
@@ -1296,8 +1306,8 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async executeSlackCompatibleWebhook(
     webhookId: string,
     webhookToken: string,
-    payload: any
-  ): Promise<any> {
+    payload: unknown
+  ): Promise<MessagePayload> {
     return this.rest.post(
       `/webhooks/${webhookId}/${webhookToken}/slack`,
       payload
@@ -1307,8 +1317,8 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
   async executeGitHubCompatibleWebhook(
     webhookId: string,
     webhookToken: string,
-    payload: any
-  ): Promise<any> {
+    payload: unknown
+  ): Promise<MessagePayload> {
     return this.rest.post(
       `/webhooks/${webhookId}/${webhookToken}/github`,
       payload
@@ -1345,10 +1355,11 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
     return this.rest.get(`/oauth2/applications/@me`)
   }
 
+  // We do not include types for this object.
   /**
    * Returns info about the current authorization. Requires authentication with a bearer token.
    */
-  async getCurrentAuthorizationInformation(): Promise<any> {
+  async getCurrentAuthorizationInformation(): Promise<unknown> {
     return this.rest.get(`/oauth2/@me`)
   }
 

@@ -80,7 +80,7 @@ export enum ApplicationCommandOptionType {
 export { ApplicationCommandOptionType as SlashCommandOptionType }
 
 export interface ApplicationCommandOptionBase<
-  T = any,
+  T = unknown,
   OptionType = ApplicationCommandOptionType
 > {
   /** Name of the option. */

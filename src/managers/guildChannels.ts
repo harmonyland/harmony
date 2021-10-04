@@ -1,5 +1,4 @@
 import type { Client } from '../client/mod.ts'
-import { Channel } from '../structures/channel.ts'
 import { Guild } from '../structures/guild.ts'
 import type { CategoryChannel } from '../structures/guildCategoryChannel.ts'
 import {
@@ -11,6 +10,7 @@ import type { GuildChannels, GuildChannelPayloads } from '../types/guild.ts'
 import { CHANNEL, GUILD_CHANNELS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import type { ChannelsManager } from './channels.ts'
+import type { BaseManager } from './base.ts'
 
 export interface CreateChannelOptions {
   name: string
@@ -32,7 +32,10 @@ export class GuildChannelsManager extends BaseChildManager<
   guild: Guild
 
   constructor(client: Client, parent: ChannelsManager, guild: Guild) {
-    super(client, parent as any)
+    super(
+      client,
+      parent as unknown as BaseManager<GuildChannelPayloads, GuildChannels>
+    )
     this.guild = guild
   }
 
@@ -46,7 +49,7 @@ export class GuildChannelsManager extends BaseChildManager<
     return (
       (await this.client.cache.size(
         this.parent.cacheName,
-        (d) => d.guild_id === this.guild.id
+        (d: GuildChannelPayload) => d.guild_id === this.guild.id
       )) ?? 0
     )
   }
@@ -57,10 +60,10 @@ export class GuildChannelsManager extends BaseChildManager<
   }
 
   async array(): Promise<GuildChannels[]> {
-    const arr = (await this.parent.array()) as Channel[]
+    const arr = await this.parent.array()
     return arr.filter(
-      (c: any) => c.guild !== undefined && c.guild.id === this.guild.id
-    ) as any
+      (c) => c.guild !== undefined && c.guild.id === this.guild.id
+    )
   }
 
   async flush(): Promise<boolean> {

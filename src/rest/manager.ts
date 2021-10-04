@@ -12,7 +12,7 @@ export type MethodFunction = (
   bucket?: string | null,
   rawResponse?: boolean,
   options?: RequestOptions
-) => Promise<any>
+) => Promise<any> // untyped JSON
 
 export interface APIMap extends MethodFunction {
   /** Make a GET request to current route */
@@ -40,10 +40,10 @@ export const builder = (rest: RESTManager, acum = '/'): APIMap => {
       if (METHODS.includes(String(p)) === true) {
         const method = (
           rest as unknown as {
-            [name: string]: MethodFunction
+            [name: string]: (...args: unknown[]) => Promise<unknown>
           }
         )[String(p)]
-        return async (...args: any[]) =>
+        return async (...args: unknown[]) =>
           await method.bind(rest)(
             `${Constants.DISCORD_API_URL}/v${rest.version}${acum.substring(
               0,
@@ -62,7 +62,7 @@ export interface RESTOptions {
   /** Token to use for authorization */
   token?: string | (() => string | undefined)
   /** Headers to patch with if any */
-  headers?: { [name: string]: string | undefined }
+  headers?: Record<string, string>
   /** Whether to use Canary instance of Discord API or not */
   canary?: boolean
   /** Discord REST API version to use */
@@ -120,7 +120,7 @@ export class RESTManager {
   /** Token Type of the Token if any */
   tokenType: TokenType = TokenType.Bot
   /** Headers object which patch the current ones */
-  headers: any = {}
+  headers: Record<string, string> = {}
   /** Optional custom User Agent (header) */
   userAgent?: string
   /** Whether REST Manager is using Canary API */
@@ -136,7 +136,7 @@ export class RESTManager {
   globalLimit = Infinity
   globalRemaining = this.globalLimit
   globalReset: number | null = null
-  globalDelay: number | null = null
+  globalDelay: number | null | Promise<void> = null
   retryLimit = 1
   restTimeOffset = 0
 
@@ -172,7 +172,7 @@ export class RESTManager {
     })
   }
 
-  setTimeout(fn: (...args: any[]) => any, ms: number): number {
+  setTimeout(fn: (...args: unknown[]) => unknown, ms: number): number {
     const timer = setTimeout(async () => {
       this.timers.delete(timer)
       await fn()

@@ -14,14 +14,12 @@ export class GatewayCache {
     if (cacheName !== undefined) this.cacheName = cacheName
   }
 
-  async get(key: string): Promise<undefined | any> {
-    const result = await this.client.cache.get(this.cacheName, key)
-    return result
+  async get<T>(key: string): Promise<undefined | T> {
+    return this.client.cache.get<T>(this.cacheName, key)
   }
 
-  async set(key: string, value: any): Promise<any> {
-    const result = await this.client.cache.set(this.cacheName, key, value)
-    return result
+  async set<T>(key: string, value: T): Promise<void> {
+    await this.client.cache.set(this.cacheName, key, value)
   }
 
   async delete(key: string): Promise<boolean> {

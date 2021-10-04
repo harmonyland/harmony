@@ -101,7 +101,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
         .then(async (data) => {
           await this.set(id, data as MessagePayload)
 
-          let channel: any = await this.client.channels.get<TextChannel>(
+          let channel = await this.client.channels.get<TextChannel>(
             this.channel.id
           )
           if (channel === undefined)

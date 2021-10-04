@@ -2,6 +2,8 @@ import { Collection } from '../utils/collection.ts'
 import type { Client } from '../client/client.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 
+// Note: need to keep anys here for compatibility
+
 export type CollectorFilter = (...args: any[]) => boolean | Promise<boolean>
 
 export interface CollectorOptions {
@@ -23,15 +25,17 @@ export interface CollectorOptions {
 export type CollectorEvents = {
   start: []
   end: []
-  collect: any
+  collect: any[]
 }
 
-export class Collector extends HarmonyEventEmitter<CollectorEvents> {
+export class Collector<
+  T extends unknown[] = any[]
+> extends HarmonyEventEmitter<CollectorEvents> {
   client?: Client
   private _started: boolean = false
   event: string
   filter: CollectorFilter = () => true
-  collected: Collection<string, any[]> = new Collection()
+  collected: Collection<string, T> = new Collection()
   max?: number
   deinitOnEnd: boolean = false
   timeout?: number
@@ -67,7 +71,7 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   }
 
   /** Start collecting */
-  collect(): Collector {
+  collect(): this {
     this.started = true
     if (this.client !== undefined) this.init(this.client)
     if (this._timer !== undefined) clearTimeout(this._timer)
@@ -80,39 +84,39 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   }
 
   /** End collecting */
-  end(): Collector {
+  end(): this {
     this.started = false
     if (this._timer !== undefined) clearTimeout(this._timer)
     return this
   }
 
   /** Reset collector and start again */
-  reset(): Collector {
+  reset(): this {
     this.collected = new Collection()
     this.collect()
     return this
   }
 
   /** Init the Collector on Client */
-  init(client: Client): Collector {
+  init(client: Client): this {
     this.client = client
     client.addCollector(this)
     return this
   }
 
   /** De initialize the Collector i.e. remove cleanly */
-  deinit(client: Client): Collector {
+  deinit(client: Client): this {
     client.removeCollector(this)
     return this
   }
 
   /** Checks we may want to perform on an extended version of Collector */
-  protected check(..._args: any[]): boolean | Promise<boolean> {
+  protected check(..._args: T): boolean | Promise<boolean> {
     return true
   }
 
   /** Fire the Collector */
-  async _fire(...args: any[]): Promise<void> {
+  async _fire(...args: T): Promise<void> {
     if (!this.started) return
     const check = await this.check(...args)
     if (!check) return
@@ -130,19 +134,19 @@ export class Collector extends HarmonyEventEmitter<CollectorEvents> {
   }
 
   /** Set filter of the Collector */
-  when(filter: CollectorFilter): Collector {
+  when(filter: CollectorFilter): this {
     this.filter = filter
     return this
   }
 
   /** Add a new listener for 'collect' event */
-  each(handler: CallableFunction): Collector {
+  each(handler: CallableFunction): this {
     this.on('collect', () => handler())
     return this
   }
 
   /** Returns a Promise resolved when Collector ends or a timeout occurs */
-  async wait(timeout?: number): Promise<Collector> {
+  async wait(timeout?: number): Promise<this> {
     if (timeout === undefined) timeout = this.timeout ?? 0
     return await new Promise((resolve, reject) => {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions

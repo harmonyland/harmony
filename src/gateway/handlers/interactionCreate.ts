@@ -28,6 +28,7 @@ import {
 import { Message } from '../../structures/message.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
 import { MessagePayload } from '../../types/channel.ts'
+import { GuildPayload, MemberPayload } from '../../types/guild.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -43,7 +44,11 @@ export const interactionCreate: GatewayEventHandler = async (
     d.guild_id === undefined
       ? undefined
       : (await gateway.client.guilds.get(d.guild_id)) ??
-        new Guild(gateway.client, { unavailable: true, id: d.guild_id } as any)
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        new Guild(gateway.client, {
+          unavailable: true,
+          id: d.guild_id
+        } as GuildPayload)
 
   if (d.member !== undefined)
     await guild?.members.set(d.member.user.id, d.member)
@@ -80,7 +85,7 @@ export const interactionCreate: GatewayEventHandler = async (
 
   if ((d.data as InteractionApplicationCommandData)?.resolved !== undefined) {
     for (const [id, data] of Object.entries(
-      (d.data as any)?.resolved.users ?? {}
+      (d.data as InteractionApplicationCommandData)?.resolved?.users ?? {}
     )) {
       await gateway.client.users.set(id, data as UserPayload)
       resolved.users[id] = (await gateway.client.users.get(
@@ -97,18 +102,16 @@ export const interactionCreate: GatewayEventHandler = async (
       let permissions = new Permissions(Permissions.DEFAULT)
       if (roles !== undefined) {
         const mRoles = roles.filter(
-          (r) =>
-            ((data as any)?.roles?.includes(r.id) as boolean) ||
-            r.id === guild?.id
+          (r) => (data?.roles?.includes(r.id) as boolean) || r.id === guild?.id
         )
         permissions = new Permissions(mRoles.map((r) => r.permissions))
       }
-      ;(data as any).user = (d.data as any).resolved.users?.[
-        id
-      ] as unknown as UserPayload
+      ;(data as MemberPayload).user = (
+        d.data as InteractionApplicationCommandData
+      ).resolved?.users?.[id] as unknown as UserPayload
       resolved.members[id] = new Member(
         gateway.client,
-        data as any,
+        data,
         resolved.users[id],
         guild as Guild,
         permissions
@@ -124,7 +127,7 @@ export const interactionCreate: GatewayEventHandler = async (
       } else {
         resolved.roles[id] = new Role(
           gateway.client,
-          data as any,
+          data,
           guild as unknown as Guild
         )
       }

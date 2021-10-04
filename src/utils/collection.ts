@@ -1,3 +1,5 @@
+// Note: can't change this any to unknown now, it'd be breaking
+
 /** Enhanced Map with various utility functions */
 export class Collection<K = string, V = any> extends Map<K, V> {
   /** Set a key to value in Collection */

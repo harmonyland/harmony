@@ -86,7 +86,7 @@ class ChannelLog extends Extension {
     class Pong extends Command {
       name = 'Pong'
 
-      execute(ctx: CommandContext): any {
+      execute(ctx: CommandContext): void {
         ctx.message.reply('Ping!')
       }
     }

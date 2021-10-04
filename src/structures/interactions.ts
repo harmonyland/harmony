@@ -79,7 +79,7 @@ export class InteractionChannel extends SnowflakeBase {
   }
 
   /** Resolve to actual Channel object if present in Cache */
-  async resolve<T = Channel>(): Promise<T | undefined> {
+  async resolve<T extends Channel = Channel>(): Promise<T | undefined> {
     return this.client.channels.get<T>(this.id)
   }
 }
@@ -328,7 +328,7 @@ export class Interaction extends SnowflakeBase {
       }
     }
 
-    const payload: any = {
+    const payload = {
       content: text,
       embeds:
         (option as WebhookMessageOptions)?.embed !== undefined
@@ -350,7 +350,9 @@ export class Interaction extends SnowflakeBase {
           ? (option as { components: CallableFunction }).components()
           : transformComponent(
               (option as { components: MessageComponentData[] }).components
-            )
+            ),
+      username: undefined as undefined | string,
+      avatar: undefined as undefined | string
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {
@@ -390,7 +392,7 @@ export class Interaction extends SnowflakeBase {
       content?: string
       components?: MessageComponentData[]
       embeds?: Array<Embed | EmbedPayload>
-      file?: any
+      file?: MessageAttachment
       allowed_mentions?: {
         parse?: string
         roles?: string[]

@@ -44,8 +44,8 @@ export class MessageReactionsManager extends BaseManager<
     return reaction
   }
 
-  async set(key: string, value: Reaction): Promise<any> {
-    return this.client.cache.set(
+  async set(key: string, value: Reaction): Promise<void> {
+    await this.client.cache.set(
       this.cacheName,
       key,
       value,
@@ -68,9 +68,9 @@ export class MessageReactionsManager extends BaseManager<
     )
   }
 
-  async flush(): Promise<any> {
+  async flush(): Promise<void> {
     await this.client.cache.deleteCache(`reaction_users:${this.message.id}`)
-    return this.client.cache.deleteCache(this.cacheName)
+    await this.client.cache.deleteCache(this.cacheName)
   }
 
   /** Remove all Reactions from the Message */

@@ -1,8 +1,8 @@
 import { UserFlags } from '../types/userFlags.ts'
-import { BitField } from './bitfield.ts'
+import { BitField, BitFieldResolvable } from './bitfield.ts'
 
 export class UserFlagsManager extends BitField {
-  constructor(bits: any) {
-    super(UserFlags, bits)
+  constructor(bits: BitFieldResolvable | undefined) {
+    super(UserFlags, bits ?? 0)
   }
 }

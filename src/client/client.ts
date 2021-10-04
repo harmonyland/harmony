@@ -401,7 +401,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   }
 
   async emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
-    const collectors: Collector[] = []
+    const collectors: Array<Collector<unknown[]>> = []
     for (const collector of this.collectors.values()) {
       if (collector.event === event) collectors.push(collector)
     }

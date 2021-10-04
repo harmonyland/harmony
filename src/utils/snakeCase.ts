@@ -7,6 +7,7 @@ export function camelCase(name: string): string {
     .join('')
 }
 
+// Can't really make an actual type for this
 export function toCamelCase(data: any): any {
   if (Array.isArray(data))
     return data.map((e) => {

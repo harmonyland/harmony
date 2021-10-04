@@ -9,8 +9,8 @@ import { toCamelCase } from '../utils/snakeCase.ts'
 export function transformComponent(
   d: MessageComponentData[]
 ): MessageComponentPayload[] {
-  return d.map((e: any) => {
-    e = { ...e }
+  return d.map((data: unknown) => {
+    const e = { ...(data as Record<string, unknown>) }
     if (e.customID !== undefined) {
       e.custom_id = e.customID
       delete e.customID
@@ -24,16 +24,19 @@ export function transformComponent(
       delete e.maxValues
     }
     if (e.components !== undefined) {
-      e.components = transformComponent(e.components)
+      e.components = transformComponent(e.components as MessageComponentData[])
     }
     if (typeof e.type === 'string') {
-      e.type = MessageComponentType[e.type.toUpperCase()]
+      e.type =
+        MessageComponentType[
+          e.type.toUpperCase() as keyof typeof MessageComponentType
+        ]
     }
     if (typeof e.style === 'string') {
-      e.style = ButtonStyle[e.style.toUpperCase()]
+      e.style = ButtonStyle[e.style.toUpperCase() as keyof typeof ButtonStyle]
     }
     return e
-  })
+  }) as unknown as MessageComponentPayload[]
 }
 
 export function transformComponentPayload(

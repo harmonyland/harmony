@@ -2,7 +2,7 @@
 
 export interface RequestPromise {
   resolve: CallableFunction
-  promise: Promise<any>
+  promise: Promise<unknown>
 }
 
 export class RequestQueue {
@@ -12,7 +12,7 @@ export class RequestQueue {
     return this.promises.length
   }
 
-  async wait(): Promise<any> {
+  async wait(): Promise<unknown> {
     const next =
       this.promises.length !== 0
         ? this.promises[this.promises.length - 1].promise
