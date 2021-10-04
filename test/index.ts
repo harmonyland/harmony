@@ -331,6 +331,11 @@ client.on('messageCreate', async (msg: Message) => {
         msg.channel.send(icon)
       }
     }
+  } else if (msg.content === '!roleSmile') {
+    const role = await msg.guild?.roles.get('834440844270501888')
+    if (role !== undefined) {
+      role.edit({ unicode_emoji: '😀' })
+    }
   }
 })
 
