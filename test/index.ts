@@ -318,6 +318,19 @@ client.on('messageCreate', async (msg: Message) => {
     } else {
       msg.channel.send(msg.author.avatarURL())
     }
+  } else if (msg.content.startsWith('!roleIcon')) {
+    const size = msg.mentions.roles.size
+    const role = msg.mentions.roles.first()
+    const icon = role?.roleIcon()
+    if (size === 0) {
+      msg.channel.send('no role mentioned')
+    } else {
+      if (icon === undefined) {
+        msg.channel.send('no icon')
+      } else {
+        msg.channel.send(icon)
+      }
+    }
   }
 })
 

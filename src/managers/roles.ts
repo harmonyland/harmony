@@ -1,4 +1,5 @@
 import { Permissions } from '../../mod.ts'
+import { fetchAuto } from '../../deps.ts'
 import type { Client } from '../client/mod.ts'
 import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
@@ -101,6 +102,14 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
   }
 
   async edit(role: Role | string, options: RoleModifyPayload): Promise<Role> {
+    if (
+      options.icon !== undefined &&
+      options.icon !== null &&
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      !options.icon.startsWith('data:')
+    ) {
+      options.icon = await fetchAuto(options.icon)
+    }
     if (role instanceof Role) {
       role = role.id
     }

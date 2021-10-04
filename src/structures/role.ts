@@ -5,6 +5,9 @@ import { Permissions } from '../utils/permissions.ts'
 import type { Guild } from './guild.ts'
 import type { Member } from './member.ts'
 import { User } from './user.ts'
+import { ImageURL } from './cdn.ts'
+import { ImageFormats, ImageSize } from '../types/cdn.ts'
+import { ROLE_ICON } from '../types/endpoint.ts'
 
 /** Represents a Guild Role */
 export class Role extends SnowflakeBase {
@@ -13,6 +16,8 @@ export class Role extends SnowflakeBase {
   name!: string
   color!: number
   hoist!: boolean
+  icon?: string
+  unicodeEmoji?: string
   position!: number
   permissions!: Permissions
   managed!: boolean
@@ -30,6 +35,8 @@ export class Role extends SnowflakeBase {
     this.name = data.name ?? this.name
     this.color = data.color ?? this.color
     this.hoist = data.hoist ?? this.hoist
+    this.icon = data.icon ?? this.icon
+    this.unicodeEmoji = data.unicode_emoji ?? this.unicodeEmoji
     this.position = data.position ?? this.position
     this.permissions =
       data.permissions !== undefined
@@ -89,6 +96,16 @@ export class Role extends SnowflakeBase {
     }
 
     return member.roles.remove(this.id)
+  }
+
+  /** Get the icon for the role. If set, is either a URL to an icon, or a Unicode emoji. */
+  roleIcon(
+    format: ImageFormats = 'png',
+    size: ImageSize = 512
+  ): string | undefined {
+    return this.icon !== undefined
+      ? `${ImageURL(ROLE_ICON(this.id, this.icon), format, size)}`
+      : this.unicodeEmoji
   }
 }
 
