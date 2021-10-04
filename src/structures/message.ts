@@ -88,6 +88,7 @@ export class Message extends SnowflakeBase {
     super(client)
     this.id = data.id
     this.author = author
+    this.channel = channel
     this.mentions = new MessageMentions(this.client, this)
     this.reactions = new MessageReactionsManager(this.client, this)
     this.createdTimestamp = new Date(data.timestamp)
