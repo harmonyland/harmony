@@ -50,8 +50,11 @@ export interface VoiceRegion {
   id: string
   /** Name of the region */
   name: string
-  /** True if this is a vip-only server */
-  vip: boolean
+  /**
+   * True if this is a vip-only server
+   * @deprecated This field is no longer sent
+   */
+  vip: false
   /** True for a single server that is closest to the current user's client */
   optimal: boolean
   /** Whether this is a deprecated voice region (avoid switching to these) */
