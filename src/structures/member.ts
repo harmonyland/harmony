@@ -240,4 +240,12 @@ export class Member extends SnowflakeBase {
         )}`
       : this.user.avatarURL(format, size)
   }
+
+  async effectiveColor(): Promise<number> {
+    return (
+      (await this.roles.array())
+        .sort((a, b) => b.position - a.position)
+        .find((r) => r.color !== 0)?.color ?? 0
+    )
+  }
 }
