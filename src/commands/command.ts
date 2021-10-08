@@ -171,7 +171,7 @@ export class CommandCategory {
   /** Name of the Category. */
   name: string = ''
   /** Description of the Category. */
-  description: string = ''
+  description?: string = ''
   /** Permissions(s) required by both User and Bot in order to use Category Commands */
   permissions?: string | string[]
   /** Permission(s) required for using Category Commands */
