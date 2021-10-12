@@ -56,7 +56,7 @@ export type CommandContextMiddlewareNext = () => unknown | Promise<unknown>
  *
  * See InteractionsClient (`Client#slash`) for more info about Slash Commands.
  */
-export class CommandClient extends Client implements CommandClientOptions {
+export class CommandClient<CustomEvents extends Record<string, unknown[]> = {}> extends Client<CustomEvents> implements CommandClientOptions {
   prefix: string | string[]
   mentionPrefix: boolean
 
@@ -74,9 +74,9 @@ export class CommandClient extends Client implements CommandClientOptions {
   allowDMs: boolean
   caseSensitive: boolean
 
-  extensions: ExtensionsManager = new ExtensionsManager(this)
-  commands: CommandsManager = new CommandsManager(this)
-  categories: CategoriesManager = new CategoriesManager(this)
+  extensions: ExtensionsManager = new ExtensionsManager(this as CommandClient)
+  commands: CommandsManager = new CommandsManager(this as CommandClient)
+  categories: CategoriesManager = new CategoriesManager(this as CommandClient)
 
   middlewares = new Array<CommandContextMiddleware<CommandContext>>()
 
@@ -207,7 +207,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     if (typeof usedPrefix !== 'string') return
     prefix = usedPrefix
 
-    const parsed = parseCommand(this, msg, prefix)
+    const parsed = parseCommand(this as CommandClient, msg, prefix)
     if (parsed === undefined) return
     const command = this.commands.fetch(parsed)
 
@@ -260,7 +260,7 @@ export class CommandClient extends Client implements CommandClientOptions {
       return
 
     const ctx: CommandContext = {
-      client: this,
+      client: this as CommandClient,
       name: parsed.name,
       prefix,
       rawArgs: parsed.args,

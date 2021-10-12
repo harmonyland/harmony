@@ -79,7 +79,7 @@ export interface ClientOptions {
 /**
  * Harmony Client. Provides high-level interface over the REST and WebSocket API.
  */
-export class Client extends HarmonyEventEmitter<ClientEvents> {
+export class Client<CustomEvents extends Record<string, unknown[]> = {}> extends HarmonyEventEmitter<ClientEvents & CustomEvents> {
   /** REST Manager - used to make all requests */
   rest: RESTManager
   /** User which Client logs in to, undefined until logs in */
@@ -131,18 +131,18 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   fetchGatewayInfo: boolean = true
 
   /** Voice Connections Manager */
-  readonly voice = new VoiceManager(this)
+  readonly voice: VoiceManager = new VoiceManager(this as Client)
 
   /** Users Manager, containing all Users cached */
-  readonly users: UsersManager = new UsersManager(this)
+  readonly users: UsersManager = new UsersManager(this as Client)
   /** Guilds Manager, providing cache & API interface to Guilds */
-  readonly guilds: GuildManager = new GuildManager(this)
+  readonly guilds: GuildManager = new GuildManager(this as Client)
   /** Channels Manager, providing cache interface to Channels */
-  readonly channels: ChannelsManager = new ChannelsManager(this)
+  readonly channels: ChannelsManager = new ChannelsManager(this as Client)
   /** Channels Manager, providing cache interface to Channels */
-  readonly emojis: EmojisManager = new EmojisManager(this)
+  readonly emojis: EmojisManager = new EmojisManager(this as Client)
   /** Stickers Manager, providing cache interface to (Guild) Stickers and API interfacing */
-  readonly stickers: StickersManager = new StickersManager(this)
+  readonly stickers: StickersManager = new StickersManager(this as Client)
 
   /** Last READY timestamp */
   upSince?: Date
@@ -189,7 +189,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     this.intents = options.intents?.map((e) =>
       typeof e === 'string' ? GatewayIntents[e] : e
     )
-    this.shards = new ShardManager(this)
+    this.shards = new ShardManager(this as Client)
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
     if (options.presence !== undefined)
@@ -248,7 +248,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       token: () => this.token,
       tokenType: TokenType.Bot,
       canary: options.canary,
-      client: this
+      client: this as Client
     }
 
     if (options.restOptions !== undefined)
@@ -257,7 +257,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
     this.slash = this.interactions = new InteractionsClient({
       id: () => this.getEstimatedID(),
-      client: this,
+      client: this as Client,
       enabled: options.enableSlash
     })
   }
@@ -270,7 +270,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
    */
   setAdapter(adapter: ICacheAdapter): Client {
     this.cache = adapter
-    return this
+    return this as Client
   }
 
   /** Changes Presence of Client */
@@ -310,7 +310,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Fetch Application of the Client */
   async fetchApplication(): Promise<Application> {
     const app = await this.rest.api.oauth2.applications['@me'].get()
-    return new Application(this, app)
+    return new Application(this as Client, app)
   }
 
   /** Fetch an Invite */
@@ -319,7 +319,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       this.rest
         .get(INVITE(id))
         .then((data) => {
-          resolve(new Invite(this, data))
+          resolve(new Invite(this as Client, data))
         })
         .catch((e) => reject(e))
     })
@@ -359,7 +359,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       await this.shards.launch(this.shard)
     } else await this.shards.connect()
     await readyPromise
-    return this
+    return this as Client
   }
 
   /** Destroy the Gateway connection */
@@ -372,14 +372,14 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     this.shards.destroy()
     this.user = undefined
     this.upSince = undefined
-    return this
+    return this as Client
   }
 
   /** Attempt to Close current Gateway connection and Resume */
   async reconnect(): Promise<Client> {
     this.gateway.close()
     this.gateway.initWebsocket()
-    return this.waitFor('ready', () => true).then(() => this)
+    return this.waitFor('ready', () => true).then(() => this) as Promise<Client>
   }
 
   /** Add a new Collector */
@@ -400,7 +400,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     }
   }
 
-  async emit(event: keyof ClientEvents, ...args: any[]): Promise<void> {
+  async emit(event: keyof (CustomEvents & ClientEvents), ...args: any[]): Promise<void> {
     const collectors: Array<Collector<unknown[]>> = []
     for (const collector of this.collectors.values()) {
       if (collector.event === event) collectors.push(collector)
@@ -437,7 +437,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       username: data.username,
       avatar: data.avatar
     })
-    return this
+    return this as Client
   }
 
   /** Change Username of the Client User */
@@ -463,7 +463,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   /** Returns a template object for the given code. */
   async fetchTemplate(code: string): Promise<Template> {
     const payload = await this.rest.api.guilds.templates[code].get()
-    return new Template(this, payload)
+    return new Template(this as Client, payload)
   }
 
   /** Creates an OAuth2 URL */
