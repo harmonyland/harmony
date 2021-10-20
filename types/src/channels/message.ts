@@ -150,3 +150,8 @@ export interface CreateMessagePayload {
   // components: MessageComponentPayload[];
   sticker_ids?: string[];
 }
+
+export interface GetMessageReactionPayload {
+  after?: string;
+  limit?: number;
+}
