@@ -155,3 +155,13 @@ export interface GetMessageReactionParams {
   after?: string;
   limit?: number;
 }
+
+export interface EditMessagePayload {
+  content?: string | null;
+  embeds?: EmbedPayload[] | null;
+  flags?: MessageFlags | null;
+  file?: AttachmentPayload | null;
+  allowed_mentions?: AllowedMentionsPayload | null;
+  attachments?: AttachmentPayload[] | null;
+  // components?: MessageComponentPayload[] | null;
+}
