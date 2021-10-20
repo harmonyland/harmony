@@ -131,3 +131,22 @@ export interface GetChannelMessagesParams {
   after?: string;
   limit?: number;
 }
+
+export interface AllowedMentionsPayload {
+  parse?: string[];
+  roles?: string[];
+  users?: string[];
+  replied_user?: boolean;
+}
+
+export interface CreateMessagePayload {
+  content: string;
+  tts?: boolean;
+  file?: AttachmentPayload;
+  files?: AttachmentPayload[];
+  embeds?: EmbedPayload[];
+  allowed_mentions?: AllowedMentionsPayload;
+  message_reference?: MessageReferencePayload;
+  // components: MessageComponentPayload[];
+  sticker_ids?: string[];
+}
