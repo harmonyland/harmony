@@ -151,7 +151,7 @@ export interface CreateMessagePayload {
   sticker_ids?: string[];
 }
 
-export interface GetMessageReactionPayload {
+export interface GetMessageReactionParams {
   after?: string;
   limit?: number;
 }
