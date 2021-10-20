@@ -124,3 +124,10 @@ export interface Message {
   // components?: MessageComponentPayload[];
   // sticker_items?: StickerItemPayload[];
 }
+
+export interface GetChannelMessagesParams {
+  around?: string;
+  before?: string;
+  after?: string;
+  limit?: number;
+}
