@@ -21,7 +21,7 @@ export {
   CategoriesManager,
   CommandsLoader
 } from './src/commands/command.ts'
-export type { CommandContext, CommandOptions } from './src/commands/command.ts'
+export type { CommandContext, CommandOptions, PrefixReturnType } from './src/commands/command.ts'
 export {
   Extension,
   ExtensionCommands,
