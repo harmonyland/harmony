@@ -12,7 +12,7 @@ import {
 import { parseArgs } from '../utils/command.ts'
 import { Extension, ExtensionsManager } from './extension.ts'
 
-type PrefixReturnType = string | string[] | Promise<string | string[]>
+export type PrefixReturnType = string | string[] | Promise<string | string[]>
 
 /** Command Client options extending Client Options to provide a lot of Commands-related customizations */
 export interface CommandClientOptions extends ClientOptions {
