@@ -21,7 +21,7 @@ export {
   CategoriesManager,
   CommandsLoader
 } from './src/commands/command.ts'
-export type { CommandContext, CommandOptions, PrefixReturnType } from './src/commands/command.ts'
+export type { CommandContext, CommandOptions } from './src/commands/command.ts'
 export {
   Extension,
   ExtensionCommands,
@@ -29,7 +29,7 @@ export {
 } from './src/commands/extension.ts'
 export { ApplicationCommandsModule } from './src/interactions/commandModule.ts'
 export { CommandClient, command, subcommand } from './src/commands/client.ts'
-export type { CommandClientOptions } from './src/commands/client.ts'
+export type { CommandClientOptions, PrefixReturnType } from './src/commands/client.ts'
 export { BaseManager } from './src/managers/base.ts'
 export { BaseChildManager } from './src/managers/baseChild.ts'
 export { ChannelsManager } from './src/managers/channels.ts'
