@@ -93,4 +93,11 @@ export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
 }
 
 export type EditGuildCategoryPayload = EditGuildChannelPayload;
+
+export interface EditChannelPermissionsPayload {
+  allow: string;
+  deny: string;
+  type: OverwriteType;
+  reason?: string;
+}
 // End
