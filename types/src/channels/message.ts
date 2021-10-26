@@ -165,3 +165,8 @@ export interface EditMessagePayload {
   attachments?: AttachmentPayload[] | null;
   // components?: MessageComponentPayload[] | null;
 }
+
+export interface BulkDeleteMessagesPayload {
+  messages: string[];
+  reason?: string;
+}
