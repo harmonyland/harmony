@@ -25,3 +25,13 @@ export interface TextChannelPayload extends ChannelPayload {
   last_pin_timestamp: string | null;
   last_message_id: string | null;
 }
+
+export interface CreateChannelInvitePayload {
+  max_age?: number;
+  max_uses?: number;
+  temporary?: boolean;
+  unique?: boolean;
+  // target_type?: InviteTargetType;
+  target_user_id?: string;
+  target_applicaton_id?: string;
+}
