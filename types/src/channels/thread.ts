@@ -55,3 +55,14 @@ export interface StartThreadWithoutMessagePayload {
   invitable?: boolean;
   reason?: string;
 }
+
+export interface ListThreadsPayload {
+  threads: GuildThreadChannelPayload[];
+  members: ThreadMemberPayload[];
+  has_more: boolean;
+}
+
+export interface ListThreadsParams {
+  before?: string;
+  limit?: number;
+}
