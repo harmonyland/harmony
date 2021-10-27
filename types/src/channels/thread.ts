@@ -1,5 +1,6 @@
 // deno-lint-ignore-file camelcase
 import { Reasonable } from "../etc/reasonable.ts";
+import { ChannelType } from "./base.ts";
 import { GuildTextChannelPayload } from "./guild.ts";
 
 // https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure
@@ -39,4 +40,18 @@ export interface EditGuildThreadCHannelPayload extends Reasonable {
   invitable?: boolean;
   /** Duration in second */
   rate_limit_per_user?: number | null;
+}
+
+export interface StartThreadWithMessagePayload {
+  name: string;
+  auto_archive_duration?: number;
+  reason?: string;
+}
+
+export interface StartThreadWithoutMessagePayload {
+  name: string;
+  auto_archive_duration?: number;
+  type?: ChannelType;
+  invitable?: boolean;
+  reason?: string;
 }
