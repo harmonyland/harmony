@@ -1,5 +1,3 @@
-// deno-lint-ignore-file camelcase
-
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";

@@ -1,4 +1,3 @@
-// deno-lint-ignore-file camelcase
 import { Reasonable } from "../etc/reasonable.ts";
 import { TextChannelPayload } from "./base.ts";
 

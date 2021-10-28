@@ -1,5 +1,3 @@
-// deno-lint-ignore-file camelcase
-
 // https://discord.com/developers/docs/resources/channel#channel-object-channel-types
 export enum ChannelType {
   GUILD_TEXT = 0,

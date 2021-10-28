@@ -1,5 +1,3 @@
-// deno-lint-ignore-file camelcase
-
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-types
 export enum EmbedType {
   RICH = "rich",

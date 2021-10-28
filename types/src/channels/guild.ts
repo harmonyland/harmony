@@ -1,4 +1,3 @@
-// deno-lint-ignore-file camelcase
 // Thread channels are seperated to a different file.
 import { Reasonable } from "../etc/reasonable.ts";
 import { ChannelPayload, ChannelType, TextChannelPayload } from "./base.ts";

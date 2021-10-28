@@ -1,5 +1,3 @@
-// deno-lint-ignore-file camelcase
-
 // https://discord.com/developers/docs/resources/channel#followed-channel-object-followed-channel-structure
 export interface FollowedChannelPayload {
   channel_id: string;
