@@ -20,4 +20,4 @@ jobs:
           deno-version: v1.x
 
       - name: Formatting Check
-        run: deno fmt --check
+        run: deno fmt -c deno.json --check
