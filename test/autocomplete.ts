@@ -1,3 +1,4 @@
+// eslint-disable @typescript-eslint/strict-boolean-expressions
 import { Client } from '../mod.ts'
 import { TOKEN } from './config.ts'
 
@@ -24,7 +25,7 @@ const client = new Client({
   intents: []
 })
 
-const clean = (x: string) => x.replaceAll(/^[a-zA-Z0-9]/g, '')
+const clean = (x: string): string => x.replaceAll(/^[a-zA-Z0-9]/g, '')
 
 client.on('interactionCreate', (d) => {
   if (d.isAutocomplete()) {
