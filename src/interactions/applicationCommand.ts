@@ -273,6 +273,14 @@ export function transformApplicationCommandOption(
     )
     delete data.channel_types
   }
+  if (data.minValue !== undefined) {
+    data.min_value = data.minValue
+    delete data.minValue
+  }
+  if (data.maxValue !== undefined) {
+    data.max_value = data.maxValue
+    delete data.maxValue
+  }
   return data as unknown as ApplicationCommandOptionPayload
 }
 
