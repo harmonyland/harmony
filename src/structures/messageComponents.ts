@@ -6,9 +6,12 @@ import {
   MessageComponentOption,
   MessageComponentType
 } from '../types/messageComponents.ts'
-import { Interaction } from './interactions.ts'
+import { Interaction, InteractionMessageOptions } from './interactions.ts'
 import type { Client } from '../client/mod.ts'
-import { InteractionPayload } from '../types/interactions.ts'
+import {
+  InteractionPayload,
+  InteractionResponseType
+} from '../types/interactions.ts'
 import type { Guild } from './guild.ts'
 import type { GuildTextChannel } from './guildTextChannel.ts'
 import type { Member } from './member.ts'
@@ -96,5 +99,22 @@ export class MessageComponentInteraction extends Interaction {
 
   get values(): string[] {
     return this.data.values ?? []
+  }
+
+  /** Respond with DEFERRED_MESSAGE_UPDATE */
+  async deferredMessageUpdate(): Promise<void> {
+    await this.respond({
+      type: InteractionResponseType.DEFERRED_MESSAGE_UPDATE
+    })
+  }
+
+  /** Respond with UPDATE_MESSAGE */
+  async updateMessage(
+    options: Partial<InteractionMessageOptions>
+  ): Promise<void> {
+    await this.respond({
+      type: InteractionResponseType.UPDATE_MESSAGE,
+      ...options
+    })
   }
 }
