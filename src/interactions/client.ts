@@ -282,7 +282,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     try {
       await cmd.handler(interaction as ApplicationCommandInteraction)
     } catch (e) {
-      await this.emit('interactionError', e)
+      await this.emit('interactionError', e as Error)
     }
   }
 
