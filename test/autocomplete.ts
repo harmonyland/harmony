@@ -1,4 +1,4 @@
-// eslint-disable @typescript-eslint/strict-boolean-expressions
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Client } from '../mod.ts'
 import { TOKEN } from './config.ts'
 
