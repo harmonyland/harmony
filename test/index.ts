@@ -13,7 +13,8 @@ import {
   Permissions,
   Collector,
   MessageAttachment,
-  OverrideType
+  OverrideType,
+  ColorUtil
 } from '../mod.ts'
 import { TOKEN } from './config.ts'
 
@@ -334,8 +335,14 @@ client.on('messageCreate', async (msg: Message) => {
   } else if (msg.content === '!roleSmile') {
     const role = await msg.guild?.roles.get('834440844270501888')
     if (role !== undefined) {
-      role.edit({ unicode_emoji: '😀' })
+      role.edit({ unicodeEmoji: '😀' })
     }
+  } else if (msg.content === '!color') {
+    msg.channel.send(
+      msg.member !== undefined
+        ? ColorUtil.intToHex(await msg.member.effectiveColor())
+        : 'not in a guild'
+    )
   }
 })
 

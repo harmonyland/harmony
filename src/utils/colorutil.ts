@@ -196,7 +196,7 @@ export class ColorUtil {
    */
   static intToHex(color: number): string {
     if (!ColorUtil.validateColor(color)) throw new Error('Invalid color')
-    return `#${color.toString(16)}`
+    return `#${color.toString(16).padStart(6, '0')}`
   }
 
   /**
