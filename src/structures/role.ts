@@ -1,6 +1,6 @@
 import type { Client } from '../client/mod.ts'
 import { SnowflakeBase } from './base.ts'
-import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type { RoleModifyOptions, RolePayload } from '../types/role.ts'
 import { Permissions } from '../utils/permissions.ts'
 import type { Guild } from './guild.ts'
 import type { Member } from './member.ts'
@@ -60,7 +60,7 @@ export class Role extends SnowflakeBase {
   }
 
   /** Edit the Role */
-  async edit(options: RoleModifyPayload): Promise<Role> {
+  async edit(options: RoleModifyOptions): Promise<Role> {
     return this.guild.roles.edit(this, options)
   }
 

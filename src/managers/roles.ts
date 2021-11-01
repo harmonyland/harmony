@@ -4,7 +4,11 @@ import type { Client } from '../client/mod.ts'
 import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
 import { GUILD_ROLE, GUILD_ROLES } from '../types/endpoint.ts'
-import type { RoleModifyPayload, RolePayload } from '../types/role.ts'
+import type {
+  RoleModifyPayload,
+  RoleModifyOptions,
+  RolePayload
+} from '../types/role.ts'
 import { BaseManager } from './base.ts'
 
 export interface CreateGuildRoleOptions {
@@ -101,21 +105,24 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
     return oldRole
   }
 
-  async edit(role: Role | string, options: RoleModifyPayload): Promise<Role> {
+  async edit(role: Role | string, options: RoleModifyOptions): Promise<Role> {
+    const payload = options as RoleModifyPayload
+    payload.unicode_emoji = options.unicodeEmoji
+
     if (
-      options.icon !== undefined &&
-      options.icon !== null &&
+      payload.icon !== undefined &&
+      payload.icon !== null &&
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-      !options.icon.startsWith('data:')
+      !payload.icon.startsWith('data:')
     ) {
-      options.icon = await fetchAuto(options.icon)
+      payload.icon = await fetchAuto(payload.icon)
     }
     if (role instanceof Role) {
       role = role.id
     }
     const resp: RolePayload = await this.client.rest.patch(
       GUILD_ROLE(this.guild.id, role),
-      options
+      payload
     )
 
     return new Role(this.client, resp, this.guild)

@@ -21,12 +21,19 @@ export interface RoleTagsPayload {
   integration_id?: string
 }
 
-export interface RoleModifyPayload {
+export interface RoleModifyBase {
   name?: string | null
   permissions?: string | null
   color?: number | null
   hoist?: boolean | null
   icon?: string | null
-  unicode_emoji?: string | null
   mentionable?: boolean | null
+}
+
+export interface RoleModifyPayload extends RoleModifyBase {
+  unicode_emoji?: string | null
+}
+
+export interface RoleModifyOptions extends RoleModifyBase {
+  unicodeEmoji?: string | null
 }
