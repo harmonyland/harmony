@@ -20,7 +20,7 @@ client.on('messageCreate', async (msg) => {
         `\`\`\`js\n${Deno.inspect(result).substr(0, 2000 - 20)}\n\`\`\``
       )
     } catch (e) {
-      msg.reply(`\`\`\`js\n${e}\n\`\`\``, {
+      msg.reply(`\`\`\`js\n${(e as Error).stack}\n\`\`\``, {
         allowedMentions: { replied_user: false }
       })
     }

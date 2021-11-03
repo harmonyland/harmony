@@ -8,7 +8,10 @@ import {
   InteractionMessageComponentData,
   MessageComponentData
 } from './messageComponents.ts'
-import type { InteractionApplicationCommandData } from './applicationCommand.ts'
+import type {
+  ApplicationCommandChoice,
+  InteractionApplicationCommandData
+} from './applicationCommand.ts'
 import type { UserPayload } from './user.ts'
 
 export enum InteractionType {
@@ -17,7 +20,9 @@ export enum InteractionType {
   /** Slash Command Interaction */
   APPLICATION_COMMAND = 2,
   /** Message Component Interaction */
-  MESSAGE_COMPONENT = 3
+  MESSAGE_COMPONENT = 3,
+  /** Application Command Option Autocomplete Interaction */
+  AUTOCOMPLETE = 4
 }
 
 export interface InteractionMemberPayload extends MemberPayload {
@@ -60,7 +65,9 @@ export enum InteractionResponseType {
   /** Components: It will acknowledge the interaction and update the button to a loading state, and then you can PATCH the message later. */
   DEFERRED_MESSAGE_UPDATE = 6,
   /** Components: Sent in response to a button interaction to immediately update the message to which the button was attached */
-  UPDATE_MESSAGE = 7
+  UPDATE_MESSAGE = 7,
+  /** Respond with auto-completions for Autocomplete Interactions */
+  APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8
 }
 
 export interface InteractionResponsePayload {
@@ -70,7 +77,7 @@ export interface InteractionResponsePayload {
   data?: InteractionResponseDataPayload
 }
 
-export interface InteractionResponseDataPayload {
+export interface InteractionResponseDataBasePayload {
   tts?: boolean
   /** Text content of the Response (Message) */
   content: string
@@ -81,6 +88,14 @@ export interface InteractionResponseDataPayload {
   flags?: number
   components?: MessageComponentData[]
 }
+
+export interface InteractionResponseDataAutocompletePayload {
+  choices?: ApplicationCommandChoice[]
+}
+
+export type InteractionResponseDataPayload =
+  | InteractionResponseDataBasePayload
+  | InteractionResponseDataAutocompletePayload
 
 export enum InteractionResponseFlags {
   /** A Message which is only visible to Interaction User. */

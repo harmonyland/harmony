@@ -29,6 +29,7 @@ import { Message } from '../../structures/message.ts'
 import { TextChannel } from '../../structures/textChannel.ts'
 import { MessagePayload } from '../../types/channel.ts'
 import { GuildPayload, MemberPayload } from '../../types/guild.ts'
+import { AutocompleteInteraction } from '../../structures/autocompleteInteraction.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -179,6 +180,14 @@ export const interactionCreate: GatewayEventHandler = async (
   let interaction
   if (d.type === InteractionType.APPLICATION_COMMAND) {
     interaction = new ApplicationCommandInteraction(gateway.client, d, {
+      member,
+      guild,
+      channel,
+      user,
+      resolved
+    })
+  } else if (d.type === InteractionType.AUTOCOMPLETE) {
+    interaction = new AutocompleteInteraction(gateway.client, d, {
       member,
       guild,
       channel,

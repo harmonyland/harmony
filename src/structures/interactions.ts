@@ -20,6 +20,7 @@ import {
   MessageComponentData
 } from '../types/messageComponents.ts'
 import {
+  ApplicationCommandChoice,
   InteractionApplicationCommandData,
   InteractionChannelPayload
 } from '../types/applicationCommand.ts'
@@ -35,6 +36,7 @@ import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import type { ApplicationCommandInteraction } from './applicationCommand.ts'
 import type { MessageComponentInteraction } from './messageComponents.ts'
+import type { AutocompleteInteraction } from './autocompleteInteraction.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   name?: string
@@ -60,6 +62,7 @@ export interface InteractionMessageOptions {
 export interface InteractionResponse extends InteractionMessageOptions {
   /** Type of Interaction Response */
   type?: InteractionResponseType | keyof typeof InteractionResponseType
+  choices?: ApplicationCommandChoice[]
 }
 
 /** Represents a Channel Object for an Option in Slash Command */
@@ -160,9 +163,14 @@ export class Interaction extends SnowflakeBase {
     return this.type === InteractionType.MESSAGE_COMPONENT
   }
 
+  isAutocomplete(): this is AutocompleteInteraction {
+    return this.type === InteractionType.AUTOCOMPLETE
+  }
+
   /** Respond to an Interaction */
   async respond(data: InteractionResponse): Promise<this> {
     if (this.responded) throw new Error('Already responded to Interaction')
+
     let flags = 0
     if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
     if (data.flags !== undefined) {
@@ -170,6 +178,7 @@ export class Interaction extends SnowflakeBase {
         flags = data.flags.reduce((p, a) => p | a, flags)
       } else if (typeof data.flags === 'number') flags |= data.flags
     }
+
     const payload: InteractionResponsePayload = {
       type:
         data.type === undefined
@@ -178,12 +187,15 @@ export class Interaction extends SnowflakeBase {
           ? InteractionResponseType[data.type]
           : data.type,
       data:
-        data.type === undefined ||
-        data.content !== undefined ||
-        data.embeds !== undefined ||
-        data.components !== undefined ||
-        data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-        data.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
+        data.type ===
+        InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT
+          ? { choices: data.choices }
+          : data.type === undefined ||
+            data.content !== undefined ||
+            data.embeds !== undefined ||
+            data.components !== undefined ||
+            data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+            data.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
           ? {
               content: data.content ?? '',
               embeds: data.embeds,

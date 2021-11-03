@@ -14,7 +14,7 @@ export default class EvalCommand extends Command {
         `\`\`\`js\n${`${evaled}`.substring(0, 1990)}\n\`\`\``
       )
     } catch (e) {
-      ctx.message.reply(`\`\`\`js\n${e.stack}\n\`\`\``)
+      ctx.message.reply(`\`\`\`js\n${(e as Error).stack}\n\`\`\``)
     }
   }
 }

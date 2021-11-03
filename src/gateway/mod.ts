@@ -166,7 +166,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
             try {
               await handler(this, d)
             } catch (e) {
-              this.client.emit('error', e)
+              this.client.emit('error', e as Error)
             }
           }
         }

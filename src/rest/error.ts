@@ -3,10 +3,12 @@ import { DiscordAPIErrorPayload } from './types.ts'
 
 export class DiscordAPIError extends Error {
   name = 'DiscordAPIError'
+  status: number
   error?: DiscordAPIErrorPayload
 
   constructor(error: string | DiscordAPIErrorPayload) {
     super()
+    this.status = typeof error === 'string' ? -1 : error.status
     const fmt = Object.entries(
       typeof error === 'object' ? simplifyAPIError(error.errors ?? {}) : {}
     )

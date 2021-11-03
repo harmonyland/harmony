@@ -131,12 +131,14 @@ export class BucketHandler {
     let res
     try {
       res = await request.execute()
-    } catch (error) {
+    } catch (_error) {
+      // For backward compatibility.
+      const error = _error as HTTPError
       if (request.retries === this.manager.retryLimit) {
         throw new HTTPError(
           error.message,
           error.constructor.name,
-          error.status,
+          error.code,
           request.method,
           request.path
         )
@@ -207,11 +209,12 @@ export class BucketHandler {
       let data
       try {
         data = await parseResponse(res, false)
-      } catch (err) {
+      } catch (_err) {
+        const err = _err as HTTPError
         throw new HTTPError(
           err.message,
           err.constructor.name,
-          err.status,
+          err.code,
           request.method,
           request.path
         )

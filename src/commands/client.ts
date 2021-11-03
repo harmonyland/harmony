@@ -394,11 +394,11 @@ export class CommandClient extends Client implements CommandClientOptions {
         await command.afterExecute(ctx, result)
       } catch (e) {
         try {
-          await command.onError(ctx, e)
+          await command.onError(ctx, e as Error)
         } catch (e) {
-          this.emit('commandError', ctx, e)
+          this.emit('commandError', ctx, e as Error)
         }
-        this.emit('commandError', ctx, e)
+        this.emit('commandError', ctx, e as Error)
       }
     }
 
