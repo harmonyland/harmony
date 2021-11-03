@@ -30,6 +30,7 @@ import { TextChannel } from '../structures/textChannel.ts'
 import { Role } from '../structures/role.ts'
 import { Message } from '../structures/message.ts'
 import { MessageComponentInteraction } from '../structures/messageComponents.ts'
+import { AutocompleteInteraction } from '../structures/autocompleteInteraction.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
@@ -148,12 +149,19 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     return typeof this.id === 'string' ? this.id : this.id()
   }
 
-  /** Adds a new Slash Command Handler */
+  /** Adds a new Application Command Handler */
+  handle(cmd: ApplicationCommandHandler): this
+  handle(cmd: string, handler: ApplicationCommandHandlerCallback): this
+  handle(
+    cmd: string,
+    handler: ApplicationCommandHandlerCallback,
+    type: ApplicationCommandType | keyof typeof ApplicationCommandType
+  ): this
   handle(
     cmd: string | ApplicationCommandHandler,
     handler?: ApplicationCommandHandlerCallback,
     type?: ApplicationCommandType | keyof typeof ApplicationCommandType
-  ): InteractionsClient {
+  ): this {
     const handle = {
       name: typeof cmd === 'string' ? cmd : cmd.name,
       ...(handler !== undefined ? { handler } : {}),
@@ -274,7 +282,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     try {
       await cmd.handler(interaction as ApplicationCommandInteraction)
     } catch (e) {
-      await this.emit('interactionError', e)
+      await this.emit('interactionError', e as Error)
     }
   }
 
@@ -357,7 +365,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
             new Member(client, payload.member, user, guild!)
           : undefined
 
-      if (payload.type === InteractionType.APPLICATION_COMMAND) {
+      if (
+        payload.type === InteractionType.APPLICATION_COMMAND ||
+        payload.type === InteractionType.AUTOCOMPLETE
+      ) {
         const resolved: InteractionApplicationCommandResolved = {
           users: {},
           members: {},
@@ -420,13 +431,22 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
           )
         }
 
-        res = new ApplicationCommandInteraction(client, payload, {
-          user,
-          member,
-          guild,
-          channel,
-          resolved
-        })
+        res =
+          payload.type === InteractionType.APPLICATION_COMMAND
+            ? new ApplicationCommandInteraction(client, payload, {
+                user,
+                member,
+                guild,
+                channel,
+                resolved
+              })
+            : new AutocompleteInteraction(client, payload, {
+                user,
+                member,
+                guild,
+                channel,
+                resolved
+              })
       } else if (payload.type === InteractionType.MESSAGE_COMPONENT) {
         res = new MessageComponentInteraction(client, payload, {
           channel,

@@ -13,6 +13,8 @@ export interface InteractionApplicationCommandOption {
   value?: any
   /** Sub options */
   options?: InteractionApplicationCommandOption[]
+  /** Whether this option was focused in Autocomplete Interaction */
+  focused?: boolean
 }
 
 export interface InteractionChannelPayload {
@@ -73,7 +75,7 @@ export enum ApplicationCommandOptionType {
   ROLE = 8,
   /** Union of User and Role option type */
   MENTIONABLE = 9,
-  /** Number option tyoe, similar to JS Number. Can be both integer and float */
+  /** Number option type, similar to JS Number. Can be both integer and float */
   NUMBER = 10
 }
 
@@ -96,6 +98,8 @@ export interface ApplicationCommandOptionBase<
   choices?: ApplicationCommandChoice[]
   /** Nested options for Sub-Command or Sub-Command-Groups */
   options?: T[]
+  /** Whether this Option supports realtime autocomplete */
+  autocomplete?: boolean
 }
 
 export type { ApplicationCommandOptionBase as SlashCommandOptionBase }

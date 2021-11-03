@@ -16,13 +16,6 @@ class MyClient extends Client {
 
   debug(title: string, msg: string): void {
     console.log(`[${title}] ${msg}`)
-    if (title === 'Gateway' && msg === 'Initializing WebSocket...') {
-      try {
-        throw new Error('Stack')
-      } catch (e) {
-        console.log(e.stack)
-      }
-    }
   }
 }
 
