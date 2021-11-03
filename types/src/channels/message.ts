@@ -1,3 +1,4 @@
+import { Reasonable } from "../etc/reasonable.ts";
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
@@ -164,7 +165,6 @@ export interface EditMessagePayload {
   // components?: MessageComponentPayload[] | null;
 }
 
-export interface BulkDeleteMessagesPayload {
+export interface BulkDeleteMessagesPayload extends Reasonable {
   messages: string[];
-  reason?: string;
 }

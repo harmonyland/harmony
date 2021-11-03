@@ -41,18 +41,16 @@ export interface EditGuildThreadCHannelPayload extends Reasonable {
   rate_limit_per_user?: number | null;
 }
 
-export interface StartThreadWithMessagePayload {
+export interface StartThreadWithMessagePayload extends Reasonable {
   name: string;
   auto_archive_duration?: number;
-  reason?: string;
 }
 
-export interface StartThreadWithoutMessagePayload {
+export interface StartThreadWithoutMessagePayload extends Reasonable {
   name: string;
   auto_archive_duration?: number;
   type?: ChannelType;
   invitable?: boolean;
-  reason?: string;
 }
 
 export interface ListThreadsPayload {
