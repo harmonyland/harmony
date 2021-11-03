@@ -56,7 +56,6 @@ export type CategoryPayload = GuildChannelPayload;
 // https://discord.com/developers/docs/resources/channel#channel-object-example-store-channel
 export type GuildStoreChannel = GuildChannelPayload;
 
-// Start of EditGuildChannelPayload
 // https://discord.com/developers/docs/resources/channel#modify-channel-json-params-guild-channel
 export interface EditGuildChannelPayload extends Reasonable {
   name?: string;
@@ -99,4 +98,3 @@ export interface EditChannelPermissionsPayload {
   type: OverwriteType;
   reason?: string;
 }
-// End
