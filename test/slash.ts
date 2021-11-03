@@ -31,6 +31,18 @@ export class MyClient extends Client {
               name: 'string',
               type: Type.STRING,
               description: 'String'
+            },
+            {
+              name: 'number',
+              type: Type.NUMBER,
+              description: 'Number'
+            },
+            {
+              name: 'numberclamp',
+              type: Type.NUMBER,
+              description: 'Clamped number',
+              minValue: 69,
+              maxValue: 73
             }
           ]
         },
@@ -65,6 +77,7 @@ export class MyClient extends Client {
 
   @slash() test(d: ApplicationCommandInteraction): void {
     console.log(d.resolved)
+    console.log(d.options)
   }
 
   @event() raw(evt: string, d: any): void {

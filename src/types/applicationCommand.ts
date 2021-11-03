@@ -110,6 +110,8 @@ export interface ApplicationCommandOptionPayload
     ApplicationCommandOptionType
   > {
   channel_types?: ChannelTypes[]
+  min_value?: number
+  max_value?: number
 }
 
 export type { ApplicationCommandOptionPayload as SlashCommandOptionPayload }
@@ -120,6 +122,8 @@ export interface ApplicationCommandOption
     ApplicationCommandOptionType | keyof typeof ApplicationCommandOptionType
   > {
   channelTypes?: Array<ChannelTypes | keyof typeof ChannelTypes>
+  minValue?: number
+  maxValue?: number
 }
 
 export type { ApplicationCommandOption as SlashCommandOption }
