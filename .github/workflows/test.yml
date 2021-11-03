@@ -24,4 +24,4 @@ jobs:
           deno-version: ${{ matrix.deno }}
 
       - name: Test
-        run: deno run mod.ts
+        run: deno run -c deno.json mod.ts

@@ -20,4 +20,4 @@ jobs:
           deno-version: v1.x
 
       - name: Lint
-        run: deno lint
+        run: deno lint -c deno.json
