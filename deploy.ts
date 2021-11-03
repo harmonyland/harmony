@@ -96,7 +96,7 @@ export function init(options: DeploySlashInitOptions): void {
 
       await client._process(d)
     } catch (e) {
-      await client.emit('interactionError', e)
+      await client.emit('interactionError', e as Error)
     }
   }
 
@@ -129,13 +129,34 @@ export function init(options: DeploySlashInitOptions): void {
  * @param handler Handler function (required if previous argument was command name)
  */
 export function handle(
+  cmd: string,
+  handler: ApplicationCommandHandlerCallback
+): void
+export function handle(cmd: ApplicationCommandHandler): void
+export function handle(
+  cmd: string,
+  handler: ApplicationCommandHandlerCallback,
+  type: ApplicationCommandType | keyof typeof ApplicationCommandType
+): void
+export function handle(
   cmd: string | ApplicationCommandHandler,
   handler?: ApplicationCommandHandlerCallback,
   type?: ApplicationCommandType | keyof typeof ApplicationCommandType
 ): void {
   if (client === undefined)
-    throw new Error('Slash Client not initialized. Call `init` first')
-  client.handle(cmd, handler, type)
+    throw new Error('Interaction Client not initialized. Call `init` first')
+
+  if (
+    typeof cmd === 'string' &&
+    typeof handler === 'function' &&
+    typeof type !== 'undefined'
+  ) {
+    client.handle(cmd, handler, type)
+  } else if (typeof cmd === 'string' && typeof handler === 'function') {
+    client.handle(cmd, handler)
+  } else if (typeof cmd === 'object') {
+    client.handle(cmd)
+  } else throw new Error('Invalid overload for `handle` function')
 }
 
 /** Listen for Interactions Event */
