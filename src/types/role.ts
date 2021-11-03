@@ -3,6 +3,8 @@ export interface RolePayload {
   name: string
   color: number
   hoist: boolean
+  icon?: string
+  unicode_emoji?: string
   position: number
   permissions: string
   managed: boolean
@@ -24,5 +26,7 @@ export interface RoleModifyPayload {
   permissions?: string | null
   color?: number | null
   hoist?: boolean | null
+  icon?: string | null
+  unicodeEmoji?: string | null
   mentionable?: boolean | null
 }
