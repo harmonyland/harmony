@@ -1,7 +1,7 @@
 {
   "lint": {
     "rules": {
-      "exclude": ["camelCase"]
+      "exclude": ["camelcase"]
     }
   },
 
