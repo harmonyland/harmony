@@ -319,6 +319,24 @@ client.on('messageCreate', async (msg: Message) => {
     } else {
       msg.channel.send(msg.author.avatarURL())
     }
+  } else if (msg.content.startsWith('!roleIcon') === true) {
+    const size = msg.mentions.roles.size
+    const role = msg.mentions.roles.first()
+    const icon = role?.roleIcon()
+    if (size === 0) {
+      msg.channel.send('no role mentioned')
+    } else {
+      if (icon === undefined) {
+        msg.channel.send('no icon')
+      } else {
+        msg.channel.send(icon)
+      }
+    }
+  } else if (msg.content === '!roleSmile') {
+    const role = await msg.guild?.roles.get('834440844270501888')
+    if (role !== undefined) {
+      role.edit({ unicodeEmoji: '😀' })
+    }
   } else if (msg.content === '!color') {
     msg.channel.send(
       msg.member !== undefined

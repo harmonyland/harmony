@@ -173,6 +173,8 @@ const ACHIEVEMENT_ICON = (
   `${Constants.DISCORD_CDN_URL}/app-assets/${applicationID}/achievements/${achievementID}/icons/${iconHASH}`
 const TEAM_ICON = (teamID: string, iconID: string): string =>
   `${Constants.DISCORD_CDN_URL}/team-icons/${teamID}/${iconID}`
+const ROLE_ICON = (roleID: string, iconID: string): string =>
+  `${Constants.DISCORD_CDN_URL}/role-icons/${roleID}/${iconID}`
 
 // Emoji Endpoints
 const EMOJI = (guildID: string, emojiID: string): string =>
@@ -291,6 +293,7 @@ export {
   APPLICATION_ASSET,
   ACHIEVEMENT_ICON,
   TEAM_ICON,
+  ROLE_ICON,
   EMOJI,
   TEMPLATE,
   INVITE,
