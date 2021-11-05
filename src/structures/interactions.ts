@@ -262,7 +262,8 @@ export class Interaction extends SnowflakeBase {
         content: options.content,
         embeds: options.embeds,
         flags: options.flags,
-        allowedMentions: options.allowedMentions
+        allowedMentions: options.allowedMentions,
+        components: options.components
       })
     } else {
       await this.respond(
