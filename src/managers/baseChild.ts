@@ -14,7 +14,9 @@ export class BaseChildManager<T, T2> extends Base {
   }
 
   get cacheName(): string {
-    return this.parent.cacheName
+    return typeof this.parent === 'undefined'
+      ? 'unknown_parent'
+      : this.parent.cacheName
   }
 
   async get(key: string): Promise<T2 | undefined> {
@@ -75,7 +77,7 @@ export class BaseChildManager<T, T2> extends Base {
     return this.parent.keys()
   }
 
-  [Deno.customInspect](): string {
+  [Symbol.for('Deno.customInspect')](): string {
     return `ChildManager(${this.cacheName})`
   }
 }

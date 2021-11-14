@@ -105,7 +105,7 @@ export class BaseManager<T, T2> extends Base {
     return (await this.client.cache.keys(this.cacheName)) ?? []
   }
 
-  [Deno.customInspect](): string {
+  [Symbol.for('Deno.customInspect')](): string {
     return `Manager(${this.cacheName})`
   }
 }
