@@ -69,7 +69,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
         this.member.id,
         typeof role === 'string' ? role : role.id
       ),
-      undefined,
+      { reason },
       undefined,
       undefined,
       undefined,
