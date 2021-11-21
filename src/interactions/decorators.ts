@@ -36,9 +36,15 @@ interface CommandValidation {
 }
 
 type ApplicationCommandDecorator = (
-  _client: ApplicationCommandClientExt,
-  _prop: string,
+  client: ApplicationCommandClientExt,
+  prop: string,
   desc: TypedPropertyDescriptor<ApplicationCommandHandlerCallback>
+) => void
+
+type AutocompleteDecorator = (
+  client: ApplicationCommandClientExt,
+  prop: string,
+  desc: TypedPropertyDescriptor<AutocompleteHandlerCallback>
 ) => void
 
 /**
@@ -80,7 +86,10 @@ function wrapConditionApplicationCommandHandler(
  * @param command Command name of which options' to provide autocompletions for. Can be `*` (all).
  * @param option Option name to handle autocompletions for. Can be `*` (all).
  */
-export function autocomplete(command: string, option: string) {
+export function autocomplete(
+  command: string,
+  option: string
+): AutocompleteDecorator {
   return function (
     client: ApplicationCommandClientExt,
     _prop: string,
