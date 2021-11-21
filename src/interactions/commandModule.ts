@@ -2,7 +2,6 @@ import type {
   ApplicationCommandHandler,
   AutocompleteHandler
 } from './client.ts'
-import { DecoratedAppExt } from './decorators.ts'
 
 export class ApplicationCommandsModule {
   name: string = ''
@@ -10,17 +9,11 @@ export class ApplicationCommandsModule {
   autocomplete: AutocompleteHandler[] = []
 
   constructor() {
-    if (
-      (this as ApplicationCommandsModule & DecoratedAppExt)._decoratedAppCmd !==
-      undefined
-    ) {
+    if ((this as any)._decoratedAppCmd !== undefined) {
       this.commands = (this as any)._decoratedAppCmd
     }
 
-    if (
-      (this as ApplicationCommandsModule & DecoratedAppExt)
-        ._decoratedAutocomplete !== undefined
-    ) {
+    if ((this as any)._decoratedAutocomplete !== undefined) {
       this.autocomplete = (this as any)._decoratedAutocomplete
     }
   }

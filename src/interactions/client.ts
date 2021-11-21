@@ -31,7 +31,6 @@ import { Role } from '../structures/role.ts'
 import { Message } from '../structures/message.ts'
 import { MessageComponentInteraction } from '../structures/messageComponents.ts'
 import { AutocompleteInteraction } from '../structures/autocompleteInteraction.ts'
-import { DecoratedAppExt } from './decorators.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
@@ -119,7 +118,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     this.enabled = options.enabled ?? true
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const client = this.client as Client & DecoratedAppExt
+    const client = this.client as unknown as {
+      _decoratedAppCmd: ApplicationCommandHandler[]
+      _decoratedAutocomplete: AutocompleteHandler[]
+    }
     if (client?._decoratedAppCmd !== undefined) {
       client._decoratedAppCmd.forEach((e) => {
         e.handler = e.handler.bind(this.client)
@@ -134,7 +136,11 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       })
     }
 
-    const self = this as InteractionsClient & DecoratedAppExt
+    const self = this as unknown as InteractionsClient & {
+      _decoratedAppCmd: ApplicationCommandHandler[]
+      _decoratedAutocomplete: AutocompleteHandler[]
+    }
+
     if (self._decoratedAppCmd !== undefined) {
       self._decoratedAppCmd.forEach((e) => {
         e.handler = e.handler.bind(this.client)
