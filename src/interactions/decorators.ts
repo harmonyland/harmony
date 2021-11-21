@@ -12,7 +12,7 @@ import { GatewayIntents } from '../types/gateway.ts'
 import { ApplicationCommandType } from '../types/applicationCommand.ts'
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
-interface DecoratedAppExt {
+export interface DecoratedAppExt {
   _decoratedAppCmd?: ApplicationCommandHandler[]
   _decoratedAutocomplete?: AutocompleteHandler[]
 }
