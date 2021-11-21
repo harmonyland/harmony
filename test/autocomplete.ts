@@ -27,19 +27,15 @@ const client = new Client({
 
 const clean = (x: string): string => x.replaceAll(/^[a-zA-Z0-9]/g, '')
 
-client.on('interactionCreate', (d) => {
-  if (d.isAutocomplete()) {
-    if (d.name === 'choose' && d.focusedOption.name === 'pokemon') {
-      const value = clean(d.focusedOption.value ?? '')
+client.interactions.autocomplete('choose', 'pokemon', (d) => {
+  const value = clean(d.focusedOption.value ?? '')
 
-      return d.autocomplete(
-        names
-          .filter((e) => clean(e).startsWith(value))
-          .filter((_, i) => i < 10)
-          .map((e) => ({ name: e, value: e }))
-      )
-    }
-  }
+  return d.autocomplete(
+    names
+      .filter((e) => clean(e).startsWith(value))
+      .filter((_, i) => i < 10)
+      .map((e) => ({ name: e, value: e }))
+  )
 })
 
 client.interactions.handle('choose', (d) =>

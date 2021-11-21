@@ -3,7 +3,8 @@ import {
   ApplicationCommandsManager,
   InteractionsClient,
   ApplicationCommandHandler,
-  ApplicationCommandHandlerCallback
+  ApplicationCommandHandlerCallback,
+  AutocompleteHandlerCallback
 } from './src/interactions/mod.ts'
 import {
   InteractionResponseType,
@@ -157,6 +158,14 @@ export function handle(
   } else if (typeof cmd === 'object') {
     client.handle(cmd)
   } else throw new Error('Invalid overload for `handle` function')
+}
+
+export function autocomplete(
+  cmd: string,
+  option: string,
+  callback: AutocompleteHandlerCallback
+): void {
+  client.autocomplete(cmd, option, callback)
 }
 
 /** Listen for Interactions Event */

@@ -49,6 +49,14 @@ export interface ApplicationCommandHandler {
 export type { ApplicationCommandHandlerCallback as SlashCommandHandlerCallback }
 export type { ApplicationCommandHandler as SlashCommandHandler }
 
+export type AutocompleteHandlerCallback = (d: AutocompleteInteraction) => any
+
+export interface AutocompleteHandler {
+  cmd: string
+  option: string
+  handler: AutocompleteHandlerCallback
+}
+
 /** Options for InteractionsClient */
 export interface SlashOptions {
   id?: string | (() => string)
@@ -84,6 +92,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   enabled: boolean = true
   commands: ApplicationCommandsManager
   handlers: ApplicationCommandHandler[] = []
+  autocompleteHandlers: AutocompleteHandler[] = []
   readonly rest!: RESTManager
   modules: ApplicationCommandsModule[] = []
   publicKey?: string
@@ -200,6 +209,26 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     return this
   }
 
+  /**
+   * Add a handler for autocompletions (for application command options).
+   *
+   * @param cmd Command name. Can be `*`
+   * @param option Option name. Can be `*`
+   * @param handler Handler callback that is fired when a matching Autocomplete Interaction comes in.
+   */
+  autocomplete(
+    cmd: string,
+    option: string,
+    handler: AutocompleteHandlerCallback
+  ): this {
+    this.autocompleteHandlers.push({
+      cmd,
+      option,
+      handler
+    })
+    return this
+  }
+
   /** Load a Slash Module */
   loadModule(module: ApplicationCommandsModule): InteractionsClient {
     this.modules.push(module)
@@ -270,17 +299,36 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   ): Promise<void> {
     if (!this.enabled) return
 
-    if (interaction.type !== InteractionType.APPLICATION_COMMAND) return
+    await this.emit('interaction', interaction)
+
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (interaction.isAutocomplete()) {
+      const handle = this.autocompleteHandlers.find(
+        (e) =>
+          (e.cmd.toLowerCase() === interaction.name || e.cmd === '*') &&
+          (e.option === '*' ||
+            e.option.toLowerCase() ===
+              interaction.focusedOption?.name.toLowerCase())
+      )
+      try {
+        await handle?.handler(interaction)
+      } catch (e) {
+        await this.emit('interactionError', e as Error)
+      }
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!interaction.isApplicationCommand()) return
 
     const cmd =
-      this._getCommand(interaction as ApplicationCommandInteraction) ??
+      this._getCommand(interaction) ??
       this.getHandlers().find((e) => e.name === '*')
 
     if (cmd === undefined) return
 
-    await this.emit('interaction', interaction)
     try {
-      await cmd.handler(interaction as ApplicationCommandInteraction)
+      await cmd.handler(interaction)
     } catch (e) {
       await this.emit('interactionError', e as Error)
     }
