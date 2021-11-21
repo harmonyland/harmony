@@ -301,6 +301,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     await this.emit('interaction', interaction)
 
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (interaction.isAutocomplete()) {
       const handle = this.autocompleteHandlers.find(
         (e) =>
@@ -317,6 +318,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       return
     }
 
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!interaction.isApplicationCommand()) return
 
     const cmd =
