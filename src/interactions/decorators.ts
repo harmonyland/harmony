@@ -1,17 +1,20 @@
 import {
   ApplicationCommandHandler,
   ApplicationCommandHandlerCallback,
+  AutocompleteHandler,
+  AutocompleteHandlerCallback,
   InteractionsClient
 } from './client.ts'
 import type { Client } from '../client/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
 import { ApplicationCommandInteraction } from '../structures/applicationCommand.ts'
 import { GatewayIntents } from '../types/gateway.ts'
-import { ApplicationCommandType } from '../../mod.ts'
+import { ApplicationCommandType } from '../types/applicationCommand.ts'
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
 interface DecoratedAppExt {
   _decoratedAppCmd?: ApplicationCommandHandler[]
+  _decoratedAutocomplete?: AutocompleteHandler[]
 }
 
 // Maybe a better name for this would be `ApplicationCommandBase` or `ApplicationCommandObject` or something else
@@ -68,6 +71,31 @@ function wrapConditionApplicationCommandHandler(
       return
     } // condition met
     return original.call(this, i)
+  }
+}
+
+/**
+ * Decorator to add a autocomplete interaction handler.
+ *
+ * @param command Command name of which options' to provide autocompletions for. Can be `*` (all).
+ * @param option Option name to handle autocompletions for. Can be `*` (all).
+ */
+export function autocomplete(command: string, option: string) {
+  return function (
+    client: ApplicationCommandClientExt,
+    _prop: string,
+    desc: TypedPropertyDescriptor<AutocompleteHandlerCallback>
+  ) {
+    if (client._decoratedAutocomplete === undefined)
+      client._decoratedAutocomplete = []
+    if (typeof desc.value !== 'function') {
+      throw new Error('@autocomplete decorator requires a function')
+    } else
+      client._decoratedAutocomplete.push({
+        cmd: command,
+        option,
+        handler: desc.value
+      })
   }
 }
 
