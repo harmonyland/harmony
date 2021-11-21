@@ -1,4 +1,4 @@
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-types
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-types */
 export enum EmbedType {
   RICH = "rich",
   IMAGE = "image",
@@ -8,7 +8,7 @@ export enum EmbedType {
   LINK = "link",
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure */
 export interface EmbedVideoPayload {
   url?: string;
   proxy_url?: string;
@@ -16,7 +16,7 @@ export interface EmbedVideoPayload {
   width?: number;
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure */
 export interface EmbedImagePayload {
   url?: string;
   proxy_url?: string;
@@ -24,16 +24,16 @@ export interface EmbedImagePayload {
   width?: number;
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure */
 export type EmbedThumbnailPayload = EmbedImagePayload;
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure */
 export interface EmbedProviderPayload {
   name?: string;
   url?: string;
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure */
 export interface EmbedAuthorPayload {
   name?: string;
   url?: string;
@@ -41,21 +41,21 @@ export interface EmbedAuthorPayload {
   proxy_icon_url?: string;
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure */
 export interface EmbedFooterPayload {
   text?: string;
   icon_url?: string;
   proxy_icon_url?: string;
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure */
 export interface EmbedFieldPayload {
   name?: string;
   value?: string;
   inline?: boolean;
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-structure
+/** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-structure */
 export interface EmbedPayload {
   title?: string;
   type?: EmbedType;

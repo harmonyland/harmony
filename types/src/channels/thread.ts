@@ -2,7 +2,7 @@ import { Reasonable } from "../etc/reasonable.ts";
 import { ChannelType } from "./base.ts";
 import { GuildTextChannelPayload } from "./guild.ts";
 
-// https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure
+/** @link https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure */
 export interface ThreadMetadataPayload {
   archived: boolean;
   auto_archive_duration: number;
@@ -11,7 +11,7 @@ export interface ThreadMetadataPayload {
   invitable?: boolean;
 }
 
-// https://discord.com/developers/docs/resources/channel#thread-member-object-thread-member-structure
+/** @link https://discord.com/developers/docs/resources/channel#thread-member-object-thread-member-structure */
 export interface ThreadMemberPayload {
   id?: string;
   user_id?: string;
@@ -19,7 +19,7 @@ export interface ThreadMemberPayload {
   flags: number;
 }
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-thread-channel
+/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-thread-channel */
 export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
   message_count: number;
   member_count: number;
@@ -29,7 +29,7 @@ export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
   permissions: string;
 }
 
-// https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread
+/** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread */
 export interface EditGuildThreadCHannelPayload extends Reasonable {
   name?: string;
   archived?: boolean;
