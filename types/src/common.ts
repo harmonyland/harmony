@@ -1,1 +1,1 @@
-export type snowflake = bigint;
+export type snowflake = string;
