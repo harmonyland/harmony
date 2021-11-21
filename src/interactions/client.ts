@@ -324,7 +324,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (interaction.isAutocomplete()) {
-      const handle = this.autocompleteHandlers.find(
+      const handle = [
+        ...this.autocompleteHandlers,
+        ...this.modules.map((e) => e.autocomplete).flat()
+      ].find(
         (e) =>
           (e.cmd.toLowerCase() === interaction.name || e.cmd === '*') &&
           (e.option === '*' ||
