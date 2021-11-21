@@ -541,7 +541,15 @@ export class CommandsManager {
             (e) =>
               (this.client.caseSensitive === true
                 ? e.name
-                : e.name.toLowerCase()) === name
+                : e.name.toLowerCase()) === name ||
+              (typeof e.aliases === 'string'
+                ? [e.aliases]
+                : e.aliases ?? []
+              ).some(
+                (e) =>
+                  (this.client.caseSensitive === true ? e : e.toLowerCase()) ===
+                  name
+              )
           )
         if (sub !== undefined) {
           const shifted = parsed.args.shift()
