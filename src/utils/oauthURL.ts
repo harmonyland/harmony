@@ -20,7 +20,7 @@ export function createOAuthURL(options: OAuthURLOptions): string {
 
   const params = new URLSearchParams({
     client_id: options.clientID,
-    scopes: [new Set(options.scopes)].join(' ')
+    scopes: [...new Set(options.scopes)].join(' ')
   })
 
   if (options.permissions !== undefined) {
@@ -62,7 +62,7 @@ export function createOAuthURL(options: OAuthURLOptions): string {
     params.set('redirect_uri', options.redirectURI)
   }
 
-  return `${Constants.DISCORD_API_URL}/${
+  return `${Constants.DISCORD_API_URL}/v${
     Constants.DISCORD_API_VERSION
   }/oauth2/authorize?${params.toString()}`
 }
