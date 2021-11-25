@@ -118,19 +118,40 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     this.enabled = options.enabled ?? true
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const client = this.client as any
+    const client = this.client as unknown as {
+      _decoratedAppCmd: ApplicationCommandHandler[]
+      _decoratedAutocomplete: AutocompleteHandler[]
+    }
     if (client?._decoratedAppCmd !== undefined) {
-      client._decoratedAppCmd.forEach((e: any) => {
+      client._decoratedAppCmd.forEach((e) => {
         e.handler = e.handler.bind(this.client)
         this.handlers.push(e)
       })
     }
 
-    const self = this as any
+    if (client?._decoratedAutocomplete !== undefined) {
+      client._decoratedAutocomplete.forEach((e) => {
+        e.handler = e.handler.bind(this.client)
+        this.autocompleteHandlers.push(e)
+      })
+    }
+
+    const self = this as unknown as InteractionsClient & {
+      _decoratedAppCmd: ApplicationCommandHandler[]
+      _decoratedAutocomplete: AutocompleteHandler[]
+    }
+
     if (self._decoratedAppCmd !== undefined) {
-      self._decoratedAppCmd.forEach((e: any) => {
+      self._decoratedAppCmd.forEach((e) => {
         e.handler = e.handler.bind(this.client)
         self.handlers.push(e)
+      })
+    }
+
+    if (self._decoratedAutocomplete !== undefined) {
+      self._decoratedAutocomplete.forEach((e) => {
+        e.handler = e.handler.bind(this.client)
+        self.autocompleteHandlers.push(e)
       })
     }
 
@@ -303,7 +324,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (interaction.isAutocomplete()) {
-      const handle = this.autocompleteHandlers.find(
+      const handle = [
+        ...this.autocompleteHandlers,
+        ...this.modules.map((e) => e.autocomplete).flat()
+      ].find(
         (e) =>
           (e.cmd.toLowerCase() === interaction.name || e.cmd === '*') &&
           (e.option === '*' ||
