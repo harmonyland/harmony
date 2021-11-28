@@ -392,16 +392,25 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       body?: BodyInit
     }) => Promise<void>
   }): Promise<false | Interaction> {
-    if (req.method.toLowerCase() !== 'post') return false
+    if (req.method.toLowerCase() !== 'post') {
+      console.log('verify: request is not post')
+      return false
+    }
 
     const signature = req.headers.get('x-signature-ed25519')
     const timestamp = req.headers.get('x-signature-timestamp')
-    if (signature === null || timestamp === null) return false
+    if (signature === null || timestamp === null) {
+      console.log('verify: relevant headers not present')
+      return false
+    }
 
     const rawbody =
       req.body instanceof Uint8Array ? req.body : await Deno.readAll(req.body)
     const verify = await this.verifyKey(rawbody, signature, timestamp)
-    if (!verify) return false
+    if (!verify) {
+      console.log('verify: edverify failed')
+      return false
+    }
 
     try {
       const payload: InteractionPayload = JSON.parse(decodeText(rawbody))
@@ -555,6 +564,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
       return res
     } catch (e) {
+      console.error("failed", e)
       return false
     }
   }
@@ -568,7 +578,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     request: Request
   }): Promise<false | Interaction> {
     if (req.bodyUsed === true) throw new Error('Request Body already used')
-    if (req.body === null) return false
+    if (req.body === null) {
+      console.log('verify: body is null')
+      return false
+    }
     const body = new Uint8Array(await req.arrayBuffer())
 
     return await this.verifyServerRequest({
