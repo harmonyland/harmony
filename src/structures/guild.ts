@@ -56,6 +56,7 @@ import type { GuildApplicationCommandsManager } from '../interactions/applicatio
 import { toCamelCase } from '../utils/snakeCase.ts'
 import { ThreadsManager } from '../managers/threads.ts'
 import { GuildStickersManager } from '../managers/guildStickers.ts'
+import type { InteractionsClient } from '../interactions/client.ts'
 
 export class GuildBan extends Base {
   guild: Guild
@@ -222,7 +223,9 @@ export class Guild extends SnowflakeBase {
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
     this.stickers = new GuildStickersManager(this.client, this)
-    this.commands = this.client.interactions.commands.for(this)
+    this.commands = typeof this.client.interactions === 'object'
+      ? this.client.interactions.commands.for(this)
+      : (this.client as unknown as InteractionsClient).commands.for(this)
   }
 
   readFromData(data: GuildPayload): void {
