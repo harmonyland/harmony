@@ -223,9 +223,10 @@ export class Guild extends SnowflakeBase {
     this.emojis = new GuildEmojisManager(this.client, this.client.emojis, this)
     this.invites = new InviteManager(this.client, this)
     this.stickers = new GuildStickersManager(this.client, this)
-    this.commands = typeof this.client.interactions === 'object'
-      ? this.client.interactions.commands.for(this)
-      : (this.client as unknown as InteractionsClient).commands.for(this)
+    this.commands =
+      typeof this.client.interactions === 'object'
+        ? this.client.interactions.commands.for(this)
+        : (this.client as unknown as InteractionsClient).commands.for(this)
   }
 
   readFromData(data: GuildPayload): void {
