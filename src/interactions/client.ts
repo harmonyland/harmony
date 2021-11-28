@@ -569,8 +569,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   }): Promise<false | Interaction> {
     if (req.bodyUsed === true) throw new Error('Request Body already used')
     if (req.body === null) return false
-    const body = (await req.body.getReader().read()).value
-    if (body === undefined) return false
+    const body = new Uint8Array(await req.body.arrayBuffer())
 
     return await this.verifyServerRequest({
       headers: req.headers,
