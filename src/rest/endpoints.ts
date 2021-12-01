@@ -373,6 +373,7 @@ export class RESTEndpoints {
       for (const [k, v] of entries) {
         if (v === undefined) continue
         const kSnake = k === 'actionType' ? 'action_type' : k
+        if (q !== '?') q += '&'
         q += `${encodeURIComponent(kSnake)}=${encodeURIComponent(
           v?.toString() ?? ''
         )}`
