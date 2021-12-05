@@ -290,7 +290,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       const groupMatched =
         e.group !== undefined && e.parent !== undefined
           ? i.data.options
-              .find(
+              ?.find(
                 (o) =>
                   o.name === e.group &&
                   o.type === ApplicationCommandOptionType.SUB_COMMAND_GROUP
@@ -299,7 +299,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
           : true
       const subMatched =
         e.group === undefined && e.parent !== undefined
-          ? i.data.options.find(
+          ? i.data.options?.find(
               (o) =>
                 o.name === e.name &&
                 o.type === ApplicationCommandOptionType.SUB_COMMAND
