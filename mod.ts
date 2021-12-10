@@ -130,7 +130,17 @@ export type {
   GuildCreateChannelOptions,
   GuildCreateRolePayload
 } from './src/types/guild.ts'
-export { AuditLogEvents } from './src/types/guild.ts'
+export {
+  AuditLog,
+  AuditLofChange,
+  AuditLogChangePayload,
+  AuditLogEntry,
+  AuditLogEntryPayload,
+  AuditLogEvents,
+  AuditLogPayload,
+  OptionalAuditEntryInfo,
+  OptionalAuditEntryInfoPayload
+} from './src/types/guild.ts'
 export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
 export { PermissionFlags } from './src/types/permissionFlags.ts'
 export type {
