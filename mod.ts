@@ -120,6 +120,12 @@ export * from './src/types/channel.ts'
 export type { EmojiPayload } from './src/types/emoji.ts'
 export { Verification } from './src/types/guild.ts'
 export type {
+  AuditLog,
+  AuditLogChange,
+  AuditLogChangePayload,
+  AuditLogEntry,
+  AuditLogEntryPayload,
+  AuditLogPayload,
   GuildIntegrationPayload,
   GuildPayload,
   GuildBanPayload,
@@ -128,7 +134,9 @@ export type {
   GuildTextBasedChannels,
   GuildCreateOptions,
   GuildCreateChannelOptions,
-  GuildCreateRolePayload
+  GuildCreateRolePayload,
+  OptionalAuditEntryInfo,
+  OptionalAuditEntryInfoPayload
 } from './src/types/guild.ts'
 export { AuditLogEvents } from './src/types/guild.ts'
 export type { InvitePayload, PartialInvitePayload } from './src/types/invite.ts'
