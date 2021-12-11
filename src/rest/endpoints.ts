@@ -1393,14 +1393,14 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
    * Adds the current user to a thread. Returns a 204 empty response on success. Also requires the thread is not archived. Fires a Thread Members Update Gateway event.
    */
   async joinThread(channelId: string): Promise<undefined> {
-    return this.rest.post(`/channels/${channelId}/thread-members/@me`)
+    return this.rest.post(`/channels/${channelId}/thread-members/@me`, {})
   }
 
   /**
    * Adds another user to a thread. Requires the ability to send messages in the thread. Also requires the thread is not archived. Returns a 204 empty response on success. Fires a Thread Members Update Gateway event.
    */
   async addUserToThread(channelId: string, userId: string): Promise<undefined> {
-    return this.rest.post(`/channels/${channelId}/thread-members/${userId}`)
+    return this.rest.post(`/channels/${channelId}/thread-members/${userId}`, {})
   }
 
   /**
