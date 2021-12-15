@@ -191,7 +191,9 @@ export class TextChannel extends Channel {
 
   /** Fetches the webhooks associated with a channel */
   async fetchWebhooks(): Promise<Webhook[]> {
-    const webhooks = (await this.client.rest.get(CHANNEL_WEBHOOKS(this.id))) as WebhookPayload[];
-    return webhooks.map(hook => new Webhook(hook, this.client, this.client.rest));
+    const webhooks = (await this.client.rest.get(
+      CHANNEL_WEBHOOKS(this.id)
+    )) as WebhookPayload[];
+    return webhooks.map((e) => new Webhook(e, this.client, this.client.rest));
   }
 }
