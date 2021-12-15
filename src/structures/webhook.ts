@@ -50,12 +50,12 @@ export class Webhook {
   }
 
   constructor(data: WebhookPayload, client?: Client, rest?: RESTManager) {
-    this.fromPayload(data)
     if (rest !== undefined) this.rest = rest
     else if (client !== undefined) {
       this.client = client
       this.rest = client.rest
     } else this.rest = new RESTManager()
+    this.fromPayload(data)
   }
 
   private fromPayload(data: WebhookPayload): this {
