@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-node@v2.1.2
 
       - name: Setup Prettier
-        run: npm install --dev prettier
+        run: npm install prettier
 
       - name: Prettier Check
         run: npx prettier --check ./src ./test deploy.ts mod.ts deps.ts
