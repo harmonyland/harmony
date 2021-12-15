@@ -17,8 +17,8 @@ import { Emoji } from './emoji.ts'
 import type { Member } from './member.ts'
 import { Message } from './message.ts'
 import type { User } from './user.ts'
-import { Webhook } from "./webhook.ts"
-import { WebhookPayload} from "../types/webhook.ts"
+import { Webhook } from './webhook.ts'
+import { WebhookPayload } from '../types/webhook.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
@@ -193,7 +193,7 @@ export class TextChannel extends Channel {
   async fetchWebhooks(): Promise<Webhook[]> {
     const webhooks = (await this.client.rest.get(
       CHANNEL_WEBHOOKS(this.id)
-    )) as WebhookPayload[];
-    return webhooks.map((e) => new Webhook(e, this.client, this.client.rest));
+    )) as WebhookPayload[]
+    return webhooks.map((e) => new Webhook(e, this.client, this.client.rest))
   }
 }
