@@ -99,7 +99,10 @@ export class APIRequest {
       this.method === 'put' ||
       this.method === 'patch'
     ) {
-      body = this.options.data
+      // Use empty JSON object as body by default
+      // this should not be required, but seems like CloudFlare is not
+      // letting these requests without a body through.
+      body = this.options.data ?? {}
       if (this.options.files !== undefined && this.options.files.length > 0) {
         contentType = undefined
         const form = new FormData()
@@ -108,9 +111,9 @@ export class APIRequest {
         )
         form.append('payload_json', JSON.stringify(body))
         body = form
-      } else if (body !== undefined && body instanceof FormData) {
+      } else if (body instanceof FormData) {
         contentType = 'multipart/form-data'
-      } else if (body !== undefined) {
+      } else {
         contentType = 'application/json'
         body = JSON.stringify(body)
       }
