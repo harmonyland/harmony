@@ -17,6 +17,7 @@ export interface MemberData {
   deaf?: boolean
   mute?: boolean
   channel?: string | VoiceChannel | null
+  communicationDisabledUntil?: Date
 }
 
 export class Member extends SnowflakeBase {
@@ -30,6 +31,7 @@ export class Member extends SnowflakeBase {
   mute!: boolean
   guild: Guild
   permissions: Permissions
+  communicationDisabledUntil?: Date | null
 
   constructor(
     client: Client,
@@ -63,6 +65,12 @@ export class Member extends SnowflakeBase {
     this.premiumSince = data.premium_since ?? this.premiumSince
     this.deaf = data.deaf ?? this.deaf
     this.mute = data.mute ?? this.mute
+    this.communicationDisabledUntil =
+      data.communication_disabled_until === null
+        ? null
+        : data.communication_disabled_until === undefined
+        ? undefined
+        : new Date(data.communication_disabled_until)
   }
 
   /**
@@ -79,13 +87,16 @@ export class Member extends SnowflakeBase {
   /**
    * Edits the Member
    * @param data Data to apply
+   * @param reason Audit Log reason
    */
-  async edit(data: MemberData): Promise<Member> {
+  async edit(data: MemberData, reason?: string): Promise<Member> {
     const payload = {
       nick: data.nick,
       roles: data.roles?.map((e) => (typeof e === 'string' ? e : e.id)),
       deaf: data.deaf,
       mute: data.mute,
+      communication_disabled_until:
+        data.communicationDisabledUntil?.toISOString(),
       channel_id:
         typeof data.channel === 'string' ? data.channel : data.channel?.id
     }
@@ -95,7 +106,10 @@ export class Member extends SnowflakeBase {
       payload,
       undefined,
       null,
-      true
+      true,
+      {
+        reason
+      }
     )
     if (res.ok === true) {
       if (data.nick !== undefined)
@@ -110,37 +124,46 @@ export class Member extends SnowflakeBase {
    * New nickname to set. If empty, nick is reset
    * @param nick New nickname
    */
-  async setNickname(nick?: string): Promise<Member> {
-    return await this.edit({
-      nick: nick === undefined ? null : nick
-    })
+  async setNickname(nick?: string, reason?: string): Promise<Member> {
+    return await this.edit(
+      {
+        nick: nick === undefined ? null : nick
+      },
+      reason
+    )
   }
 
   /**
    * Resets nickname of the Member
    */
-  async resetNickname(): Promise<Member> {
-    return await this.setNickname()
+  async resetNickname(reason?: string): Promise<Member> {
+    return await this.setNickname(undefined, reason)
   }
 
   /**
    * Sets a Member mute in VC
    * @param mute Value to set
    */
-  async setMute(mute?: boolean): Promise<Member> {
-    return await this.edit({
-      mute: mute ?? false
-    })
+  async setMute(mute?: boolean, reason?: string): Promise<Member> {
+    return await this.edit(
+      {
+        mute: mute ?? false
+      },
+      reason
+    )
   }
 
   /**
    * Sets a Member deaf in VC
    * @param deaf Value to set
    */
-  async setDeaf(deaf?: boolean): Promise<Member> {
-    return await this.edit({
-      deaf: deaf ?? false
-    })
+  async setDeaf(deaf?: boolean, reason?: string): Promise<Member> {
+    return await this.edit(
+      {
+        deaf: deaf ?? false
+      },
+      reason
+    )
   }
 
   /**
@@ -148,20 +171,27 @@ export class Member extends SnowflakeBase {
    * @param channel Channel to move(null or undefined to disconnect)
    */
   async moveVoiceChannel(
-    channel?: string | VoiceChannel | null
+    channel?: string | VoiceChannel | null,
+    reason?: string
   ): Promise<Member> {
-    return await this.edit({
-      channel: channel ?? null
-    })
+    return await this.edit(
+      {
+        channel: channel ?? null
+      },
+      reason
+    )
   }
 
   /**
    * Disconnects a Member from connected VC
    */
-  async disconnectVoice(): Promise<Member> {
-    return await this.edit({
-      channel: null
-    })
+  async disconnectVoice(reason?: string): Promise<Member> {
+    return await this.edit(
+      {
+        channel: null
+      },
+      reason
+    )
   }
 
   /**
