@@ -85,6 +85,17 @@ export class APIRequest {
       })
     }
 
+    // Interaction response
+    if (
+      options.data?.data?.files !== undefined &&
+      Array.isArray(options.data?.data?.files)
+    ) {
+      if (_files === undefined) _files = []
+      options.data?.data?.files.forEach((file: MessageAttachment) => {
+        _files!.push(file)
+      })
+    }
+
     if (_files !== undefined && _files.length > 0) {
       if (options.files === undefined) options.files = _files
       else options.files = [...options.files, ..._files]
@@ -107,8 +118,21 @@ export class APIRequest {
         contentType = undefined
         const form = new FormData()
         this.options.files.forEach((file, i) =>
-          form.append(`file${i === 0 ? '' : i}`, file.blob, file.name)
+          form.append(`files[${i}]`, file.blob, file.name)
         )
+        if (typeof body === 'object' && body !== null) {
+          // Differentiate between interaction response
+          // and other endpoints.
+          const target =
+            'data' in body && 'type' in body
+              ? (body as unknown as { data: Record<string, unknown> }).data
+              : (body as unknown as Record<string, unknown>)
+          target.attachments = this.options.files.map((e, i) => ({
+            id: i,
+            filename: e.name,
+            description: e.description
+          }))
+        }
         form.append('payload_json', JSON.stringify(body))
         body = form
       } else if (body instanceof FormData) {
@@ -141,14 +165,6 @@ export class APIRequest {
                 ? this.rest.token
                 : this.rest.token()
             }`.trim()
-    }
-
-    // TODO: Remove once https://github.com/denoland/deno/issues/11920 is fixed
-    if (
-      (this.method === 'post' || this.method === 'put') &&
-      (body === undefined || body === null)
-    ) {
-      headers['Content-Length'] = '0'
     }
 
     if (contentType !== undefined) headers['Content-Type'] = contentType

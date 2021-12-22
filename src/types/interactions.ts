@@ -13,6 +13,7 @@ import type {
   InteractionApplicationCommandData
 } from './applicationCommand.ts'
 import type { UserPayload } from './user.ts'
+import { MessageAttachment } from '../structures/message.ts'
 
 export enum InteractionType {
   /** Ping sent by the API (HTTP-only) */
@@ -87,6 +88,7 @@ export interface InteractionResponseDataBasePayload {
   allowed_mentions?: AllowedMentionsPayload
   flags?: number
   components?: MessageComponentData[]
+  files?: MessageAttachment[]
 }
 
 export interface InteractionResponseDataAutocompletePayload {

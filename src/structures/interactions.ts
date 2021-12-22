@@ -57,6 +57,7 @@ export interface InteractionMessageOptions {
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
   components?: MessageComponentData[]
+  files?: MessageAttachment[]
 }
 
 export interface InteractionResponse extends InteractionMessageOptions {
@@ -201,6 +202,7 @@ export class Interaction extends SnowflakeBase {
               embeds: data.embeds,
               tts: data.tts ?? false,
               flags,
+              files: data.files,
               allowed_mentions: data.allowedMentions,
               components:
                 data.components === undefined
@@ -278,17 +280,7 @@ export class Interaction extends SnowflakeBase {
 
   /** Edit the original Interaction response */
   async editResponse(
-    data:
-      | {
-          content?: string
-          embeds?: Array<Embed | EmbedPayload>
-          flags?: number | number[]
-          allowedMentions?: AllowedMentionsPayload
-          components?: MessageComponentData[]
-          files?: MessageAttachment[]
-          file?: MessageAttachment
-        }
-      | string
+    data: InteractionMessageOptions | string
   ): Promise<Interaction> {
     if (typeof data === 'string') data = { content: data }
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
@@ -300,6 +292,7 @@ export class Interaction extends SnowflakeBase {
           ? data.flags.reduce((p, a) => p | a, 0)
           : data.flags,
       allowed_mentions: data.allowedMentions,
+      files: data.files,
       components:
         data.components === undefined
           ? undefined
