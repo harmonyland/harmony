@@ -70,7 +70,7 @@ export class ApplicationCommandInteraction extends Interaction {
 
   /** Gets sub command name from options */
   get subCommand(): string | undefined {
-    if (this.data.options[0].type === ApplicationCommandOptionType.SUB_COMMAND)
+    if (this.data.options?.[0].type === ApplicationCommandOptionType.SUB_COMMAND)
       return this.data.options[0].name
     else if (
       this.data.options[0].type ===
@@ -84,7 +84,7 @@ export class ApplicationCommandInteraction extends Interaction {
   /** Gets sub command group name from options */
   get subCommandGroup(): string | undefined {
     if (
-      this.data.options[0].type ===
+      this.data.options?.[0].type ===
       ApplicationCommandOptionType.SUB_COMMAND_GROUP
     )
       return this.data.options[0].name
