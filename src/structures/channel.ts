@@ -64,6 +64,11 @@ export class Channel extends SnowflakeBase {
     this.id = data.id ?? this.id
   }
 
+  delete(): this {
+    this.client.rest.endpoints.deleteChannel(this.id)
+    return this
+  }
+
   isDM(): this is DMChannel {
     return isDMChannel(this)
   }
