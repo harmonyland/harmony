@@ -151,8 +151,8 @@ export class GuildChannel extends Channel {
     this.parentID = data.parent_id ?? this.parentID
   }
 
-  delete(): this {
-    this.client.rest.endpoints.deleteChannel(this.id)
+  async delete(): Promise<this> {
+    await this.client.rest.endpoints.deleteChannel(this.id)
     return this
   }
 
