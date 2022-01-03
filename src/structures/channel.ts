@@ -64,11 +64,6 @@ export class Channel extends SnowflakeBase {
     this.id = data.id ?? this.id
   }
 
-  delete(): this {
-    this.client.rest.endpoints.deleteChannel(this.id)
-    return this
-  }
-
   isDM(): this is DMChannel {
     return isDMChannel(this)
   }
@@ -154,6 +149,11 @@ export class GuildChannel extends Channel {
       data.permission_overwrites ?? this.permissionOverwrites
     this.nsfw = data.nsfw ?? this.nsfw
     this.parentID = data.parent_id ?? this.parentID
+  }
+
+  delete(): this {
+    this.client.rest.endpoints.deleteChannel(this.id)
+    return this
   }
 
   /** Get Permission Overties for a specific Member or Role */
