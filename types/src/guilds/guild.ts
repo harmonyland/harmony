@@ -1,4 +1,6 @@
-import { GuildChannelPayload } from "../channels/guild.ts";
+import { ChannelType } from "../channels/base.ts";
+import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
+import { GuildMemberPayload } from "./member.ts";
 
 export interface GuildPayload {
   id: string;
@@ -30,7 +32,7 @@ export interface GuildPayload {
   unavailable?: boolean;
   member_count?: number;
   // voice_states?: VoiceStatePayload[];
-  // members?: MemberPayload[];
+  members?: GuildMemberPayload[];
   channels?: GuildChannelPayload[];
   // presences?: PresencePayload[];
   max_presences?: number | null;
@@ -119,4 +121,71 @@ export enum GuildFeature {
   VERIFIED = "VERIFIED",
   VIP_REGIONS = "VIP_REGIONS",
   WELCOME_SCREEN_ENABLED = "WELCOME_SCREEN_ENABLED",
+}
+
+export interface PartialGuildChannelPayload {
+  name: string;
+  type: ChannelType;
+  id?: number;
+  parent_id?: number;
+}
+
+export interface CreateGuildPayload {
+  name: string;
+  icon?: string | null;
+  verification_level?: VerificationLevel;
+  default_message_notifications?: DefaultMessageNotificationLevel;
+  explicit_content_filter?: ExplicitContentFilterLevel;
+  // roles?: RolePayload[];
+  channels?: PartialGuildChannelPayload[];
+  afk_channel_id?: string;
+  afk_timeout?: number;
+  system_channel_id?: string;
+  system_channel_flags?: SystemChannelFlags;
+}
+
+export interface GetGuildParams {
+  with_counts?: boolean;
+}
+
+export interface EditGuildPayload {
+  name?: string;
+  verification_level?: VerificationLevel | null;
+  default_message_notifications?: DefaultMessageNotificationLevel | null;
+  explicit_content_filter?: ExplicitContentFilterLevel | null;
+  afk_channel_id?: string | null;
+  afk_timeout?: number;
+  icon?: string | null;
+  owner_id?: string;
+  splash?: string | null;
+  discovery_splash?: string | null;
+  banner?: string | null;
+  system_channel_id?: string | null;
+  system_channel_flags?: SystemChannelFlags;
+  rules_channel_id?: string | null;
+  public_updates_channel_id?: string | null;
+  preferred_locale?: string | null;
+  features?: GuildFeature[];
+  description?: string | null;
+  premium_progress_bar_enabled?: boolean;
+}
+
+export interface CreateGuildChannelPayload {
+  name: string;
+  type?: ChannelType;
+  topic?: string;
+  bitrate?: number;
+  user_limit?: number;
+  rate_limit_per_user?: number;
+  position?: number;
+  permission_overwrites?: OverwritePayload[];
+  parent_id?: string;
+  nsfw?: boolean;
+}
+
+export interface EditGuildChannelPayload {
+  id: string;
+  position: number | null;
+  lock_permissions: boolean | null;
+  parent_id: string | null;
 }
