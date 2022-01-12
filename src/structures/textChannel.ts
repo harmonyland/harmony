@@ -18,7 +18,7 @@ import type { Member } from './member.ts'
 import { Message } from './message.ts'
 import type { User } from './user.ts'
 import { Webhook } from './webhook.ts'
-import { WebhookPayload } from '../types/webhook.ts'
+import type { WebhookPayload } from '../types/webhook.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
