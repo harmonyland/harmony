@@ -11,7 +11,6 @@ import type {
 import { OverrideType } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import type { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
-import getChannelByType from '../utils/channel.ts'
 import {
   isDMChannel,
   isGroupDMChannel,
