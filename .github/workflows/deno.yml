@@ -31,5 +31,8 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }} # tests across multiple Deno versions
 
-      - name: Run mod.ts to test deeper
-        run: deno run --allow-net mod.ts
+      - name: Check
+        run: deno run mod.ts
+
+      - name: Check Deploy
+        run: deno run deploy.ts
