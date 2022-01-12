@@ -234,7 +234,7 @@ export class GuildChannel extends Channel {
       .add(memberOWs.length === 0 ? 0 : memberOWs.map((e) => Number(e.allow)))
   }
 
-  async edit(options?: ModifyChannelOption): Promise<this> {
+  async edit(options?: ModifyChannelOption): Promise<any> {
     const body: ModifyChannelPayload = {
       name: options?.name,
       position: options?.position,
