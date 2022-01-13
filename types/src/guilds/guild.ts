@@ -1,5 +1,6 @@
 import { ChannelType } from "../channels/base.ts";
 import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
+import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
 
 export interface GuildPayload {
@@ -47,7 +48,7 @@ export interface GuildPayload {
   max_video_channel_users?: number;
   approximate_member_count?: number;
   approximate_presence_count?: number;
-  // welcome_screen?: WelcomeScreenPayload;
+  welcome_screen?: WelcomeScreenPayload;
   nsfw_level: GuildNSFWLevel;
   // stage_instances?: StageInstancePayload[];
   // stickers?: StickerPayload[];
