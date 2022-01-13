@@ -118,6 +118,12 @@ export class Interaction extends SnowflakeBase {
   data?: InteractionApplicationCommandData | InteractionMessageComponentData
   message?: Message
 
+  /** User locale (not present on PING type) */
+  locale?: string
+
+  /** Guild locale (not present on PING type) */
+  guildLocale?: string
+
   constructor(
     client: Client,
     data: InteractionPayload,
@@ -140,6 +146,8 @@ export class Interaction extends SnowflakeBase {
     this.guild = others.guild
     this.channel = others.channel
     this.message = others.message
+    this.locale = data.locale
+    this.guildLocale = data.guild_locale
   }
 
   /**

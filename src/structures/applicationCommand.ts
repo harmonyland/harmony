@@ -28,6 +28,9 @@ export interface InteractionApplicationCommandResolved {
 }
 
 export class ApplicationCommandInteraction extends Interaction {
+  declare locale: string
+  declare guildLocale: string
+
   /** Data sent with Interaction. Only applies to Application Command */
   data: InteractionApplicationCommandData
   /** Resolved data for Snowflakes in Slash Command Arguments */

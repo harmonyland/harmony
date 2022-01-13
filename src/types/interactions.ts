@@ -34,6 +34,13 @@ export interface InteractionMemberPayload extends MemberPayload {
 export interface InteractionPayload {
   /** Type of the Interaction */
   type: InteractionType
+
+  /** User locale (not present on PING type) */
+  locale?: string
+
+  /** Guild locale (not present on PING type) */
+  guild_locale?: string
+
   /** Token of the Interaction to respond */
   token: string
   /** Member object of user who invoked */
