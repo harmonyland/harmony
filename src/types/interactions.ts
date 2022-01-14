@@ -6,7 +6,6 @@ import {
 import type { MemberPayload } from './guild.ts'
 import {
   InteractionMessageComponentData,
-  MessageComponentData,
   MessageComponentPayload
 } from './messageComponents.ts'
 import type {
