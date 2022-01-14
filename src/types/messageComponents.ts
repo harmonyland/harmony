@@ -11,7 +11,9 @@ export enum MessageComponentType {
   /** A clickable button */
   BUTTON = 2,
   /** Dropdown menu */
-  SELECT = 3
+  SELECT = 3,
+  /** Text Input (only for modals) */
+  TEXT_INPUT = 4
 }
 
 export enum ButtonStyle {
@@ -29,13 +31,50 @@ export enum ButtonStyle {
   DESTRUCTIVE = 4
 }
 
+export enum TextInputStyle {
+  /** Intended for short single-line text. */
+  SHORT = 1,
+  /** Intended for much longer inputs. */
+  PARAGRAPH = 2
+}
+
 export interface MessageComponentEmoji {
   id?: string
   name?: string
   animated?: boolean
 }
 
-export interface MessageComponentOption {
+export interface ActionRowComponentPayload {
+  type: MessageComponentType.ACTION_ROW
+  components: MessageComponentPayload[]
+}
+
+export interface ActionRowComponent {
+  type: MessageComponentType.ACTION_ROW | 'ACTION_ROW'
+  components: MessageComponentData[]
+}
+
+export interface ButtonComponentPayload {
+  type: MessageComponentType.BUTTON
+  label: string
+  style: ButtonStyle
+  custom_id?: string
+  url?: string
+  disabled?: boolean
+  emoji?: MessageComponentEmoji
+}
+
+export interface ButtonComponent {
+  type: MessageComponentType.BUTTON | 'BUTTON'
+  label: string
+  style: ButtonStyle | keyof typeof ButtonStyle
+  customID?: string
+  url?: string
+  disabled?: boolean
+  emoji?: MessageComponentEmoji
+}
+
+export interface SelectComponentOption {
   label: string
   value: string
   default?: boolean
@@ -43,41 +82,73 @@ export interface MessageComponentOption {
   emoji?: MessageComponentEmoji
 }
 
-export interface MessageComponentBase<
-  T1 = MessageComponentType,
-  T2 = MessageComponentPayload,
-  T3 = ButtonStyle
-> {
-  type: T1
-  components?: T2[]
-  label?: string
-  style?: T3
-  url?: string
-  emoji?: MessageComponentEmoji
-  disabled?: boolean
-  options?: MessageComponentOption[]
+export interface SelectComponentPayload {
+  type: MessageComponentType.SELECT
+  custom_id: string
   placeholder?: string
-}
-
-export interface MessageComponentPayload extends MessageComponentBase {
-  custom_id?: string
+  options: SelectComponentOption[]
+  disabled?: boolean
   min_values?: number
   max_values?: number
 }
 
-export interface MessageComponentData
-  extends MessageComponentBase<
-    keyof typeof MessageComponentType | MessageComponentType,
-    MessageComponentData,
-    ButtonStyle | keyof typeof ButtonStyle
-  > {
-  customID?: string
+export interface SelectComponent {
+  type: MessageComponentType.SELECT | 'SELECT'
+  customID: string
+  placeholder?: string
+  options: SelectComponentOption[]
+  disabled?: boolean
   minValues?: number
   maxValues?: number
 }
+
+export interface TextInputComponentPayload {
+  type: MessageComponentType.TEXT_INPUT
+  label: string
+  custom_id: string
+  style: TextInputStyle
+  placeholder?: string
+  min_length?: number
+  max_length?: number
+}
+
+export interface TextInputComponent {
+  type: MessageComponentType.TEXT_INPUT | 'TEXT_INPUT'
+  label: string
+  customID: string
+  style: TextInputStyle | keyof typeof TextInputStyle
+  placeholder?: string
+  minLength?: number
+  maxLength?: number
+}
+
+export type MessageComponentPayload =
+  | ActionRowComponentPayload
+  | ButtonComponentPayload
+  | SelectComponentPayload
+  | TextInputComponentPayload
+
+export type MessageComponentData =
+  | ActionRowComponent
+  | ButtonComponent
+  | SelectComponent
+  | TextInputComponent
 
 export interface InteractionMessageComponentData {
   custom_id: string
   component_type: MessageComponentType
   values?: string[]
+}
+
+export interface ModalSubmitComponentTextInputData {
+  type: MessageComponentType.TEXT_INPUT
+  custom_id: string
+  value: string
+}
+
+export type ModalSubmitComponentData = ModalSubmitComponentTextInputData
+
+export interface InteractionModalSubmitData {
+  custom_id: string
+  components: ModalSubmitComponentData[]
 }
