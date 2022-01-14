@@ -301,7 +301,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       })
     )
     error.name = 'ErrorEvent'
-    console.error(error)
+    // Do not log errors by default
+    // console.error(error)
     this.emit('error', error, event)
     this.client.emit('gatewayError', event, this.shards)
   }
