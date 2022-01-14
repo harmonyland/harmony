@@ -480,7 +480,7 @@ export class Interaction extends SnowflakeBase {
     if (data.components !== undefined) {
       payload.components = transformComponent(data.components)
     }
-    
+
     await this.client.rest.patch(
       WEBHOOK_MESSAGE(
         this.applicationID,
