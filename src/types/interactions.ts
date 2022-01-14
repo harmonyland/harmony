@@ -14,6 +14,7 @@ import type {
   InteractionApplicationCommandData
 } from './applicationCommand.ts'
 import type { UserPayload } from './user.ts'
+import { MessageAttachment } from '../structures/message.ts'
 
 export enum InteractionType {
   /** Ping sent by the API (HTTP-only) */
@@ -36,6 +37,13 @@ export interface InteractionMemberPayload extends MemberPayload {
 export interface InteractionPayload {
   /** Type of the Interaction */
   type: InteractionType
+
+  /** User locale (not present on PING type) */
+  locale?: string
+
+  /** Guild locale (not present on PING type) */
+  guild_locale?: string
+
   /** Token of the Interaction to respond */
   token: string
   /** Member object of user who invoked */
@@ -92,6 +100,7 @@ export interface InteractionResponseDataBasePayload {
   allowed_mentions?: AllowedMentionsPayload
   flags?: number
   components?: MessageComponentPayload[]
+  files?: MessageAttachment[]
 }
 
 export interface InteractionResponseDataAutocompletePayload {

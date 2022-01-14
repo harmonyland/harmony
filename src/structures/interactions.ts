@@ -63,6 +63,7 @@ export interface InteractionMessageOptions {
   /** Whether the Message Response should be Ephemeral (only visible to User) or not */
   ephemeral?: boolean
   components?: MessageComponentData[]
+  files?: MessageAttachment[]
 }
 
 export interface InteractionResponseAutocompleteChoices {
@@ -163,6 +164,12 @@ export class Interaction extends SnowflakeBase {
     | InteractionModalSubmitData
   message?: Message
 
+  /** User locale (not present on PING type) */
+  locale?: string
+
+  /** Guild locale (not present on PING type) */
+  guildLocale?: string
+
   constructor(
     client: Client,
     data: InteractionPayload,
@@ -185,6 +192,8 @@ export class Interaction extends SnowflakeBase {
     this.guild = others.guild
     this.channel = others.channel
     this.message = others.message
+    this.locale = data.locale
+    this.guildLocale = data.guild_locale
   }
 
   /**
@@ -331,17 +340,7 @@ export class Interaction extends SnowflakeBase {
 
   /** Edit the original Interaction response */
   async editResponse(
-    data:
-      | {
-          content?: string
-          embeds?: Array<Embed | EmbedPayload>
-          flags?: number | number[]
-          allowedMentions?: AllowedMentionsPayload
-          components?: MessageComponentData[]
-          files?: MessageAttachment[]
-          file?: MessageAttachment
-        }
-      | string
+    data: InteractionMessageOptions | string
   ): Promise<Interaction> {
     if (typeof data === 'string') data = { content: data }
     const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
@@ -353,6 +352,7 @@ export class Interaction extends SnowflakeBase {
           ? data.flags.reduce((p, a) => p | a, 0)
           : data.flags,
       allowed_mentions: data.allowedMentions,
+      files: data.files,
       components:
         data.components === undefined
           ? undefined

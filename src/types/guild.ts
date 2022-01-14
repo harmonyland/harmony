@@ -90,6 +90,9 @@ export interface MemberPayload {
   deaf: boolean
   mute: boolean
   pending?: boolean
+  // Only relevant in Interaction object.
+  permissions?: string
+  communication_disabled_until?: string | null
 }
 
 export enum MessageNotification {

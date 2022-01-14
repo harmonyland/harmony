@@ -28,7 +28,7 @@ import type { InteractionType } from '../types/interactions.ts'
 import { encodeText } from '../utils/encoding.ts'
 import { MessageComponentData } from '../types/messageComponents.ts'
 import { transformComponentPayload } from '../utils/components.ts'
-import { ThreadChannel } from './threadChannel.ts'
+import type { ThreadChannel } from './threadChannel.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 
@@ -227,8 +227,13 @@ export class Message extends SnowflakeBase {
 export class MessageAttachment {
   name: string
   blob: Blob
+  description?: string
 
-  constructor(name: string, blob: Blob | Uint8Array | string) {
+  constructor(
+    name: string,
+    blob: Blob | Uint8Array | string,
+    description?: string
+  ) {
     this.name = name
     this.blob =
       typeof blob === 'string'
@@ -236,12 +241,14 @@ export class MessageAttachment {
         : blob instanceof Uint8Array
         ? new Blob([blob])
         : blob
+    this.description = description
   }
 
   /** Load an Message Attachment from local file or URL */
   static async load(
     path: string,
-    filename?: string
+    filename?: string,
+    description?: string
   ): Promise<MessageAttachment> {
     const blob = path.startsWith('http')
       ? await fetch(path).then((res) => res.blob())
@@ -253,6 +260,13 @@ export class MessageAttachment {
       else filename = 'unnamed_attachment'
     }
 
-    return new MessageAttachment(filename, blob)
+    return new MessageAttachment(filename, blob, description)
+  }
+
+  // So that it's not present in actual payload we send to Discord.
+  // It is only attached in the FormData and some metadata is put
+  // in attachments array.
+  toJSON(): undefined {
+    return undefined
   }
 }

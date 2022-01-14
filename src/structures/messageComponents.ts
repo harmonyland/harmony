@@ -69,6 +69,8 @@ export class MessageComponents extends Array<MessageComponentData> {
 export class MessageComponentInteraction extends Interaction {
   data: InteractionMessageComponentData
   declare message: Message
+  declare locale: string
+  declare guildLocale: string
 
   constructor(
     client: Client,

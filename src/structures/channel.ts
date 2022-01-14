@@ -11,7 +11,6 @@ import type {
 import { OverrideType } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import type { GuildChannelPayloads, GuildChannels } from '../types/guild.ts'
-import getChannelByType from '../utils/channel.ts'
 import {
   isDMChannel,
   isGroupDMChannel,
@@ -42,7 +41,7 @@ import type {
 } from '../structures/guildTextChannel.ts'
 import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import type { StageVoiceChannel } from '../structures/guildVoiceStageChannel.ts'
-import { TextChannel } from '../structures/textChannel.ts'
+import type { TextChannel } from '../structures/textChannel.ts'
 import type { ThreadChannel } from '../structures/threadChannel.ts'
 
 export class Channel extends SnowflakeBase {
@@ -151,6 +150,11 @@ export class GuildChannel extends Channel {
     this.parentID = data.parent_id ?? this.parentID
   }
 
+  async delete(): Promise<this> {
+    await this.client.rest.endpoints.deleteChannel(this.id)
+    return this
+  }
+
   /** Get Permission Overties for a specific Member or Role */
   async overwritesFor(target: Member | Role | string): Promise<Overwrite[]> {
     const stringToObject =
@@ -239,12 +243,8 @@ export class GuildChannel extends Channel {
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
-
-    return (
-      (getChannelByType(this.client, resp, this.guild) as
-        | GuildChannels
-        | undefined) ?? new GuildChannel(this.client, resp, this.guild)
-    )
+    await this.client.channels.set(resp.id, resp)
+    return (await this.client.channels.get<GuildChannels>(resp.id))!
   }
 
   /** Edit name of the channel */

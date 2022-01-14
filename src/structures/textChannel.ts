@@ -7,7 +7,8 @@ import type {
 } from '../types/channel.ts'
 import {
   MESSAGE_REACTION_ME,
-  MESSAGE_REACTION_USER
+  MESSAGE_REACTION_USER,
+  CHANNEL_WEBHOOKS
 } from '../types/endpoint.ts'
 import { Collection } from '../utils/collection.ts'
 import { Channel } from './channel.ts'
@@ -16,6 +17,8 @@ import { Emoji } from './emoji.ts'
 import type { Member } from './member.ts'
 import { Message } from './message.ts'
 import type { User } from './user.ts'
+import { Webhook } from './webhook.ts'
+import type { WebhookPayload } from '../types/webhook.ts'
 
 export type AllMessageOptions = MessageOptions | Embed
 
@@ -184,5 +187,13 @@ export class TextChannel extends Channel {
   async triggerTyping(): Promise<TextChannel> {
     await this.client.rest.api.channels[this.id].typing.post()
     return this
+  }
+
+  /** Fetches the webhooks associated with a channel */
+  async fetchWebhooks(): Promise<Webhook[]> {
+    const webhooks = (await this.client.rest.get(
+      CHANNEL_WEBHOOKS(this.id)
+    )) as WebhookPayload[]
+    return webhooks.map((e) => new Webhook(e, this.client, this.client.rest))
   }
 }

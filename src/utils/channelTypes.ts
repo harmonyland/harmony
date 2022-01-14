@@ -10,7 +10,7 @@ import type {
 } from '../structures/guildTextChannel.ts'
 import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import type { StageVoiceChannel } from '../structures/guildVoiceStageChannel.ts'
-import { TextChannel } from '../structures/textChannel.ts'
+import type { TextChannel } from '../structures/textChannel.ts'
 import type { ThreadChannel } from '../structures/threadChannel.ts'
 import { ChannelTypes } from '../types/channel.ts'
 
