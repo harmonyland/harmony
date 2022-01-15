@@ -17,14 +17,13 @@
 - `@decorators` supported
 - Made with ❤️ in TypeScript
 
-## Table of Contents
+## Docs
 
-- [Usage](#usage)
-- [Docs](#docs)
-- [Discord](#discord)
-- [Maintainer](#maintainer)
-- [Contributing](#contributing)
-- [License](#license)
+Documentation is available for `main` (branch) and `stable` (release).
+
+- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
+- [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
+- [Guide](https://harmony.mod.land)
 
 ## Usage
 
@@ -145,14 +144,6 @@ new MyClient().connect('super secret token comes here', [
   GatewayIntents.GUILD_MESSAGES
 ])
 ```
-
-## Docs
-
-Documentation is available for `main` (branch) and `stable` (release).
-
-- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
-- [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
-- [Guide](https://harmony.mod.land)
 
 ## Discord
 
