@@ -1,6 +1,6 @@
-![banner](https://cdn.discordapp.com/attachments/783319033730564098/783399012547035176/HarmonyBanner.png)
+![banner](./assets/banner.png)
 
-<p align=center><i><b>An easy to use Discord API Library for Deno</b></i></p>
+<p align=center><b>An easy to use Discord API Library for Deno</b></p>
 <p align=center>
 <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
 <a href=https://discord.gg/harmony>
