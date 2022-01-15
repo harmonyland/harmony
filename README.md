@@ -9,13 +9,13 @@
 </p>
 <br>
 
-- Lightweight and easy to use.
-- Complete Object-Oriented approach.
-- Slash Commands supported.
-- Built-in Commands framework.
-- Customizable Caching, with Redis support.
-- Use `@decorators` to easily make things!
-- Made with ❤️ in TypeScript.
+- Lightweight and easy to use
+- Complete Object-Oriented approach
+- Slash Commands supported
+- Built-in Commands framework
+- Customizable Caching, with Redis support
+- `@decorators` supported
+- Made with ❤️ in TypeScript
 
 ## Table of Contents
 
@@ -30,9 +30,7 @@
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
-We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.1.3`.
-
-You can also import the module [from nest.land](https://nest.land/package/harmony) (note: import URL is not same as package one).
+We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.5.0`.
 
 For a quick example, run this:
 
@@ -170,12 +168,12 @@ Found a bug or want support? Join our Discord Server!
 
 See [the contributing file](CONTRIBUTING.md)!
 
-Pull Requests are accepted.
+Pull requests are welcome!
 
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## License
 
-[MIT © 2020-2021 Harmonyland](LICENSE)
+[MIT © 2020-2022 Harmonyland](LICENSE)
 
-#### Made with ❤ by Harmonyland
+#### Made with ❤ by Harmony Land
