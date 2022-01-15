@@ -17,19 +17,17 @@
 - `@decorators` supported
 - Made with ❤️ in TypeScript
 
-## Docs
-
-Documentation is available for `main` (branch) and `stable` (release).
-
-- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
-- [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
-- [Guide](https://harmony.mod.land)
-
 ## Usage
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
 We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.5.0`.
+
+## Docs
+
+Documentation is available [main branch](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts) or [latest stable version](https://doc.deno.land/https/deno.land/x/harmony/mod.ts). You can also check out the [guide](https://harmony.mod.land).
+
+## Example
 
 For a quick example, run this:
 
