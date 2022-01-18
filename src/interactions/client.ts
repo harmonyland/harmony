@@ -9,17 +9,17 @@ import {
   InteractionType
 } from '../types/interactions.ts'
 import {
-  ApplicationCommandType,
   ApplicationCommandOptionType,
+  ApplicationCommandType,
   InteractionApplicationCommandData
 } from '../types/applicationCommand.ts'
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
-import { verify as edverify } from 'https://deno.land/x/ed25519@1.0.1/mod.ts'
+import { edverify } from '../../deps.ts'
 import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
-import { encodeText, decodeText } from '../utils/encoding.ts'
+import { decodeText, encodeText } from '../utils/encoding.ts'
 import { ApplicationCommandsManager } from './applicationCommand.ts'
 import { Application } from '../structures/application.ts'
 import { Member } from '../structures/member.ts'
@@ -101,8 +101,9 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     super()
     let id = options.id
     if (options.token !== undefined) id = atob(options.token?.split('.')[0])
-    if (id === undefined)
+    if (id === undefined) {
       throw new Error('ID could not be found. Pass at least client or token')
+    }
     this.id = id
 
     if (options.client !== undefined) {
@@ -203,8 +204,9 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
         typeof type === 'string' ? ApplicationCommandType[type] : type
     }
 
-    if (handle.handler === undefined)
+    if (handle.handler === undefined) {
       throw new Error('Invalid usage. Handler function not provided')
+    }
 
     if (
       (handle.type === undefined ||
@@ -215,8 +217,9 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       handle.group === undefined
     ) {
       const parts = handle.name.split(/ +/).filter((e) => e !== '')
-      if (parts.length > 3 || parts.length < 1)
+      if (parts.length > 3 || parts.length < 1) {
         throw new Error('Invalid command name')
+      }
       const root = parts.shift() as string
       const group = parts.length === 2 ? parts.shift() : undefined
       const sub = parts.shift()
@@ -364,8 +367,9 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     signature: string | Uint8Array,
     timestamp: string | Uint8Array
   ): Promise<boolean> {
-    if (this.publicKey === undefined)
+    if (this.publicKey === undefined) {
       throw new Error('Public Key is not present')
+    }
 
     const fullBody = new Uint8Array([
       ...(typeof timestamp === 'string' ? encodeText(timestamp) : timestamp),
@@ -380,7 +384,6 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
    *
    * **Data present in Interaction returned by this method is very different from actual typings
    * as there is no real `Client` behind the scenes to cache things.**
-   *
    */
   async verifyServerRequest(req: {
     headers: Headers
@@ -596,8 +599,9 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     const timestamp = req.headers.get('x-signature-timestamp')
     const contentLength = req.headers.get('content-length')
 
-    if (signature === null || timestamp === null || contentLength === null)
+    if (signature === null || timestamp === null || contentLength === null) {
       return false
+    }
 
     const body = new Uint8Array(parseInt(contentLength))
     await req.body.read(body)
