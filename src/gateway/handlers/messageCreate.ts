@@ -8,13 +8,22 @@ export const messageCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: MessagePayload
 ) => {
-  const channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
+  let channel = await gateway.client.channels.get<TextChannel>(d.channel_id)
   // Fetch the channel if not cached.
   // Commented out right now as it causes some undefined behavior.
   // if (channel === undefined)
   //   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   //   channel = (await gateway.client.channels.fetch(d.channel_id)) as TextChannel
-  if (channel === undefined) return
+  if (channel === undefined) {
+    if (d.guild_id === undefined) {
+      // Let's assume it's a DM channel.
+      await gateway.client.channels.set(d.channel_id, {
+        id: d.channel_id,
+        type: 1
+      })
+      channel = (await gateway.client.channels.get<TextChannel>(d.channel_id))!
+    } else return
+  }
   await channel.messages.set(d.id, d)
   const user = new User(gateway.client, d.author)
   await gateway.client.users.set(d.author.id, d.author)
