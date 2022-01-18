@@ -16,7 +16,7 @@ import {
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
-import { edverify } from '../../deps.ts'
+import { edverify, decodeHex } from '../../deps.ts'
 import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { decodeText, encodeText } from '../utils/encoding.ts'
@@ -362,11 +362,11 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   }
 
   /** Verify HTTP based Interaction */
-  async verifyKey(
+  verifyKey(
     rawBody: string | Uint8Array,
     signature: string | Uint8Array,
     timestamp: string | Uint8Array
-  ): Promise<boolean> {
+  ): boolean {
     if (this.publicKey === undefined) {
       throw new Error('Public Key is not present')
     }
@@ -376,7 +376,13 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       ...(typeof rawBody === 'string' ? encodeText(rawBody) : rawBody)
     ])
 
-    return edverify(signature, fullBody, this.publicKey).catch(() => false)
+    return edverify(
+      decodeHex(encodeText(this.publicKey)),
+      decodeHex(
+        signature instanceof Uint8Array ? signature : encodeText(signature)
+      ),
+      fullBody
+    )
   }
 
   /**
