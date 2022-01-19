@@ -3,6 +3,7 @@ import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
+import { RolePayload } from "./role.ts";
 
 export interface GuildPayload {
   id: string;
@@ -22,7 +23,7 @@ export interface GuildPayload {
   verification_level: number;
   default_message_notifications: DefaultMessageNotificationLevel;
   explicit_content_filter: ExplicitContentFilterLevel;
-  // roles: RolePayload[];
+  roles: RolePayload[];
   emojis: EmojiPayload[];
   features: GuildFeature[];
   mfa_level: MFALevel;
@@ -138,7 +139,7 @@ export interface CreateGuildPayload {
   verification_level?: VerificationLevel;
   default_message_notifications?: DefaultMessageNotificationLevel;
   explicit_content_filter?: ExplicitContentFilterLevel;
-  // roles?: RolePayload[];
+  roles?: RolePayload[];
   channels?: PartialGuildChannelPayload[];
   afk_channel_id?: string;
   afk_timeout?: number;
