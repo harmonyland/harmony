@@ -1,5 +1,6 @@
 import { ChannelType } from "../channels/base.ts";
 import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
+import { EmojiPayload } from "../emojis/emoij.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
 
@@ -22,7 +23,7 @@ export interface GuildPayload {
   default_message_notifications: DefaultMessageNotificationLevel;
   explicit_content_filter: ExplicitContentFilterLevel;
   // roles: RolePayload[];
-  // emojis: EmojiPayload[];
+  emojis: EmojiPayload[];
   features: GuildFeature[];
   mfa_level: MFALevel;
   application_id: string | null;
