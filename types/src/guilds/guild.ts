@@ -1,7 +1,9 @@
 import { ChannelType } from "../channels/base.ts";
 import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
+import { EmojiPayload } from "../emojis/emoij.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
+import { RolePayload } from "./role.ts";
 
 export interface GuildPayload {
   id: string;
@@ -21,8 +23,8 @@ export interface GuildPayload {
   verification_level: number;
   default_message_notifications: DefaultMessageNotificationLevel;
   explicit_content_filter: ExplicitContentFilterLevel;
-  // roles: RolePayload[];
-  // emojis: EmojiPayload[];
+  roles: RolePayload[];
+  emojis: EmojiPayload[];
   features: GuildFeature[];
   mfa_level: MFALevel;
   application_id: string | null;
@@ -52,6 +54,8 @@ export interface GuildPayload {
   nsfw_level: GuildNSFWLevel;
   // stage_instances?: StageInstancePayload[];
   // stickers?: StickerPayload[];
+  // guild_scheduled_events?: GuildScheduledEventPayload[];
+  premium_progress_bar_enabled?: boolean;
 }
 
 export enum DefaultMessageNotificationLevel {
@@ -137,7 +141,7 @@ export interface CreateGuildPayload {
   verification_level?: VerificationLevel;
   default_message_notifications?: DefaultMessageNotificationLevel;
   explicit_content_filter?: ExplicitContentFilterLevel;
-  // roles?: RolePayload[];
+  roles?: RolePayload[];
   channels?: PartialGuildChannelPayload[];
   afk_channel_id?: string;
   afk_timeout?: number;

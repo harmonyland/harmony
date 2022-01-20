@@ -1,3 +1,4 @@
+import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
@@ -27,7 +28,7 @@ export interface AttachmentPayload {
 export interface ReactionPayload {
   count: number;
   me: boolean;
-  // emoji: EmojiPayload;
+  emoji: EmojiPayload;
 }
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-types

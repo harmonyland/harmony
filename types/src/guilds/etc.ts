@@ -2,6 +2,7 @@ import {
   GuildThreadChannelPayload,
   ThreadMemberPayload,
 } from "../channels/thread.ts";
+import { EmojiPayload } from "../emojis/emoij.ts";
 import { GuildFeature } from "./guild.ts";
 
 export interface GuildPreviewPayload {
@@ -10,7 +11,7 @@ export interface GuildPreviewPayload {
   icon: string | null;
   splash: string | null;
   discovery_splash: string | null;
-  // emojis: EmojiPayload[];
+  emojis: EmojiPayload[];
   features: GuildFeature[];
   approximate_member_count: number;
   approximate_presence_count: number;
