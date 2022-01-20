@@ -1,3 +1,5 @@
+import { InviteTargetType } from "../invites/intive.ts";
+
 // https://discord.com/developers/docs/resources/channel#channel-object-channel-types
 export enum ChannelType {
   GUILD_TEXT = 0,
@@ -29,7 +31,7 @@ export interface CreateChannelInvitePayload {
   max_uses?: number;
   temporary?: boolean;
   unique?: boolean;
-  // target_type?: InviteTargetType;
+  target_type?: InviteTargetType;
   target_user_id?: string;
   target_applicaton_id?: string;
 }
