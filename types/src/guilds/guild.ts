@@ -54,6 +54,8 @@ export interface GuildPayload {
   nsfw_level: GuildNSFWLevel;
   // stage_instances?: StageInstancePayload[];
   // stickers?: StickerPayload[];
+  // guild_scheduled_events?: GuildScheduledEventPayload[];
+  premium_progress_bar_enabled?: boolean;
 }
 
 export enum DefaultMessageNotificationLevel {
