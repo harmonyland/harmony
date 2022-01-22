@@ -1,5 +1,6 @@
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
+import { StickerItemPayload } from "../stickers/sticker.ts";
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
@@ -122,7 +123,7 @@ export interface Message {
   // interaction?: MessageInteractionPayload;
   thread?: GuildThreadChannelPayload;
   // components?: MessageComponentPayload[];
-  // sticker_items?: StickerItemPayload[];
+  sticker_items?: StickerItemPayload[];
 }
 
 export interface GetChannelMessagesParams {
