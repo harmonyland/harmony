@@ -16,7 +16,7 @@ else
   echo "{
   \"deno.path\": \"/home/codespace/.deno/bin/deno\",
   \"deno.enable\": true,
-  \"deno.config\": \"./Deno.jsonc\",
+  \"deno.config\": \"./deno.json\",
   \"deno.lint\": true,
   \"editor.tabSize\": 2,
   \"editor.defaultFormatter\": \"denoland.vscode-deno\",
