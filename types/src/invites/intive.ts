@@ -1,3 +1,4 @@
+import { ApplicationPayload } from "../applications/application.ts";
 import { GuildChannelPayload } from "../channels/guild.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
@@ -8,7 +9,7 @@ export interface InvitePayload {
   channel: GuildChannelPayload | null;
   target_type?: InviteTargetType;
   // target_user?: UserPayload;
-  // target_application?: ApplicationPayload;
+  target_application?: ApplicationPayload;
   approximate_presence_count?: number;
   approximate_member_count?: number;
   expires_at?: string | null;
