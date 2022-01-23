@@ -154,6 +154,26 @@ export class Member extends SnowflakeBase {
   }
 
   /**
+   * Sets Guild Timeout for the Member
+   * @param expiration Value to set
+   */
+  async setGuildTimeout(expiration?: Date, reason?: string): Promise<Member> {
+    return await this.edit(
+      {
+        communicationDisabledUntil: expiration
+      },
+      reason
+    )
+  }
+
+  /**
+   * Resets Guild Timeout for the Member
+   */
+  async resetGuildTimeout(reason?: string): Promise<Member> {
+    return await this.setGuildTimeout(undefined, reason)
+  }
+
+  /**
    * Sets a Member deaf in VC
    * @param deaf Value to set
    */
