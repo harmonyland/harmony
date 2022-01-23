@@ -118,13 +118,12 @@ export class GuildChannelsManager extends BaseChildManager<
   }
 
   async keys(): Promise<string[]> {
-    const raw: GuildChannelPayload[] =
-      (await this.client.cache.array('channels')) ?? []
+    const channelsList = []
 
-    if (raw.length === 0) return []
+    for (channel of (await this.client.cache.array('channels')) ?? []) {
+      if (channel.guild_id === this.guild_id) channelsList.push(channel.id)
+    }
 
-    return raw
-      .filter((rawChannel) => rawChannel.guild_id === this.guild.id)
-      .map((ch) => ch.id)
+    return channelsList
   }
 }
