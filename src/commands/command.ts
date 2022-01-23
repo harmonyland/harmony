@@ -52,6 +52,8 @@ export interface CommandOptions {
   usage?: string | string[]
   /** Usage Example of Command, only Arguments (without Prefix and Name) */
   examples?: string | string[]
+  /** Make arguments optional. Eg: Don't require any args to be present to execute the command. default: false */
+  optionalArgs?: boolean
   /** Does the Command take Arguments? Maybe number of required arguments? Or list of arguments? */
   args?: Args[]
   /** Permissions(s) required by both User and Bot in order to use Command */
