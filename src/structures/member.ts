@@ -154,10 +154,10 @@ export class Member extends SnowflakeBase {
   }
 
   /**
-   * Sets Guild Timeout for the Member
+   * Sets Timeout for the Member
    * @param expiration Value to set
    */
-  async setGuildTimeout(expiration?: Date, reason?: string): Promise<Member> {
+  async setTimeout(expiration?: Date, reason?: string): Promise<Member> {
     return await this.edit(
       {
         communicationDisabledUntil: expiration
@@ -167,10 +167,10 @@ export class Member extends SnowflakeBase {
   }
 
   /**
-   * Resets Guild Timeout for the Member
+   * Resets Timeout for the Member
    */
-  async resetGuildTimeout(reason?: string): Promise<Member> {
-    return await this.setGuildTimeout(undefined, reason)
+  async resetTimeout(reason?: string): Promise<Member> {
+    return await this.setTimeout(undefined, reason)
   }
 
   /**
