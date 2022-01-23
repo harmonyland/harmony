@@ -374,7 +374,9 @@ export class CommandClient extends Client implements CommandClientOptions {
     }
 
     if (
-      command.args !== undefined && parsed.args.length === 0 && command.optionalArgs !== true
+      command.args !== undefined &&
+      parsed.args.length === 0 &&
+      command.optionalArgs !== true
     ) {
       try {
         return command.onMissingArgs(ctx)
