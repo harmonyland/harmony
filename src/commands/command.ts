@@ -92,6 +92,7 @@ export class Command implements CommandOptions {
   extension?: Extension
   usage?: string | string[]
   examples?: string | string[]
+  optionalArgs?: boolean
   args?: Args[]
   permissions?: string | string[]
   userPermissions?: string | string[]
