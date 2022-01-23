@@ -116,4 +116,8 @@ export class GuildChannelsManager extends BaseChildManager<
     )
     return this
   }
+
+  async keys(): Promise<string[]> {
+    return (await this.array()).map((c) => c.snowflake.id)
+  }
 }
