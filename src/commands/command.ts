@@ -723,7 +723,7 @@ export const parseCommand = (
 ): ParsedCommand | undefined => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
-  const args = content.split(' ')
+  const args = content.split(/\s/)
 
   const name = args.shift()
   if (name === undefined) return
