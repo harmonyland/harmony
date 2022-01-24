@@ -1,3 +1,5 @@
+import { TeamPayload } from "./team.ts";
+
 export interface ApplicationPayload {
   id: string;
   name: string;
@@ -11,7 +13,7 @@ export interface ApplicationPayload {
   // owner?: UserPayload
   summary: string;
   verify_key: string;
-  // team: TeamPayload | null
+  team: TeamPayload | null;
   guild_id?: string;
   primary_sku_id?: string;
   slug?: string;
