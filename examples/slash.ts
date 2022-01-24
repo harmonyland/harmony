@@ -20,11 +20,11 @@ export class MyClient extends Client {
       this.interactions.commands.bulkEdit([
         {
           name: 'ping',
-          description: "It's literally ping command. What did you expect?",
+          description: "It's literally a ping command. What did you expect?",
           options: [
             {
               name: 'pingarg',
-              description: 'Again literally pingArg',
+              description: 'Again, literally pingArg',
               required: false,
               type: ApplicationCommandOptionType.STRING
             }
@@ -32,7 +32,7 @@ export class MyClient extends Client {
         },
         {
           name: 'hello',
-          description: 'Is is nice to be greeted',
+          description: 'It is nice to be greeted',
           options: [
             {
               name: 'target',
