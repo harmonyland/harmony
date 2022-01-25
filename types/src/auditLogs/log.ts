@@ -10,6 +10,7 @@ import {
 import { StagePrivacyLevel } from "../stageInstances/stage.ts";
 import { StickerFormatType } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
+import { WebhookPayload } from "../webhooks/webhook.ts";
 
 export interface AuditLogPayload {
   audit_log_entries: AuditLogEntryPayload[];
@@ -17,7 +18,7 @@ export interface AuditLogPayload {
   integrations: IntegrationPayload[];
   threads: GuildThreadChannelPayload[];
   users: UserPayload[];
-  // webhooks: WebhookPayload[]
+  webhooks: WebhookPayload[];
 }
 
 export interface AuditLogEntryPayload {

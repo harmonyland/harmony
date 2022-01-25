@@ -6,6 +6,7 @@ import { StickerItemPayload } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
+import { AllowedMentionsPayload } from "./etc.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
 
 // https://discord.com/developers/docs/resources/channel#channel-mention-object-channel-mention-structure
@@ -134,13 +135,6 @@ export interface GetChannelMessagesParams {
   before?: string;
   after?: string;
   limit?: number;
-}
-
-export interface AllowedMentionsPayload {
-  parse?: string[];
-  roles?: string[];
-  users?: string[];
-  replied_user?: boolean;
 }
 
 export interface CreateMessagePayload {
