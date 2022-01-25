@@ -2,6 +2,7 @@ import { ApplicationPayload } from "../applications/application.ts";
 import { GuildChannelPayload } from "../channels/guild.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
+import { ScheduledEventPayload } from "../schaduledEvent/schaduledEvent.ts";
 
 export interface InvitePayload {
   code: string;
@@ -14,7 +15,7 @@ export interface InvitePayload {
   approximate_member_count?: number;
   expires_at?: string | null;
   stage_instance?: InviteStageInstancePayload;
-  // guild_scheduled_event?: GuildScheduledEventPayload;
+  guild_scheduled_event?: ScheduledEventPayload;
 }
 
 export enum InviteTargetType {

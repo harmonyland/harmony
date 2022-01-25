@@ -1,6 +1,7 @@
 import { ChannelType } from "../channels/base.ts";
 import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
+import { ScheduledEventPayload } from "../schaduledEvent/schaduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
@@ -55,7 +56,7 @@ export interface GuildPayload {
   nsfw_level: GuildNSFWLevel;
   stage_instances?: StageInstancePayload[];
   // stickers?: StickerPayload[];
-  // guild_scheduled_events?: GuildScheduledEventPayload[];
+  guild_scheduled_events?: ScheduledEventPayload[];
   premium_progress_bar_enabled?: boolean;
 }
 
