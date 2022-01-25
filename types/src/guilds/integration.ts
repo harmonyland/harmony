@@ -1,23 +1,25 @@
-export enum IntergrationExpireBehaviors {
+import { UserPayload } from "../users/user.ts";
+
+export enum IntegrationExpireBehaviors {
   REMOVE_ROLE = 0,
   KICK = 1,
 }
 
-export interface IntergrationAccountPayload {
+export interface IntegrationAccountPayload {
   id: string;
   name: string;
 }
 
-export interface IntergrationApplicationPayload {
+export interface IntegrationApplicationPayload {
   id: string;
   name: string;
   icon: string | null;
   description: string;
   summary: string;
-  // bot?: UserPayload;
+  bot?: UserPayload;
 }
 
-export interface IntergrationPayload {
+export interface IntegrationPayload {
   id: string;
   name: string;
   type: string;
@@ -25,12 +27,12 @@ export interface IntergrationPayload {
   syncing?: boolean;
   role_id?: string;
   enable_emoticons?: boolean;
-  expire_behavior?: IntergrationExpireBehaviors;
+  expire_behavior?: IntegrationExpireBehaviors;
   expire_grace_period?: number;
-  // user?: UserPayload;
-  account: IntergrationAccountPayload;
+  user?: UserPayload;
+  account: IntegrationAccountPayload;
   synced_at?: string;
   subscriber_count?: number;
   revoked?: boolean;
-  application: IntergrationApplicationPayload;
+  application: IntegrationApplicationPayload;
 }
