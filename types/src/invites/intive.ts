@@ -3,13 +3,14 @@ import { GuildChannelPayload } from "../channels/guild.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
+import { UserPayload } from "../users/user.ts";
 
 export interface InvitePayload {
   code: string;
   guild: GuildPayload;
   channel: GuildChannelPayload | null;
   target_type?: InviteTargetType;
-  // target_user?: UserPayload;
+  target_user?: UserPayload;
   target_application?: ApplicationPayload;
   approximate_presence_count?: number;
   approximate_member_count?: number;

@@ -3,6 +3,8 @@ import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
+import { StickerPayload } from "../stickers/sticker.ts";
+import { VoiceStatePayload } from "../voices/voice.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
 import { RolePayload } from "./role.ts";
@@ -36,7 +38,7 @@ export interface GuildPayload {
   large?: boolean;
   unavailable?: boolean;
   member_count?: number;
-  // voice_states?: VoiceStatePayload[];
+  voice_states?: VoiceStatePayload[];
   members?: GuildMemberPayload[];
   channels?: GuildChannelPayload[];
   // presences?: PresencePayload[];
@@ -55,7 +57,7 @@ export interface GuildPayload {
   welcome_screen?: WelcomeScreenPayload;
   nsfw_level: GuildNSFWLevel;
   stage_instances?: StageInstancePayload[];
-  // stickers?: StickerPayload[];
+  stickers?: StickerPayload[];
   guild_scheduled_events?: ScheduledEventPayload[];
   premium_progress_bar_enabled?: boolean;
 }

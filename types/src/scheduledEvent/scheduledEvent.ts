@@ -1,4 +1,5 @@
 import { GuildMemberPayload } from "../guilds/member.ts";
+import { UserPayload } from "../users/user.ts";
 
 export interface ScheduledEventPayload {
   id: string;
@@ -14,7 +15,7 @@ export interface ScheduledEventPayload {
   entity_type: ScheduledEventEntityType;
   entity_id: string | null;
   entity_metadata: ScheduledEventEntityMetadataPayload;
-  // creator?: UserPayload
+  creator?: UserPayload;
   user_cound?: number;
 }
 
@@ -41,7 +42,7 @@ export interface ScheduledEventEntityMetadataPayload {
 
 export interface ScheduledEventUserPayload {
   guild_scheduled_event_id: string;
-  // user: UserPayload
+  user: UserPayload;
   member?: GuildMemberPayload;
 }
 

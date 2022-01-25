@@ -1,5 +1,7 @@
+import { UserPayload } from "../users/user.ts";
+
 export interface GuildMemberPayload {
-  // user?: UserPayload;
+  user?: UserPayload;
   nick?: string | null;
   avatar?: string | null;
   roles: string[];

@@ -1,6 +1,9 @@
+import { ApplicationPayload } from "../applications/application.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
+import { GuildMemberPayload } from "../guilds/member.ts";
 import { StickerItemPayload } from "../stickers/sticker.ts";
+import { UserPayload } from "../users/user.ts";
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
@@ -97,14 +100,14 @@ export interface Message {
   id: string;
   channel_id: string;
   guild_id: string;
-  // author: UserPayload;
-  // member?: MemberPayload;
+  author: UserPayload;
+  member?: GuildMemberPayload;
   content: string;
   timestamp: string;
   edited_timestamp: string | null;
   tts: boolean;
   mention_everyone: boolean;
-  // mentions: UserPayload[];
+  mentions: UserPayload[];
   mention_roles: string[];
   mention_channels?: ChannelMentionPayload[];
   attachments: AttachmentPayload[];
@@ -115,7 +118,7 @@ export interface Message {
   webhook_id?: string;
   type: MessageType;
   activity?: MessageActivityPayload;
-  // application?: ApplicationPayload;
+  application?: ApplicationPayload;
   application_id?: string;
   message_reference?: MessageReferencePayload;
   flags?: MessageFlags;

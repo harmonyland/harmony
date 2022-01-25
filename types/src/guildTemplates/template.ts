@@ -1,4 +1,5 @@
 import { GuildPayload } from "../guilds/guild.ts";
+import { UserPayload } from "../users/user.ts";
 
 export interface GuildTemplatePayload {
   code: string;
@@ -6,7 +7,7 @@ export interface GuildTemplatePayload {
   description: string | null;
   usage_count: number;
   creator_id: string;
-  // creator: UserPayload
+  creator: UserPayload;
   created_at: string;
   updated_at: string;
   source_guild_id: string;

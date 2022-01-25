@@ -1,3 +1,5 @@
+import { UserPayload } from "../users/user.ts";
+
 export interface TeamPayload {
   icon: string | null;
   id: string;
@@ -10,7 +12,7 @@ export interface TeamMemberPayload {
   membership_state: MembershipState;
   permissions: ["*"];
   team_id: string;
-  // user: UserPayload;
+  user: UserPayload;
 }
 
 export enum MembershipState {

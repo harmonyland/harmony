@@ -1,3 +1,5 @@
+import { UserPayload } from "../users/user.ts";
+
 export interface StickerPayload {
   id: string;
   pack_id?: string;
@@ -8,7 +10,7 @@ export interface StickerPayload {
   format_type: StickerFormatType;
   available?: boolean;
   guild_id?: string;
-  // user?: UserPayload
+  user?: UserPayload;
   sort_value?: number;
 }
 

@@ -1,5 +1,6 @@
 import { OverwritePayload } from "../channels/guild.ts";
 import { GuildThreadChannelPayload } from "../channels/thread.ts";
+import { IntegrationPayload } from "../guilds/integration.ts";
 import { RolePayload } from "../guilds/role.ts";
 import {
   ScheduledEventPayload,
@@ -8,13 +9,14 @@ import {
 } from "../scheduledEvent/scheduledEvent.ts";
 import { StagePrivacyLevel } from "../stageInstances/stage.ts";
 import { StickerFormatType } from "../stickers/sticker.ts";
+import { UserPayload } from "../users/user.ts";
 
 export interface AuditLogPayload {
   audit_log_entries: AuditLogEntryPayload[];
   guild_scheduled_events: ScheduledEventPayload[];
-  // integrations: IntegrationPayload[]
+  integrations: IntegrationPayload[];
   threads: GuildThreadChannelPayload[];
-  // users: UserPayload[]
+  users: UserPayload[];
   // webhooks: WebhookPayload[]
 }
 

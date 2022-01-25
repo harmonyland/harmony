@@ -1,3 +1,4 @@
+import { UserPayload } from "../users/user.ts";
 import { TeamPayload } from "./team.ts";
 
 export interface ApplicationPayload {
@@ -10,7 +11,7 @@ export interface ApplicationPayload {
   bot_require_code_grant: boolean;
   terms_of_service_url?: string;
   privacy_policy_url?: string;
-  // owner?: UserPayload
+  owner?: UserPayload;
   summary: string;
   verify_key: string;
   team: TeamPayload | null;

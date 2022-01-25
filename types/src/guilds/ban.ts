@@ -1,5 +1,7 @@
+import { UserPayload } from "../users/user.ts";
+
 export interface GuildBanPayload {
-  // user: UserPayload;
+  user: UserPayload;
   reason: string | null;
 }
 

@@ -1,8 +1,10 @@
+import { UserPayload } from "../users/user.ts";
+
 export interface EmojiPayload {
   id: string | null;
   name: string | null;
   roles?: string[];
-  // user?: UserPayload;
+  user?: UserPayload;
   require_colons?: boolean;
   managed?: boolean;
   animated?: boolean;
