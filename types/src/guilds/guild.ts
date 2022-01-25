@@ -1,7 +1,7 @@
 import { ChannelType } from "../channels/base.ts";
 import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
-import { ScheduledEventPayload } from "../schaduledEvent/schaduledEvent.ts";
+import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";

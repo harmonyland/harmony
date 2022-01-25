@@ -2,7 +2,7 @@ import { ApplicationPayload } from "../applications/application.ts";
 import { GuildChannelPayload } from "../channels/guild.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
-import { ScheduledEventPayload } from "../schaduledEvent/schaduledEvent.ts";
+import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 
 export interface InvitePayload {
   code: string;
