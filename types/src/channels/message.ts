@@ -97,7 +97,7 @@ export enum MessageFlags {
 }
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-structure
-export interface Message {
+export interface MessagePayload {
   id: string;
   channel_id: string;
   guild_id: string;
@@ -123,7 +123,7 @@ export interface Message {
   application_id?: string;
   message_reference?: MessageReferencePayload;
   flags?: MessageFlags;
-  referenced_message?: Message | null;
+  referenced_message?: MessagePayload | null;
   // interaction?: MessageInteractionPayload;
   thread?: GuildThreadChannelPayload;
   // components?: MessageComponentPayload[];
