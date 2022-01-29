@@ -1,10 +1,10 @@
 import { Reasonable } from "../etc/reasonable.ts";
+import { UserPayload } from "../users/user.ts";
 import { TextChannelPayload } from "./base.ts";
 
-/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-dm-channel */
-// deno-lint-ignore no-empty-interface
+// https://discord.com/developers/docs/resources/channel#channel-object-example-dm-channel
 export interface DMChannelPayload extends TextChannelPayload {
-  // recipients: UserPayload[]
+  recipients: UserPayload[];
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-group-dm-channel */

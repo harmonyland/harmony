@@ -202,7 +202,8 @@ export type GetApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
+> =
+  `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
 
 /**
  * Edit Application Command Permissions
@@ -212,7 +213,8 @@ export type EditApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
+> =
+  `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
 
 /**
  * Batch Edit Application Command Permissions
@@ -1381,7 +1383,8 @@ export type GetGatewayBotEndpoint = `/gateway/bot`;
  * Get Current Bot Application Information
  * @method GET
  */
-export type GetCurrentBotApplicationInformationEndpoint = `/oauth2/applications/@me`;
+export type GetCurrentBotApplicationInformationEndpoint =
+  `/oauth2/applications/@me`;
 
 /**
  * Get Current Authorization Information

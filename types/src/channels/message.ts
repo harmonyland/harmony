@@ -1,6 +1,12 @@
+import { ApplicationPayload } from "../applications/application.ts";
+import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
+import { GuildMemberPayload } from "../guilds/member.ts";
+import { StickerItemPayload } from "../stickers/sticker.ts";
+import { UserPayload } from "../users/user.ts";
 import { ChannelType } from "./base.ts";
 import { EmbedPayload } from "./embed.ts";
+import { AllowedMentionsPayload } from "./etc.ts";
 import { GuildThreadChannelPayload } from "./thread.ts";
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-mention-object-channel-mention-structure */
@@ -27,7 +33,7 @@ export interface AttachmentPayload {
 export interface ReactionPayload {
   count: number;
   me: boolean;
-  // emoji: EmojiPayload;
+  emoji: EmojiPayload;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-types */
@@ -90,19 +96,19 @@ export enum MessageFlags {
   LOADING = 128,
 }
 
-/** @link https://discord.com/developers/docs/resources/channel#message-object-message-structure */
-export interface Message {
+// https://discord.com/developers/docs/resources/channel#message-object-message-structure
+export interface MessagePayload {
   id: string;
   channel_id: string;
   guild_id: string;
-  // author: UserPayload;
-  // member?: MemberPayload;
+  author: UserPayload;
+  member?: GuildMemberPayload;
   content: string;
   timestamp: string;
   edited_timestamp: string | null;
   tts: boolean;
   mention_everyone: boolean;
-  // mentions: UserPayload[];
+  mentions: UserPayload[];
   mention_roles: string[];
   mention_channels?: ChannelMentionPayload[];
   attachments: AttachmentPayload[];
@@ -113,15 +119,15 @@ export interface Message {
   webhook_id?: string;
   type: MessageType;
   activity?: MessageActivityPayload;
-  // application?: ApplicationPayload;
+  application?: ApplicationPayload;
   application_id?: string;
   message_reference?: MessageReferencePayload;
   flags?: MessageFlags;
-  referenced_message?: Message | null;
+  referenced_message?: MessagePayload | null;
   // interaction?: MessageInteractionPayload;
   thread?: GuildThreadChannelPayload;
   // components?: MessageComponentPayload[];
-  // sticker_items?: StickerItemPayload[];
+  sticker_items?: StickerItemPayload[];
 }
 
 export interface GetChannelMessagesParams {
@@ -129,13 +135,6 @@ export interface GetChannelMessagesParams {
   before?: string;
   after?: string;
   limit?: number;
-}
-
-export interface AllowedMentionsPayload {
-  parse?: string[];
-  roles?: string[];
-  users?: string[];
-  replied_user?: boolean;
 }
 
 export interface CreateMessagePayload {

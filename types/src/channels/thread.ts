@@ -29,8 +29,8 @@ export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
   permissions: string;
 }
 
-/** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread */
-export interface EditGuildThreadCHannelPayload extends Reasonable {
+// https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread
+export interface EditGuildThreadChannelPayload extends Reasonable {
   name?: string;
   archived?: boolean;
   /** Duration in minute */
