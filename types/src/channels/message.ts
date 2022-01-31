@@ -100,7 +100,7 @@ export enum MessageFlags {
 export interface MessagePayload {
   id: string;
   channel_id: string;
-  guild_id: string;
+  guild_id?: string;
   author: UserPayload;
   member?: GuildMemberPayload;
   content: string;
