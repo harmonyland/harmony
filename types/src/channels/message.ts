@@ -81,7 +81,7 @@ export interface MessageReferencePayload {
   message_id?: string;
   channel_id?: string;
   guild_id?: string;
-  fail_if_not_exists?: string;
+  fail_if_not_exists?: boolean;
 }
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-flags
