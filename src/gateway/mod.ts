@@ -67,7 +67,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   private heartbeatServerResponded = false
   client!: Client
   cache: GatewayCache
-  private timedIdentify: number | null = null
+  private readonly timedIdentify: number | null = null
   shards?: number[]
   ping: number = 0
 
