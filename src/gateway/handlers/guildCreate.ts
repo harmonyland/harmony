@@ -52,9 +52,12 @@ export const guildCreate: GatewayEventHandler = async (
     // It wasn't lazy load, so emit event
     gateway.client.emit('guildCreate', guild)
   } else {
+    gateway.debug(`Guild loaded: ${d.id}`)
     if (gateway._guildsLoaded !== undefined) {
       gateway._guildsLoaded++
       gateway._checkGuildsLoaded()
+    } else {
+      gateway.debug('But Guild Loader already timed out...')
     }
     gateway.client.emit('guildLoaded', guild)
   }
