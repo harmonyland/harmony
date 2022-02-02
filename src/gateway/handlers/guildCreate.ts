@@ -11,6 +11,8 @@ export const guildCreate: GatewayEventHandler = async (
   await gateway._readyReceived
   // gateway.debug('Resolved... processing GUILD_CREATE')
 
+  const now = performance.now()
+
   const hasGuild: Guild | undefined = await gateway.client.guilds.get(d.id)
   await gateway.client.guilds.set(d.id, d)
   const guild = (await gateway.client.guilds.get(d.id)) as unknown as Guild
@@ -47,6 +49,9 @@ export const guildCreate: GatewayEventHandler = async (
     }
     await gateway.client.emojis.set(emojiPayload.id, emojiPayload)
   }
+
+  const took = performance.now() - now
+  gateway.debug(`Populating guild cache took ${took}ms`)
 
   if (hasGuild === undefined) {
     // It wasn't lazy load, so emit event
