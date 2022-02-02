@@ -227,11 +227,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this._guildsLoaded = undefined
           this._guildsToBeLoaded = undefined
         }, 15000)
-      } else {
-        this.debug('Skipping timeout')
       }
-    } else {
-      this.debug("Guild loader check called, but it isn't even active!")
     }
   }
 
