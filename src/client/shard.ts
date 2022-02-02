@@ -54,7 +54,7 @@ export class ShardManager extends HarmonyEventEmitter<ShardManagerEvents> {
     if (this.queueProcessing || this.queue.length === 0) return
     this.queueProcessing = true
     const item = this.queue[0]
-    item()
+    await item()
     this.queue.shift()
     await delay(5000)
     this.queueProcessing = false
