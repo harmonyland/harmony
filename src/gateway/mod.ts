@@ -67,7 +67,6 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   private heartbeatServerResponded = false
   client!: Client
   cache: GatewayCache
-  private readonly timedIdentify: number | null = null
   shards?: number[]
   ping: number = 0
 
@@ -285,11 +284,6 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         this.debug(
           'Unknown Close code, probably connection error. Reconnecting in 5s.'
         )
-
-        if (this.timedIdentify !== null) {
-          clearTimeout(this.timedIdentify)
-          this.debug('Timed Identify found. Cleared timeout.')
-        }
 
         await delay(5000)
         await this.reconnect(true)
