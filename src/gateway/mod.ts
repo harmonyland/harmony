@@ -88,6 +88,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     this.shards = shards
     this._readyReceived = new Promise((resolve) => {
       this._resolveReadyReceived = () => {
+        this.debug('Resolving READY')
         this._resolveReadyReceived = undefined
         resolve()
       }

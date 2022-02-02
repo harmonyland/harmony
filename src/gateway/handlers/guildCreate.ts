@@ -7,7 +7,9 @@ export const guildCreate: GatewayEventHandler = async (
   gateway: Gateway,
   d: GuildPayload
 ) => {
+  gateway.debug('Waiting for READY to resolve')
   await gateway._readyReceived
+  gateway.debug('Resolved... processing GUILD_CREATE')
 
   const hasGuild: Guild | undefined = await gateway.client.guilds.get(d.id)
   await gateway.client.guilds.set(d.id, d)
