@@ -226,7 +226,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.emit('guildsLoaded')
           this._guildsLoaded = undefined
           this._guildsToBeLoaded = undefined
-        }, 15000)
+        }, 30000)
       }
     }
   }

@@ -3,7 +3,7 @@ import { TOKEN } from './config.ts'
 
 const client = new harmony.Client({
   token: TOKEN,
-  intents: ['GUILDS', 'GUILD_MEMBERS'],
+  intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_PRESENCES', 'GUILD_MESSAGES'],
   cache: new harmony.RedisCacheAdapter({
     hostname: '127.0.0.1',
     port: 6379
