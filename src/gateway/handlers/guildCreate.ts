@@ -54,6 +54,7 @@ export const guildCreate: GatewayEventHandler = async (
   } else {
     if (gateway._guildsLoaded !== undefined) {
       gateway._guildsLoaded++
+      gateway.debug(`Guild loaded, total ${gateway._guildsLoaded}`)
       gateway._checkGuildsLoaded()
     } else {
       gateway.debug('New guild loaded, but Guild Loader already timed out...')
