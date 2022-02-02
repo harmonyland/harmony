@@ -126,3 +126,5 @@ test/dd.ts
 /test/dd.ts
 
 test/pokemon.json
+
+*.rdb
