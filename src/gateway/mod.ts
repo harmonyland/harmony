@@ -152,10 +152,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.sessionID = undefined
           this.sequenceID = undefined
         }
-        this.timedIdentify = setTimeout(async () => {
-          this.timedIdentify = null
-          this.enqueueIdentify(!(d as boolean))
-        }, 5000)
+        this.enqueueIdentify(!(d as boolean))
         break
 
       case GatewayOpcodes.DISPATCH: {
