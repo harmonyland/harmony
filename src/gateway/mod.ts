@@ -71,6 +71,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   shards?: number[]
   ping: number = 0
 
+  _readyReceived: Promise<void>
+  _resolveReadyReceived?: () => void
   _guildsToBeLoaded?: number
   _guildsLoaded?: number
   _guildLoadTimeout?: number
@@ -84,6 +86,12 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     Object.defineProperty(this, 'client', { value: client, enumerable: false })
     this.cache = new GatewayCache(client)
     this.shards = shards
+    this._readyReceived = new Promise((resolve) => {
+      this._resolveReadyReceived = () => {
+        this._resolveReadyReceived = undefined
+        resolve()
+      }
+    })
   }
 
   private onopen(): void {
