@@ -201,7 +201,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     }
   }
 
-  _checkGuildsLoaded(): void {
+  _checkGuildsLoaded(timeout = true): void {
     if (
       this._guildsLoaded !== undefined &&
       this._guildsToBeLoaded !== undefined
@@ -215,7 +215,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         this.emit('guildsLoaded')
         this._guildsLoaded = undefined
         this._guildsToBeLoaded = undefined
-      } else {
+      } else if (timeout) {
         this._guildLoadTimeout = setTimeout(() => {
           this._guildLoadTimeout = undefined
           this.debug(
@@ -226,7 +226,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.emit('guildsLoaded')
           this._guildsLoaded = undefined
           this._guildsToBeLoaded = undefined
-        }, 30000)
+        }, 60000)
       }
     }
   }
