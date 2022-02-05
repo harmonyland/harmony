@@ -120,7 +120,7 @@ export function autocomplete(
   }
 }
 
-/** 
+/**
  * Decorator to create a Slash Command handler.
  * 
  * Example:
@@ -140,8 +140,8 @@ export function autocomplete(
  * use decorator on.
  * 
  * If you want to split these decorators into different
- * files, you can use these in classes extending 
- * `ApplicationCommandsModule` and then use 
+ * files, you can use these in classes extending
+ * `ApplicationCommandsModule` and then use
  * `client.interactions.loadModule`.
  * 
  * For handling sub-commands or grouped sub-commands, look
@@ -168,7 +168,7 @@ export function slash(
   }
 }
 
-/** 
+/**
  * Decorator to create a Sub-Command Command handler for a
  * Slash Command.
  * 
@@ -214,8 +214,8 @@ export function subslash(
   }
 }
 
-/** 
- * Decorator to create a Grouped Sub-Command Command handler 
+/**
+ * Decorator to create a Grouped Sub-Command Command handler
  * for a Slash Command.
  * 
  * Example:
@@ -262,7 +262,7 @@ export function groupslash(
   }
 }
 
-/** 
+/**
  * Decorator to create a Message Context Menu Command handler.
  * 
  * Example:
@@ -281,8 +281,8 @@ export function groupslash(
  * ```
  * 
  * If you want to split these decorators into different
- * files, you can use these in classes extending 
- * `ApplicationCommandsModule` and then use 
+ * files, you can use these in classes extending
+ * `ApplicationCommandsModule` and then use
  * `client.interactions.loadModule`.
  * 
  * For handling user context menu commands, look into docs for
@@ -307,7 +307,7 @@ export function messageContextMenu(name?: string): ApplicationCommandDecorator {
   }
 }
 
-/** 
+/**
  * Decorator to create a User Context Menu Command handler.
  * 
  * Example:
