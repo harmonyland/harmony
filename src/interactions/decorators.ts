@@ -87,7 +87,7 @@ function wrapConditionApplicationCommandHandler(
  * ```ts
  * class MyClient extends Client {
  *   // ...
- * 
+ *
  *   @autocomplete("search", "query")
  *   searchCompletions(i: AutocompleteInteraction) {
  *     // ...
@@ -127,7 +127,7 @@ export function autocomplete(
  * ```ts
  * class MyClient extends Client {
  *   // ...
- *  
+ *
  *   @slash("my-command")
  *   myCommand(i: ApplicationCommandInteraction) {
  *     return i.reply("Hello, World!");
@@ -176,7 +176,7 @@ export function slash(
  * ```ts
  * class MyClient extends Client {
  *   // ...
- *  
+ *
  *   @subslash("config", "reset")
  *   configReset(i: ApplicationCommandInteraction) {
  *     // ...
@@ -222,7 +222,7 @@ export function subslash(
  * ```ts
  * class MyClient extends Client {
  *   // ...
- *  
+ *
  *   @groupslash("config", "options", "set")
  *   configOptionsSet(i: ApplicationCommandInteraction) {
  *     // ...
@@ -269,7 +269,7 @@ export function groupslash(
  * ```ts
  * class MyClient extends Client {
  *   // ...
- *  
+ *
  *   @messageContextMenu("Content Length")
  *   contentLength(i: ApplicationCommandInteraction) {
  *     return i.reply({
@@ -314,7 +314,7 @@ export function messageContextMenu(name?: string): ApplicationCommandDecorator {
  * ```ts
  * class MyClient extends Client {
  *   // ...
- *  
+ *
  *   @userContextMenu("Command Name")
  *   commandName(i: ApplicationCommandInteraction) {
  *     // ...
