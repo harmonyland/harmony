@@ -193,7 +193,7 @@ export interface CreateGuildChannelPayload {
   nsfw?: boolean;
 }
 
-export interface EditGuildChannelPayload {
+export interface EditGuildChannelPositionPayload {
   id: string;
   position: number | null;
   lock_permissions: boolean | null;
