@@ -1,1 +1,1 @@
-export * from "./schaduledEvent.ts";
+export * from "./scheduledEvent.ts";

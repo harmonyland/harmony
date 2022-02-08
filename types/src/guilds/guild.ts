@@ -1,6 +1,7 @@
 import { ChannelType } from "../channels/base.ts";
 import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
+import { Locales } from "../etc/locales.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
 import { StickerPayload } from "../stickers/sticker.ts";
@@ -49,7 +50,7 @@ export interface GuildPayload {
   banner: string | null;
   premium_tier: PremiumTier;
   premium_subscription_count?: number;
-  preferred_locale: string;
+  preferred_locale: Locales;
   public_updates_channel_id: string | null;
   max_video_channel_users?: number;
   approximate_member_count?: number;
@@ -192,7 +193,7 @@ export interface CreateGuildChannelPayload {
   nsfw?: boolean;
 }
 
-export interface EditGuildChannelPayload {
+export interface EditGuildChannelPositionPayload {
   id: string;
   position: number | null;
   lock_permissions: boolean | null;

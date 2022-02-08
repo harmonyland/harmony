@@ -81,7 +81,7 @@ export interface MessageReferencePayload {
   message_id?: string;
   channel_id?: string;
   guild_id?: string;
-  fail_if_not_exists?: string;
+  fail_if_not_exists?: boolean;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-flags */
@@ -100,7 +100,7 @@ export enum MessageFlags {
 export interface MessagePayload {
   id: string;
   channel_id: string;
-  guild_id: string;
+  guild_id?: string;
   author: UserPayload;
   member?: GuildMemberPayload;
   content: string;
