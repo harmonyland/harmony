@@ -19,14 +19,17 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   async get(key: string): Promise<Member | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
-    const user = (await this.client.users.get(raw.user.id))! // it will always be present, see `set` impl for details
-    const roles = await this.guild.roles.array()
-    let permissions = new Permissions(Permissions.DEFAULT)
-    if (roles !== undefined) {
-      const mRoles = roles.filter(
-        (r) => (raw.roles.includes(r.id) as boolean) || r.id === this.guild.id
-      )
-      permissions = new Permissions(mRoles.map((r) => r.permissions))
+    // it will always be present, see `set` impl for details
+    const user = (await this.client.users.get(raw.user.id))!
+    let permissions = new Permissions(raw.permissions ?? Permissions.DEFAULT)
+    if (raw.permissions !== undefined) {
+      const roles = await this.guild.roles.array()
+      if (roles !== undefined) {
+        const mRoles = roles.filter(
+          (r) => (raw.roles.includes(r.id) as boolean) || r.id === this.guild.id
+        )
+        permissions = new Permissions(mRoles.map((r) => r.permissions))
+      }
     }
     const res = new this.DataType(
       this.client,
