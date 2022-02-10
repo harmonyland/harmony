@@ -6,7 +6,6 @@ import { GUILD_MEMBER } from '../types/endpoint.ts'
 import type { MemberPayload } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { Permissions } from '../utils/permissions.ts'
-import { UserPayload } from '../types/user.ts'
 
 export class MembersManager extends BaseManager<MemberPayload, Member> {
   guild: Guild
@@ -19,14 +18,17 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   async get(key: string): Promise<Member | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
-    const user = (await this.client.users.get(raw.user.id))! // it will always be present, see `set` impl for details
-    const roles = await this.guild.roles.array()
-    let permissions = new Permissions(Permissions.DEFAULT)
-    if (roles !== undefined) {
-      const mRoles = roles.filter(
-        (r) => (raw.roles.includes(r.id) as boolean) || r.id === this.guild.id
-      )
-      permissions = new Permissions(mRoles.map((r) => r.permissions))
+    // it will always be present, see `set` impl for details
+    const user = (await this.client.users.get(raw.user.id))!
+    let permissions = new Permissions(raw.permissions ?? Permissions.DEFAULT)
+    if (raw.permissions !== undefined) {
+      const roles = await this.guild.roles.array()
+      if (roles !== undefined) {
+        const mRoles = roles.filter(
+          (r) => (raw.roles.includes(r.id) as boolean) || r.id === this.guild.id
+        )
+        permissions = new Permissions(mRoles.map((r) => r.permissions))
+      }
     }
     const res = new this.DataType(
       this.client,
@@ -40,21 +42,16 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
 
   async set(id: string, payload: MemberPayload): Promise<void> {
     await this.client.users.set(payload.user.id, payload.user)
-    // to prevent duplication of user object we'll store it in user cache
-    // and only keep id here for retreiving later from user cache
-    payload = { ...payload }
-    payload.user = { id: payload.user.id } as unknown as UserPayload
     await super.set(id, payload)
   }
 
   async array(): Promise<Member[]> {
     let arr = await (this.client.cache.array(this.cacheName) as MemberPayload[])
     if (arr === undefined) arr = []
-
+    const roles = await this.guild.roles.array()
     return await Promise.all(
       arr.map(async (raw) => {
         const user = new User(this.client, raw.user)
-        const roles = await this.guild.roles.array()
         let permissions = new Permissions(Permissions.DEFAULT)
         if (roles !== undefined) {
           const mRoles = roles.filter(
