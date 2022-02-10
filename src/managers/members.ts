@@ -53,11 +53,10 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   async array(): Promise<Member[]> {
     let arr = await (this.client.cache.array(this.cacheName) as MemberPayload[])
     if (arr === undefined) arr = []
-
+    const roles = await this.guild.roles.array()
     return await Promise.all(
       arr.map(async (raw) => {
         const user = new User(this.client, raw.user)
-        const roles = await this.guild.roles.array()
         let permissions = new Permissions(Permissions.DEFAULT)
         if (roles !== undefined) {
           const mRoles = roles.filter(
