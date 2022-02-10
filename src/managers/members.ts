@@ -43,10 +43,6 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
 
   async set(id: string, payload: MemberPayload): Promise<void> {
     await this.client.users.set(payload.user.id, payload.user)
-    // to prevent duplication of user object we'll store it in user cache
-    // and only keep id here for retreiving later from user cache
-    // payload = { ...payload }
-    // payload.user = { id: payload.user.id } as unknown as UserPayload
     await super.set(id, payload)
   }
 
