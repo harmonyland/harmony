@@ -6,7 +6,6 @@ import { GUILD_MEMBER } from '../types/endpoint.ts'
 import type { MemberPayload } from '../types/guild.ts'
 import { BaseManager } from './base.ts'
 import { Permissions } from '../utils/permissions.ts'
-import { UserPayload } from '../types/user.ts'
 
 export class MembersManager extends BaseManager<MemberPayload, Member> {
   guild: Guild
