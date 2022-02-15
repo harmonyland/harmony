@@ -414,7 +414,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       if (collector.event === event) collectors.push(collector)
     }
     if (collectors.length !== 0) {
-      this.collectors.forEach((collector) => collector._fire(...args))
+      collectors.forEach((collector) => collector._fire(...args))
     }
     // TODO(DjDeveloperr): Fix this ts-ignore
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
