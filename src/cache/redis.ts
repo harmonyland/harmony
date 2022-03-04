@@ -5,7 +5,7 @@ import {
   Redis,
   RedisConnectOptions,
   RedisValue
-} from 'https://deno.land/x/redis@v0.25.0/mod.ts'
+} from 'https://deno.land/x/redis@v0.25.1/mod.ts'
 
 /** Redis Cache Adapter for using Redis as a cache-provider. */
 export class RedisCacheAdapter implements ICacheAdapter {

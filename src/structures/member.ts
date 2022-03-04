@@ -17,7 +17,7 @@ export interface MemberData {
   deaf?: boolean
   mute?: boolean
   channel?: string | VoiceChannel | null
-  communicationDisabledUntil?: Date
+  communicationDisabledUntil?: Date | null
 }
 
 export class Member extends SnowflakeBase {
@@ -151,6 +151,26 @@ export class Member extends SnowflakeBase {
       },
       reason
     )
+  }
+
+  /**
+   * Sets Timeout for the Member
+   * @param expiration Value to set
+   */
+  async setTimeout(expiration?: Date | null, reason?: string): Promise<Member> {
+    return await this.edit(
+      {
+        communicationDisabledUntil: expiration
+      },
+      reason
+    )
+  }
+
+  /**
+   * Resets Timeout for the Member
+   */
+  async resetTimeout(reason?: string): Promise<Member> {
+    return await this.setTimeout(null, reason)
   }
 
   /**

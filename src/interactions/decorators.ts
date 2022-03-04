@@ -83,6 +83,18 @@ function wrapConditionApplicationCommandHandler(
 /**
  * Decorator to add a autocomplete interaction handler.
  *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @autocomplete("search", "query")
+ *   searchCompletions(i: AutocompleteInteraction) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
  * @param command Command name of which options' to provide autocompletions for. Can be `*` (all).
  * @param option Option name to handle autocompletions for. Can be `*` (all).
  */
@@ -108,7 +120,33 @@ export function autocomplete(
   }
 }
 
-/** Decorator to create a Slash Command handler */
+/**
+ * Decorator to create a Slash Command handler.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @slash("my-command")
+ *   myCommand(i: ApplicationCommandInteraction) {
+ *     return i.reply("Hello, World!");
+ *   }
+ * }
+ * ```
+ *
+ * Note that the name parameter is optional in this decorator,
+ * it can also be inferred from the method name you define and
+ * use decorator on.
+ *
+ * If you want to split these decorators into different
+ * files, you can use these in classes extending
+ * `ApplicationCommandsModule` and then use
+ * `client.interactions.loadModule`.
+ *
+ * For handling sub-commands or grouped sub-commands, look
+ * into docs for `subslash` and `groupslash`.
+ */
 export function slash(
   name?: string,
   guild?: string
@@ -130,7 +168,29 @@ export function slash(
   }
 }
 
-/** Decorator to create a Sub-Slash Command handler */
+/**
+ * Decorator to create a Sub-Command Command handler for a
+ * Slash Command.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @subslash("config", "reset")
+ *   configReset(i: ApplicationCommandInteraction) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * Note that only first argument that is `parent` is required,
+ * second can be inferred from the method name you define
+ * and use decorator on.
+ *
+ * For more info on Slash Command handler decorators, look
+ * into docs for `slash` decorator.
+ */
 export function subslash(
   parent: string,
   name?: string,
@@ -154,7 +214,29 @@ export function subslash(
   }
 }
 
-/** Decorator to create a Grouped Slash Command handler */
+/**
+ * Decorator to create a Grouped Sub-Command Command handler
+ * for a Slash Command.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @groupslash("config", "options", "set")
+ *   configOptionsSet(i: ApplicationCommandInteraction) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * Note that only first two arguments i.e. `group` & `parent` are
+ * required, name can be inferred from the method name you define
+ * and use decorator on.
+ *
+ * For more info on Slash Command handler decorators, look
+ * into docs for `slash` decorator.
+ */
 export function groupslash(
   parent: string,
   group: string,
@@ -180,7 +262,32 @@ export function groupslash(
   }
 }
 
-/** Decorator to create a Message Context Menu Command handler */
+/**
+ * Decorator to create a Message Context Menu Command handler.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @messageContextMenu("Content Length")
+ *   contentLength(i: ApplicationCommandInteraction) {
+ *     return i.reply({
+ *       content: `Length: ${i.targetMessage!.content.length}`,
+ *       ephemeral: true,
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * If you want to split these decorators into different
+ * files, you can use these in classes extending
+ * `ApplicationCommandsModule` and then use
+ * `client.interactions.loadModule`.
+ *
+ * For handling user context menu commands, look into docs for
+ * `userContextMenu` decorator.
+ */
 export function messageContextMenu(name?: string): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,
@@ -200,7 +307,27 @@ export function messageContextMenu(name?: string): ApplicationCommandDecorator {
   }
 }
 
-/** Decorator to create a User Context Menu Command handler */
+/**
+ * Decorator to create a User Context Menu Command handler.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @userContextMenu("Command Name")
+ *   commandName(i: ApplicationCommandInteraction) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * First argument that is `name` is optional and can be
+ * inferred from method name.
+ *
+ * For handling more docs regarding how context menu command
+ * decorators work, look into `messageContextMenu`'s docs.
+ */
 export function userContextMenu(name?: string): ApplicationCommandDecorator {
   return function (
     client: ApplicationCommandClientExt,

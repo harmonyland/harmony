@@ -52,6 +52,8 @@ export interface CommandOptions {
   usage?: string | string[]
   /** Usage Example of Command, only Arguments (without Prefix and Name) */
   examples?: string | string[]
+  /** Make arguments optional. Eg: Don't require any args to be present to execute the command. default: false */
+  optionalArgs?: boolean
   /** Does the Command take Arguments? Maybe number of required arguments? Or list of arguments? */
   args?: Args[]
   /** Permissions(s) required by both User and Bot in order to use Command */
@@ -90,6 +92,7 @@ export class Command implements CommandOptions {
   extension?: Extension
   usage?: string | string[]
   examples?: string | string[]
+  optionalArgs?: boolean
   args?: Args[]
   permissions?: string | string[]
   userPermissions?: string | string[]
@@ -720,7 +723,7 @@ export const parseCommand = (
 ): ParsedCommand | undefined => {
   let content = msg.content.slice(prefix.length)
   if (client.spacesAfterPrefix === true) content = content.trim()
-  const args = content.split(' ')
+  const args = content.split(/\s/)
 
   const name = args.shift()
   if (name === undefined) return

@@ -192,19 +192,24 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     this.shards = new ShardManager(this)
     this.forceNewSession = options.forceNewSession
     if (options.cache !== undefined) this.cache = options.cache
-    if (options.presence !== undefined)
+    if (options.presence !== undefined) {
       this.presence =
         options.presence instanceof ClientPresence
           ? options.presence
           : new ClientPresence(options.presence)
-    if (options.messageCacheLifetime !== undefined)
+    }
+    if (options.messageCacheLifetime !== undefined) {
       this.messageCacheLifetime = options.messageCacheLifetime
-    if (options.reactionCacheLifetime !== undefined)
+    }
+    if (options.reactionCacheLifetime !== undefined) {
       this.reactionCacheLifetime = options.reactionCacheLifetime
-    if (options.fetchUncachedReactions === true)
+    }
+    if (options.fetchUncachedReactions === true) {
       this.fetchUncachedReactions = true
-    if (options.messageCacheMax !== undefined)
+    }
+    if (options.messageCacheMax !== undefined) {
       this.messageCacheMax = options.messageCacheMax
+    }
     if (options.compress !== undefined) this.compress = options.compress
 
     if (
@@ -251,8 +256,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       client: this
     }
 
-    if (options.restOptions !== undefined)
+    if (options.restOptions !== undefined) {
       Object.assign(restOptions, options.restOptions)
+    }
     this.rest = new RESTManager(restOptions)
 
     this.slash = this.interactions = new InteractionsClient({
@@ -282,8 +288,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       this.presence = presence
     } else this.presence = new ClientPresence(presence)
     this.shards.list.forEach((shard) => {
-      if (onlyInShards.length !== 0 && onlyInShards.includes(shard.shardID))
+      if (onlyInShards.length !== 0 && onlyInShards.includes(shard.shardID)) {
         return
+      }
       shard.sendPresence(this.presence.create())
     })
   }
@@ -354,8 +361,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
     this.rest.token = token
     if (this.shard !== undefined) {
-      if (typeof this.shardCount === 'number')
+      if (typeof this.shardCount === 'number') {
         this.shards.cachedShardCount = this.shardCount
+      }
       await this.shards.launch(this.shard)
     } else await this.shards.connect()
     await readyPromise
@@ -406,7 +414,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       if (collector.event === event) collectors.push(collector)
     }
     if (collectors.length !== 0) {
-      this.collectors.forEach((collector) => collector._fire(...args))
+      collectors.forEach((collector) => collector._fire(...args))
     }
     // TODO(DjDeveloperr): Fix this ts-ignore
     // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
@@ -424,10 +432,11 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
     username?: string
     avatar?: string
   }): Promise<Client> {
-    if (data.username === undefined && data.avatar === undefined)
+    if (data.username === undefined && data.avatar === undefined) {
       throw new Error(
         'Either username or avatar or both must be specified to edit'
       )
+    }
 
     if (data.avatar?.startsWith('http') === true) {
       data.avatar = await fetchAuto(data.avatar)
@@ -493,8 +502,9 @@ export function event(name?: keyof ClientEvents) {
         [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
       }
     )[prop as unknown as keyof ClientEvents]
-    if (typeof listener !== 'function')
+    if (typeof listener !== 'function') {
       throw new Error('@event decorator requires a function')
+    }
 
     if (c._decoratedEvents === undefined) c._decoratedEvents = {}
     const key = name === undefined ? prop : name

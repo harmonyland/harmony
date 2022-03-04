@@ -1,6 +1,6 @@
-![banner](https://cdn.discordapp.com/attachments/783319033730564098/783399012547035176/HarmonyBanner.png)
+![banner](./assets/banner.png)
 
-<p align=center><i><b>An easy to use Discord API Library for Deno</b></i></p>
+<p align=center><b>An easy to use Discord API Library for Deno</b></p>
 <p align=center>
 <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
 <a href=https://discord.gg/harmony>
@@ -9,30 +9,25 @@
 </p>
 <br>
 
-- Lightweight and easy to use.
-- Complete Object-Oriented approach.
-- Slash Commands supported.
-- Built-in Commands framework.
-- Customizable Caching, with Redis support.
-- Use `@decorators` to easily make things!
-- Made with ❤️ in TypeScript.
-
-## Table of Contents
-
-- [Usage](#usage)
-- [Docs](#docs)
-- [Discord](#discord)
-- [Maintainer](#maintainer)
-- [Contributing](#contributing)
-- [License](#license)
+- Lightweight and easy to use
+- Complete Object-Oriented approach
+- Slash Commands supported
+- Built-in Commands framework
+- Customizable Caching, with Redis support
+- `@decorators` supported
+- Made with ❤️ in TypeScript
 
 ## Usage
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
-We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.1.3`.
+We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.5.0`.
 
-You can also import the module [from nest.land](https://nest.land/package/harmony) (note: import URL is not same as package one).
+## Docs
+
+Documentation is available [main branch](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts) or [latest stable version](https://doc.deno.land/https/deno.land/x/harmony/mod.ts). You can also check out the [guide](https://harmony.mod.land).
+
+## Example
 
 For a quick example, run this:
 
@@ -148,14 +143,6 @@ new MyClient().connect('super secret token comes here', [
 ])
 ```
 
-## Docs
-
-Documentation is available for `main` (branch) and `stable` (release).
-
-- [Main](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts)
-- [Stable](https://doc.deno.land/https/deno.land/x/harmony/mod.ts)
-- [Guide](https://harmony.mod.land)
-
 ## Discord
 
 Found a bug or want support? Join our Discord Server!
@@ -170,12 +157,12 @@ Found a bug or want support? Join our Discord Server!
 
 See [the contributing file](CONTRIBUTING.md)!
 
-Pull Requests are accepted.
+Pull requests are welcome!
 
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
 
 ## License
 
-[MIT © 2020-2021 Harmonyland](LICENSE)
+[MIT © 2020-2022 Harmonyland](LICENSE)
 
-#### Made with ❤ by Harmonyland
+#### Made with ❤ by Harmony Land

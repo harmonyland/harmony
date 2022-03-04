@@ -30,6 +30,8 @@ export const ready: GatewayEventHandler = async (
     await gateway.client.guilds.set(guild.id, guild)
   }
 
+  gateway._resolveReadyReceived?.()
+
   gateway.client.emit('shardReady', gateway.shards?.[0] ?? 0)
-  gateway._checkGuildsLoaded()
+  gateway._checkGuildsLoaded(false)
 }

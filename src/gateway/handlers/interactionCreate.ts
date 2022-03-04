@@ -66,6 +66,9 @@ export const interactionCreate: GatewayEventHandler = async (
           new Permissions(d.member.permissions)
         )
       : undefined
+  if (member !== undefined) {
+    member.permissions.bitfield = BigInt(d.member!.permissions!)
+  }
   if (d.user !== undefined) await gateway.client.users.set(d.user.id, d.user)
   const dmUser =
     d.user !== undefined ? await gateway.client.users.get(d.user.id) : undefined

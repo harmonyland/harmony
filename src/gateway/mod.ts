@@ -67,10 +67,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   private heartbeatServerResponded = false
   client!: Client
   cache: GatewayCache
-  private timedIdentify: number | null = null
   shards?: number[]
   ping: number = 0
 
+  _readyReceived: Promise<void>
+  _resolveReadyReceived?: () => void
   _guildsToBeLoaded?: number
   _guildsLoaded?: number
   _guildLoadTimeout?: number
@@ -84,6 +85,13 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     Object.defineProperty(this, 'client', { value: client, enumerable: false })
     this.cache = new GatewayCache(client)
     this.shards = shards
+    this._readyReceived = new Promise((resolve) => {
+      this._resolveReadyReceived = () => {
+        this.debug('Resolving READY')
+        this._resolveReadyReceived = undefined
+        resolve()
+      }
+    })
   }
 
   private onopen(): void {
@@ -144,10 +152,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           this.sessionID = undefined
           this.sequenceID = undefined
         }
-        this.timedIdentify = setTimeout(async () => {
-          this.timedIdentify = null
-          this.enqueueIdentify(!(d as boolean))
-        }, 5000)
+        this.enqueueIdentify(!(d as boolean))
         break
 
       case GatewayOpcodes.DISPATCH: {
@@ -195,7 +200,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     }
   }
 
-  _checkGuildsLoaded(): void {
+  _checkGuildsLoaded(timeout = true): void {
     if (
       this._guildsLoaded !== undefined &&
       this._guildsToBeLoaded !== undefined
@@ -209,7 +214,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         this.emit('guildsLoaded')
         this._guildsLoaded = undefined
         this._guildsToBeLoaded = undefined
-      } else {
+      } else if (timeout) {
         this._guildLoadTimeout = setTimeout(() => {
           this._guildLoadTimeout = undefined
           this.debug(
@@ -280,11 +285,6 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
           'Unknown Close code, probably connection error. Reconnecting in 5s.'
         )
 
-        if (this.timedIdentify !== null) {
-          clearTimeout(this.timedIdentify)
-          this.debug('Timed Identify found. Cleared timeout.')
-        }
-
         await delay(5000)
         await this.reconnect(true)
         break
@@ -301,7 +301,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       })
     )
     error.name = 'ErrorEvent'
-    console.error(error)
+    // Do not log errors by default
+    // console.error(error)
     this.emit('error', error, event)
     this.client.emit('gatewayError', event, this.shards)
   }
