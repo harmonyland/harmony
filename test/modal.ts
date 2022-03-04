@@ -40,11 +40,17 @@ client.interactions.handle('modal', (i) => {
 })
 
 client.on('interactionCreate', (i) => {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (i.isModalSubmit()) {
+    return i.reply(
+      `Short text: ${
+        i.getComponent('text_input_short')!.value
+      }\nParagraph input: ${i.getComponent('text_input_para')!.value}`
+    )
   }
 })
 
-if (Deno.args.includes('sync')) {
+if (Deno.args.includes('sync') === true) {
   await client.interactions.commands.bulkEdit(
     [
       {

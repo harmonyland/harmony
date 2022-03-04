@@ -2,9 +2,7 @@ import {
   ButtonStyle,
   InteractionMessageComponentData,
   MessageComponentData,
-  SelectComponentOption,
   MessageComponentType,
-  TextInputStyle,
   ButtonComponent,
   SelectComponent,
   TextInputComponent

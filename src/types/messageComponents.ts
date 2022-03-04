@@ -146,7 +146,14 @@ export interface ModalSubmitComponentTextInputData {
   value: string
 }
 
-export type ModalSubmitComponentData = ModalSubmitComponentTextInputData
+export type ModalSubmitComponentDataBase = ModalSubmitComponentTextInputData
+
+export interface ModalSubmitActionRow {
+  type: MessageComponentType.ACTION_ROW
+  components: ModalSubmitComponentDataBase[]
+}
+
+export type ModalSubmitComponentData = ModalSubmitActionRow
 
 export interface InteractionModalSubmitData {
   custom_id: string

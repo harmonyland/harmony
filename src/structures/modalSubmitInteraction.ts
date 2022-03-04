@@ -11,17 +11,22 @@ import { Member } from './member.ts'
 import { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 
+export interface ModalSubmitComponentActionRow {
+  type: MessageComponentType.ACTION_ROW
+  components: ModalSubmitComponentBase[]
+}
+
+export type ModalSubmitComponentBase = ModalSubmitComponentTextInput
+
 export interface ModalSubmitComponentTextInput {
   type: MessageComponentType.TEXT_INPUT
   customID: string
   value: string
 }
 
-export type ModalSubmitComponent = ModalSubmitComponentTextInput
-
 export class ModalSubmitInteraction extends Interaction {
   data: InteractionModalSubmitData
-  components: ModalSubmitComponent[] = []
+  components: ModalSubmitComponentActionRow[] = []
 
   constructor(
     client: Client,
@@ -37,11 +42,18 @@ export class ModalSubmitInteraction extends Interaction {
     this.data = data.data as unknown as InteractionModalSubmitData
 
     for (const raw of this.data.components) {
-      if (raw.type === MessageComponentType.TEXT_INPUT) {
+      if (raw.type === MessageComponentType.ACTION_ROW) {
+        const components: ModalSubmitComponentBase[] = []
+        for (const data of raw.components) {
+          components.push({
+            type: data.type,
+            customID: data.custom_id,
+            value: data.value
+          })
+        }
         this.components.push({
           type: raw.type,
-          customID: raw.custom_id,
-          value: raw.value
+          components
         })
       }
     }
@@ -51,9 +63,17 @@ export class ModalSubmitInteraction extends Interaction {
     return this.data.custom_id
   }
 
-  getComponent<T extends ModalSubmitComponent>(
+  getComponent<T extends ModalSubmitComponentBase>(
     customID: string
   ): T | undefined {
-    return this.components.find((e) => e.customID === customID) as T
+    for (const component of this.components) {
+      if (component.type === MessageComponentType.ACTION_ROW) {
+        for (const inner of component.components) {
+          if (inner.customID === customID) {
+            return inner as T
+          }
+        }
+      }
+    }
   }
 }

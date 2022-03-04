@@ -162,6 +162,7 @@ export class Interaction extends SnowflakeBase {
     | InteractionApplicationCommandData
     | InteractionMessageComponentData
     | InteractionModalSubmitData
+
   message?: Message
 
   /** User locale (not present on PING type) */
@@ -362,8 +363,8 @@ export class Interaction extends SnowflakeBase {
   }
 
   /** Respond with a Modal */
-  async showModal(modal: InteractionResponseModal) {
-    return this.respond({
+  async showModal(modal: InteractionResponseModal): Promise<this> {
+    return await this.respond({
       type: InteractionResponseType.MODAL,
       ...modal
     })
@@ -475,7 +476,7 @@ export class Interaction extends SnowflakeBase {
       }
     }
   ): Promise<this> {
-    const payload = { ...data } as Record<string, unknown>
+    const payload: Record<string, unknown> = { ...data }
 
     if (data.components !== undefined) {
       payload.components = transformComponent(data.components)
