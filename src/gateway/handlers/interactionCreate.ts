@@ -30,6 +30,7 @@ import { TextChannel } from '../../structures/textChannel.ts'
 import { MessagePayload } from '../../types/channel.ts'
 import { GuildPayload, MemberPayload } from '../../types/guild.ts'
 import { AutocompleteInteraction } from '../../structures/autocompleteInteraction.ts'
+import { ModalSubmitInteraction } from '../../structures/modalSubmitInteraction.ts'
 
 export const interactionCreate: GatewayEventHandler = async (
   gateway: Gateway,
@@ -204,6 +205,13 @@ export const interactionCreate: GatewayEventHandler = async (
       channel,
       user,
       message
+    })
+  } else if (d.type === InteractionType.MODAL_SUBMIT) {
+    interaction = new ModalSubmitInteraction(gateway.client, d, {
+      member,
+      guild,
+      channel,
+      user
     })
   } else {
     interaction = new Interaction(gateway.client, d, {

@@ -172,7 +172,7 @@ export function fragment(
             ? el.children.map((e) => {
                 return e.props
               })
-            : undefined
+            : []
         })
       })
 

@@ -31,6 +31,7 @@ import { Role } from '../structures/role.ts'
 import { Message } from '../structures/message.ts'
 import { MessageComponentInteraction } from '../structures/messageComponents.ts'
 import { AutocompleteInteraction } from '../structures/autocompleteInteraction.ts'
+import { ModalSubmitInteraction } from '../structures/modalSubmitInteraction.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
@@ -528,6 +529,13 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
                 channel,
                 resolved
               })
+      } else if (payload.type === InteractionType.MODAL_SUBMIT) {
+        res = new ModalSubmitInteraction(client, payload, {
+          channel,
+          guild,
+          member,
+          user
+        })
       } else if (payload.type === InteractionType.MESSAGE_COMPONENT) {
         res = new MessageComponentInteraction(client, payload, {
           channel,

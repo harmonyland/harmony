@@ -61,7 +61,7 @@ export class MyClient extends Client {
   }
 
   @slash()
-  //Only allow this command if the user passed the parameter 'bot' or the bot's username
+  // Only allow this command if the user passed the parameter 'bot' or the bot's username
   @customValidation(
     (i) =>
       ['bot', i.client.user!.username].includes(i.option<string>('target')),
@@ -72,7 +72,7 @@ export class MyClient extends Client {
   }
 
   @slash()
-  //Only allow this command if the user is in a voice channel
+  // Only allow this command if the user is in a voice channel
   @isUserInVoiceChannel('You must be in a voice channel to use this command')
   async join(d: ApplicationCommandInteraction): Promise<void> {
     const vs = await d.guild!.voiceStates.get(d.user.id)
@@ -82,7 +82,7 @@ export class MyClient extends Client {
   }
 
   @slash()
-  //Only allow this command if the bot is in a voice channel
+  // Only allow this command if the bot is in a voice channel
   @isBotInVoiceChannel("I'm not in a voice channel")
   async leave(d: ApplicationCommandInteraction): Promise<void> {
     const vs = await d.guild!.voiceStates.get(d.client.user!.id)

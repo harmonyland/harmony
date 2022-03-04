@@ -17,6 +17,7 @@ import {
 } from '../types/interactions.ts'
 import {
   InteractionMessageComponentData,
+  InteractionModalSubmitData,
   MessageComponentData
 } from '../types/messageComponents.ts'
 import {
@@ -37,6 +38,7 @@ import { User } from './user.ts'
 import type { ApplicationCommandInteraction } from './applicationCommand.ts'
 import type { MessageComponentInteraction } from './messageComponents.ts'
 import type { AutocompleteInteraction } from './autocompleteInteraction.ts'
+import type { ModalSubmitInteraction } from './modalSubmitInteraction.ts'
 
 interface WebhookMessageOptions extends MessageOptions {
   name?: string
@@ -46,6 +48,10 @@ interface WebhookMessageOptions extends MessageOptions {
 }
 
 type AllWebhookMessageOptions = string | WebhookMessageOptions
+
+export interface BaseInteractionResponse {
+  type?: InteractionResponseType | keyof typeof InteractionResponseType
+}
 
 /** Interaction Message related Options */
 export interface InteractionMessageOptions {
@@ -60,10 +66,36 @@ export interface InteractionMessageOptions {
   files?: MessageAttachment[]
 }
 
-export interface InteractionResponse extends InteractionMessageOptions {
-  /** Type of Interaction Response */
-  type?: InteractionResponseType | keyof typeof InteractionResponseType
+export interface InteractionResponseAutocompleteChoices {
   choices?: ApplicationCommandChoice[]
+}
+
+export interface InteractionResponseModal {
+  title: string
+  customID: string
+  components: MessageComponentData[]
+}
+
+export type InteractionResponse = BaseInteractionResponse &
+  (
+    | InteractionMessageOptions
+    | InteractionResponseAutocompleteChoices
+    | InteractionResponseModal
+  )
+
+function isResponseMessage(
+  response: InteractionResponse
+): response is InteractionMessageOptions & BaseInteractionResponse {
+  return (
+    response.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
+    response.type === InteractionResponseType.UPDATE_MESSAGE
+  )
+}
+
+function isResponseModal(
+  response: InteractionResponse
+): response is InteractionResponseModal & BaseInteractionResponse {
+  return response.type === InteractionResponseType.MODAL
 }
 
 /** Represents a Channel Object for an Option in Slash Command */
@@ -92,6 +124,17 @@ export class InteractionUser extends User {
   member?: Member
 }
 
+/**
+ * Represents a base Interaction.
+ *
+ * There are different types of interactions which have different actions you
+ * can perform ("respond") based on. Because of that, Interaction class is extended
+ * by those subclasses to structure the code properly.
+ *
+ * You will be (most of the time if not all) provided with an Interaction object that
+ * is actually one of those subclasses, but just TS-type is Interaction - in that case
+ * you use type-guards such as `isApplicationCommand`, `isMessageComponent`, etc.
+ */
 export class Interaction extends SnowflakeBase {
   /** Type of Interaction */
   type: InteractionType
@@ -115,7 +158,11 @@ export class Interaction extends SnowflakeBase {
   _httpResponded?: boolean
   applicationID: string
   /** Data sent with Interaction. Only applies to Application Command */
-  data?: InteractionApplicationCommandData | InteractionMessageComponentData
+  data?:
+    | InteractionApplicationCommandData
+    | InteractionMessageComponentData
+    | InteractionModalSubmitData
+
   message?: Message
 
   /** User locale (not present on PING type) */
@@ -172,8 +219,14 @@ export class Interaction extends SnowflakeBase {
     return this.type === InteractionType.MESSAGE_COMPONENT
   }
 
+  /** Checks whether the Interaction is for Application Command Option autocompletions */
   isAutocomplete(): this is AutocompleteInteraction {
     return this.type === InteractionType.AUTOCOMPLETE
+  }
+
+  /** Checks whether the Interaction is for the modal/form submitted by the user */
+  isModalSubmit(): this is ModalSubmitInteraction {
+    return this.type === InteractionType.MODAL_SUBMIT
   }
 
   /** Respond to an Interaction */
@@ -181,8 +234,9 @@ export class Interaction extends SnowflakeBase {
     if (this.responded) throw new Error('Already responded to Interaction')
 
     let flags = 0
-    if (data.ephemeral === true) flags |= InteractionResponseFlags.EPHEMERAL
-    if (data.flags !== undefined) {
+    if (isResponseMessage(data) && data.ephemeral === true)
+      flags |= InteractionResponseFlags.EPHEMERAL
+    if (isResponseMessage(data) && data.flags !== undefined) {
       if (Array.isArray(data.flags)) {
         flags = data.flags.reduce((p, a) => p | a, flags)
       } else if (typeof data.flags === 'number') flags |= data.flags
@@ -195,29 +249,28 @@ export class Interaction extends SnowflakeBase {
           : typeof data.type === 'string'
           ? InteractionResponseType[data.type]
           : data.type,
-      data:
-        data.type ===
-        InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT
-          ? { choices: data.choices }
-          : data.type === undefined ||
-            data.content !== undefined ||
-            data.embeds !== undefined ||
-            data.components !== undefined ||
-            data.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-            data.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE
-          ? {
-              content: data.content ?? '',
-              embeds: data.embeds,
-              tts: data.tts ?? false,
-              flags,
-              files: data.files,
-              allowed_mentions: data.allowedMentions,
-              components:
-                data.components === undefined
-                  ? undefined
-                  : transformComponent(data.components)
-            }
-          : undefined
+      data: isResponseModal(data)
+        ? {
+            title: data.title,
+            components: transformComponent(data.components),
+            custom_id: data.customID
+          }
+        : data.type ===
+          InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT
+        ? { choices: 'choices' in data ? data.choices : [] }
+        : isResponseMessage(data)
+        ? {
+            content: data.content ?? '',
+            embeds: data.embeds,
+            tts: data.tts ?? false,
+            flags,
+            allowed_mentions: data.allowedMentions,
+            components:
+              data.components === undefined
+                ? undefined
+                : transformComponent(data.components)
+          }
+        : undefined
     }
 
     if (this._httpRespond !== undefined && this._httpResponded !== true) {
@@ -307,6 +360,14 @@ export class Interaction extends SnowflakeBase {
           : transformComponent(data.components)
     })
     return this
+  }
+
+  /** Respond with a Modal */
+  async showModal(modal: InteractionResponseModal): Promise<this> {
+    return await this.respond({
+      type: InteractionResponseType.MODAL,
+      ...modal
+    })
   }
 
   /** Delete the original Interaction Response */
@@ -415,11 +476,12 @@ export class Interaction extends SnowflakeBase {
       }
     }
   ): Promise<this> {
-    data = { ...data }
+    const payload: Record<string, unknown> = { ...data }
 
     if (data.components !== undefined) {
-      data.components = transformComponent(data.components)
+      payload.components = transformComponent(data.components)
     }
+
     await this.client.rest.patch(
       WEBHOOK_MESSAGE(
         this.applicationID,
