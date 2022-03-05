@@ -87,6 +87,7 @@ function isResponseMessage(
   response: InteractionResponse
 ): response is InteractionMessageOptions & BaseInteractionResponse {
   return (
+    response.type === undefined ||
     response.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
     response.type === InteractionResponseType.UPDATE_MESSAGE
   )
