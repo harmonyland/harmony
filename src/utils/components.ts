@@ -24,6 +24,14 @@ export function transformComponent(
       e.max_values = e.maxValues
       delete e.maxValues
     }
+    if (e.minLength !== undefined) {
+      e.min_length = e.minLength
+      delete e.minLength
+    }
+    if (e.maxLength !== undefined) {
+      e.max_length = e.maxLength
+      delete e.maxLength
+    }
     if (e.components !== undefined) {
       e.components = transformComponent(e.components as MessageComponentData[])
     }
