@@ -1,10 +1,10 @@
 {
   "name": "harmony",
-  "version": "0.9.3",
-  "description": "Discord Deno API that is easy to use.",
+  "version": "2.6.0",
+  "description": "An easy to use Discord API Library",
   "main": "mod.ts",
   "repository": "https://github.com/harmony-org/harmony.git",
-  "author": "Helloyunho <yunho050840@gmail.com>",
+  "author": "Harmony Land and contributors",
   "license": "MIT",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.5.0",
@@ -17,6 +17,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "typescript": "^4.0.3"
+    "typescript": "^4.6.2"
   }
 }

@@ -491,6 +491,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     return this.websocket?.close(code, reason)
   }
 
+  // Alias for backward compat, since event@2.0.0 removed close again...
+  close(code?: number, reason?: string): void {
+    this.closeGateway(code, reason)
+  }
+
   #destroyCalled = false
   #destroyComplete = false
 

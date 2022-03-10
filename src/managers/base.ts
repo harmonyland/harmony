@@ -68,12 +68,9 @@ export class BaseManager<T, T2> extends Base {
   }
 
   async *[Symbol.asyncIterator](): AsyncIterableIterator<T2> {
-    const arr = (await this.array()) ?? []
-    const { readable, writable } = new TransformStream()
-    const writer = writable.getWriter()
-    arr.forEach((el: unknown) => writer.write(el))
-    writer.close()
-    yield* readable
+    for (const data of (await this.array()) ?? []) {
+      yield data
+    }
   }
 
   async fetch(...args: unknown[]): Promise<T2 | undefined> {
