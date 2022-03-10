@@ -35,7 +35,7 @@ export class GuildPresencesManager extends BaseManager<
     payload.user = { id: payload.user.id } as unknown as UserPayload
     await super.set(id, payload)
   }
-  
+
   async fetch(id: string): Promise<Presence | undefined> {
     await this.guild.chunk({
       users: [id],
