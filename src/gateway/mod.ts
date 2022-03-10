@@ -397,12 +397,13 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       throw new Error(
         'Missing limit property when specifying query for Requesting Members!'
       )
-    const nonce = `${guild}_${new Date().getTime()}`
+    const nonce = crypto.randomUUID()
     this.send({
       op: GatewayOpcodes.REQUEST_GUILD_MEMBERS,
       d: {
         guild_id: guild,
-        query: options.query ?? '',
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        query: options.users?.length ? undefined : options.query ?? '',
         limit: options.limit ?? 0,
         presences: options.presences,
         user_ids: options.users,

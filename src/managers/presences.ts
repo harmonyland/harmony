@@ -22,7 +22,7 @@ export class GuildPresencesManager extends BaseManager<
     if (raw === undefined) return
     let user = await this.client.users.get(raw.user.id)
     if (user === undefined) user = new User(this.client, raw.user)
-    const guild = await this.client.guilds.get(raw.guild_id)
+    const guild = await this.client.guilds.get(raw.guild_id ?? this.guild.id)
     if (guild === undefined) return
     const presence = new Presence(this.client, raw, user, guild)
     return presence
@@ -34,6 +34,14 @@ export class GuildPresencesManager extends BaseManager<
     payload = { ...payload }
     payload.user = { id: payload.user.id } as unknown as UserPayload
     await super.set(id, payload)
+  }
+
+  async fetch(id: string): Promise<Presence | undefined> {
+    await this.guild.chunk({
+      users: [id],
+      presences: true
+    })
+    return await this.get(id)
   }
 
   async array(): Promise<Presence[]> {
