@@ -402,7 +402,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       op: GatewayOpcodes.REQUEST_GUILD_MEMBERS,
       d: {
         guild_id: guild,
-        query: options.query ?? '',
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        query: options.users?.length ? undefined : options.query ?? '',
         limit: options.limit ?? 0,
         presences: options.presences,
         user_ids: options.users,
