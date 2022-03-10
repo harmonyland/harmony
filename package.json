@@ -1,5 +1,5 @@
 {
-  "name": "harmony",
+  "name": "@harmonyland/harmony",
   "version": "2.6.0",
   "description": "An easy to use Discord API Library",
   "main": "mod.ts",

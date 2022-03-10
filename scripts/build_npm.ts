@@ -7,18 +7,33 @@ await emptyDir('./npm')
 await build({
   entryPoints: ['./mod.ts'],
   test: false,
+  typeCheck: false,
   outDir: './npm',
   shims: {
     deno: true,
     timers: true,
     undici: true,
-    blob: true
+    blob: true,
+    custom: [
+      {
+        globalNames: [
+          {
+            name: 'WebSocket',
+            exportName: 'default'
+          }
+        ],
+        package: {
+          name: 'ws',
+          version: '^8.5.0'
+        }
+      }
+    ]
   },
   package: {
-    // package.json properties
-    name: 'harmony',
+    name: '@harmonyland/harmony',
     version: Deno.args[0],
-    description: 'An easy to use and advanced Discord API Library for Deno',
+    description:
+      'An easy to use and advanced Discord API Library for Deno and Node.js',
     license: 'MIT',
     repository: {
       type: 'git',
@@ -39,3 +54,5 @@ await build({
 // Post build steps
 Deno.copyFileSync('LICENSE', 'npm/LICENSE')
 Deno.copyFileSync('README.md', 'npm/README.md')
+Deno.mkdirSync('./npm/assets')
+Deno.copyFileSync('./assets/banner.png', './npm/assets/banner.png')

@@ -1,3 +1,4 @@
+export { EventEmitter } from 'https://deno.land/x/event@2.0.0/mod.ts'
 export { decompress_with as unzlib } from 'https://unpkg.com/@evan/wasm@0.0.94/target/zlib/deno.js'
 export { fetchAuto } from 'https://deno.land/x/fetchbase64@1.0.0/mod.ts'
 export { walk } from 'https://deno.land/std@0.128.0/fs/walk.ts'
