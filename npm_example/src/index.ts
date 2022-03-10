@@ -13,9 +13,7 @@ const client = new harmony.Client({
 
 client.on('messageCreate', async (msg) => {
   if (msg.content === '!ping') {
-    if (!msg.guild) return
-    const presence = await msg.guild.presences.get(msg.author.id)
-    await msg.channel.send(`Pong! ${presence?.status}`)
+    await msg.channel.send(`Pong!`)
   }
 })
 
