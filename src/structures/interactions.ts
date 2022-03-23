@@ -370,6 +370,7 @@ export class Interaction extends SnowflakeBase {
     return new Message(
       this.client,
       message,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       this.channel!,
       new User(this.client, message.author)
     )
