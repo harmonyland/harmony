@@ -363,6 +363,18 @@ export class Interaction extends SnowflakeBase {
     return this
   }
 
+  /** Fetch the Message object of the Interaction Response */
+  async fetchResponse(): Promise<Message> {
+    const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
+    const message = await this.client.rest.get(url)
+    return new Message(
+      this.client,
+      message,
+      this.channel!,
+      new User(this.client, message.author)
+    )
+  }
+
   /** Respond with a Modal */
   async showModal(modal: InteractionResponseModal): Promise<this> {
     return await this.respond({
