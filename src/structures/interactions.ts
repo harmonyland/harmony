@@ -269,7 +269,8 @@ export class Interaction extends SnowflakeBase {
             components:
               data.components === undefined
                 ? undefined
-                : transformComponent(data.components)
+                : transformComponent(data.components),
+            files: data.files ?? []
           }
         : undefined
     }
@@ -327,7 +328,8 @@ export class Interaction extends SnowflakeBase {
         embeds: options.embeds,
         flags: options.flags,
         allowedMentions: options.allowedMentions,
-        components: options.components
+        components: options.components,
+        files: options.files
       })
     } else {
       await this.respond(
