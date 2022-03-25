@@ -270,7 +270,7 @@ export class Interaction extends SnowflakeBase {
               data.components === undefined
                 ? undefined
                 : transformComponent(data.components),
-            files: data.files ?? [],
+            files: data.files ?? []
           }
         : undefined
     }
