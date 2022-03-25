@@ -329,7 +329,7 @@ export class Interaction extends SnowflakeBase {
         flags: options.flags,
         allowedMentions: options.allowedMentions,
         components: options.components,
-        files: options.files,
+        files: options.files
       })
     } else {
       await this.respond(
