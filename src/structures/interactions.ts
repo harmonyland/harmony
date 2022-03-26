@@ -269,7 +269,8 @@ export class Interaction extends SnowflakeBase {
             components:
               data.components === undefined
                 ? undefined
-                : transformComponent(data.components)
+                : transformComponent(data.components),
+            files: data.files ?? []
           }
         : undefined
     }
@@ -327,7 +328,8 @@ export class Interaction extends SnowflakeBase {
         embeds: options.embeds,
         flags: options.flags,
         allowedMentions: options.allowedMentions,
-        components: options.components
+        components: options.components,
+        files: options.files
       })
     } else {
       await this.respond(
@@ -361,6 +363,19 @@ export class Interaction extends SnowflakeBase {
           : transformComponent(data.components)
     })
     return this
+  }
+
+  /** Fetch the Message object of the Interaction Response */
+  async fetchResponse(): Promise<Message> {
+    const url = WEBHOOK_MESSAGE(this.applicationID, this.token, '@original')
+    const message = await this.client.rest.get(url)
+    return new Message(
+      this.client,
+      message,
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      this.channel!,
+      new User(this.client, message.author)
+    )
   }
 
   /** Respond with a Modal */
