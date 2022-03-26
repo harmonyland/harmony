@@ -30,6 +30,7 @@ export class Member extends SnowflakeBase {
   deaf!: boolean
   mute!: boolean
   guild: Guild
+  /** Use `edit` method to update permissions */
   permissions: Permissions
   communicationDisabledUntil?: Date | null
 
