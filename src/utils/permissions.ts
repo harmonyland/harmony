@@ -4,7 +4,7 @@ import { BitField, BitFieldResolvable } from './bitfield.ts'
 
 export type PermissionResolvable = BitFieldResolvable
 
-/** Manages Discord's Bit-based Permissions (updates only locally) */
+/** Represents permissions BitField */
 export class Permissions extends BitField {
   static DEFAULT = 104324673n
   static ALL = Object.values(PermissionFlags).reduce(
