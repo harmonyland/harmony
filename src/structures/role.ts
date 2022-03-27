@@ -19,6 +19,7 @@ export class Role extends SnowflakeBase {
   icon?: string
   unicodeEmoji?: string
   position!: number
+  /** Use `edit` method to update permissions */
   permissions!: Permissions
   managed!: boolean
   mentionable!: boolean
