@@ -48,7 +48,7 @@ import {
 
 export interface GatewayPayload {
   op: GatewayOpcode;
-  d: GatewayDataType;
+  d: GatewayDataType | null;
   s: number | null;
   t: GatewayEventNames | null;
 }
