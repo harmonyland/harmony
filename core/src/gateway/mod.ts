@@ -12,7 +12,8 @@ import {
   Reasumable,
 } from "../../../types/src/gateways/gateway.ts";
 import { GatewayOpcode } from "../../../types/src/gateways/opcode.ts";
-import { unzlib } from "../../deps.ts";
+import { EventEmitter, unzlib } from "../../deps.ts";
+import { GatewayEvents } from "../../types/gateway/events.ts";
 import { decoder } from "../utils/utf8.ts";
 
 interface GatewayOptions {
@@ -23,15 +24,7 @@ interface GatewayOptions {
   };
 }
 
-// dummy event class until the event emitter lib is ready
-class Event {
-  // deno-lint-ignore no-explicit-any
-  emit(_name: string, ..._args: any[]): boolean {
-    return false;
-  }
-}
-
-export class Gateway extends Event {
+export class Gateway extends EventEmitter<GatewayEvents> {
   ws!: WebSocket;
   token: string;
   intents = 0;
@@ -112,7 +105,7 @@ export class Gateway extends Event {
           };
           this.send(GatewayOpcode.RESUME, data);
         }
-        this.emit("HELLO", d);
+        this.emit("HELLO", d as GatewayHelloPayload);
         break;
       case GatewayOpcode.HEARTBEAT_ACK:
         this.serverHeartbeat = true;
@@ -132,6 +125,7 @@ export class Gateway extends Event {
             this.sessionID = (d as GatewayReadyPayload).session_id;
             break;
         }
+        // @ts-ignore - every events are implemented anyway
         this.emit(t!, d);
     }
   }
