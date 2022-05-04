@@ -2,9 +2,12 @@ import { ApplicationPayload } from "../applications/application.ts";
 import { ChannelPayload } from "../channels/base.ts";
 import { MessagePayload } from "../channels/message.ts";
 import { GuildPayload } from "../guilds/guild.ts";
+import { GuildMemberPayload } from "../guilds/member.ts";
+import { InteractionPayload } from "../interactions/interaction.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
 import { UserPayload } from "../users/user.ts";
+import { VoiceStatePayload } from "../voices/voice.ts";
 import { ActivityPayload } from "./activity.ts";
 import {
   GatewayGuildBanAddPayload,
@@ -143,6 +146,7 @@ export type GatewayDataType =
   | GatewayIntegrationCreatePayload
   | GatewayIntegrationUpdatePayload
   | GatewayIntegrationDeletePayload
+  | InteractionPayload
   | GatewayInviteCreatePayload
   | GatewayInviteDeletePayload
   | MessagePayload
@@ -153,7 +157,12 @@ export type GatewayDataType =
   | GatewayMessageReactionRemoveAllPayload
   | GatewayMessageReactionRemoveEmojiPayload
   | GatewayWebhookUpdatePayload
-  | StageInstancePayload;
+  | StageInstancePayload
+  | UserPayload
+  | VoiceStatePayload
+  | GatewayPresenceUpdatePayload
+  | GatewayTypingStartPayload
+  | GatewayVoiceServerUpdatePayload;
 
 export interface ConnectGatewayParams {
   v: number;
@@ -237,4 +246,34 @@ export interface SessionStartLimitPayload {
   remaning: number;
   reset_after: number;
   max_concurrency: number;
+}
+
+export type ClientStatusType = "online" | "idle" | "dnd";
+
+export interface ClientStatusPayload {
+  desktop?: ClientStatusType;
+  mobile?: ClientStatusType;
+  web?: ClientStatusType;
+}
+
+export interface GatewayPresenceUpdatePayload {
+  user: UserPayload;
+  guild_id: string;
+  status: StatusType;
+  activities: ActivityPayload[];
+  client_status: ClientStatusPayload;
+}
+
+export interface GatewayTypingStartPayload {
+  channel_id: string;
+  guild_id?: string;
+  user_id: string;
+  timestamp: number;
+  member?: GuildMemberPayload;
+}
+
+export interface GatewayVoiceServerUpdatePayload {
+  token: string;
+  guild_id: string;
+  endpoint: string | null;
 }
