@@ -65,6 +65,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
     );
     this.ws.onmessage = this.onmessage.bind(this);
+    this.ws.binaryType = "arraybuffer";
   }
 
   private onmessage({ data }: MessageEvent) {
