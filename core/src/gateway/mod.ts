@@ -77,7 +77,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       decoded = unzlib(decoded, 0, (e: Uint8Array) => decoder.decode(e));
     }
     const { op, d, s, t }: GatewayPayload = JSON.parse(decoded);
-    this.sequence = s;
+    this.sequence = s ?? this.sequence;
     switch (op) {
       case GatewayOpcode.HELLO:
         this.heartbeatInterval = (d as GatewayHelloPayload).heartbeat_interval;
@@ -129,6 +129,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
         // @ts-ignore - every events are implemented anyway
         this.emit(t!, d);
     }
+    this.emit("RAW", { op, d, s, t });
   }
 
   reconnect(resume = false, code?: number) {

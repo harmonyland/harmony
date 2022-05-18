@@ -25,6 +25,7 @@ import type {
   GatewayMessageReactionRemoveAllPayload,
   GatewayMessageReactionRemoveEmojiPayload,
   GatewayMessageReactionRemovePayload,
+  GatewayPayload,
   GatewayPresenceUpdatePayload,
   GatewayReadyPayload,
   GatewayScheduledEventUserAddPayload,
@@ -104,4 +105,5 @@ export type GatewayEvents = {
   VOICE_STATE_UPDATE: [VoiceStatePayload];
   VOICE_SERVER_UPDATE: [GatewayVoiceServerUpdatePayload];
   WEBHOOKS_UPDATE: [GatewayWebhookUpdatePayload];
+  RAW: [GatewayPayload];
 };
