@@ -194,7 +194,7 @@ export interface GatewayResumePayload {
   seq: number;
 }
 
-export type HeartbeatPayload = number;
+export type HeartbeatPayload = number | null;
 export type Reasumable = boolean;
 
 export interface GetGatewayGuildMembersPayload {
