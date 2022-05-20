@@ -4,6 +4,7 @@ import {
 } from "../../../types/src/constants.ts";
 import {
   GatewayDataType,
+  GatewayEventNames,
   GatewayHelloPayload,
   GatewayIdentifyPayload,
   GatewayPayload,
@@ -142,20 +143,33 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   heartbeat() {
     if (this.serverHeartbeat) {
       this.serverHeartbeat = false;
-      this.ws.send(
-        JSON.stringify({ op: GatewayOpcode.HEARTBEAT, d: this.sequence }),
-      );
+      this.send(GatewayOpcode.HEARTBEAT, this.sequence);
     } else {
       // oh my god, the server is dead
       this.reconnect(true, 4000);
     }
   }
 
-  send(op: GatewayOpcode, data: GatewayDataType) {
+  send(
+    op: GatewayOpcode,
+    data: GatewayDataType,
+    seq = false,
+    t?: GatewayEventNames,
+  ) {
     const req = {
       op,
       d: data,
+      s: seq ? this.sequence : null,
+      t,
     };
     this.ws.send(JSON.stringify(req));
+  }
+
+  sendDispatch(
+    event: GatewayEventNames,
+    data: GatewayDataType,
+    seq = false,
+  ) {
+    this.send(GatewayOpcode.DISPATCH, data, seq, event);
   }
 }
