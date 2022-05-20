@@ -1,20 +1,19 @@
 import {
   DISCORD_API_VERSION,
   DISCORD_GATEWAY_BASE,
-} from "../../../types/src/constants.ts";
-import {
+  GatewayCloseCode,
   GatewayDataType,
   GatewayEventNames,
+  GatewayEvents,
   GatewayHelloPayload,
   GatewayIdentifyPayload,
+  GatewayOpcode,
   GatewayPayload,
   GatewayReadyPayload,
   GatewayResumePayload,
   Reasumable,
-} from "../../../types/src/gateways/gateway.ts";
-import { GatewayOpcode } from "../../../types/src/gateways/opcode.ts";
+} from "../../../types/mod.ts";
 import { EventEmitter, unzlib } from "../../deps.ts";
-import { GatewayEvents } from "../../types/gateway/events.ts";
 import { decoder } from "../utils/utf8.ts";
 
 interface GatewayOptions {
@@ -66,6 +65,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
     );
     this.ws.onmessage = this.onmessage.bind(this);
+    this.ws.onclose = this.onclose.bind(this);
     this.ws.binaryType = "arraybuffer";
   }
 
@@ -133,9 +133,39 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.emit("RAW", { op, d, s, t });
   }
 
+  private onclose(e: CloseEvent) {
+    switch (e.code) {
+      case GatewayCloseCode.UNKNOWN_ERROR:
+      case GatewayCloseCode.UNKNOWN_OPCODE:
+      case GatewayCloseCode.DECODE_ERROR:
+      case GatewayCloseCode.INVALID_SEQ:
+      case GatewayCloseCode.ALREADY_AUTHENTICATED:
+      case GatewayCloseCode.RATE_LIMITED:
+        this.emit("CLOSED", e.code, true, true);
+        this.reconnect(true);
+        break;
+      case GatewayCloseCode.NOT_AUTHENTICATED:
+      case GatewayCloseCode.SESSION_TIMEOUT:
+        this.emit("CLOSED", e.code, true, false);
+        this.reconnect();
+        break;
+      case GatewayCloseCode.INVALID_SHARD:
+      case GatewayCloseCode.SHARDING_REQUIRED:
+      case GatewayCloseCode.INVALID_VERSION:
+      case GatewayCloseCode.INVALID_INTENT:
+      case GatewayCloseCode.DISALLOWED_INTENT:
+      case GatewayCloseCode.AUTHENTICATION_FAILED:
+      default:
+        this.emit("CLOSED", e.code, false, false);
+        break;
+    }
+  }
+
   reconnect(resume = false, code?: number) {
     this.resume = resume;
-    this.ws.close(code);
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.close(code);
+    }
     this.initVariables();
     this.connect();
   }
