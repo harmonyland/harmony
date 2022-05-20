@@ -1,10 +1,11 @@
 import {
   DISCORD_API_VERSION,
   DISCORD_GATEWAY_BASE,
+} from "../../../types/src/constants.ts";
+import {
   GatewayCloseCode,
   GatewayDataType,
   GatewayEventNames,
-  GatewayEvents,
   GatewayHelloPayload,
   GatewayIdentifyPayload,
   GatewayOpcode,
@@ -13,6 +14,7 @@ import {
   GatewayResumePayload,
   Reasumable,
 } from "../../../types/mod.ts";
+import { GatewayEvents } from "../../types/gateway/events.ts";
 import { EventEmitter, unzlib } from "../../deps.ts";
 import { decoder } from "../utils/utf8.ts";
 
@@ -64,9 +66,14 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.ws = new WebSocket(
       `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
     );
+    this.ws.onopen = this.onopen.bind(this);
     this.ws.onmessage = this.onmessage.bind(this);
     this.ws.onclose = this.onclose.bind(this);
     this.ws.binaryType = "arraybuffer";
+  }
+
+  private onopen() {
+    this.emit("CONNECTED");
   }
 
   private onmessage({ data }: MessageEvent) {

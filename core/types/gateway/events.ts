@@ -106,4 +106,6 @@ export type GatewayEvents = {
   VOICE_SERVER_UPDATE: [GatewayVoiceServerUpdatePayload];
   WEBHOOKS_UPDATE: [GatewayWebhookUpdatePayload];
   RAW: [GatewayPayload];
+  CLOSED: [number, boolean, boolean];
+  CONNECTED: [];
 };
