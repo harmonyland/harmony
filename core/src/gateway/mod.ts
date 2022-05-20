@@ -80,6 +80,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.sequence = s ?? this.sequence;
     switch (op) {
       case GatewayOpcode.HELLO:
+        this.serverHeartbeat = true;
         this.heartbeatInterval = (d as GatewayHelloPayload).heartbeat_interval;
         this.heartbeatCode = setInterval(
           this.heartbeat.bind(this),
@@ -98,7 +99,6 @@ export class Gateway extends EventEmitter<GatewayEvents> {
           );
         } else {
           // time to resume our session
-          this.serverHeartbeat = true;
           const data: GatewayResumePayload = {
             token: this.token,
             session_id: this.sessionID!,
@@ -142,7 +142,9 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   heartbeat() {
     if (this.serverHeartbeat) {
       this.serverHeartbeat = false;
-      this.ws.send(JSON.stringify({ op: GatewayOpcode.HEARTBEAT }));
+      this.ws.send(
+        JSON.stringify({ op: GatewayOpcode.HEARTBEAT, d: this.sequence }),
+      );
     } else {
       // oh my god, the server is dead
       this.reconnect(true, 4000);
