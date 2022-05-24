@@ -24,6 +24,7 @@ interface GatewayOptions {
     browser: string;
     device: string;
   };
+  shard?: [number, number];
 }
 
 export class Gateway extends EventEmitter<GatewayEvents> {
@@ -31,6 +32,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   token: string;
   intents = 0;
   properties: GatewayIdentifyPayload["properties"];
+  shard?: [number, number];
   private heartbeatInterval: number | null = null;
   private heartbeatCode = 0;
   private serverHeartbeat = true;
@@ -41,7 +43,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   constructor(
     token: string,
     intents: number,
-    { properties }: GatewayOptions = {},
+    { properties, shard }: GatewayOptions = {},
   ) {
     super();
     this.token = token;
@@ -51,6 +53,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       "$browser": properties?.browser ?? "harmony",
       "$device": properties?.device ?? "harmony",
     };
+    this.shard = shard;
     this.connect();
   }
 
@@ -103,6 +106,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
               intents: this.intents,
               properties: this.properties,
               compress: true,
+              shard: this.shard,
             },
           );
         } else {
