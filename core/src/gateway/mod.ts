@@ -18,7 +18,7 @@ import { GatewayEvents } from "../../types/gateway/events.ts";
 import { EventEmitter, unzlib } from "../../deps.ts";
 import { decoder } from "../utils/utf8.ts";
 
-interface GatewayOptions {
+export interface GatewayOptions {
   properties?: {
     os: string;
     browser: string;
