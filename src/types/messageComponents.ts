@@ -110,6 +110,8 @@ export interface TextInputComponentPayload {
   placeholder?: string
   min_length?: number
   max_length?: number
+  value?: string
+  required?: boolean
 }
 
 export interface TextInputComponent {
@@ -120,6 +122,8 @@ export interface TextInputComponent {
   placeholder?: string
   minLength?: number
   maxLength?: number
+  value?: string
+  required?: boolean
 }
 
 export type MessageComponentPayload =
