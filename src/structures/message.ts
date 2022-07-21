@@ -74,6 +74,7 @@ export class Message extends SnowflakeBase {
   interaction?: MessageInteraction
   createdTimestamp: Date
   components: MessageComponentData[] = []
+  url: string
 
   get createdAt(): Date {
     return this.createdTimestamp // new Date(this.timestamp)
@@ -115,6 +116,7 @@ export class Message extends SnowflakeBase {
     this.application = data.application ?? this.application
     this.messageReference = data.message_reference ?? this.messageReference
     this.flags = data.flags ?? this.flags
+    this.url = `https://discord.com/channels/${data.guild_id}/${data.channel_id}/${this.id}`
     this.stickerItems =
       data.sticker_items !== undefined
         ? data.sticker_items.map(
