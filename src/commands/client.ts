@@ -12,7 +12,7 @@ import {
 import { parseArgs } from '../utils/command.ts'
 import { Extension, ExtensionsManager } from './extension.ts'
 
-type PrefixType = string | RegExp | (string | RegExp)[]
+type PrefixType = string | RegExp | Array<string | RegExp>
 type PrefixReturnType = PrefixType | Promise<PrefixType>
 
 /** Command Client options extending Client Options to provide a lot of Commands-related customizations */
@@ -58,7 +58,7 @@ export type CommandContextMiddlewareNext = () => unknown | Promise<unknown>
  * See InteractionsClient (`Client#slash`) for more info about Slash Commands.
  */
 export class CommandClient extends Client implements CommandClientOptions {
-  prefix: string | RegExp | (string | RegExp)[]
+  prefix: PrefixType
   mentionPrefix: boolean
 
   getGuildPrefix: (guildID: string) => PrefixReturnType
