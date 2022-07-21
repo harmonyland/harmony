@@ -116,7 +116,7 @@ export class Message extends SnowflakeBase {
     this.application = data.application ?? this.application
     this.messageReference = data.message_reference ?? this.messageReference
     this.flags = data.flags ?? this.flags
-    this.url = `https://discord.com/channels/${data.guild_id || "@me"}/${data.channel_id}/${this.id}`
+    this.url = `https://discord.com/channels/${this.guildID || "@me"}/${this.channelID}/${this.id}`
     this.stickerItems =
       data.sticker_items !== undefined
         ? data.sticker_items.map(
