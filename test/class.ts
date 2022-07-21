@@ -12,7 +12,8 @@ import { TOKEN } from './config.ts'
 class MyClient extends CommandClient {
   constructor() {
     super({
-      prefix: ['!', '!!'],
+      // /^!+/ is a regular expression that matches any amount of exclamation marks
+      prefix: ['!', '!!', /!+/],
       caseSensitive: false
     })
   }
