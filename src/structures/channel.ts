@@ -198,6 +198,15 @@ export class GuildChannel extends Channel {
 
     return overwrites
   }
+  
+  /** Edit category of the channel */
+  async setCategory(
+    category: CategoryChannel | string
+  ): Promise<GuildTextBasedChannel> {
+    return await this.edit({
+      parentID: typeof category === 'object' ? category.id : category
+    })
+  }
 
   /** Get Permissions for a Member in this Channel */
   async permissionsFor(target: Member | Role | string): Promise<Permissions> {
