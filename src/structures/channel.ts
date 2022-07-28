@@ -198,7 +198,7 @@ export class GuildChannel extends Channel {
 
     return overwrites
   }
-  
+
   /** Edit category of the channel */
   async setCategory(
     category: CategoryChannel | string
