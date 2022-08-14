@@ -192,7 +192,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       case GatewayOpcodes.RECONNECT: {
         this.emit('reconnectRequired')
         this.debug('Received OpCode RECONNECT')
-        await this.reconnect()
+        await this.reconnect(d === true)
         break
       }
       default:
