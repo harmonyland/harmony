@@ -35,6 +35,7 @@ function calculateReset(
   return new Date(Number(reset) * 1000).getTime() - getAPIOffset(serverDate)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let invalidCount = 0
 let invalidCountResetTime: number | null = null
 
