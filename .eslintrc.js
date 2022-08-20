@@ -3,7 +3,7 @@ module.exports = {
     es2021: true,
     node: true
   },
-  extends: ['standard-with-typescript', 'prettier', 'prettier/standard'],
+  extends: ['standard-with-typescript', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
