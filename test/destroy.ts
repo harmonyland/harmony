@@ -1,8 +1,7 @@
 import { Client } from '../mod.ts'
-import { TOKEN } from './config.ts'
 
 const client = new Client({
-  token: TOKEN,
+  token: Deno.env.get('TOKEN'),
   intents: ['GUILDS']
 })
 
@@ -12,6 +11,6 @@ await client.connect()
 console.log('Connected!')
 
 setTimeout(() => {
-  console.log('Destroying...')
-  client.destroy()
+  // client.gateway.reconnect()
+  client.gateway.destroy()
 }, 3000)

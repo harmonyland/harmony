@@ -29,7 +29,7 @@ export interface VoiceStateOptions {
   deaf?: boolean
 }
 
-export const RECONNECT_REASON = 'harmony-reconnect'
+export const RECONNECT_CODE = 3999
 export const DESTROY_REASON = 'harmony-destroy'
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
@@ -191,8 +191,8 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       }
       case GatewayOpcodes.RECONNECT: {
         this.emit('reconnectRequired')
-        this.debug('Received OpCode RECONNECT')
-        await this.reconnect(d === true)
+        this.debug(`Received OpCode RECONNECT`)
+        await this.reconnect(true)
         break
       }
       default:
@@ -231,6 +231,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   }
 
   private async onclose({ reason, code }: CloseEvent): Promise<void> {
+    // Likely an async close event from previous websocket object
+    // after we reconnect.
+    if (!this.connected) return
+
+    this.connected = false
     if (this.destroyed) return
     if (this.#destroyCalled) {
       this.#destroyComplete = true
@@ -238,12 +243,12 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       return
     }
 
-    if (reason === RECONNECT_REASON) return
-
     this.emit('close', code, reason)
     this.debug(`Connection Closed with code: ${code} ${reason}`)
 
     switch (code) {
+      case RECONNECT_CODE:
+        return
       case GatewayCloseCodes.UNKNOWN_ERROR:
         this.debug('API has encountered Unknown Error. Reconnecting...')
         await this.reconnect()
@@ -460,7 +465,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       await this.cache.delete(`seq_${this.shards?.join('-') ?? '0'}`)
     }
 
-    this.closeGateway(1000, RECONNECT_REASON)
+    this.closeGateway(3999)
     this.initWebsocket()
   }
 
@@ -548,7 +553,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       this.debug('Found dead connection, reconnecting...')
       clearInterval(this.heartbeatIntervalID)
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.reconnect()
+      this.reconnect(false)
       return
     }
 

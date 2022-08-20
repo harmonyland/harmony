@@ -53,7 +53,6 @@ export class Collection<K = string, V = any> extends Map<K, V> {
   find(callback: (value: V, key: K) => boolean): V | undefined {
     for (const key of this.keys()) {
       const value = this.get(key) as V
-      // eslint-disable-next-line standard/no-callback-literal
       if (callback(value, key)) return value
     }
   }
