@@ -1,0 +1,14 @@
+{
+  "name": "harmony_example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "node ."
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "harmony": "file:../npm"
+  }
+}

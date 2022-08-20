@@ -1,6 +1,5 @@
 import {
   Client,
-  Intents,
   Message,
   Member,
   GuildChannels,
@@ -16,12 +15,19 @@ import {
   OverrideType,
   ColorUtil
 } from '../mod.ts'
-import { TOKEN } from './config.ts'
+// import { TOKEN } from './config.ts'
 
 const client = new Client({
   clientProperties: {
     browser: 'Discord iOS'
-  }
+  },
+  intents: [
+    'GUILDS',
+    'DIRECT_MESSAGES',
+    'GUILD_MESSAGES',
+    'GUILD_MEMBERS',
+    'GUILD_PRESENCES'
+  ]
   // cache: new RedisCacheAdapter({
   //   hostname: '127.0.0.1',
   //   port: 6379
@@ -364,6 +370,10 @@ client.on('messageCreate', async (msg: Message) => {
         ? ColorUtil.intToHex(await msg.member.effectiveColor())
         : 'not in a guild'
     )
+  } else if (msg.content === '!presence') {
+    if (msg.guild === undefined) return
+    const presence = await msg.guild.presences.resolve(msg.author.id)
+    msg.reply(`Status: ${presence?.status}`)
   }
 })
 
@@ -376,7 +386,7 @@ client.on('messageReactionRemove', (reaction, user) => {
   }
 })
 
-await client.connect(TOKEN, Intents.None)
+await client.connect()
 console.log(`[Login] Logged in as ${client.user?.tag}!`)
 
 // OLD: Was a way to reproduce reconnect infinite loop

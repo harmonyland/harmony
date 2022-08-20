@@ -402,7 +402,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       throw new Error(
         'Missing limit property when specifying query for Requesting Members!'
       )
-    const nonce = `${guild}_${new Date().getTime()}`
+    const nonce = crypto.randomUUID()
     this.send({
       op: GatewayOpcodes.REQUEST_GUILD_MEMBERS,
       d: {
@@ -495,6 +495,11 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       }`
     )
     return this.websocket?.close(code, reason)
+  }
+
+  // Alias for backward compat, since event@2.0.0 removed close again...
+  close(code?: number, reason?: string): void {
+    this.closeGateway(code, reason)
   }
 
   #destroyCalled = false

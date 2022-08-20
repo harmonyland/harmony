@@ -1,0 +1,8 @@
+{
+  "tasks": {
+    "fmt": "npx prettier --write src/ test/ mod.ts deploy.ts deps.ts",
+    "lint": "npx eslint src/ test/ mod.ts deploy.ts deps.ts",
+    "check": "deno run -A --check mod.ts",
+    "build-npm": "deno run -A --no-check ./scripts/build_npm.ts"
+  }
+}

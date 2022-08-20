@@ -16,7 +16,7 @@ import {
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
-import { edverify, decodeHex } from '../../deps.ts'
+import { edverify, decodeHex, readAll } from '../../deps.ts'
 import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { decodeText, encodeText } from '../utils/encoding.ts'
@@ -409,8 +409,8 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     if (signature === null || timestamp === null) return false
 
     const rawbody =
-      req.body instanceof Uint8Array ? req.body : await Deno.readAll(req.body)
-    const verify = await this.verifyKey(rawbody, signature, timestamp)
+      req.body instanceof Uint8Array ? req.body : await readAll(req.body)
+    const verify = this.verifyKey(rawbody, signature, timestamp)
     if (!verify) return false
 
     try {

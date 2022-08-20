@@ -407,12 +407,9 @@ export class ApplicationCommandPermissionsManager {
   }
 
   async *[Symbol.asyncIterator](): AsyncIterableIterator<GuildApplicationCommandPermissions> {
-    const arr = await this.all()
-    const { readable, writable } = new TransformStream()
-    const writer = writable.getWriter()
-    arr.forEach((el: unknown) => writer.write(el))
-    writer.close()
-    yield* readable
+    for (const perm of await this.all()) {
+      yield perm
+    }
   }
 }
 
@@ -602,12 +599,9 @@ export class ApplicationCommandsManager {
   }
 
   async *[Symbol.asyncIterator](): AsyncIterableIterator<ApplicationCommand> {
-    const arr = await this.all()
-    const { readable, writable } = new TransformStream()
-    const writer = writable.getWriter()
-    arr.forEach((el: unknown) => writer.write(el))
-    writer.close()
-    yield* readable
+    for (const [, cmd] of await this.all()) {
+      yield cmd
+    }
   }
 }
 
@@ -668,12 +662,9 @@ export class GuildApplicationCommandsManager {
   }
 
   async *[Symbol.asyncIterator](): AsyncIterableIterator<ApplicationCommand> {
-    const arr = await this.all()
-    const { readable, writable } = new TransformStream()
-    const writer = writable.getWriter()
-    arr.forEach((el: unknown) => writer.write(el))
-    writer.close()
-    yield* readable
+    for (const [, cmd] of await this.all()) {
+      yield cmd
+    }
   }
 }
 
