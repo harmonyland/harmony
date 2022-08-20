@@ -173,9 +173,9 @@ export class RESTManager {
   }
 
   setTimeout(fn: (...args: unknown[]) => unknown, ms: number): number {
-    const timer = setTimeout(async () => {
+    const timer = setTimeout(() => {
       this.timers.delete(timer)
-      await fn()
+      fn()
     }, ms)
     this.timers.add(timer)
     return timer

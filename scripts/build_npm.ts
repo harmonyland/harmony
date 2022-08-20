@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run -A --no-check
 
-import { build, emptyDir } from 'https://deno.land/x/dnt@0.21.2/mod.ts'
+import { build, emptyDir } from 'https://deno.land/x/dnt@0.30.0/mod.ts'
 
 await emptyDir('./npm')
 
@@ -9,12 +9,25 @@ await build({
   test: false,
   typeCheck: false,
   outDir: './npm',
+  compilerOptions: {
+    importHelpers: true,
+    target: 'ES2021',
+    lib: ['esnext', 'dom', 'dom.iterable']
+  },
   shims: {
     deno: true,
     timers: true,
     undici: true,
     blob: true,
     custom: [
+      {
+        module: './node_shims.ts',
+        globalNames: ['ErrorEvent']
+      },
+      {
+        package: { name: 'stream/web' },
+        globalNames: ['TransformStream', 'ReadableStream', 'WritableStream']
+      },
       {
         globalNames: [
           {
@@ -24,7 +37,7 @@ await build({
         ],
         package: {
           name: 'ws',
-          version: '^8.5.0'
+          version: '^8.5.3'
         }
       }
     ]
@@ -41,6 +54,9 @@ await build({
     },
     bugs: {
       url: 'https://github.com/harmonyland/harmony/issues'
+    },
+    devDependencies: {
+      '@types/ws': '^8.5.3'
     }
   },
   mappings: {
