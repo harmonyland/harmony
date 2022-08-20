@@ -178,6 +178,7 @@ export interface Ready {
   session_id: string
   shard?: number[]
   application: { id: string; flags: number }
+  resume_gateway_url: string
 }
 
 export interface ChannelPinsUpdatePayload {

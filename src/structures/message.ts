@@ -79,6 +79,10 @@ export class Message extends SnowflakeBase {
     return this.createdTimestamp // new Date(this.timestamp)
   }
 
+  get url(): string {
+    return CHANNEL_MESSAGE(this.channelID, this.id)
+  }
+
   constructor(
     client: Client,
     data: MessagePayload,

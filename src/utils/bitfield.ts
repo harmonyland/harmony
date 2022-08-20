@@ -7,7 +7,7 @@ export type BitFieldResolvable =
   | string[]
   | BitField[]
   | bigint
-  | Array<bigint>
+  | bigint[]
 
 /** Bit Field utility to work with Bits and Flags */
 export class BitField {

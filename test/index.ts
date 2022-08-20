@@ -36,16 +36,23 @@ const client = new Client({
 })
 
 client.interactions.handle('modal', async (i) =>
-  i.reply({
-    files: [
-      await MessageAttachment.load(
-        'https://cdn.discordapp.com/emojis/827755526128402493.png',
-        'file.png',
-        'description'
-      )
-    ]
-  })
+  i
+    .reply({
+      content: 'hi',
+      files: [
+        await MessageAttachment.load(
+          'https://cdn.discordapp.com/emojis/827755526128402493.png',
+          'file.png',
+          'description'
+        )
+      ],
+      ephemeral: true
+    })
+    .then((i) => i.fetchResponse())
+    .then(console.log)
 )
+
+client.interactions.on('interactionError', console.error)
 
 client.on('threadCreate', (t) => console.log('Thread Create', t))
 client.on('threadDelete', (t) => console.log('Thread Delete', t))

@@ -95,6 +95,20 @@ export class APIRequest {
         _files!.push(file)
       })
     }
+    if (
+      options.data?.data?.embeds !== undefined &&
+      Array.isArray(options.data?.data?.embeds)
+    ) {
+      const files1 = options.data?.data?.embeds
+        .map((e: Embed) => e.files)
+        .filter((e: MessageAttachment[]) => e !== undefined)
+      for (const files of files1) {
+        for (const file of files) {
+          if (_files === undefined) _files = []
+          _files?.push(file)
+        }
+      }
+    }
 
     if (_files !== undefined && _files.length > 0) {
       if (options.files === undefined) options.files = _files

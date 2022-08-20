@@ -4,7 +4,7 @@ import { BitField, BitFieldResolvable } from './bitfield.ts'
 
 export type PermissionResolvable = BitFieldResolvable
 
-/** Manages Discord's Bit-based Permissions */
+/** Represents permissions BitField */
 export class Permissions extends BitField {
   static DEFAULT = 104324673n
   static ALL = Object.values(PermissionFlags).reduce(
@@ -19,14 +19,14 @@ export class Permissions extends BitField {
   any(permission: PermissionResolvable, checkAdmin = true): boolean {
     return (
       (checkAdmin && super.has(this.flags().ADMINISTRATOR)) ||
-      super.any(permission as any)
+      super.any(permission)
     )
   }
 
   has(permission: PermissionResolvable, checkAdmin = true): boolean {
     return (
       (checkAdmin && super.has(this.flags().ADMINISTRATOR)) ||
-      super.has(permission as any)
+      super.has(permission)
     )
   }
 }

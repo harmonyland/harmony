@@ -101,7 +101,7 @@ export class Extension {
     if (this.events[event] !== undefined) return false
     else {
       const fn = (...args: any[]): void => {
-        // eslint-disable-next-line standard/no-callback-literal
+        // eslint-disable-next-line n/no-callback-literal
         cb(this, ...args)
       }
       this.client.on(event, fn)
