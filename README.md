@@ -1,6 +1,6 @@
 ![banner](./assets/banner.png)
 
-<p align=center><b>An easy to use Discord API Library for Deno</b></p>
+<p align=center><b>An easy to use Discord API Library for Deno, Node.js & Bun</b></p>
 <p align=center>
 <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
 <a href=https://discord.gg/harmony>
@@ -17,22 +17,26 @@
 - `@decorators` supported
 - Made with ❤️ in TypeScript
 
-## Usage
+## Usage (Deno)
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
-We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.5.0`.
+We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.6.1`.
 
-## Docs
+## Usage (Node.js & Bun)
 
-Documentation is available [main branch](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts) or [latest stable version](https://doc.deno.land/https/deno.land/x/harmony/mod.ts). You can also check out the [guide](https://harmony.mod.land).
+You can install and use the NPM package published under `@harmonyland/harmony`.
+
+## Documentation
+
+Documentation is available [main branch](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts) or [latest stable version (v2.6.1)](https://doc.deno.land/https/deno.land/x/harmony@v2.6.1/mod.ts). You can also check out the [guide](https://harmony.mod.land).
 
 ## Example
 
 For a quick example, run this:
 
 ```bash
-deno run --allow-net https://deno.land/x/harmony/examples/ping.ts
+deno run --allow-net https://deno.land/x/harmony@v2.6.1/examples/ping.ts
 ```
 
 And input your bot's token.
@@ -44,9 +48,16 @@ import {
   Client,
   Message,
   GatewayIntents
-} from 'https://deno.land/x/harmony/mod.ts'
+} from 'https://deno.land/x/harmony@v2.6.1/mod.ts'
 
-const client = new Client()
+const client = new Client({
+  intents: [
+    'GUILDS',
+    'DIRECT_MESSAGES',
+    'GUILD_MESSAGES'
+  ],
+  // token: optionally specify, otherwise DISCORD_TOKEN from env is used
+})
 
 // Listen for event when client is ready (Identified through gateway / Resumed)
 client.on('ready', () => {
@@ -61,11 +72,7 @@ client.on('messageCreate', (msg: Message): void => {
 })
 
 // Connect to gateway
-client.connect('super secret token comes here', [
-  GatewayIntents.DIRECT_MESSAGES,
-  GatewayIntents.GUILDS,
-  GatewayIntents.GUILD_MESSAGES
-])
+client.connect()
 ```
 
 Or with CommandClient!
@@ -76,10 +83,16 @@ import {
   Command,
   CommandContext,
   GatewayIntents
-} from 'https://deno.land/x/harmony/mod.ts'
+} from 'https://deno.land/x/harmony@v2.6.1/mod.ts'
 
 const client = new CommandClient({
-  prefix: '!'
+  prefix: '!',
+  intents: [
+    'GUILDS',
+    'DIRECT_MESSAGES',
+    'GUILD_MESSAGES'
+  ],
+  // token: optionally specify, otherwise DISCORD_TOKEN from env is used
 })
 
 // Listen for event when client is ready (Identified through gateway / Resumed)
@@ -99,11 +112,7 @@ class PingCommand extends Command {
 client.commands.add(PingCommand)
 
 // Connect to gateway
-client.connect('super secret token comes here', [
-  GatewayIntents.DIRECT_MESSAGES,
-  GatewayIntents.GUILDS,
-  GatewayIntents.GUILD_MESSAGES
-])
+client.connect()
 ```
 
 Or with Decorators!
@@ -115,13 +124,19 @@ import {
   command,
   CommandContext,
   GatewayIntents
-} from 'https://deno.land/x/harmony/mod.ts'
+} from 'https://deno.land/x/harmony@v2.6.1/mod.ts'
 
 class MyClient extends CommandClient {
   constructor() {
     super({
       prefix: ['!', '!!'],
-      caseSensitive: false
+      caseSensitive: false,
+      intents: [
+        'GUILDS',
+        'DIRECT_MESSAGES',
+        'GUILD_MESSAGES'
+      ],
+      // token: optionally specify, otherwise DISCORD_TOKEN from env is used
     })
   }
 
@@ -136,16 +151,12 @@ class MyClient extends CommandClient {
   }
 }
 
-new MyClient().connect('super secret token comes here', [
-  GatewayIntents.DIRECT_MESSAGES,
-  GatewayIntents.GUILDS,
-  GatewayIntents.GUILD_MESSAGES
-])
+new MyClient().connect()
 ```
 
 ## Discord
 
-Found a bug or want support? Join our Discord Server!
+Need support? Join our Discord Server!
 
 [![Harmony Discord Server](https://discord.com/api/guilds/783319033205751809/widget.png?style=banner1)](https://discord.gg/harmony)
 
@@ -163,6 +174,6 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT © 2020-2022 Harmonyland](LICENSE)
+[MIT © 2020-2022 Harmony Land](LICENSE)
 
 #### Made with ❤ by Harmony Land
