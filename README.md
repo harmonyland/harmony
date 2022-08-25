@@ -1,6 +1,6 @@
 ![banner](./assets/banner.png)
 
-<p align=center><b>An easy to use Discord API Library for Deno, Node.js & Bun</b></p>
+<p align=center><b>An easy to use Discord API Library for Deno and Node.js</b></p>
 <p align=center>
 <img src="https://img.shields.io/badge/standard--readme-OK-green.svg?style=for-the-badge"/>
 <a href=https://discord.gg/harmony>
@@ -23,7 +23,7 @@ You can import the package from https://deno.land/x/harmony/mod.ts (with latest 
 
 We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.6.1`.
 
-## Usage (Node.js & Bun)
+## Usage (Node.js)
 
 You can install and use the NPM package published under `@harmonyland/harmony`.
 
