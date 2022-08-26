@@ -196,7 +196,7 @@ export class CommandClient extends Client implements CommandClientOptions {
     const usedPrefixes = []
     for (const p of prefix) {
       if (typeof p === 'string') {
-        if (msg.content.startsWith(p)) {
+        if (msg.content.startsWith(p) as boolean) {
           usedPrefixes.push(p)
         }
       } else {
