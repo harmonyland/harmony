@@ -2,6 +2,10 @@ import { ApplicationPayload } from "../applications/application.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
+import {
+  ComponentPayload,
+  MessageInteractionPayload,
+} from "../interactions/mod.ts";
 import { StickerItemPayload } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
 import { ChannelType } from "./base.ts";
@@ -124,9 +128,9 @@ export interface MessagePayload {
   message_reference?: MessageReferencePayload;
   flags?: MessageFlags;
   referenced_message?: MessagePayload | null;
-  // interaction?: MessageInteractionPayload;
+  interaction?: MessageInteractionPayload;
   thread?: GuildThreadChannelPayload;
-  // components?: MessageComponentPayload[];
+  components?: ComponentPayload[];
   sticker_items?: StickerItemPayload[];
 }
 
@@ -145,7 +149,7 @@ export interface CreateMessagePayload {
   embeds?: EmbedPayload[];
   allowed_mentions?: AllowedMentionsPayload;
   message_reference?: MessageReferencePayload;
-  // components: MessageComponentPayload[];
+  components: ComponentPayload[];
   sticker_ids?: string[];
 }
 
@@ -161,7 +165,7 @@ export interface EditMessagePayload {
   file?: AttachmentPayload | null;
   allowed_mentions?: AllowedMentionsPayload | null;
   attachments?: AttachmentPayload[] | null;
-  // components?: MessageComponentPayload[] | null;
+  components?: ComponentPayload[] | null;
 }
 
 export interface BulkDeleteMessagesPayload extends Reasonable {
