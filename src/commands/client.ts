@@ -12,12 +12,13 @@ import {
 import { parseArgs } from '../utils/command.ts'
 import { Extension, ExtensionsManager } from './extension.ts'
 
-type PrefixReturnType = string | string[] | Promise<string | string[]>
+type PrefixType = string | RegExp | Array<string | RegExp>
+type PrefixReturnType = PrefixType | Promise<PrefixType>
 
 /** Command Client options extending Client Options to provide a lot of Commands-related customizations */
 export interface CommandClientOptions extends ClientOptions {
-  /** Global prefix(s) of the bot. */
-  prefix: string | string[]
+  /** Global prefix(s) of the bot. Can be a string, a regular expression, or an array including either. */
+  prefix: PrefixType
   /** Whether to enable mention prefix or not. */
   mentionPrefix?: boolean
   /** Method to get a Guild's custom prefix(s). */
@@ -57,7 +58,7 @@ export type CommandContextMiddlewareNext = () => unknown | Promise<unknown>
  * See InteractionsClient (`Client#slash`) for more info about Slash Commands.
  */
 export class CommandClient extends Client implements CommandClientOptions {
-  prefix: string | string[]
+  prefix: PrefixType
   mentionPrefix: boolean
 
   getGuildPrefix: (guildID: string) => PrefixReturnType
@@ -167,20 +168,23 @@ export class CommandClient extends Client implements CommandClientOptions {
       if (isGuildBlacklisted) return
     }
 
-    let prefix: string | string[] = []
-    if (typeof this.prefix === 'string') prefix = [...prefix, this.prefix]
+    let prefix: PrefixType = []
+    if (typeof this.prefix === 'string' || this.prefix instanceof RegExp)
+      prefix = [...prefix, this.prefix]
     else prefix = [...prefix, ...this.prefix]
 
     const userPrefix = await this.getUserPrefix(msg.author.id)
     if (userPrefix !== undefined) {
-      if (typeof userPrefix === 'string') prefix = [...prefix, userPrefix]
+      if (typeof userPrefix === 'string' || userPrefix instanceof RegExp)
+        prefix = [...prefix, userPrefix]
       else prefix = [...prefix, ...userPrefix]
     }
 
     if (msg.guild !== undefined) {
       const guildPrefix = await this.getGuildPrefix(msg.guild.id)
       if (guildPrefix !== undefined) {
-        if (typeof guildPrefix === 'string') prefix = [...prefix, guildPrefix]
+        if (typeof guildPrefix === 'string' || guildPrefix instanceof RegExp)
+          prefix = [...prefix, guildPrefix]
         else prefix = [...prefix, ...guildPrefix]
       }
     }
@@ -189,9 +193,22 @@ export class CommandClient extends Client implements CommandClientOptions {
 
     let mentionPrefix = false
 
-    let usedPrefix = prefix
-      .filter((v) => msg.content.startsWith(v))
-      .sort((b, a) => a.length - b.length)[0]
+    const usedPrefixes = []
+    for (const p of prefix) {
+      if (typeof p === 'string') {
+        if (msg.content.startsWith(p)) {
+          usedPrefixes.push(p)
+        }
+      } else {
+        const match = msg.content.match(p)
+        // The regex matches and is at the start of the message
+        if (match !== null && match.index === 0) {
+          usedPrefixes.push(match[0])
+        }
+      }
+    }
+
+    let usedPrefix = usedPrefixes.sort((b, a) => a.length - b.length)[0]
     if (usedPrefix === undefined && this.mentionPrefix) mentionPrefix = true
 
     if (mentionPrefix) {
