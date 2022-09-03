@@ -68,7 +68,7 @@ export enum GatewayIntents {
   DIRECT_MESSAGES = 1 << 12,
   DIRECT_MESSAGE_REACTIONS = 1 << 13,
   DIRECT_MESSAGE_TYPING = 1 << 13,
-  MESSAGE_CONTENT = (1 << 15)
+  MESSAGE_CONTENT = 1 << 15
 }
 
 export enum GatewayEvents {
