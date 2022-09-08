@@ -61,11 +61,17 @@ export class Queue {
     resolve: () => void;
   }[] = [];
 
+  resetTime = 0;
+
   get length() {
     return this.#promises.length;
   }
 
   async wait() {
+    if (this.resetTime > Date.now()) {
+      await new Promise((r) => setTimeout(r, this.resetTime - Date.now()));
+    }
+
     const next = (this.#promises[this.#promises.length - 1]?.wait ??
       Promise.resolve());
 
@@ -96,9 +102,9 @@ export class Queue {
 export class HTTPClient implements HTTPClientOptions {
   tokenType?: TokenType;
   token?: string;
-  userAgent?: string;
-  baseURL?: string;
-  version?: number;
+  userAgent: string;
+  baseURL: string;
+  version: number;
   maxRetries = 5;
 
   private queue = new Map<string, Queue>();
@@ -106,21 +112,20 @@ export class HTTPClient implements HTTPClientOptions {
   constructor(options?: HTTPClientOptions) {
     if (options !== undefined) {
       if (
-        (this.token !== undefined && this.tokenType === undefined) ||
-        (this.token === undefined && this.tokenType !== undefined)
+        (options.token !== undefined && options.tokenType === undefined) ||
+        (options.token === undefined && options.tokenType !== undefined)
       ) {
         throw new TypeError(
           `Either tokenType and token both must be specified or neither of should be.`,
         );
       }
-
-      this.tokenType = options.tokenType;
-      this.token = options.token;
-      this.userAgent = options.userAgent;
-      this.baseURL = options.baseURL;
-      this.version = options.version;
-      this.maxRetries = options.maxRetries ?? this.maxRetries;
     }
+    this.tokenType = options?.tokenType;
+    this.token = options?.token;
+    this.userAgent = options?.userAgent ?? USER_AGENT;
+    this.baseURL = options?.baseURL ?? DISCORD_API_BASE;
+    this.version = options?.version ?? DISCORD_API_VERSION;
+    this.maxRetries = options?.maxRetries ?? this.maxRetries;
   }
 
   async request(
@@ -134,13 +139,13 @@ export class HTTPClient implements HTTPClientOptions {
 
     let response, error;
 
-    const execute = async (retries = 0) => {
+    const execute = async () => {
       await queue.wait();
 
       // Enqueue it and wait for the queue to be resolved.
       try {
         const headers: Record<string, string> = {
-          "user-agent": this.userAgent ?? USER_AGENT,
+          "user-agent": this.userAgent,
         };
 
         if (this.token !== undefined && this.tokenType !== undefined) {
@@ -157,7 +162,7 @@ export class HTTPClient implements HTTPClientOptions {
         ) {
           // It's multipart formdata.
           if (options?.body instanceof FormData) {
-            body = body;
+            body = options.body;
           } else {
             if (typeof options?.body === "object") {
               // It's a simple JSON body.
@@ -165,25 +170,26 @@ export class HTTPClient implements HTTPClientOptions {
                 options.body,
                 (_, v) => typeof v === "bigint" ? v.toString() : v,
               );
+              headers["content-type"] = "application/json";
             } else {
               // Default to empty body to avoid Cloudflare errors.
               body = "";
             }
-
-            headers["content-type"] = "application/json";
           }
         }
 
         const res = await fetch(
-          `${
-            this.baseURL ?? DISCORD_API_BASE
-          }/v${DISCORD_API_VERSION}${endpoint}`,
+          `${this.baseURL}/v${this.version}${endpoint}`,
           {
             method,
             headers,
             body,
           },
         );
+
+        if (res.headers.get("X-RateLimit-Remaining") === "0") {
+          queue.resetTime = Number(res.headers.get("X-RateLimit-Reset")) * 1000;
+        }
 
         if (res.ok) {
           response = await res.json();
@@ -199,13 +205,18 @@ export class HTTPClient implements HTTPClientOptions {
       }
     };
 
-    await execute();
-
-    if (typeof error !== "undefined") {
-      throw error;
+    let tries = 0;
+    while (tries < this.maxRetries) {
+      await execute();
+      if (error === undefined) {
+        return response;
+      } else {
+        tries++;
+        if (tries === this.maxRetries) {
+          throw error;
+        }
+      }
     }
-
-    return response;
   }
 
   [Symbol.for("Deno.customInspect")]() {
