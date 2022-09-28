@@ -37,6 +37,11 @@ export interface GuildTextBasedChannelPayload
   topic?: string
 }
 
+export enum ChannelFlags {
+  PINNED = 1 << 1,
+  REQUIRE_TAG = 1 << 4
+}
+
 export interface ThreadChannelPayload
   extends TextChannelPayload,
     GuildChannelPayload {
@@ -46,6 +51,9 @@ export interface ThreadChannelPayload
   thread_metadata: ThreadMetadataPayload
   rate_limit_per_user: number
   owner_id: string
+  total_message_sent: number
+  applied_tags?: string[]
+  flags: number
 }
 
 export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
@@ -62,6 +70,32 @@ export interface GuildVoiceChannelPayload extends GuildChannelPayload {
 
 export interface GuildStageChannelPayload
   extends Omit<GuildVoiceChannelPayload, 'video_quality_mode'> {}
+
+export interface GuildForumTagPayload {
+  id: string
+  name: string
+  moderated: boolean
+  emoji_id: string
+  emoji_name: string | null
+}
+
+export interface GuildForumDefaultReactionPayload {
+  emoji_id: string | null
+  emoji_name: string | null
+}
+
+export enum GuildForumSortOrderTypes {
+  LATEST_ACTIVITY = 0,
+  CREATION_DATE = 1
+}
+
+export interface GuildForumChannelPayload extends GuildChannelPayload {
+  default_thread_rate_limit_per_user: number
+  rate_limit_per_user: number
+  available_tags: GuildForumTagPayload[]
+  default_reaction_emoji: GuildForumDefaultReactionPayload | null
+  default_sort_order: GuildForumSortOrderTypes | null
+}
 
 export interface DMChannelPayload extends TextChannelPayload {
   recipients: UserPayload[]
@@ -194,7 +228,9 @@ export enum ChannelTypes {
   NEWS_THREAD = 10,
   PUBLIC_THREAD = 11,
   PRIVATE_THREAD = 12,
-  GUILD_STAGE_VOICE = 13
+  GUILD_STAGE_VOICE = 13,
+  GUILD_DIRECTORY = 14,
+  GUILD_FORUM = 15
 }
 
 export interface MessagePayload {
