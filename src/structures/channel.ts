@@ -202,7 +202,7 @@ export class GuildChannel extends Channel {
   /** Edit category of the channel */
   async setCategory(
     category: CategoryChannel | string
-  ): Promise<GuildTextBasedChannel> {
+  ): Promise<GuildChannels> {
     return await this.edit({
       parentID: typeof category === 'object' ? category.id : category
     })

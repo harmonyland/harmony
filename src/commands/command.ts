@@ -631,9 +631,9 @@ export class CommandsManager {
 
   /** Delete a Command */
   delete(cmd: string | Command): boolean {
-    const find = typeof cmd === 'string' ? this.find(cmd) : cmd
-    if (find === undefined) return false
-    else return this.list.delete(find.name)
+    const search = this.filter(typeof cmd === 'string' ? cmd : cmd.name)
+    if (search.size === 0) return false
+    else return this.list.delete([...search.keys()][0])
   }
 
   /** Check whether a Command is disabled or not */
