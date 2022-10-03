@@ -1,3 +1,4 @@
+import type { Guild } from '../../mod.ts'
 import type { Client } from '../client/mod.ts'
 import { Emoji } from '../structures/emoji.ts'
 import type { EmojiPayload } from '../types/emoji.ts'
@@ -31,5 +32,21 @@ export class EmojisManager extends BaseManager<EmojiPayload, Emoji> {
         })
         .catch((e) => reject(e))
     })
+  }
+
+  /** Try to get Emoji from cache, if not found then fetch */
+  async resolve(
+    key: string,
+    guild?: string | Guild
+  ): Promise<Emoji | undefined> {
+    const cacheValue = await this.get(key)
+    if (cacheValue !== undefined) return cacheValue
+    else {
+      if (guild !== undefined) {
+        const guildID = typeof guild === 'string' ? guild : guild.id
+        const fetchValue = await this.fetch(guildID, key).catch(() => undefined)
+        if (fetchValue !== undefined) return fetchValue
+      }
+    }
   }
 }
