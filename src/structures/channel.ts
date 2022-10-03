@@ -46,6 +46,7 @@ import type { ThreadChannel } from '../structures/threadChannel.ts'
 
 export class Channel extends SnowflakeBase {
   type!: ChannelTypes
+  flags!: number
 
   static cacheName = 'channel'
 
@@ -61,6 +62,7 @@ export class Channel extends SnowflakeBase {
   readFromData(data: ChannelPayload): void {
     this.type = data.type ?? this.type
     this.id = data.id ?? this.id
+    this.flags = data.flags ?? this.flags
   }
 
   isDM(): this is DMChannel {

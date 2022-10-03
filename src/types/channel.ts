@@ -15,6 +15,7 @@ import type {
 export interface ChannelPayload {
   id: string
   type: ChannelTypes
+  flags: number
 }
 
 export interface TextChannelPayload extends ChannelPayload {
@@ -53,7 +54,6 @@ export interface ThreadChannelPayload
   owner_id: string
   total_message_sent: number
   applied_tags?: string[]
-  flags: number
 }
 
 export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
