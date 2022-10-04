@@ -11,6 +11,8 @@ import type {
   MessageComponentData,
   MessageComponentPayload
 } from './messageComponents.ts'
+import type { Emoji } from '../structures/emoji.ts'
+import type { GuildForumTag } from '../structures/guildForumChannel.ts'
 
 export interface ChannelPayload {
   id: string
@@ -58,6 +60,8 @@ export interface ThreadChannelPayload
 
 export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
   rate_limit_per_user: number
+  default_thread_rate_limit_per_user: number
+  default_auto_archive_duration: number
 }
 
 export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
@@ -89,9 +93,7 @@ export enum GuildForumSortOrderTypes {
   CREATION_DATE = 1
 }
 
-export interface GuildForumChannelPayload extends GuildChannelPayload {
-  default_thread_rate_limit_per_user: number
-  rate_limit_per_user: number
+export interface GuildForumChannelPayload extends GuildTextChannelPayload {
   available_tags: GuildForumTagPayload[]
   default_reaction_emoji: GuildForumDefaultReactionPayload | null
   default_sort_order: GuildForumSortOrderTypes | null
@@ -131,6 +133,8 @@ export interface ModifyGuildTextBasedChannelPayload
 export interface ModifyGuildTextChannelPayload
   extends ModifyGuildTextBasedChannelPayload {
   rate_limit_per_user?: number | null
+  default_thread_rate_limit_per_user?: number | null
+  default_auto_archive_duration?: number | null
 }
 
 export interface ModifyThreadChannelPayload
@@ -146,6 +150,13 @@ export interface ModifyGuildNewsChannelPayload
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
   user_limit?: number | null
+}
+
+export interface ModifyGuildForumChannelPayload
+  extends ModifyGuildTextChannelPayload {
+  default_reaction_emoji?: GuildForumDefaultReactionPayload | null
+  default_sort_order?: GuildForumSortOrderTypes | null
+  available_tags?: GuildForumTagPayload[] | null
 }
 
 export interface ModifyChannelOption {
@@ -166,6 +177,8 @@ export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
 export interface ModifyGuildTextChannelOption
   extends ModifyGuildTextBasedChannelOption {
   slowmode?: number | null
+  defaultThreadSlowmode?: number | null
+  defaultAutoArchiveDuration?: number | null
 }
 
 export interface ModifyThreadChannelOption
@@ -181,6 +194,13 @@ export interface ModifyGuildNewsChannelOption
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
   userLimit?: number | null
+}
+
+export interface ModifyGuildForumChannelOption
+  extends ModifyGuildTextChannelOption {
+  defaultReactionEmoji?: Emoji | GuildForumDefaultReactionPayload | null
+  defaultSortOrder?: GuildForumSortOrderTypes | null
+  availableTags?: GuildForumTag[] | GuildForumTagPayload[] | null
 }
 
 export enum OverwriteType {
