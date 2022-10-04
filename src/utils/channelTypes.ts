@@ -74,7 +74,8 @@ export function isGuildChannel(channel: Channel): channel is GuildChannel {
     channel.type === ChannelTypes.GUILD_STAGE_VOICE ||
     channel.type === ChannelTypes.NEWS_THREAD ||
     channel.type === ChannelTypes.PRIVATE_THREAD ||
-    channel.type === ChannelTypes.PUBLIC_THREAD
+    channel.type === ChannelTypes.PUBLIC_THREAD ||
+    channel.type === ChannelTypes.GUILD_FORUM
   )
 }
 

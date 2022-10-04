@@ -10,7 +10,6 @@ import type {
   ModifyGuildTextChannelOption,
   ModifyGuildTextChannelPayload
 } from '../types/channel.ts'
-import { ChannelTypes } from '../types/channel.ts'
 import type { Guild } from './guild.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import type { Message } from './message.ts'
@@ -19,11 +18,6 @@ import type { Invite } from './invite.ts'
 import type { CategoryChannel } from './guildCategoryChannel.ts'
 import type { ThreadChannel, ThreadMember } from './threadChannel.ts'
 import { ChannelThreadsManager } from '../managers/channelThreads.ts'
-
-const GUILD_TEXT_BASED_CHANNEL_TYPES: ChannelTypes[] = [
-  ChannelTypes.GUILD_TEXT,
-  ChannelTypes.GUILD_NEWS
-]
 
 export interface CreateThreadOptions {
   /** 2-100 character channel name */
@@ -133,13 +127,10 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
   }
 }
 
-export const checkGuildTextBasedChannel = (
-  channel: TextChannel
-): channel is GuildTextBasedChannel =>
-  GUILD_TEXT_BASED_CHANNEL_TYPES.includes(channel.type)
-
 export class GuildTextChannel extends GuildTextBasedChannel {
   slowmode!: number
+  defaultThreadSlowmode!: number
+  defaultAutoArchiveDuration!: number
   threads: ChannelThreadsManager
 
   constructor(client: Client, data: GuildTextChannelPayload, guild: Guild) {
@@ -155,6 +146,10 @@ export class GuildTextChannel extends GuildTextBasedChannel {
   readFromData(data: GuildTextChannelPayload): void {
     super.readFromData(data)
     this.slowmode = data.rate_limit_per_user ?? this.slowmode
+    this.defaultThreadSlowmode =
+      data.default_thread_rate_limit_per_user ?? this.defaultThreadSlowmode
+    this.defaultAutoArchiveDuration =
+      data.default_auto_archive_duration ?? this.defaultAutoArchiveDuration
   }
 
   /** Edit the Guild Text Channel */
@@ -168,7 +163,9 @@ export class GuildTextChannel extends GuildTextBasedChannel {
       parent_id: options?.parentID,
       nsfw: options?.nsfw,
       topic: options?.topic,
-      rate_limit_per_user: options?.slowmode
+      rate_limit_per_user: options?.slowmode,
+      default_auto_archive_duration: options?.defaultAutoArchiveDuration,
+      default_thread_rate_limit_per_user: options?.defaultThreadSlowmode
     }
 
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
@@ -179,6 +176,20 @@ export class GuildTextChannel extends GuildTextBasedChannel {
   /** Edit Slowmode of the channel */
   async setSlowmode(slowmode?: number | null): Promise<GuildTextChannel> {
     return await this.edit({ slowmode: slowmode ?? null })
+  }
+
+  /** Edit Default Slowmode of the threads in the channel */
+  async setDefaultThreadSlowmode(
+    slowmode?: number | null
+  ): Promise<GuildTextChannel> {
+    return await this.edit({ defaultThreadSlowmode: slowmode ?? null })
+  }
+
+  /** Edit Default Auto Archive Duration of threads */
+  async setDefaultAutoArchiveDuration(
+    slowmode?: number | null
+  ): Promise<GuildTextChannel> {
+    return await this.edit({ defaultAutoArchiveDuration: slowmode ?? null })
   }
 
   async startThread(
