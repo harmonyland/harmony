@@ -89,6 +89,9 @@ export class ThreadChannel extends GuildTextBasedChannel {
   members: ThreadMembersManager
   slowmode: number = 0
   owner!: UserResolvable
+  totalMessageSent!: number
+  // currently there's no way to grab the tag by id
+  appliedTags: string[] = []
 
   constructor(client: Client, data: ThreadChannelPayload, guild: Guild) {
     super(client, data, guild)
@@ -106,6 +109,8 @@ export class ThreadChannel extends GuildTextBasedChannel {
         : undefined
     this.slowmode = data.rate_limit_per_user ?? this.slowmode
     this.owner = new UserResolvable(this.client, data.owner_id) ?? this.owner
+    this.totalMessageSent = data.total_message_sent ?? this.totalMessageSent
+    this.appliedTags = data.applied_tags ?? this.appliedTags
   }
 
   readFromData(data: ThreadChannelPayload): this {

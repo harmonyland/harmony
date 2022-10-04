@@ -87,8 +87,7 @@ export { Snowflake } from './src/utils/snowflake.ts'
 export { TextChannel } from './src/structures/textChannel.ts'
 export {
   GuildTextBasedChannel,
-  GuildTextChannel,
-  checkGuildTextBasedChannel
+  GuildTextChannel
 } from './src/structures/guildTextChannel.ts'
 export type { AllMessageOptions } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
