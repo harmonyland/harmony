@@ -30,14 +30,6 @@ export interface CreateThreadOptions {
 export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
   topic?: string
 
-  get mention(): string {
-    return `<#${this.id}>`
-  }
-
-  toString(): string {
-    return this.mention
-  }
-
   constructor(
     client: Client,
     data: GuildTextBasedChannelPayload,

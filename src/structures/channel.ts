@@ -54,6 +54,10 @@ export class Channel extends SnowflakeBase {
     return `<#${this.id}>`
   }
 
+  toString(): string {
+    return this.mention
+  }
+
   constructor(client: Client, data: ChannelPayload) {
     super(client, data)
     this.readFromData(data)
