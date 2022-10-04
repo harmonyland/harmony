@@ -36,8 +36,14 @@ export interface GuildChannelPayload extends ChannelPayload {
 
 export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
-    GuildChannelPayload {
+    GuildChannelPayload {}
+
+export interface GuildThreadAvailableChannelPayload
+  extends GuildChannelPayload {
   topic?: string
+  rate_limit_per_user: number
+  default_thread_rate_limit_per_user?: number
+  default_auto_archive_duration?: number
 }
 
 export enum ChannelFlags {
@@ -58,13 +64,13 @@ export interface ThreadChannelPayload
   applied_tags?: string[]
 }
 
-export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
-  rate_limit_per_user: number
-  default_thread_rate_limit_per_user: number
-  default_auto_archive_duration: number
-}
+export interface GuildTextChannelPayload
+  extends GuildTextBasedChannelPayload,
+    GuildThreadAvailableChannelPayload {}
 
-export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
+export interface GuildNewsChannelPayload
+  extends GuildTextBasedChannelPayload,
+    GuildThreadAvailableChannelPayload {}
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -93,7 +99,8 @@ export enum GuildForumSortOrderTypes {
   CREATION_DATE = 1
 }
 
-export interface GuildForumChannelPayload extends GuildTextChannelPayload {
+export interface GuildForumChannelPayload
+  extends GuildThreadAvailableChannelPayload {
   available_tags: GuildForumTagPayload[]
   default_reaction_emoji: GuildForumDefaultReactionPayload | null
   default_sort_order: GuildForumSortOrderTypes | null
@@ -127,15 +134,19 @@ export interface ModifyGuildCategoryChannelPayload
 export interface ModifyGuildTextBasedChannelPayload
   extends ModifyChannelPayload {
   type?: number
-  topic?: string | null
 }
 
-export interface ModifyGuildTextChannelPayload
-  extends ModifyGuildTextBasedChannelPayload {
+export interface ModifyGuildThreadAvailableChannelPayload
+  extends ModifyChannelPayload {
+  topic?: string | null
   rate_limit_per_user?: number | null
   default_thread_rate_limit_per_user?: number | null
   default_auto_archive_duration?: number | null
 }
+
+export interface ModifyGuildTextChannelPayload
+  extends ModifyGuildTextBasedChannelPayload,
+    ModifyGuildThreadAvailableChannelPayload {}
 
 export interface ModifyThreadChannelPayload
   extends ModifyGuildTextBasedChannelPayload {
@@ -145,7 +156,8 @@ export interface ModifyThreadChannelPayload
 }
 
 export interface ModifyGuildNewsChannelPayload
-  extends ModifyGuildTextBasedChannelPayload {}
+  extends ModifyGuildTextBasedChannelPayload,
+    ModifyGuildThreadAvailableChannelPayload {}
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
@@ -153,7 +165,7 @@ export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
 }
 
 export interface ModifyGuildForumChannelPayload
-  extends ModifyGuildTextChannelPayload {
+  extends ModifyGuildThreadAvailableChannelPayload {
   default_reaction_emoji?: GuildForumDefaultReactionPayload | null
   default_sort_order?: GuildForumSortOrderTypes | null
   available_tags?: GuildForumTagPayload[] | null
@@ -171,15 +183,19 @@ export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
 
 export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
-  topic?: string | null
 }
 
-export interface ModifyGuildTextChannelOption
-  extends ModifyGuildTextBasedChannelOption {
+export interface ModifyGuildThreadAvailableChannelOption
+  extends ModifyChannelOption {
+  topic?: string | null
   slowmode?: number | null
   defaultThreadSlowmode?: number | null
   defaultAutoArchiveDuration?: number | null
 }
+
+export interface ModifyGuildTextChannelOption
+  extends ModifyGuildTextBasedChannelOption,
+    ModifyGuildThreadAvailableChannelOption {}
 
 export interface ModifyThreadChannelOption
   extends ModifyGuildTextChannelOption {
@@ -189,7 +205,8 @@ export interface ModifyThreadChannelOption
 }
 
 export interface ModifyGuildNewsChannelOption
-  extends ModifyGuildTextBasedChannelOption {}
+  extends ModifyGuildTextBasedChannelOption,
+    ModifyGuildThreadAvailableChannelOption {}
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
@@ -197,7 +214,7 @@ export interface ModifyVoiceChannelOption extends ModifyChannelOption {
 }
 
 export interface ModifyGuildForumChannelOption
-  extends ModifyGuildTextChannelOption {
+  extends ModifyGuildThreadAvailableChannelOption {
   defaultReactionEmoji?: Emoji | GuildForumDefaultReactionPayload | null
   defaultSortOrder?: GuildForumSortOrderTypes | null
   availableTags?: GuildForumTag[] | GuildForumTagPayload[] | null
