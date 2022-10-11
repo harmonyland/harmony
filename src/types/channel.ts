@@ -603,5 +603,18 @@ export interface CreateThreadPayload {
   /** 2-100 character channel name */
   name: string
   /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
-  auto_archive_duration: number
+  auto_archive_duration?: number
+  rate_limit_per_user?: number | null
+  type?: ChannelTypes
+  invitable?: boolean
+}
+
+export interface CreateThreadInForumPayload {
+  /** 2-100 character channel name */
+  name: string
+  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  auto_archive_duration?: number
+  rate_limit_per_user?: number | null
+  message: CreateMessagePayload
+  applied_tags?: string[]
 }

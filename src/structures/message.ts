@@ -16,7 +16,6 @@ import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
 import type { TextChannel } from './textChannel.ts'
 import type {
-  CreateThreadOptions,
   GuildTextBasedChannel,
   GuildTextChannel
 } from './guildTextChannel.ts'
@@ -29,6 +28,7 @@ import { encodeText } from '../utils/encoding.ts'
 import { MessageComponentData } from '../types/messageComponents.ts'
 import { transformComponentPayload } from '../utils/components.ts'
 import type { ThreadChannel } from './threadChannel.ts'
+import { CreateThreadOptions } from './guildThreadAvailableChannel.ts'
 
 type AllMessageOptions = MessageOptions | Embed
 

@@ -1,15 +1,32 @@
 import { Client } from '../client/client.ts'
+import type { AllMessageOptions } from '../managers/channels.ts'
 import {
+  CreateThreadInForumPayload,
   GuildForumChannelPayload,
   GuildForumSortOrderTypes,
   GuildForumTagPayload,
   ModifyGuildForumChannelOption,
-  ModifyGuildForumChannelPayload
+  ModifyGuildForumChannelPayload,
+  ThreadChannelPayload
 } from '../types/channel.ts'
 import { CHANNEL } from '../types/endpoint.ts'
+import { transformComponent } from '../utils/components.ts'
+import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
 import { Guild } from './guild.ts'
 import { GuildThreadAvailableChannel } from './guildThreadAvailableChannel.ts'
+import { Message } from './message.ts'
+import { ThreadChannel } from './threadChannel.ts'
+
+export interface CreateThreadInForumOptions {
+  /** 2-100 character channel name */
+  name: string
+  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  autoArchiveDuration?: number
+  slowmode?: number | null
+  message: string | AllMessageOptions
+  appliedTags?: string[] | GuildForumTag[]
+}
 
 export class GuildForumTag {
   id!: string
@@ -99,5 +116,75 @@ export class GuildForumChannel extends GuildThreadAvailableChannel {
     const resp = await this.client.rest.patch(CHANNEL(this.id), body)
 
     return new GuildForumChannel(this.client, resp, this.guild)
+  }
+
+  override async startThread(
+    options: CreateThreadInForumOptions,
+    message?: string | AllMessageOptions | Message
+  ): Promise<ThreadChannel> {
+    if (options.message !== undefined) {
+      message = options.message
+    }
+    if (message instanceof Message) {
+      message = {
+        content: message.content,
+        embeds: message.embeds.map((embed) => new Embed(embed)),
+        components: message.components
+      }
+    } else if (message instanceof Embed) {
+      message = {
+        embed: message
+      }
+    } else if (Array.isArray(message)) {
+      message = {
+        embeds: message
+      }
+    } else if (typeof message === 'string') {
+      message = {
+        content: message
+      }
+    }
+
+    const messageObject = {
+      content: message?.content,
+      embed: message?.embed,
+      embeds: message?.embeds,
+      file: message?.file,
+      files: message?.files,
+      allowed_mentions: message?.allowedMentions,
+      components:
+        message?.components !== undefined
+          ? typeof message.components === 'function'
+            ? message.components()
+            : transformComponent(message.components)
+          : undefined
+    }
+
+    if (
+      messageObject.content === undefined &&
+      messageObject.embed === undefined
+    ) {
+      messageObject.content = ''
+    }
+
+    const body: CreateThreadInForumPayload = {
+      name: options.name,
+      auto_archive_duration: options.autoArchiveDuration,
+      rate_limit_per_user: options.slowmode,
+      message: messageObject,
+      applied_tags: options.appliedTags?.map((tag) => {
+        if (tag instanceof GuildForumTag) {
+          return tag.id
+        }
+        return tag
+      })
+    }
+
+    const resp: ThreadChannelPayload = await this.client.rest.api.channels[
+      this.id
+    ].threads.post(body)
+    const thread = new ThreadChannel(this.client, resp, this.guild)
+    this.threads.set(thread.id, resp)
+    return thread
   }
 }

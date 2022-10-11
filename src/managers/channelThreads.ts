@@ -6,9 +6,11 @@ import type {
   ThreadChannel,
   ThreadMember
 } from '../structures/threadChannel.ts'
-import type { CreateThreadOptions } from '../structures/guildTextChannel.ts'
 import type { BaseManager, Message } from '../../mod.ts'
-import type { GuildThreadAvailableChannel } from '../structures/guildThreadAvailableChannel.ts'
+import type {
+  CreateThreadOptions,
+  GuildThreadAvailableChannel
+} from '../structures/guildThreadAvailableChannel.ts'
 
 export class ChannelThreadsManager extends BaseChildManager<
   ThreadChannelPayload,
@@ -58,7 +60,7 @@ export class ChannelThreadsManager extends BaseChildManager<
 
   async start(
     options: CreateThreadOptions,
-    message: string | Message
+    message?: string | Message
   ): Promise<ThreadChannel> {
     return this.channel.startThread(options, message)
   }

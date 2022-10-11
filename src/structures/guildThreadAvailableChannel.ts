@@ -1,6 +1,8 @@
+import { AllMessageOptions } from '../../mod.ts'
 import { Client } from '../client/client.ts'
 import { ChannelThreadsManager } from '../managers/channelThreads.ts'
 import {
+  ChannelTypes,
   GuildThreadAvailableChannelPayload,
   ModifyGuildThreadAvailableChannelOption,
   ModifyGuildThreadAvailableChannelPayload
@@ -8,9 +10,18 @@ import {
 import { CHANNEL } from '../types/endpoint.ts'
 import { GuildChannel } from './channel.ts'
 import { Guild } from './guild.ts'
-import { CreateThreadOptions } from './guildTextChannel.ts'
 import { Message } from './message.ts'
 import { ThreadChannel, ThreadMember } from './threadChannel.ts'
+
+export interface CreateThreadOptions {
+  /** 2-100 character channel name */
+  name: string
+  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  autoArchiveDuration?: number
+  slowmode?: number | null
+  type?: ChannelTypes
+  invitable?: boolean
+}
 
 export class GuildThreadAvailableChannel extends GuildChannel {
   topic?: string
@@ -91,13 +102,26 @@ export class GuildThreadAvailableChannel extends GuildChannel {
 
   async startThread(
     options: CreateThreadOptions,
-    message: Message | string
+    message?: Message | string
   ): Promise<ThreadChannel> {
-    const payload = await this.client.rest.endpoints.startPublicThread(
-      this.id,
-      typeof message === 'string' ? message : message.id,
-      { name: options.name, auto_archive_duration: options.autoArchiveDuration }
-    )
+    const payload =
+      message !== undefined
+        ? await this.client.rest.endpoints.startPublicThreadFromMessage(
+            this.id,
+            typeof message === 'string' ? message : message.id,
+            {
+              name: options.name,
+              auto_archive_duration: options.autoArchiveDuration,
+              rate_limit_per_user: options.slowmode
+            }
+          )
+        : await this.client.rest.endpoints.startThreadWithoutMessage(this.id, {
+            name: options.name,
+            auto_archive_duration: options.autoArchiveDuration,
+            rate_limit_per_user: options.slowmode,
+            invitable: options.invitable,
+            type: options.type
+          })
     await this.client.channels.set(payload.id, payload)
     return (await this.client.channels.get<ThreadChannel>(payload.id))!
   }

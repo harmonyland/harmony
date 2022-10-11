@@ -12,13 +12,6 @@ import { CHANNEL } from '../types/endpoint.ts'
 import type { Message } from './message.ts'
 import { GuildThreadAvailableChannel } from './guildThreadAvailableChannel.ts'
 
-export interface CreateThreadOptions {
-  /** 2-100 character channel name */
-  name: string
-  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
-  autoArchiveDuration: number
-}
-
 /** Represents a Text Channel but in a Guild */
 export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
   constructor(
