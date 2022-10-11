@@ -18,6 +18,7 @@ export class Permissions extends BitField {
 
   any(permission: PermissionResolvable, checkAdmin = true): boolean {
     return (
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       (checkAdmin && super.has(this.flags().ADMINISTRATOR)) ||
       super.any(permission)
     )
@@ -25,6 +26,7 @@ export class Permissions extends BitField {
 
   has(permission: PermissionResolvable, checkAdmin = true): boolean {
     return (
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       (checkAdmin && super.has(this.flags().ADMINISTRATOR)) ||
       super.has(permission)
     )

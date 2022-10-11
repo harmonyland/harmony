@@ -39,7 +39,7 @@ export class GuildForumTag {
     this.readFromData(data)
   }
 
-  readFromData(data: GuildForumTagPayload) {
+  readFromData(data: GuildForumTagPayload): void {
     this.id = data.id ?? this.id
     this.name = data.name ?? this.name
     this.moderated = data.moderated ?? this.moderated
@@ -63,12 +63,13 @@ export class GuildForumChannel extends GuildThreadAvailableChannel {
     this.availableTags =
       data.available_tags?.map((tag) => new GuildForumTag(tag)) ??
       this.availableTags
-    this.defaultReactionEmoji = data.default_reaction_emoji
-      ? new Emoji(this.client, {
-          id: data.default_reaction_emoji.emoji_id,
-          name: data.default_reaction_emoji.emoji_name
-        })
-      : this.defaultReactionEmoji
+    this.defaultReactionEmoji =
+      data.default_reaction_emoji !== null
+        ? new Emoji(this.client, {
+            id: data.default_reaction_emoji.emoji_id,
+            name: data.default_reaction_emoji.emoji_name
+          })
+        : this.defaultReactionEmoji
     this.defaultSortOrder = data.default_sort_order ?? this.defaultSortOrder
   }
 

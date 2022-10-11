@@ -1397,7 +1397,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
     channelId: string,
     payload: CreateThreadPayload
   ): Promise<ThreadChannelPayload> {
-    return this.startThreadWithoutMessage(channelId, payload)
+    return await this.startThreadWithoutMessage(channelId, payload)
   }
 
   /**

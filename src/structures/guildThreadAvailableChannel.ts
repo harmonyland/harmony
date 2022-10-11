@@ -1,4 +1,3 @@
-import { AllMessageOptions } from '../../mod.ts'
 import { Client } from '../client/client.ts'
 import { ChannelThreadsManager } from '../managers/channelThreads.ts'
 import {
