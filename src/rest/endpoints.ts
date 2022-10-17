@@ -1379,6 +1379,22 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
     )
   }
 
+  // Exist for backwards compatibility
+  /**
+   * Creates a new public thread from an existing message. Returns a channel on success, and a 400 BAD REQUEST on invalid parameters. Fires a Thread Create Gateway event.
+   */
+  async startPublicThread(
+    channelId: string,
+    messageId: string,
+    payload: CreateThreadPayload
+  ): Promise<ThreadChannelPayload> {
+    return await this.startPublicThreadFromMessage(
+      channelId,
+      messageId,
+      payload
+    )
+  }
+
   /**
    * Creates a new thread from an existing message. Returns a channel on success, and a 400 BAD REQUEST on invalid parameters. Fires a Thread Create Gateway event.
    */
