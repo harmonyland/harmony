@@ -30,8 +30,7 @@ export interface GatewayGuildMemberAddPayload extends GuildMemberPayload {
   guild_id: string;
 }
 
-export interface GatewayGuildMemberRemovePayload
-  extends GatewayGuildMemberAddPayload {
+export interface GatewayGuildMemberRemovePayload {
   user: UserPayload;
 }
 
