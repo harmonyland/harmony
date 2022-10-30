@@ -1,6 +1,6 @@
 import { Endpoint } from "../../../types/src/endpoints.ts";
 
-const CHANNELS_OR_GUILDS_BUCKET_REGEX = /\/(channels|guilds)\/\d{15,20}/;
+const CHANNELS_OR_GUILDS_BUCKET_REGEX = /\/(channels|guilds)\/\d{15,20}/g;
 
 /**
  * Based on https://discord.com/developers/docs/topics/rate-limits#rate-limits

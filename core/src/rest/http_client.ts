@@ -137,8 +137,6 @@ export class HTTPClient implements HTTPClientOptions {
     const queue = this.queue.get(bucket) ??
       (this.queue.set(bucket, new Queue()), this.queue.get(bucket)!);
 
-    let response, error;
-
     const execute = async () => {
       await queue.wait();
 
@@ -188,18 +186,30 @@ export class HTTPClient implements HTTPClientOptions {
         );
 
         if (res.headers.get("X-RateLimit-Remaining") === "0") {
-          queue.resetTime = Number(res.headers.get("X-RateLimit-Reset")) * 1000;
+          queue.resetTime =
+            Number(res.headers.get("X-RateLimit-Reset")) * 1000 + 5; // add a little bit of delay to avoid 429s
         }
 
         if (res.ok) {
-          response = await res.json();
+          return await res.json();
         } else if (res.status >= 500 && res.status < 600) {
+          await res.body?.cancel();
           throw new Error(
             `Discord API Internal Server Error (${res.status})`,
           );
+        } else if (res.status >= 400 && res.status < 500) {
+          await res.body?.cancel();
+          throw new Error(
+            `Discord API Error (${res.status})`,
+          );
+        } else {
+          await res.body?.cancel();
+          throw new Error(
+            `What in the world is this code? (${res.status})`,
+          );
         }
       } catch (e) {
-        error = e;
+        throw e;
       } finally {
         queue.shift();
       }
@@ -207,10 +217,9 @@ export class HTTPClient implements HTTPClientOptions {
 
     let tries = 0;
     while (tries < this.maxRetries) {
-      await execute();
-      if (error === undefined) {
-        return response;
-      } else {
+      try {
+        await execute();
+      } catch (error) {
         tries++;
         if (tries === this.maxRetries) {
           throw error;
