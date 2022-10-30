@@ -25,7 +25,7 @@ export interface GuildPayload {
   afk_timeout: number;
   widget_enabled: boolean;
   widget_channel_id?: string | null;
-  verification_level: number;
+  verification_level: VerificationLevel;
   default_message_notifications: DefaultMessageNotificationLevel;
   explicit_content_filter: ExplicitContentFilterLevel;
   roles: RolePayload[];

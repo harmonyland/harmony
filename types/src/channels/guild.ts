@@ -34,7 +34,7 @@ export interface GuildTextChannelPayload
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-guild-news-channel */
-export type GuildNewsChannelPayload = GuildTextChannelPayload;
+export type GuildAnnouncementChannelPayload = GuildTextChannelPayload;
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes */
 export enum VideoQualityModes {
@@ -53,8 +53,11 @@ export interface GuildVoiceChannelPayload extends GuildChannelPayload {
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-channel-category */
 export type CategoryPayload = GuildChannelPayload;
 
-/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-store-channel */
-export type GuildStoreChannel = GuildChannelPayload;
+export interface GuildStageChannelPayload extends GuildChannelPayload {
+  bitrate: number;
+  user_limit: number;
+  rtc_region: string | null;
+}
 
 /** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-guild-channel */
 export interface EditGuildChannelPayload extends Reasonable {
@@ -63,13 +66,10 @@ export interface EditGuildChannelPayload extends Reasonable {
   permission_overwrites?: OverwritePayload[] | null;
 }
 
-export interface EditGuildStoreChannelPayload extends EditGuildChannelPayload {
+export interface EditGuildAnnouncementChannelPayload
+  extends EditGuildChannelPayload {
   nsfw?: boolean | null;
   parent_id?: string | null;
-}
-
-export interface EditGuildNewsChannelPayload
-  extends EditGuildStoreChannelPayload {
   type?: ChannelType;
   topic?: string | null;
   /** Duration in minute */
@@ -77,7 +77,7 @@ export interface EditGuildNewsChannelPayload
 }
 
 export interface EditGuildTextChannelPayload
-  extends EditGuildNewsChannelPayload {
+  extends EditGuildAnnouncementChannelPayload {
   /** Duration in second */
   rate_limit_per_user?: number | null;
 }
