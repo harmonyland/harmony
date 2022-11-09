@@ -30,9 +30,9 @@ export interface CommandClientOptions extends ClientOptions {
   /** Method to check if certain Guild is blacklisted from using Commands. */
   isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   /** Method to check if certain User is blacklisted from using Commands. */
-  isUserBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  isUserBlacklisted?: (userdID: string) => boolean | Promise<boolean>
   /** Method to check if certain Channel is blacklisted from using Commands. */
-  isChannelBlacklisted?: (guildID: string) => boolean | Promise<boolean>
+  isChannelBlacklisted?: (channelID: string) => boolean | Promise<boolean>
   /** Allow spaces after prefix? Recommended with Mention Prefix ON. */
   spacesAfterPrefix?: boolean
   /** List of Bot's Owner IDs whom can access `ownerOnly` commands. */
@@ -66,8 +66,8 @@ export class CommandClient extends Client implements CommandClientOptions {
   getChannelPrefix: (channelID: string) => PrefixReturnType
 
   isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>
-  isUserBlacklisted: (guildID: string) => boolean | Promise<boolean>
-  isChannelBlacklisted: (guildID: string) => boolean | Promise<boolean>
+  isUserBlacklisted: (userdID: string) => boolean | Promise<boolean>
+  isChannelBlacklisted: (channelID: string) => boolean | Promise<boolean>
 
   spacesAfterPrefix: boolean
   owners: string[]
