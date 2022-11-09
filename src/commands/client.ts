@@ -66,7 +66,7 @@ export class CommandClient extends Client implements CommandClientOptions {
   getChannelPrefix: (channelID: string) => PrefixReturnType
 
   isGuildBlacklisted: (guildID: string) => boolean | Promise<boolean>
-  isUserBlacklisted: (userdID: string) => boolean | Promise<boolean>
+  isUserBlacklisted: (userID: string) => boolean | Promise<boolean>
   isChannelBlacklisted: (channelID: string) => boolean | Promise<boolean>
 
   spacesAfterPrefix: boolean
