@@ -30,7 +30,7 @@ export interface CommandClientOptions extends ClientOptions {
   /** Method to check if certain Guild is blacklisted from using Commands. */
   isGuildBlacklisted?: (guildID: string) => boolean | Promise<boolean>
   /** Method to check if certain User is blacklisted from using Commands. */
-  isUserBlacklisted?: (userdID: string) => boolean | Promise<boolean>
+  isUserBlacklisted?: (userID: string) => boolean | Promise<boolean>
   /** Method to check if certain Channel is blacklisted from using Commands. */
   isChannelBlacklisted?: (channelID: string) => boolean | Promise<boolean>
   /** Allow spaces after prefix? Recommended with Mention Prefix ON. */
