@@ -8,12 +8,12 @@ import {
   EveryChannelTypes,
   ChannelTypes,
   GuildTextChannel,
-  checkGuildTextBasedChannel,
   Permissions,
   Collector,
   MessageAttachment,
   OverrideType,
-  ColorUtil
+  ColorUtil,
+  isGuildBasedTextChannel
 } from '../mod.ts'
 // import { TOKEN } from './config.ts'
 
@@ -219,7 +219,7 @@ client.on('messageCreate', async (msg: Message) => {
     vs.channel?.join()
   } else if (msg.content === '!getOverwrites') {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!checkGuildTextBasedChannel(msg.channel)) {
+    if (!isGuildBasedTextChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -251,7 +251,7 @@ client.on('messageCreate', async (msg: Message) => {
     msg.channel.send(`Your permissions:\n${permissions.toArray().join('\n')}`)
   } else if (msg.content === '!addBasicOverwrites') {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!checkGuildTextBasedChannel(msg.channel)) {
+    if (!isGuildBasedTextChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     if (msg.member !== undefined) {
@@ -263,7 +263,7 @@ client.on('messageCreate', async (msg: Message) => {
     }
   } else if (msg.content === '!updateBasicOverwrites') {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!checkGuildTextBasedChannel(msg.channel)) {
+    if (!isGuildBasedTextChannel(msg.channel)) {
       return msg.channel.send("This isn't a guild text channel!")
     }
     if (msg.member !== undefined) {

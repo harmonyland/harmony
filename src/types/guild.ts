@@ -8,6 +8,7 @@ import type {
   GuildTextChannel,
   GuildTextBasedChannel
 } from '../structures/guildTextChannel.ts'
+import type { GuildForumChannel } from '../structures/guildForumChannel.ts'
 import type { ApplicationPayload } from './application.ts'
 import type {
   ChannelPayload,
@@ -18,7 +19,8 @@ import type {
   GuildTextChannelPayload,
   GuildVoiceChannelPayload,
   ThreadChannelPayload,
-  MessageStickerPayload
+  MessageStickerPayload,
+  GuildForumChannelPayload
 } from './channel.ts'
 import type { EmojiPayload } from './emoji.ts'
 import type { PresenceUpdatePayload } from './gateway.ts'
@@ -190,6 +192,11 @@ export interface GuildWidgetPayload {
   presence_count: number
 }
 
+export type GuildThreadAvailableChannelPayloads =
+  | GuildTextChannelPayload
+  | GuildNewsChannelPayload
+  | GuildForumChannelPayload
+
 export type GuildTextBasedPayloads =
   | GuildTextBasedChannelPayload
   | GuildTextChannelPayload
@@ -197,11 +204,18 @@ export type GuildTextBasedPayloads =
 
 export type GuildChannelPayloads =
   | GuildTextBasedPayloads
+  | GuildThreadAvailableChannelPayloads
   | GuildVoiceChannelPayload
   | GuildCategoryChannelPayload
 
+export type GuildThreadAvailableChannels =
+  | GuildTextChannel
+  | NewsChannel
+  | GuildForumChannel
+
 export type GuildTextBasedChannels =
   | GuildTextBasedChannel
+  | GuildThreadAvailableChannels
   | GuildTextChannel
   | NewsChannel
 

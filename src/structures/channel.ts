@@ -43,14 +43,21 @@ import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import type { StageVoiceChannel } from '../structures/guildVoiceStageChannel.ts'
 import type { TextChannel } from '../structures/textChannel.ts'
 import type { ThreadChannel } from '../structures/threadChannel.ts'
+import { CreateInviteOptions } from '../managers/invites.ts'
+import { Invite } from './invite.ts'
 
 export class Channel extends SnowflakeBase {
   type!: ChannelTypes
+  flags!: number
 
   static cacheName = 'channel'
 
   get mention(): string {
     return `<#${this.id}>`
+  }
+
+  toString(): string {
+    return this.mention
   }
 
   constructor(client: Client, data: ChannelPayload) {
@@ -61,6 +68,7 @@ export class Channel extends SnowflakeBase {
   readFromData(data: ChannelPayload): void {
     this.type = data.type ?? this.type
     this.id = data.id ?? this.id
+    this.flags = data.flags ?? this.flags
   }
 
   isDM(): this is DMChannel {
@@ -434,5 +442,10 @@ export class GuildChannel extends Channel {
   /** Edit position of the channel */
   async setPosition(position: number): Promise<GuildChannels> {
     return await this.edit({ position })
+  }
+
+  /** Create an Invite for this Channel */
+  async createInvite(options?: CreateInviteOptions): Promise<Invite> {
+    return this.guild.invites.create(this.id, options)
   }
 }

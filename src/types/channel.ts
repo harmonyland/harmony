@@ -11,10 +11,13 @@ import type {
   MessageComponentData,
   MessageComponentPayload
 } from './messageComponents.ts'
+import type { Emoji } from '../structures/emoji.ts'
+import type { GuildForumTag } from '../structures/guildForumChannel.ts'
 
 export interface ChannelPayload {
   id: string
   type: ChannelTypes
+  flags: number
 }
 
 export interface TextChannelPayload extends ChannelPayload {
@@ -33,8 +36,19 @@ export interface GuildChannelPayload extends ChannelPayload {
 
 export interface GuildTextBasedChannelPayload
   extends TextChannelPayload,
-    GuildChannelPayload {
+    GuildChannelPayload {}
+
+export interface GuildThreadAvailableChannelPayload
+  extends GuildChannelPayload {
   topic?: string
+  rate_limit_per_user: number
+  default_thread_rate_limit_per_user?: number
+  default_auto_archive_duration?: number
+}
+
+export enum ChannelFlags {
+  PINNED = 1 << 1,
+  REQUIRE_TAG = 1 << 4
 }
 
 export interface ThreadChannelPayload
@@ -46,13 +60,17 @@ export interface ThreadChannelPayload
   thread_metadata: ThreadMetadataPayload
   rate_limit_per_user: number
   owner_id: string
+  total_message_sent: number
+  applied_tags?: string[]
 }
 
-export interface GuildTextChannelPayload extends GuildTextBasedChannelPayload {
-  rate_limit_per_user: number
-}
+export interface GuildTextChannelPayload
+  extends GuildTextBasedChannelPayload,
+    GuildThreadAvailableChannelPayload {}
 
-export interface GuildNewsChannelPayload extends GuildTextBasedChannelPayload {}
+export interface GuildNewsChannelPayload
+  extends GuildTextBasedChannelPayload,
+    GuildThreadAvailableChannelPayload {}
 
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: string
@@ -62,6 +80,31 @@ export interface GuildVoiceChannelPayload extends GuildChannelPayload {
 
 export interface GuildStageChannelPayload
   extends Omit<GuildVoiceChannelPayload, 'video_quality_mode'> {}
+
+export interface GuildForumTagPayload {
+  id: string
+  name: string
+  moderated: boolean
+  emoji_id: string
+  emoji_name: string | null
+}
+
+export interface GuildForumDefaultReactionPayload {
+  emoji_id: string | null
+  emoji_name: string | null
+}
+
+export enum GuildForumSortOrderTypes {
+  LATEST_ACTIVITY = 0,
+  CREATION_DATE = 1
+}
+
+export interface GuildForumChannelPayload
+  extends GuildThreadAvailableChannelPayload {
+  available_tags: GuildForumTagPayload[]
+  default_reaction_emoji: GuildForumDefaultReactionPayload | null
+  default_sort_order: GuildForumSortOrderTypes | null
+}
 
 export interface DMChannelPayload extends TextChannelPayload {
   recipients: UserPayload[]
@@ -91,13 +134,19 @@ export interface ModifyGuildCategoryChannelPayload
 export interface ModifyGuildTextBasedChannelPayload
   extends ModifyChannelPayload {
   type?: number
+}
+
+export interface ModifyGuildThreadAvailableChannelPayload
+  extends ModifyChannelPayload {
   topic?: string | null
+  rate_limit_per_user?: number | null
+  default_thread_rate_limit_per_user?: number | null
+  default_auto_archive_duration?: number | null
 }
 
 export interface ModifyGuildTextChannelPayload
-  extends ModifyGuildTextBasedChannelPayload {
-  rate_limit_per_user?: number | null
-}
+  extends ModifyGuildTextBasedChannelPayload,
+    ModifyGuildThreadAvailableChannelPayload {}
 
 export interface ModifyThreadChannelPayload
   extends ModifyGuildTextBasedChannelPayload {
@@ -107,11 +156,19 @@ export interface ModifyThreadChannelPayload
 }
 
 export interface ModifyGuildNewsChannelPayload
-  extends ModifyGuildTextBasedChannelPayload {}
+  extends ModifyGuildTextBasedChannelPayload,
+    ModifyGuildThreadAvailableChannelPayload {}
 
 export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
   bitrate?: number | null
   user_limit?: number | null
+}
+
+export interface ModifyGuildForumChannelPayload
+  extends ModifyGuildThreadAvailableChannelPayload {
+  default_reaction_emoji?: GuildForumDefaultReactionPayload | null
+  default_sort_order?: GuildForumSortOrderTypes | null
+  available_tags?: GuildForumTagPayload[] | null
 }
 
 export interface ModifyChannelOption {
@@ -126,13 +183,19 @@ export interface ModifyGuildCategoryChannelOption extends ModifyChannelOption {}
 
 export interface ModifyGuildTextBasedChannelOption extends ModifyChannelOption {
   type?: number
+}
+
+export interface ModifyGuildThreadAvailableChannelOption
+  extends ModifyChannelOption {
   topic?: string | null
+  slowmode?: number | null
+  defaultThreadSlowmode?: number | null
+  defaultAutoArchiveDuration?: number | null
 }
 
 export interface ModifyGuildTextChannelOption
-  extends ModifyGuildTextBasedChannelOption {
-  slowmode?: number | null
-}
+  extends ModifyGuildTextBasedChannelOption,
+    ModifyGuildThreadAvailableChannelOption {}
 
 export interface ModifyThreadChannelOption
   extends ModifyGuildTextChannelOption {
@@ -142,11 +205,19 @@ export interface ModifyThreadChannelOption
 }
 
 export interface ModifyGuildNewsChannelOption
-  extends ModifyGuildTextBasedChannelOption {}
+  extends ModifyGuildTextBasedChannelOption,
+    ModifyGuildThreadAvailableChannelOption {}
 
 export interface ModifyVoiceChannelOption extends ModifyChannelOption {
   bitrate?: number | null
   userLimit?: number | null
+}
+
+export interface ModifyGuildForumChannelOption
+  extends ModifyGuildThreadAvailableChannelOption {
+  defaultReactionEmoji?: Emoji | GuildForumDefaultReactionPayload | null
+  defaultSortOrder?: GuildForumSortOrderTypes | null
+  availableTags?: GuildForumTag[] | GuildForumTagPayload[] | null
 }
 
 export enum OverwriteType {
@@ -194,7 +265,9 @@ export enum ChannelTypes {
   NEWS_THREAD = 10,
   PUBLIC_THREAD = 11,
   PRIVATE_THREAD = 12,
-  GUILD_STAGE_VOICE = 13
+  GUILD_STAGE_VOICE = 13,
+  GUILD_DIRECTORY = 14,
+  GUILD_FORUM = 15
 }
 
 export interface MessagePayload {
@@ -530,5 +603,18 @@ export interface CreateThreadPayload {
   /** 2-100 character channel name */
   name: string
   /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
-  auto_archive_duration: number
+  auto_archive_duration?: number
+  rate_limit_per_user?: number | null
+  type?: ChannelTypes
+  invitable?: boolean
+}
+
+export interface CreateThreadInForumPayload {
+  /** 2-100 character channel name */
+  name: string
+  /** duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080 */
+  auto_archive_duration?: number
+  rate_limit_per_user?: number | null
+  message: CreateMessagePayload
+  applied_tags?: string[]
 }

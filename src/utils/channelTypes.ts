@@ -8,6 +8,7 @@ import type {
   GuildTextBasedChannel,
   GuildTextChannel
 } from '../structures/guildTextChannel.ts'
+import { GuildThreadAvailableChannel } from '../structures/guildThreadAvailableChannel.ts'
 import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import type { StageVoiceChannel } from '../structures/guildVoiceStageChannel.ts'
 import type { TextChannel } from '../structures/textChannel.ts'
@@ -74,7 +75,8 @@ export function isGuildChannel(channel: Channel): channel is GuildChannel {
     channel.type === ChannelTypes.GUILD_STAGE_VOICE ||
     channel.type === ChannelTypes.NEWS_THREAD ||
     channel.type === ChannelTypes.PRIVATE_THREAD ||
-    channel.type === ChannelTypes.PUBLIC_THREAD
+    channel.type === ChannelTypes.PUBLIC_THREAD ||
+    channel.type === ChannelTypes.GUILD_FORUM
   )
 }
 
@@ -95,5 +97,15 @@ export function isTextChannel(channel: Channel): channel is TextChannel {
     channel.type === ChannelTypes.NEWS_THREAD ||
     channel.type === ChannelTypes.PRIVATE_THREAD ||
     channel.type === ChannelTypes.PUBLIC_THREAD
+  )
+}
+
+export function isThreadAvailableChannel(
+  channel: Channel
+): channel is GuildThreadAvailableChannel {
+  return (
+    channel.type === ChannelTypes.GUILD_TEXT ||
+    channel.type === ChannelTypes.GUILD_NEWS ||
+    channel.type === ChannelTypes.GUILD_FORUM
   )
 }

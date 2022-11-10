@@ -67,6 +67,10 @@ export {
   GuildIntegration
 } from './src/structures/guild.ts'
 export { CategoryChannel } from './src/structures/guildCategoryChannel.ts'
+export {
+  GuildForumChannel,
+  GuildForumTag
+} from './src/structures/guildForumChannel.ts'
 export { NewsChannel } from './src/structures/guildNewsChannel.ts'
 export { VoiceChannel } from './src/structures/guildVoiceChannel.ts'
 export { Invite } from './src/structures/invite.ts'
@@ -87,8 +91,7 @@ export { Snowflake } from './src/utils/snowflake.ts'
 export { TextChannel } from './src/structures/textChannel.ts'
 export {
   GuildTextBasedChannel,
-  GuildTextChannel,
-  checkGuildTextBasedChannel
+  GuildTextChannel
 } from './src/structures/guildTextChannel.ts'
 export type { AllMessageOptions } from './src/structures/textChannel.ts'
 export { MessageReaction } from './src/structures/messageReaction.ts'
