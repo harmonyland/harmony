@@ -93,7 +93,7 @@ export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
 export type EditGuildCategoryPayload = EditGuildChannelPayload;
 
 export interface EditChannelPermissionsPayload extends Reasonable {
-  allow: string;
-  deny: string;
+  allow?: string;
+  deny?: string;
   type: OverwriteType;
 }
