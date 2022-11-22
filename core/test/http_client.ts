@@ -10,14 +10,14 @@ Deno.test("test multiple request", async () => {
   for (let i = 0; i < requests; i++) {
     promises.push(
       client.request("POST", `/channels/749139969192230995/messages`, {
-        body: { content: "kay lets try another msg" },
+        body: { content: "a" },
       }),
     );
   }
   for (let i = 0; i < requests; i++) {
     promises.push(
       client.request("POST", `/channels/847264722734546964/messages`, {
-        body: { content: "kay lets try another msg" },
+        body: { content: "a" },
       }),
     );
   }

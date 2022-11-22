@@ -137,7 +137,7 @@ export class HTTPClient implements HTTPClientOptions {
     const queue = this.queue.get(bucket) ??
       (this.queue.set(bucket, new Queue()), this.queue.get(bucket)!);
 
-    const execute = async () => {
+    const execute = async (): Promise<any> => {
       await queue.wait();
 
       // Enqueue it and wait for the queue to be resolved.
@@ -185,9 +185,15 @@ export class HTTPClient implements HTTPClientOptions {
           },
         );
 
-        if (res.headers.get("X-RateLimit-Remaining") === "0") {
-          queue.resetTime =
-            Number(res.headers.get("X-RateLimit-Reset")) * 1000 + 5; // add a little bit of delay to avoid 429s
+        const resetTime = Date.now() +
+          Number(res.headers.get("X-RateLimit-Reset-After")) * 1000 + 5; // add a little bit of delay to avoid 429s
+        queue.resetTime = resetTime;
+        if (res.headers.get("X-RateLimit-Global") === "true") {
+          this.queue.forEach((q) => {
+            if (q.resetTime < resetTime) {
+              q.resetTime = resetTime;
+            }
+          });
         }
 
         if (res.ok) {
@@ -218,7 +224,7 @@ export class HTTPClient implements HTTPClientOptions {
     let tries = 0;
     while (tries < this.maxRetries) {
       try {
-        await execute();
+        return await execute();
       } catch (error) {
         tries++;
         if (tries === this.maxRetries) {
