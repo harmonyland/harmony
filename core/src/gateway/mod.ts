@@ -75,6 +75,10 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.ws.binaryType = "arraybuffer";
   }
 
+  disconnect(code?: GatewayCloseCode) {
+    this.ws.close(code);
+  }
+
   private onopen() {
     this.emit("CONNECTED");
   }
