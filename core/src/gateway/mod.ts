@@ -54,7 +54,6 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       "$device": properties?.device ?? "harmony",
     };
     this.shard = shard;
-    this.connect();
   }
 
   initVariables() {
@@ -65,7 +64,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.heartbeatCode = 0;
   }
 
-  connect() {
+  async connect() {
     this.ws = new WebSocket(
       `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
     );
@@ -75,7 +74,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.ws.binaryType = "arraybuffer";
   }
 
-  disconnect(code?: GatewayCloseCode) {
+  async disconnect(code?: GatewayCloseCode) {
     this.ws.close(code);
   }
 

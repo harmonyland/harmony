@@ -56,6 +56,7 @@ export class ShardedGateway {
   }
 
   async destroy(shardID: number) {
+    if (!this.shards[shardID]) return;
     await this.shards[shardID].disconnect();
   }
 
@@ -63,5 +64,26 @@ export class ShardedGateway {
     for (const shardID in this.shards) {
       await this.destroy(Number(shardID));
     }
+  }
+
+  async run(shardID: number) {
+    if (!this.shards[shardID]) return;
+    await this.shards[shardID].connect();
+  }
+
+  async runAll() {
+    for (const shardID in this.shards) {
+      await this.run(Number(shardID));
+    }
+  }
+
+  async spawnAndRun(shardID: number) {
+    await this.spawn(shardID);
+    await this.run(shardID);
+  }
+
+  async spawnAndRunAll() {
+    await this.spawnAll();
+    await this.runAll();
   }
 }
