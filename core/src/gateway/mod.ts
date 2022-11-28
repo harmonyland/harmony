@@ -39,6 +39,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   private resume = false;
   private sequence: number | null = null;
   private sessionID: string | null = null;
+  private connected = false;
 
   constructor(
     token: string,
@@ -64,7 +65,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.heartbeatCode = 0;
   }
 
-  async connect() {
+  connect() {
     this.ws = new WebSocket(
       `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
     );
@@ -74,11 +75,14 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.ws.binaryType = "arraybuffer";
   }
 
-  async disconnect(code?: GatewayCloseCode) {
+  disconnect(code?: GatewayCloseCode) {
     this.ws.close(code);
+    this.initVariables();
+    this.connected = false;
   }
 
   private onopen() {
+    this.connected = true;
     this.emit("CONNECTED");
   }
 
@@ -173,14 +177,14 @@ export class Gateway extends EventEmitter<GatewayEvents> {
         this.emit("CLOSED", e.code, false, false);
         break;
     }
+    this.connected = false;
   }
 
   reconnect(resume = false, code?: number) {
     this.resume = resume;
-    if (this.ws.readyState === WebSocket.OPEN) {
-      this.ws.close(code);
+    if (this.connected) {
+      this.disconnect(code);
     }
-    this.initVariables();
     this.connect();
   }
 

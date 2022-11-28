@@ -1,4 +1,9 @@
 import { GetGatewayBotPayload } from "../../../types/mod.ts";
+import { EventEmitter } from "../../deps.ts";
+import {
+  GatewayEvents,
+  ShardedGatewayEvents,
+} from "../../types/gateway/events.ts";
 import { RESTClient } from "../rest/rest_client.ts";
 import { Gateway, GatewayOptions } from "./mod.ts";
 
@@ -6,7 +11,7 @@ export interface ShardedGatewayOptions extends Omit<GatewayOptions, "shard"> {
   shards?: number;
 }
 
-export class ShardedGateway {
+export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
   shards: Record<number, Gateway> = {};
   token: string;
   intents: number;
@@ -18,6 +23,7 @@ export class ShardedGateway {
     intents: number,
     options: ShardedGatewayOptions = {},
   ) {
+    super();
     this.token = token;
     this.intents = intents;
     this.options = options;
@@ -85,5 +91,42 @@ export class ShardedGateway {
   async spawnAndRunAll() {
     await this.spawnAll();
     await this.runAll();
+  }
+
+  // emit<K extends keyof ShardedGatewayEvents>(
+  //   eventName: K,
+  //   ...args: [number, ...GatewayEvents[K]]
+  // ): Promise<void> {
+  //   return super.emit(eventName, ...args as any); // sorry i had to use `as any` here
+  // }
+
+  on<K extends keyof ShardedGatewayEvents>(
+    eventName: K,
+    listener: (...args: ShardedGatewayEvents[K]) => void,
+  ): this;
+  on<K extends keyof ShardedGatewayEvents>(
+    eventName: K,
+  ): AsyncIterableIterator<ShardedGatewayEvents[K]>;
+  on(
+    eventName: keyof ShardedGatewayEvents,
+    listener?:
+      | ((...args: ShardedGatewayEvents[keyof ShardedGatewayEvents]) => void)
+      | undefined,
+  ):
+    | this
+    | AsyncIterableIterator<ShardedGatewayEvents[keyof ShardedGatewayEvents]> {
+    Object.entries(this.shards).forEach(([shardID, shard]) => {
+      const innerListener = (
+        ...args: GatewayEvents[keyof ShardedGatewayEvents]
+      ) => {
+        this.emit(eventName, Number(shardID), ...args);
+      };
+      shard.on(eventName, innerListener);
+    });
+    if (listener) {
+      return super.on(eventName, listener);
+    } else {
+      return super.on(eventName);
+    }
   }
 }
