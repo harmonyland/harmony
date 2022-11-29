@@ -93,13 +93,6 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
     await this.runAll();
   }
 
-  // emit<K extends keyof ShardedGatewayEvents>(
-  //   eventName: K,
-  //   ...args: [number, ...GatewayEvents[K]]
-  // ): Promise<void> {
-  //   return super.emit(eventName, ...args as any); // sorry i had to use `as any` here
-  // }
-
   on<K extends keyof ShardedGatewayEvents>(
     eventName: K,
     listener: (...args: ShardedGatewayEvents[K]) => void,
@@ -107,14 +100,14 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
   on<K extends keyof ShardedGatewayEvents>(
     eventName: K,
   ): AsyncIterableIterator<ShardedGatewayEvents[K]>;
+  // deno fmt breaks the lsp here
+  // deno-fmt-ignore
   on(
     eventName: keyof ShardedGatewayEvents,
-    listener?:
-      | ((...args: ShardedGatewayEvents[keyof ShardedGatewayEvents]) => void)
-      | undefined,
-  ):
-    | this
-    | AsyncIterableIterator<ShardedGatewayEvents[keyof ShardedGatewayEvents]> {
+    listener?: (
+      ...args: ShardedGatewayEvents[keyof ShardedGatewayEvents]
+    ) => void,
+  ): this | AsyncIterableIterator<ShardedGatewayEvents[keyof ShardedGatewayEvents]> {
     Object.entries(this.shards).forEach(([shardID, shard]) => {
       const innerListener = (
         ...args: GatewayEvents[keyof ShardedGatewayEvents]

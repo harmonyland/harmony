@@ -5,13 +5,11 @@ Deno.test("test receiving ready", async () => {
 
   let count = 0;
   await client.spawnAll();
-  for (const [idx, gateway] of Object.entries(client.shards)) {
-    gateway.on("READY", async () => {
-      count++;
-      while (count !== client.shardCount) {
-      }
-      await client.destroy(Number(idx));
-    });
-  }
+  client.on("READY", async (shardID) => {
+    count++;
+    while (count !== client.shardCount) {
+    }
+    await client.destroy(Number(shardID));
+  });
   await client.runAll();
 });
