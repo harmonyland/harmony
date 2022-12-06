@@ -11,12 +11,23 @@ export interface ShardedGatewayOptions extends Omit<GatewayOptions, "shard"> {
   shards?: number;
 }
 
+interface Listeners {
+  innerListeners: ((
+    ...args: GatewayEvents[keyof GatewayEvents]
+  ) => void)[];
+  outerListener?: (
+    ...args: ShardedGatewayEvents[keyof ShardedGatewayEvents]
+  ) => void;
+  once: boolean;
+}
+
 export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
   shards: Record<number, Gateway> = {};
   token: string;
   intents: number;
   options: ShardedGatewayOptions;
   shardCount?: number;
+  #_listeners: Record<string, Listeners[]> = {};
 
   constructor(
     token: string,
@@ -93,6 +104,22 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
     await this.runAll();
   }
 
+  emit<K extends keyof ShardedGatewayEvents>(
+    eventName: K,
+    ...args: ShardedGatewayEvents[K]
+  ): Promise<void> {
+    this.#_listeners[eventName]?.forEach((l) => {
+      if (l.once) {
+        l.innerListeners.forEach((innerListener) => {
+          Object.values(this.shards).forEach((shard) => {
+            shard.off(eventName, innerListener);
+          });
+        });
+      }
+    });
+    return super.emit(eventName, ...args);
+  }
+
   on<K extends keyof ShardedGatewayEvents>(
     eventName: K,
     listener: (...args: ShardedGatewayEvents[K]) => void,
@@ -108,18 +135,117 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
       ...args: ShardedGatewayEvents[keyof ShardedGatewayEvents]
     ) => void,
   ): this | AsyncIterableIterator<ShardedGatewayEvents[keyof ShardedGatewayEvents]> {
+    if (this.#_listeners[eventName] === undefined) {
+      this.#_listeners[eventName] = [];
+    }
+    const result: Listeners = {
+      innerListeners: [],
+      once: false
+    }
     Object.entries(this.shards).forEach(([shardID, shard]) => {
       const innerListener = (
-        ...args: GatewayEvents[keyof ShardedGatewayEvents]
+        ...args: GatewayEvents[keyof GatewayEvents]
       ) => {
         this.emit(eventName, Number(shardID), ...args);
       };
       shard.on(eventName, innerListener);
+      result.innerListeners.push(innerListener);
     });
     if (listener) {
+      result.outerListener = listener;
+      this.#_listeners[eventName].push(result);
       return super.on(eventName, listener);
     } else {
+      this.#_listeners[eventName].push(result);
       return super.on(eventName);
+    }
+  }
+
+  once<K extends keyof ShardedGatewayEvents>(
+    eventName: K,
+    listener: (...args: ShardedGatewayEvents[K]) => void,
+  ): this;
+  once<K extends keyof ShardedGatewayEvents>(
+    eventName: K,
+  ): Promise<ShardedGatewayEvents[K]>;
+  once(
+    eventName: keyof ShardedGatewayEvents,
+    listener?: (
+      ...args: ShardedGatewayEvents[keyof ShardedGatewayEvents]
+    ) => void,
+  ): this | Promise<ShardedGatewayEvents[keyof ShardedGatewayEvents]> {
+    if (this.#_listeners[eventName] === undefined) {
+      this.#_listeners[eventName] = [];
+    }
+    const result: Listeners = {
+      innerListeners: [],
+      once: true,
+    };
+
+    Object.entries(this.shards).forEach(([shardID, shard]) => {
+      const innerListener = (
+        ...args: GatewayEvents[keyof GatewayEvents]
+      ) => {
+        this.emit(eventName, Number(shardID), ...args);
+      };
+      shard.once(eventName, innerListener);
+      result.innerListeners.push(innerListener);
+    });
+    if (listener) {
+      result.outerListener = listener;
+      this.#_listeners[eventName].push(result);
+      return super.once(eventName, listener);
+    } else {
+      result.outerListener = listener;
+      this.#_listeners[eventName].push(result);
+      return super.once(eventName);
+    }
+  }
+
+  off<K extends keyof ShardedGatewayEvents>(
+    eventName?: K | undefined,
+    listener?: ((...args: ShardedGatewayEvents[K]) => void) | undefined,
+  ): Promise<this> {
+    if (eventName) {
+      if (listener) {
+        const listeners = this.#_listeners[eventName];
+        if (listeners) {
+          const index = listeners.findIndex((l) =>
+            l.outerListener === listener
+          );
+          if (index !== -1) {
+            listeners[index].innerListeners.forEach((innerListener) => {
+              Object.values(this.shards).forEach((shard) => {
+                shard.off(eventName, innerListener);
+              });
+            });
+            listeners.splice(index, 1);
+          }
+        }
+        return super.off(eventName, listener);
+      } else {
+        this.#_listeners[eventName]?.forEach((l) => {
+          l.innerListeners.forEach((innerListener) => {
+            Object.values(this.shards).forEach((shard) => {
+              shard.off(eventName, innerListener);
+            });
+          });
+        });
+        this.#_listeners[eventName] = [];
+        return super.off(eventName);
+      }
+    } else {
+      Object.entries(this.#_listeners).forEach(([eventName, listeners]) => {
+        listeners.forEach((l) => {
+          l.innerListeners.forEach((innerListener) => {
+            Object.values(this.shards).forEach((shard) => {
+              shard.off(eventName as keyof ShardedGatewayEvents, innerListener);
+            });
+          });
+        });
+      });
+      this.#_listeners = {};
+      return super.off();
     }
   }
 }
