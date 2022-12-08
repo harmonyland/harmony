@@ -3,18 +3,18 @@ import { HTTPClient, RequestOptions } from "./http_client.ts";
 
 export class RESTClient extends HTTPClient {
   async delete<T>(endpoint: Endpoint, options?: RequestOptions) {
-    return this.request("DELETE", endpoint, options) as Promise<T>;
+    return this.request<T>("DELETE", endpoint, options);
   }
   async get<T>(endpoint: Endpoint, options?: RequestOptions) {
-    return this.request("GET", endpoint, options) as Promise<T>;
+    return this.request<T>("GET", endpoint, options);
   }
   async patch<T>(endpoint: Endpoint, options?: RequestOptions) {
-    return this.request("PATCH", endpoint, options) as Promise<T>;
+    return this.request<T>("PATCH", endpoint, options);
   }
   async post<T>(endpoint: Endpoint, options?: RequestOptions) {
-    return this.request("POST", endpoint, options) as Promise<T>;
+    return this.request<T>("POST", endpoint, options);
   }
   async put<T>(endpoint: Endpoint, options?: RequestOptions) {
-    return this.request("PUT", endpoint, options) as Promise<T>;
+    return this.request<T>("PUT", endpoint, options);
   }
 }
