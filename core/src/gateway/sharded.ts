@@ -67,19 +67,25 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
 
   async spawnAll() {
     const shardCount = await this.getShardCount();
+    let shardQueue: Promise<void>[] = [];
     for (let i = 0; i < shardCount; i++) {
-      await this.spawn(i);
+      if (i % 16 === 0) {
+        await Promise.all(shardQueue);
+        shardQueue = [];
+      }
+      shardQueue.push(this.spawn(i));
     }
   }
 
   async destroy(shardID: number) {
     if (!this.shards[shardID]) return;
     await this.shards[shardID].disconnect();
+    delete this.shards[shardID];
   }
 
   async destroyAll() {
-    for (const shardID in this.shards) {
-      await this.destroy(Number(shardID));
+    for (let i = 0; i < Object.keys(this.shards).length; i++) {
+      await this.destroy(i);
     }
   }
 
@@ -89,8 +95,8 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
   }
 
   async runAll() {
-    for (const shardID in this.shards) {
-      await this.run(Number(shardID));
+    for (let i = 0; i < Object.keys(this.shards).length; i++) {
+      await this.run(i);
     }
   }
 
