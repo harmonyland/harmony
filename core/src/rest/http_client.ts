@@ -119,7 +119,7 @@ export class HTTPClient implements HTTPClientOptions {
     this.maxRetries = options?.maxRetries ?? this.maxRetries;
   }
 
-  async request(
+  async request<T>(
     method: HTTPMethod,
     endpoint: Endpoint,
     options?: RequestOptions,
@@ -128,87 +128,82 @@ export class HTTPClient implements HTTPClientOptions {
     const queue = this.queue.get(bucket) ??
       (this.queue.set(bucket, new Queue()), this.queue.get(bucket)!);
 
-    const execute = async (): Promise<any> => {
+    const execute = async (): Promise<T> => {
       await queue.wait();
 
       // Enqueue it and wait for the queue to be resolved.
-      try {
-        const headers: Record<string, string> = {
-          "user-agent": this.userAgent,
-        };
+      const headers: Record<string, string> = {
+        "user-agent": this.userAgent,
+      };
 
-        if (this.token !== undefined && this.tokenType !== undefined) {
-          headers["authorization"] = `${this.tokenType} ${this.token}`.trim();
-        }
+      if (this.token !== undefined && this.tokenType !== undefined) {
+        headers["authorization"] = `${this.tokenType} ${this.token}`.trim();
+      }
 
-        if (options?.headers !== undefined) {
-          Object.assign(headers, options.headers);
-        }
+      if (options?.headers !== undefined) {
+        Object.assign(headers, options.headers);
+      }
 
-        let body = undefined;
-        if (
-          ["POST", "PATCH", "PUT"].includes(method)
-        ) {
-          // It's multipart formdata.
-          if (options?.body instanceof FormData) {
-            body = options.body;
+      let body = undefined;
+      if (
+        ["POST", "PATCH", "PUT"].includes(method)
+      ) {
+        // It's multipart formdata.
+        if (options?.body instanceof FormData) {
+          body = options.body;
+        } else {
+          if (typeof options?.body === "object") {
+            // It's a simple JSON body.
+            body = JSON.stringify(
+              options.body,
+              (_, v) => typeof v === "bigint" ? v.toString() : v,
+            );
+            headers["content-type"] = "application/json";
           } else {
-            if (typeof options?.body === "object") {
-              // It's a simple JSON body.
-              body = JSON.stringify(
-                options.body,
-                (_, v) => typeof v === "bigint" ? v.toString() : v,
-              );
-              headers["content-type"] = "application/json";
-            } else {
-              // Default to empty body to avoid Cloudflare errors.
-              body = "";
-            }
+            // Default to empty body to avoid Cloudflare errors.
+            body = "";
           }
         }
+      }
 
-        const res = await fetch(
-          `${this.baseURL}/v${this.version}${endpoint}`,
-          {
-            method,
-            headers,
-            body,
-          },
+      const res = await fetch(
+        `${this.baseURL}/v${this.version}${endpoint}`,
+        {
+          method,
+          headers,
+          body,
+        },
+      );
+
+      const resetTime = Date.now() +
+        Number(res.headers.get("X-RateLimit-Reset-After")) * 1000 + 5; // add a little bit of delay to avoid 429s
+      queue.resetTime = resetTime;
+      if (res.headers.get("X-RateLimit-Global") === "true") {
+        this.queue.forEach((q) => {
+          if (q.resetTime < resetTime) {
+            q.resetTime = resetTime;
+          }
+        });
+      }
+
+      queue.shift();
+      if (res.ok) {
+        return res.json();
+      } else if (res.status >= 500 && res.status < 600) {
+        await res.body?.cancel();
+        throw new Error(
+          `Discord API Internal Server Error (${res.status})`,
         );
-
-        const resetTime = Date.now() +
-          Number(res.headers.get("X-RateLimit-Reset-After")) * 1000 + 5; // add a little bit of delay to avoid 429s
-        queue.resetTime = resetTime;
-        if (res.headers.get("X-RateLimit-Global") === "true") {
-          this.queue.forEach((q) => {
-            if (q.resetTime < resetTime) {
-              q.resetTime = resetTime;
-            }
-          });
-        }
-
-        if (res.ok) {
-          return await res.json();
-        } else if (res.status >= 500 && res.status < 600) {
-          await res.body?.cancel();
-          throw new Error(
-            `Discord API Internal Server Error (${res.status})`,
-          );
-        } else if (res.status >= 400 && res.status < 500) {
-          await res.body?.cancel();
-          throw new Error(
-            `Discord API Error (${res.status})`,
-          );
-        } else {
-          await res.body?.cancel();
-          throw new Error(
-            `What in the world is this code? (${res.status})`,
-          );
-        }
-      } catch (e) {
-        throw e;
-      } finally {
-        queue.shift();
+      } else if (res.status >= 400 && res.status < 500) {
+        await res.body?.cancel();
+        throw new Error(
+          `Discord API Error (${res.status})`,
+        );
+      } else {
+        await res.body?.cancel();
+        throw new Error(
+          `What in the world is this code? (${res.status})`,
+        );
       }
     };
 
