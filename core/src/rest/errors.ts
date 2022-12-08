@@ -1,3 +1,3 @@
-export class DiscordAPIError {}
+export class DiscordAPIError extends Error {}
 
-export class HTTPError {}
+export class HTTPError extends Error {}
