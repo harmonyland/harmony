@@ -75,6 +75,7 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
       }
       shardQueue.push(this.spawn(i));
     }
+    await Promise.all(shardQueue);
   }
 
   async destroy(shardID: number) {
