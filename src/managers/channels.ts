@@ -189,11 +189,15 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
       text = undefined
     }
 
+    if (option?.embed !== undefined) {
+      option.embeds = [option.embed]
+      delete option.embed
+    }
+
     const newMsg = await this.client.rest.api.channels[channelID].messages[
       typeof message === 'string' ? message : message.id
     ].patch({
       content: text ?? option?.content,
-      embed: option?.embed !== undefined ? option.embed : undefined,
       embeds: option?.embeds,
       // Cannot upload new files with Message
       // file: option?.file,
