@@ -66,16 +66,34 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   }
 
   connect() {
-    this.ws = new WebSocket(
-      `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
-    );
-    this.ws.onopen = this.onopen.bind(this);
-    this.ws.onmessage = this.onmessage.bind(this);
-    this.ws.onclose = this.onclose.bind(this);
-    this.ws.binaryType = "arraybuffer";
+    return new Promise<void>((resolve, reject) => {
+      this.ws = new WebSocket(
+        `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
+      );
+      const onopen = this.onopen.bind(this);
+      this.ws.onopen = () => {
+        onopen();
+        resolve();
+      };
+      this.ws.onmessage = this.onmessage.bind(this);
+      this.ws.onclose = this.onclose.bind(this);
+      this.ws.onerror = (e) => {
+        reject(e);
+      };
+      this.ws.binaryType = "arraybuffer";
+    });
   }
 
   disconnect(code?: GatewayCloseCode) {
+    // return new Promise<void>((resolve) => {
+    //   this.ws.onclose = (e) => {
+    //     this.onclose.bind(this)(e);
+    //     resolve();
+    //   };
+    //   this.ws.close(code);
+    //   this.initVariables();
+    //   this.connected = false;
+    // });
     this.ws.close(code);
     this.initVariables();
     this.connected = false;
@@ -152,6 +170,8 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   }
 
   private onclose(e: CloseEvent) {
+    this.initVariables();
+    this.connected = false;
     switch (e.code) {
       case GatewayCloseCode.UNKNOWN_ERROR:
       case GatewayCloseCode.UNKNOWN_OPCODE:
@@ -177,7 +197,6 @@ export class Gateway extends EventEmitter<GatewayEvents> {
         this.emit("CLOSED", e.code, false, false);
         break;
     }
-    this.connected = false;
   }
 
   reconnect(resume = false, code?: number) {
@@ -210,7 +229,9 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       s: seq ? this.sequence : null,
       t,
     };
-    this.ws.send(JSON.stringify(req));
+    if (this.connected) {
+      this.ws.send(JSON.stringify(req));
+    }
   }
 
   sendDispatch(
