@@ -43,9 +43,9 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
 
   async getBestShardCount() {
     const restClient = new RESTClient({ token: this.token });
-    const { shards }: GetGatewayBotPayload = await restClient.get(
+    const { shards }: GetGatewayBotPayload = (await restClient.get(
       "/gateway/bot",
-    );
+    ))!;
 
     return shards;
   }
@@ -63,6 +63,24 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
       ...this.options,
       shard: [shardID, shardCount],
     });
+    const listeners = this.#_listeners;
+    for (const [e, result] of Object.entries(listeners)) {
+      const eventName = e as keyof ShardedGatewayEvents;
+      const innerListener = (
+        ...args: GatewayEvents[keyof GatewayEvents]
+      ) => {
+        this.emit(eventName, Number(shardID), ...args);
+      };
+      for (const { once, innerListeners } of result) {
+        if (once) {
+          this.shards[shardID].once(eventName, innerListener);
+          innerListeners.push(innerListener);
+        } else {
+          this.shards[shardID].on(eventName, innerListener);
+          innerListeners.push(innerListener);
+        }
+      }
+    }
   }
 
   async spawnAll() {
@@ -86,7 +104,7 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
 
   async destroyAll() {
     for (let i = 0; i < Object.keys(this.shards).length; i++) {
-      await this.destroy(i);
+      await this.destroy(Number(Object.keys(this.shards)[i]));
     }
   }
 
@@ -122,6 +140,9 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
             shard.off(eventName, innerListener);
           });
         });
+        this.#_listeners[eventName] = this.#_listeners[eventName].filter(
+          (l) => !l.once,
+        );
       }
     });
     return super.emit(eventName, ...args);
