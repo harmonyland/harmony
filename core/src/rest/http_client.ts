@@ -218,6 +218,7 @@ export class HTTPClient implements HTTPClientOptions {
         }
       }
     }
+    throw new Error("Unreachable");
   }
 
   [Symbol.for("Deno.customInspect")]() {
