@@ -2,13 +2,13 @@
 import { Reasonable } from "../etc/reasonable.ts";
 import { ChannelPayload, ChannelType, TextChannelPayload } from "./base.ts";
 
-// https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure
+/** @link https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure */
 export enum OverwriteType {
   ROLE = 0,
   MEMBER = 1,
 }
 
-// https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure
+/** @link https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure */
 export interface OverwritePayload {
   id: string;
   type: OverwriteType;
@@ -25,7 +25,7 @@ export interface GuildChannelPayload extends ChannelPayload {
   parent_id: string | null;
 }
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-guild-text-channel
+/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-guild-text-channel */
 export interface GuildTextChannelPayload
   extends GuildChannelPayload, TextChannelPayload {
   rate_limit_per_user: number;
@@ -33,16 +33,16 @@ export interface GuildTextChannelPayload
   default_auto_archive_duration: number;
 }
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-guild-news-channel
-export type GuildNewsChannelPayload = GuildTextChannelPayload;
+/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-guild-news-channel */
+export type GuildAnnouncementChannelPayload = GuildTextChannelPayload;
 
-// https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes
+/** @link https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes */
 export enum VideoQualityModes {
   AUTO = 1,
   FULL = 2,
 }
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-guild-voice-channel
+/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-guild-voice-channel */
 export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   bitrate: number;
   user_limit: number;
@@ -50,26 +50,26 @@ export interface GuildVoiceChannelPayload extends GuildChannelPayload {
   video_quality_mode: VideoQualityModes;
 }
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-channel-category
+/** @link https://discord.com/developers/docs/resources/channel#channel-object-example-channel-category */
 export type CategoryPayload = GuildChannelPayload;
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-store-channel
-export type GuildStoreChannel = GuildChannelPayload;
+export interface GuildStageChannelPayload extends GuildChannelPayload {
+  bitrate: number;
+  user_limit: number;
+  rtc_region: string | null;
+}
 
-// https://discord.com/developers/docs/resources/channel#modify-channel-json-params-guild-channel
+/** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-guild-channel */
 export interface EditGuildChannelPayload extends Reasonable {
   name?: string;
   position?: number | null;
   permission_overwrites?: OverwritePayload[] | null;
 }
 
-export interface EditGuildStoreChannelPayload extends EditGuildChannelPayload {
+export interface EditGuildAnnouncementChannelPayload
+  extends EditGuildChannelPayload {
   nsfw?: boolean | null;
   parent_id?: string | null;
-}
-
-export interface EditGuildNewsChannelPayload
-  extends EditGuildStoreChannelPayload {
   type?: ChannelType;
   topic?: string | null;
   /** Duration in minute */
@@ -77,7 +77,7 @@ export interface EditGuildNewsChannelPayload
 }
 
 export interface EditGuildTextChannelPayload
-  extends EditGuildNewsChannelPayload {
+  extends EditGuildAnnouncementChannelPayload {
   /** Duration in second */
   rate_limit_per_user?: number | null;
 }
@@ -93,7 +93,7 @@ export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
 export type EditGuildCategoryPayload = EditGuildChannelPayload;
 
 export interface EditChannelPermissionsPayload extends Reasonable {
-  allow: string;
-  deny: string;
+  allow?: string;
+  deny?: string;
   type: OverwriteType;
 }
