@@ -85,18 +85,15 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   }
 
   disconnect(code?: GatewayCloseCode) {
-    // return new Promise<void>((resolve) => {
-    //   this.ws.onclose = (e) => {
-    //     this.onclose.bind(this)(e);
-    //     resolve();
-    //   };
-    //   this.ws.close(code);
-    //   this.initVariables();
-    //   this.connected = false;
-    // });
-    this.ws.close(code);
-    this.initVariables();
-    this.connected = false;
+    return new Promise<void>((resolve) => {
+      this.ws.onclose = (e) => {
+        this.onclose.bind(this)(e);
+        resolve();
+      };
+      this.ws.close(code);
+      this.initVariables();
+      this.connected = false;
+    });
   }
 
   private onopen() {
