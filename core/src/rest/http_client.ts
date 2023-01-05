@@ -25,10 +25,11 @@ export interface RequestOptions {
 export enum TokenType {
   Bearer = "Bearer",
   Bot = "Bot",
+  None = "",
 }
 
 export interface HTTPClientOptions {
-  /** Type of token used for authorization. */
+  /** Type of token used for authorization. Defaults to `TokenType.Bot`. */
   tokenType?: TokenType;
 
   /** Token to be used for authorization. */
@@ -110,17 +111,7 @@ export class HTTPClient implements HTTPClientOptions {
   private queue = new Map<string, Queue>();
 
   constructor(options?: HTTPClientOptions) {
-    if (options !== undefined) {
-      if (
-        (options.token !== undefined && options.tokenType === undefined) ||
-        (options.token === undefined && options.tokenType !== undefined)
-      ) {
-        throw new TypeError(
-          `Either tokenType and token both must be specified or neither of should be.`,
-        );
-      }
-    }
-    this.tokenType = options?.tokenType;
+    this.tokenType = options?.tokenType ?? TokenType.Bot;
     this.token = options?.token;
     this.userAgent = options?.userAgent ?? USER_AGENT;
     this.baseURL = options?.baseURL ?? DISCORD_API_BASE;
