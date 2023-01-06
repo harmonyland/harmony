@@ -4,9 +4,13 @@ Deno.test("test receiving ready", async () => {
   const client = new ShardedGateway(Deno.env.get("BOT_TOKEN")!, 0);
   await client.spawnAll();
 
-  client.on("READY", async (shardID) => {
-    console.log(shardID);
-    await client.destroy(shardID);
+  const readyPromise: Promise<number> = new Promise((res) => {
+    client.on("READY", res);
   });
+
   await client.runAll();
+
+  const shardID = await readyPromise;
+  console.log(shardID);
+  await client.destroy(shardID);
 });
