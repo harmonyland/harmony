@@ -73,8 +73,8 @@ export class Queue {
       await new Promise((r) => setTimeout(r, this.resetTime - Date.now()));
     }
 
-    const next = (this.#promises[this.#promises.length - 1]?.wait ??
-      Promise.resolve());
+    const next = this.#promises[this.#promises.length - 1]?.wait ??
+      Promise.resolve();
 
     let resolve!: () => void;
     const wait = new Promise<void>((r) => (resolve = r));
