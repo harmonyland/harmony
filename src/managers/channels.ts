@@ -110,7 +110,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     }
     if (option instanceof Embed) {
       option = {
-        embed: option
+        embeds: [option]
       }
     }
     if (Array.isArray(option)) {
