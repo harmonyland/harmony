@@ -55,6 +55,8 @@ export type AutocompleteHandlerCallback = (d: AutocompleteInteraction) => any
 export interface AutocompleteHandler {
   cmd: string
   option: string
+  parent?: string
+  group?: string
   handler: AutocompleteHandlerCallback
 }
 
@@ -246,11 +248,32 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     option: string,
     handler: AutocompleteHandlerCallback
   ): this {
-    this.autocompleteHandlers.push({
+    const handle: AutocompleteHandler = {
       cmd,
       option,
       handler
-    })
+    }
+
+    if (
+      typeof handle.cmd === 'string' &&
+      handle.cmd.includes(' ') &&
+      handle.parent === undefined &&
+      handle.group === undefined
+    ) {
+      const parts = handle.cmd.split(/ +/).filter((e) => e !== '')
+      if (parts.length > 3 || parts.length < 1) {
+        throw new Error('Invalid command name')
+      }
+      const root = parts.shift() as string
+      const group = parts.length === 2 ? parts.shift() : undefined
+      const sub = parts.shift()
+
+      handle.cmd = sub ?? root
+      handle.group = group
+      handle.parent = sub === undefined ? undefined : root
+    }
+
+    this.autocompleteHandlers.push(handle)
     return this
   }
 
@@ -318,6 +341,50 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     })
   }
 
+  /** Get Handler for an autocomplete Interaction. Supports nested sub commands and sub command groups. */
+  private _getAutocompleteHandler(
+    i: AutocompleteInteraction
+  ): AutocompleteHandler | undefined {
+    return [
+      ...this.autocompleteHandlers,
+      ...this.modules.map((e) => e.autocomplete).flat()
+    ].find((e) => {
+      if (i.targetID !== undefined && i.name === e.cmd) {
+        return true
+      }
+
+      const hasGroupOrParent = e.group !== undefined || e.parent !== undefined
+      const groupMatched =
+        e.group !== undefined && e.parent !== undefined
+          ? i.data.options
+              ?.find(
+                (o) =>
+                  o.name === e.group &&
+                  o.type === ApplicationCommandOptionType.SUB_COMMAND_GROUP
+              )
+              ?.options?.find((o) => o.name === e.cmd) !== undefined
+          : true
+      const subMatched =
+        e.group === undefined && e.parent !== undefined
+          ? i.data.options?.find(
+              (o) =>
+                o.name === e.cmd &&
+                o.type === ApplicationCommandOptionType.SUB_COMMAND
+            ) !== undefined
+          : true
+      const nameMatched1 = e.cmd === i.name
+      const parentMatched = hasGroupOrParent ? e.parent === i.name : true
+      const nameMatched = hasGroupOrParent ? parentMatched : nameMatched1
+      const optionMatched =
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        i.options.some((o) => o.name === e.option && o.focused) ||
+        e.option === '*'
+
+      const matched = groupMatched && subMatched && nameMatched && optionMatched
+      return matched
+    })
+  }
+
   /** Process an incoming Interaction */
   async _process(
     interaction: Interaction | ApplicationCommandInteraction
@@ -328,16 +395,12 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (interaction.isAutocomplete()) {
-      const handle = [
-        ...this.autocompleteHandlers,
-        ...this.modules.map((e) => e.autocomplete).flat()
-      ].find(
-        (e) =>
-          (e.cmd.toLowerCase() === interaction.name || e.cmd === '*') &&
-          (e.option === '*' ||
-            e.option.toLowerCase() ===
-              interaction.focusedOption?.name.toLowerCase())
-      )
+      const handle =
+        this._getAutocompleteHandler(interaction) ??
+        [
+          ...this.autocompleteHandlers,
+          ...this.modules.map((e) => e.autocomplete).flat()
+        ].find((e) => e.cmd === '*')
       try {
         await handle?.handler(interaction)
       } catch (e) {
