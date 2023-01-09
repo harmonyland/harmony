@@ -174,6 +174,6 @@ Small note: If editing the README, please conform to the [standard-readme](https
 
 ## License
 
-[MIT © 2020-2022 Harmony Land](LICENSE)
+[MIT © 2020-2023 Harmony Land](LICENSE)
 
 #### Made with ❤ by Harmony Land
