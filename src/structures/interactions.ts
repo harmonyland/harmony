@@ -89,7 +89,9 @@ function isResponseMessage(
   return (
     response.type === undefined ||
     response.type === InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE ||
-    response.type === InteractionResponseType.UPDATE_MESSAGE
+    response.type === InteractionResponseType.UPDATE_MESSAGE ||
+    response.type === InteractionResponseType.DEFERRED_CHANNEL_MESSAGE ||
+    response.type === InteractionResponseType.DEFERRED_MESSAGE_UPDATE
   )
 }
 
