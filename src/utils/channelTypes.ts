@@ -37,7 +37,8 @@ export function isGuildBasedTextChannel(
     channel.type === ChannelTypes.GUILD_NEWS ||
     channel.type === ChannelTypes.NEWS_THREAD ||
     channel.type === ChannelTypes.PRIVATE_THREAD ||
-    channel.type === ChannelTypes.PUBLIC_THREAD
+    channel.type === ChannelTypes.PUBLIC_THREAD ||
+    channel.type === ChannelTypes.GUILD_VOICE
   )
 }
 
@@ -96,7 +97,8 @@ export function isTextChannel(channel: Channel): channel is TextChannel {
     channel.type === ChannelTypes.GUILD_NEWS ||
     channel.type === ChannelTypes.NEWS_THREAD ||
     channel.type === ChannelTypes.PRIVATE_THREAD ||
-    channel.type === ChannelTypes.PUBLIC_THREAD
+    channel.type === ChannelTypes.PUBLIC_THREAD ||
+    channel.type === ChannelTypes.GUILD_VOICE
   )
 }
 

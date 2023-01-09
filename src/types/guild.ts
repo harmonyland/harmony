@@ -200,12 +200,12 @@ export type GuildThreadAvailableChannelPayloads =
 export type GuildTextBasedPayloads =
   | GuildTextBasedChannelPayload
   | GuildTextChannelPayload
+  | GuildVoiceChannelPayload
   | GuildNewsChannelPayload
 
 export type GuildChannelPayloads =
   | GuildTextBasedPayloads
   | GuildThreadAvailableChannelPayloads
-  | GuildVoiceChannelPayload
   | GuildCategoryChannelPayload
 
 export type GuildThreadAvailableChannels =
@@ -218,11 +218,11 @@ export type GuildTextBasedChannels =
   | GuildThreadAvailableChannels
   | GuildTextChannel
   | NewsChannel
+  | VoiceChannel
 
 export type GuildChannels =
   | GuildChannel
   | GuildTextBasedChannels
-  | VoiceChannel
   | CategoryChannel
 
 export interface GuildCreatePayload {

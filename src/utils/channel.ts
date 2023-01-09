@@ -39,6 +39,7 @@ export type EveryTextChannelTypes =
   | DMChannel
   | GroupDMChannel
   | ThreadChannel
+  | VoiceChannel
 
 export type EveryGuildThreadAvailableChannelTypes =
   | GuildTextChannel
@@ -58,12 +59,12 @@ export type EveryTextChannelPayloadTypes =
   | DMChannelPayload
   | GroupDMChannelPayload
   | ThreadChannelPayload
+  | GuildVoiceChannelPayload
 
 export type EveryChannelTypes =
   | Channel
   | GuildChannel
   | CategoryChannel
-  | VoiceChannel
   | StageVoiceChannel
   | EveryTextChannelTypes
   | EveryGuildThreadAvailableChannelTypes
@@ -71,7 +72,6 @@ export type EveryChannelTypes =
 export type EveryChannelPayloadTypes =
   | ChannelPayload
   | GuildCategoryChannelPayload
-  | GuildVoiceChannelPayload
   | GuildStageChannelPayload
   | EveryTextChannelPayloadTypes
   | EveryGuildThreadAvailableChannelPayloadTypes
