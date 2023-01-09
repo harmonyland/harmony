@@ -12,7 +12,7 @@ import {
 } from '../types/endpoint.ts'
 import { Collection } from '../utils/collection.ts'
 import { Channel } from './channel.ts'
-import type { Embed } from './embed.ts'
+import { Embed } from './embed.ts'
 import { Emoji } from './emoji.ts'
 import type { Member } from './member.ts'
 import { Message } from './message.ts'
@@ -41,7 +41,6 @@ export class TextChannel extends Channel {
   }
 
   /**
-   *
    * @param content Text content of the Message to send.
    * @param option Various other Message options.
    * @param reply Reference to a Message object to reply-to.
@@ -51,11 +50,17 @@ export class TextChannel extends Channel {
     option?: AllMessageOptions,
     reply?: Message
   ): Promise<Message> {
-    return this.client.channels.sendMessage(
-      this,
-      content,
-      Object.assign(option ?? {}, { reply })
-    )
+    if (typeof content === 'object') {
+      option = content
+      content = undefined
+    }
+    if (option instanceof Array) {
+      option = { embeds: option }
+    }
+    if (option instanceof Embed) {
+      option = { embeds: [option] }
+    }
+    return this.client.channels.sendMessage(this, content, { ...option, reply })
   }
 
   /**
