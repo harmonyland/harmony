@@ -14,8 +14,10 @@ import type {
   VoiceChannelJoinOptions,
   VoiceServerData
 } from '../client/voice.ts'
+import { Mixin } from '../../deps.ts'
+import { TextChannel } from './textChannel.ts'
 
-export class VoiceChannel extends GuildChannel {
+export class VoiceChannel extends Mixin(GuildChannel, TextChannel) {
   bitrate!: string
   userLimit!: number
   voiceStates = new GuildChannelVoiceStatesManager(

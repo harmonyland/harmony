@@ -72,7 +72,9 @@ export interface GuildNewsChannelPayload
   extends GuildTextBasedChannelPayload,
     GuildThreadAvailableChannelPayload {}
 
-export interface GuildVoiceChannelPayload extends GuildChannelPayload {
+export interface GuildVoiceChannelPayload
+  extends GuildChannelPayload,
+    GuildTextBasedChannelPayload {
   bitrate: string
   user_limit: number
   video_quality_mode: number
@@ -159,7 +161,9 @@ export interface ModifyGuildNewsChannelPayload
   extends ModifyGuildTextBasedChannelPayload,
     ModifyGuildThreadAvailableChannelPayload {}
 
-export interface ModifyVoiceChannelPayload extends ModifyChannelPayload {
+export interface ModifyVoiceChannelPayload
+  extends ModifyChannelPayload,
+    ModifyGuildTextBasedChannelPayload {
   bitrate?: number | null
   user_limit?: number | null
 }
@@ -208,7 +212,9 @@ export interface ModifyGuildNewsChannelOption
   extends ModifyGuildTextBasedChannelOption,
     ModifyGuildThreadAvailableChannelOption {}
 
-export interface ModifyVoiceChannelOption extends ModifyChannelOption {
+export interface ModifyVoiceChannelOption
+  extends ModifyChannelOption,
+    ModifyGuildTextBasedChannelOption {
   bitrate?: number | null
   userLimit?: number | null
 }
