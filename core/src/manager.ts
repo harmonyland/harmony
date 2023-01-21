@@ -3,7 +3,7 @@ import { ShardedGateway, ShardedGatewayOptions } from "./gateway/sharded.ts";
 import type { HTTPClientOptions } from "./rest/http_client.ts";
 import { RESTClient } from "./rest/rest_client.ts";
 
-interface APIManagerOptions {
+export interface APIManagerOptions {
   rest?: Omit<HTTPClientOptions, "token">;
   gateway?: ShardedGatewayOptions & { intents?: number };
 }
