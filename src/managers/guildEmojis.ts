@@ -50,6 +50,25 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     })
   }
 
+  async fetchAll(): Promise<Emoji[]> {
+    return await new Promise((resolve, reject) => {
+      this.client.rest
+        .get(GUILD_EMOJIS(this.guild.id))
+        .then(async (data) => {
+          const emojis: Emoji[] = []
+          for (const emojiData of data as EmojiPayload[]) {
+            const emoji = new Emoji(this.client, emojiData)
+            emojiData.guild_id = this.guild.id
+            await this.set(emojiData.id!, emojiData)
+            emoji.guild = this.guild
+            emojis.push(emoji)
+          }
+          resolve(emojis)
+        })
+        .catch((e) => reject(e))
+    })
+  }
+
   async create(
     name: string,
     url: string,

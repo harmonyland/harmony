@@ -8,7 +8,7 @@ import { Message, MessageAttachment } from './message.ts'
 import type { TextChannel } from './textChannel.ts'
 import { User } from './user.ts'
 import { fetchAuto } from '../../deps.ts'
-import { WEBHOOK_MESSAGE } from '../types/endpoint.ts'
+import { WEBHOOK_MESSAGE, CHANNEL_WEBHOOKS } from '../types/endpoint.ts'
 import { Constants } from '../types/constants.ts'
 
 export interface WebhookMessageOptions extends MessageOptions {
@@ -26,6 +26,13 @@ export interface WebhookEditOptions {
   avatar?: string
   /** New channel for Webhook. Requires authentication. */
   channelID?: string
+}
+
+export interface WebhookCreateOptions {
+  /** Name of the Webhook. */
+  name: string
+  /** Base64 image */
+  avatar?: string
 }
 
 /** Webhook follows different way of instantiation */
@@ -216,5 +223,15 @@ export class Webhook {
       )
     )
     return this
+  }
+
+  static async create(
+    channel: string | TextChannel,
+    client: Client,
+    body: WebhookCreateOptions
+  ): Promise<Webhook> {
+    if (typeof channel === 'object') channel = channel.id
+    const webhook = await client.rest.post(CHANNEL_WEBHOOKS(channel), body)
+    return new Webhook(webhook)
   }
 }
