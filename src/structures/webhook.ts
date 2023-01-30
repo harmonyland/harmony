@@ -29,10 +29,10 @@ export interface WebhookEditOptions {
 }
 
 export interface WebhookCreateOptions {
-	/** Name of the Webhook. */
-	name: string
-	/** Base64 image */
-	avatar?: string
+  /** Name of the Webhook. */
+  name: string
+  /** Base64 image */
+  avatar?: string
 }
 
 /** Webhook follows different way of instantiation */
@@ -225,9 +225,13 @@ export class Webhook {
     return this
   }
 
-  static async create(channel: string | TextChannel, client: Client, body: WebhookCreateOptions): Promise<Webhook> {
-	if (typeof channel == 'object') channel = channel.id
-	const webhook = await client.rest.post(CHANNEL_WEBHOOKS(channel), body)
-	return new Webhook(webhook)
+  static async create(
+    channel: string | TextChannel,
+    client: Client,
+    body: WebhookCreateOptions
+  ): Promise<Webhook> {
+    if (typeof channel == 'object') channel = channel.id
+    const webhook = await client.rest.post(CHANNEL_WEBHOOKS(channel), body)
+    return new Webhook(webhook)
   }
 }
