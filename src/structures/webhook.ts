@@ -225,9 +225,10 @@ export class Webhook {
     return this
   }
 
-  async create(channel: string | TextChannel, body: WebhookCreateOptions): Promise<Webhook> {
+  static async create(channel: string | TextChannel, body: WebhookCreateOptions, client?: Client): Promise<Webhook> {
 	if (typeof channel == 'object') channel = channel.id
-	const webhook = await this.client?.rest.post(CHANNEL_WEBHOOKS(channel), body)
+	const rest = client !== undefined ? client.rest : new RESTManager();
+	const webhook = await rest.post(CHANNEL_WEBHOOKS(channel), body)
 	return new Webhook(webhook)
   }
 }
