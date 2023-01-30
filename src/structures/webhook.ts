@@ -230,7 +230,7 @@ export class Webhook {
     client: Client,
     body: WebhookCreateOptions
   ): Promise<Webhook> {
-    if (typeof channel == 'object') channel = channel.id
+    if (typeof channel === 'object') channel = channel.id
     const webhook = await client.rest.post(CHANNEL_WEBHOOKS(channel), body)
     return new Webhook(webhook)
   }
