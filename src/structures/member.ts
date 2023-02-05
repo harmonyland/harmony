@@ -65,7 +65,7 @@ export class Member extends SnowflakeBase {
       )
       this.permissions.add(
         ...rolePermissions.filter(
-          (p) => !this.permissions.toArray().includes(p)
+          (p) => this.permissions.toArray().includes(p) === false
         )
       )
     })
