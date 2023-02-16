@@ -63,7 +63,7 @@ import type { Interaction } from '../../structures/interactions.ts'
 import type { CommandContext, ParsedCommand } from '../../commands/command.ts'
 import type { RequestMethods } from '../../rest/types.ts'
 import type { PartialInvitePayload } from '../../types/invite.ts'
-import type { GuildChannels } from '../../types/guild.ts'
+import type { AuditLogEntry, GuildChannels } from '../../types/guild.ts'
 import type {
   ThreadChannel,
   ThreadMember
@@ -76,6 +76,7 @@ import { threadMemberUpdate } from './threadMemberUpdate.ts'
 import { threadListSync } from './threadListSync.ts'
 import { guildStickersUpdate } from './guildStickersUpdate.ts'
 import { MessageSticker } from '../../structures/messageSticker.ts'
+import { guildAuditLogEntryCreate } from './guildAuditLogEntryCreate.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -124,7 +125,8 @@ export const gatewayHandlers: {
   THREAD_LIST_SYNC: threadListSync,
   THREAD_MEMBERS_UPDATE: threadMembersUpdate,
   THREAD_MEMBER_UPDATE: threadMemberUpdate,
-  GUILD_STICKERS_UPDATE: guildStickersUpdate
+  GUILD_STICKERS_UPDATE: guildStickersUpdate,
+  GUILD_AUDIT_LOG_ENTRY_CREATE: guildAuditLogEntryCreate
 }
 
 export interface VoiceServerUpdateData {
@@ -177,6 +179,12 @@ export type ClientEvents = {
    * @param user The User who was banned
    */
   guildBanAdd: [guild: Guild, user: User]
+  /**
+   * A new audit log entry was created
+   * @param guild The guild in which the entry was created
+   * @param entry The entry that was created
+   */
+  guildAuditLogEntryCreate: [guild: Guild, entry: AuditLogEntry]
   /**
    * A ban from a User in Guild was elevated
    * @param guild Guild from which ban was removed

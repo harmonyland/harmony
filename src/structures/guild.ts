@@ -732,6 +732,8 @@ export class GuildIntegration extends Base {
   }
 }
 
-function transformAuditLogEntryPayload(d: AuditLogEntryPayload): AuditLogEntry {
+export function transformAuditLogEntryPayload(
+  d: AuditLogEntryPayload
+): AuditLogEntry {
   return toCamelCase(d)
 }
