@@ -3,7 +3,11 @@
 import type { Guild } from '../structures/guild.ts'
 import type { Member } from '../structures/member.ts'
 import type { EmojiPayload } from './emoji.ts'
-import type { GuildPayload, MemberPayload } from './guild.ts'
+import type {
+  AuditLogEntryPayload,
+  GuildPayload,
+  MemberPayload
+} from './guild.ts'
 import type {
   ActivityGame,
   ActivityPayload,
@@ -53,7 +57,9 @@ export enum GatewayCloseCodes {
 export enum GatewayIntents {
   GUILDS = 1 << 0,
   GUILD_MEMBERS = 1 << 1,
+  /** @deprecated Use GUILD_MODERATION instead */
   GUILD_BANS = 1 << 2,
+  GUILD_MODERATION = 1 << 2,
   /** @deprecated Use GUILD_EMOJIS_AND_STICKERS instead */
   GUILD_EMOJIS = 1 << 3,
   GUILD_EMOJIS_AND_STICKERS = 1 << 3,
@@ -84,6 +90,7 @@ export enum GatewayEvents {
   Guild_Delete = 'GUILD_DELETE',
   Guild_Ban_Add = 'GUILD_BAN_ADD',
   Guild_Ban_Remove = 'GUILD_BAN_REMOVE',
+  Guild_Audit_Log_Entry_Create = 'GUILD_AUDIT_LOG_ENTRY_CREATE',
   Guild_Emojis_Update = 'GUILD_EMOJIS_UPDATE',
   Guild_Stickers_Update = 'GUILD_STICKERS_UPDATE',
   Guild_Integrations_Update = 'GUILD_INTEGRATIONS_UPDATE',
@@ -196,6 +203,10 @@ export interface GuildBanAddPayload {
 export interface GuildBanRemovePayload {
   guild_id: string
   user: UserPayload
+}
+
+export interface GuildAuditLogEntryCreatePayload extends AuditLogEntryPayload {
+  guild_id: string
 }
 
 export interface GuildEmojiUpdatePayload {
