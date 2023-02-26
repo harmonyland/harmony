@@ -381,7 +381,9 @@ export class CommandClient extends Client implements CommandClientOptions {
         const missing: string[] = []
 
         for (const perm of permissions) {
-          const has = msg.member?.permissions.has(perm)
+          const has =
+            msg.guild.ownerID === msg.author.id ||
+            msg.member?.permissions.has(perm)
           if (has !== true) missing.push(perm)
         }
 
