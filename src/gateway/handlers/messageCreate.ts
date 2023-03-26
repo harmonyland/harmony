@@ -19,7 +19,8 @@ export const messageCreate: GatewayEventHandler = async (
       // Let's assume it's a DM channel.
       await gateway.client.channels.set(d.channel_id, {
         id: d.channel_id,
-        type: 1
+        type: 1,
+        flags: 0
       })
       channel = (await gateway.client.channels.get<TextChannel>(d.channel_id))!
     } else return
