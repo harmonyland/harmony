@@ -76,7 +76,9 @@ export enum ApplicationCommandOptionType {
   /** Union of User and Role option type */
   MENTIONABLE = 9,
   /** Number option type, similar to JS Number. Can be both integer and float */
-  NUMBER = 10
+  NUMBER = 10,
+  /** Attachment option type */
+  ATTACHMENT = 11
 }
 
 export { ApplicationCommandOptionType as SlashCommandOptionType }

@@ -489,7 +489,8 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
         payload.channel_id !== undefined
           ? (new Channel(client, {
               id: payload.channel_id!,
-              type: 0
+              type: 0,
+              flags: 0
             }) as unknown as TextChannel)
           : undefined
 

@@ -18,6 +18,7 @@ import {
   Interaction
 } from './interactions.ts'
 import type { Message } from './message.ts'
+import type { Attachment } from '../types/channel.ts'
 
 export interface InteractionApplicationCommandResolved {
   users: Dict<InteractionUser>
@@ -122,6 +123,7 @@ export class ApplicationCommandInteraction extends Interaction {
       | InteractionUser
       | InteractionChannel
       | Role
+      | Attachment
       | undefined
   >(name: string): T {
     const options = this.options
