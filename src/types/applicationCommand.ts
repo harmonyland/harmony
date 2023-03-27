@@ -78,7 +78,7 @@ export enum ApplicationCommandOptionType {
   /** Number option type, similar to JS Number. Can be both integer and float */
   NUMBER = 10,
   /** Attachment option type */
-  ATTACHMENT = 11,
+  ATTACHMENT = 11
 }
 
 export { ApplicationCommandOptionType as SlashCommandOptionType }

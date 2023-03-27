@@ -50,8 +50,7 @@ import type { WebhookPayload } from '../types/webhook.ts'
 import type { Dict } from '../utils/dict.ts'
 import type { RESTManager } from './manager.ts'
 
-// deno-lint-ignore no-explicit-any
-function queryString<T extends {[key: string]: any}>(obj: T): string {
+function queryString<T extends {[key: string]: string | number | boolean}>(obj: T): string {
   return Object.entries(obj)
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join('&')
