@@ -18,7 +18,7 @@ import {
   Interaction
 } from './interactions.ts'
 import type { Message } from './message.ts'
-import type { Attachment } from "../types/channel.ts"
+import type { Attachment } from '../types/channel.ts'
 
 export interface InteractionApplicationCommandResolved {
   users: Dict<InteractionUser>
