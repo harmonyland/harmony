@@ -26,6 +26,7 @@ import { Template } from '../structures/template.ts'
 import { VoiceManager } from './voice.ts'
 import { StickersManager } from '../managers/stickers.ts'
 import { createOAuthURL, OAuthURLOptions } from '../utils/oauthURL.ts'
+import type { AllowedMentionsPayload } from '../types/channel.ts'
 
 /** OS related properties sent with Gateway Identify */
 export interface ClientProperties {
@@ -74,6 +75,8 @@ export interface ClientOptions {
   compress?: boolean
   /** Max number of messages to cache per channel. Default 100 */
   messageCacheMax?: number
+  /** Default Allowed Mentions */
+  defaultAllowedMentions?: AllowedMentionsPayload
 }
 
 /**
@@ -122,6 +125,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Client Properties */
   readonly clientProperties!: ClientProperties
+  /** Default mention settings */
+  defaultAllowedMentions: AllowedMentionsPayload = {}
 
   /** Interactions Client */
   interactions: InteractionsClient
@@ -266,6 +271,8 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       client: this,
       enabled: options.enableSlash
     })
+
+    this.defaultAllowedMentions = options.defaultAllowedMentions ?? {}
   }
 
   /**
