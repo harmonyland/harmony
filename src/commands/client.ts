@@ -43,6 +43,8 @@ export interface CommandClientOptions extends ClientOptions {
   allowDMs?: boolean
   /** Whether Commands should be case-sensitive or not, not by default. */
   caseSensitive?: boolean
+  /** Command cooldown in MS */
+  cooldown?: number
 }
 
 export type CommandContextMiddleware<T extends CommandContext> = (
@@ -80,6 +82,10 @@ export class CommandClient extends Client implements CommandClientOptions {
   categories: CategoriesManager = new CategoriesManager(this)
 
   middlewares = new Array<CommandContextMiddleware<CommandContext>>()
+
+  cooldown = 0;
+
+  private readonly lastUsed = new Map<string, { global: number, commands: { [key: string] : number } }>()
 
   constructor(options: CommandClientOptions) {
     super(options)
@@ -124,6 +130,8 @@ export class CommandClient extends Client implements CommandClientOptions {
     this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
     this.caseSensitive =
       options.caseSensitive === undefined ? false : options.caseSensitive
+
+	this.cooldown = options.cooldown ?? 0 
 
     const self = this as any
     if (self._decoratedCommands !== undefined) {
@@ -404,6 +412,17 @@ export class CommandClient extends Client implements CommandClientOptions {
       }
     }
 
+	const userCooldowns = this.lastUsed.get(msg.author.id) ?? { global: 0, commands: {} };
+	const commandCanBeUsedAt = (userCooldowns.commands[command.name] ?? 0) + ((command.cooldown ?? 0) as number);
+	const globalCooldown = userCooldowns.global + this.cooldown;
+
+	if (
+		Date.now() < commandCanBeUsedAt ||
+		Date.now() < globalCooldown
+	) {
+		return this.emit('commandOnCooldown', ctx, (commandCanBeUsedAt > globalCooldown ? commandCanBeUsedAt : globalCooldown) - Date.now());
+	}
+
     const lastNext = async (): Promise<void> => {
       try {
         this.emit('commandUsed', ctx)
@@ -412,6 +431,9 @@ export class CommandClient extends Client implements CommandClientOptions {
 
         const result = await command.execute(ctx)
         await command.afterExecute(ctx, result)
+		userCooldowns.commands[command.name] = Date.now();
+		userCooldowns.global = Date.now();
+		this.lastUsed.set(msg.author.id, userCooldowns);
       } catch (e) {
         try {
           await command.onError(ctx, e as Error)

@@ -106,6 +106,8 @@ export class Command implements CommandOptions {
   dmOnly?: boolean
   ownerOnly?: boolean
   subCommands?: Command[]
+  /** Cooldown in MS */
+  cooldown?: number
 
   declare readonly _decoratedSubCommands?: Command[]
 
