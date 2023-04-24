@@ -108,6 +108,8 @@ export class Command implements CommandOptions {
   subCommands?: Command[]
   /** Cooldown in MS */
   cooldown?: number
+  /** Global command cooldown in MS */
+  globalCooldown?: number
 
   declare readonly _decoratedSubCommands?: Command[]
 

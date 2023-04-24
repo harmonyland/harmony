@@ -28,7 +28,12 @@ export {
   ExtensionsManager
 } from './src/commands/extension.ts'
 export { ApplicationCommandsModule } from './src/interactions/commandModule.ts'
-export { CommandClient, command, subcommand } from './src/commands/client.ts'
+export {
+  CommandClient,
+  command,
+  subcommand,
+  CommandCooldownType
+} from './src/commands/client.ts'
 export type { CommandClientOptions } from './src/commands/client.ts'
 export { BaseManager } from './src/managers/base.ts'
 export { BaseChildManager } from './src/managers/baseChild.ts'
