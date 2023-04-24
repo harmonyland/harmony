@@ -90,7 +90,7 @@ export class TextChannel extends Channel {
         if (findEmoji !== undefined) emoji = `${findEmoji.name}:${findEmoji.id}`
         else throw new Error(`Emoji not found: ${emoji}`)
       } else {
-        //strip out the <>
+        // strip out the <>
         emoji = emoji[0] === '<' ? emoji.substring(1) : emoji
         emoji =
           emoji[emoji.length - 1] === '>'
@@ -120,7 +120,7 @@ export class TextChannel extends Channel {
         if (findEmoji !== undefined) emoji = `${findEmoji.name}:${findEmoji.id}`
         else throw new Error(`Emoji not found: ${emoji}`)
       } else {
-        //strip out the <>
+        // strip out the <>
         emoji = emoji[0] === '<' ? emoji.substring(1) : emoji
         emoji =
           emoji[emoji.length - 1] === '>'
