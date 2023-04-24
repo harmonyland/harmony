@@ -92,7 +92,10 @@ export class TextChannel extends Channel {
       } else {
         //strip out the <>
         emoji = emoji[0] === '<' ? emoji.substring(1) : emoji
-        emoji = emoji[emoji.length - 1] === '>' ? emoji.substring(0, emoji.length - 2) : emoji
+        emoji =
+          emoji[emoji.length - 1] === '>'
+            ? emoji.substring(0, emoji.length - 2)
+            : emoji
       }
     }
     if (message instanceof Message) message = message.id
@@ -119,7 +122,10 @@ export class TextChannel extends Channel {
       } else {
         //strip out the <>
         emoji = emoji[0] === '<' ? emoji.substring(1) : emoji
-        emoji = emoji[emoji.length - 1] === '>' ? emoji.substring(0, emoji.length - 2) : emoji
+        emoji =
+          emoji[emoji.length - 1] === '>'
+            ? emoji.substring(0, emoji.length - 2)
+            : emoji
       }
     }
     if (message instanceof Message) message = message.id
