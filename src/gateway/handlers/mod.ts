@@ -452,6 +452,9 @@ export type ClientEvents = {
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
   commandNotFound: [msg: Message, parsedCmd: ParsedCommand]
+  commandUserBlacklisted: [ctx: CommandContext]
+  commandGuildBlacklisted: [ctx: CommandContext]
+  commandChannelBlacklisted: [ctx: CommandContext]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
   error: [error: Error]
 
