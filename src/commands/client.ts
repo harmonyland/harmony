@@ -280,15 +280,15 @@ export class CommandClient extends Client implements CommandClientOptions {
       guild: msg.guild
     }
 
-	const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
-    if (isUserBlacklisted) return this.emit("commandUserBlacklisted", ctx)
+    const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
+    if (isUserBlacklisted) return this.emit('commandUserBlacklisted', ctx)
 
     const isChannelBlacklisted = await this.isChannelBlacklisted(msg.channel.id)
-    if (isChannelBlacklisted) return this.emit("commandChannelBlacklisted", ctx)
+    if (isChannelBlacklisted) return this.emit('commandChannelBlacklisted', ctx)
 
     if (msg.guild !== undefined) {
       const isGuildBlacklisted = await this.isGuildBlacklisted(msg.guild.id)
-      if (isGuildBlacklisted) return this.emit("commandGuildBlacklisted", ctx)
+      if (isGuildBlacklisted) return this.emit('commandGuildBlacklisted', ctx)
     }
 
     // In these checks too, Command overrides Category if present
