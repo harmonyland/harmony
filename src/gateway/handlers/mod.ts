@@ -77,6 +77,7 @@ import { threadListSync } from './threadListSync.ts'
 import { guildStickersUpdate } from './guildStickersUpdate.ts'
 import { MessageSticker } from '../../structures/messageSticker.ts'
 import { guildAuditLogEntryCreate } from './guildAuditLogEntryCreate.ts'
+import { CommandCooldownType } from '../../commands/client.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -455,9 +456,13 @@ export type ClientEvents = {
   commandUserBlacklisted: [ctx: CommandContext]
   commandGuildBlacklisted: [ctx: CommandContext]
   commandChannelBlacklisted: [ctx: CommandContext]
+  commandOnCooldown: [
+    ctx: CommandContext,
+    remaining: number,
+    type: CommandCooldownType
+  ]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
   error: [error: Error]
-
   threadCreate: [thread: ThreadChannel]
   threadDelete: [thread: ThreadChannel]
   threadDeleteUncached: [thread: string]
