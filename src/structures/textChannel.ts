@@ -60,7 +60,11 @@ export class TextChannel extends Channel {
     if (option instanceof Embed) {
       option = { embeds: [option] }
     }
-    return this.client.channels.sendMessage(this, content, { ...option, reply })
+    return this.client.channels.sendMessage(this, content, {
+      allowedMentions: this.client.defaultAllowedMentions,
+      ...option,
+      reply
+    })
   }
 
   /**
