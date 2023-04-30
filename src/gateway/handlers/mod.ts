@@ -463,6 +463,7 @@ export type ClientEvents = {
   ]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
   error: [error: Error]
+
   threadCreate: [thread: ThreadChannel]
   threadDelete: [thread: ThreadChannel]
   threadDeleteUncached: [thread: string]
