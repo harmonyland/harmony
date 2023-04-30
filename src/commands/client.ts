@@ -43,6 +43,21 @@ export interface CommandClientOptions extends ClientOptions {
   allowDMs?: boolean
   /** Whether Commands should be case-sensitive or not, not by default. */
   caseSensitive?: boolean
+  /** Global command cooldown in MS */
+  globalCommandCooldown?: number
+  /** Global cooldown in MS */
+  globalCooldown?: number
+}
+
+export enum CommandCooldownType {
+  /** Cooldown for command for user */
+  USER_COMMAND,
+  /** Cooldown for any command for bot */
+  USER_GLOBAL,
+  /** Cooldown for command for bot */
+  BOT_COMMAND,
+  /** Cooldown for any command for bot */
+  BOT_GLOBAL
 }
 
 export type CommandContextMiddleware<T extends CommandContext> = (
@@ -80,6 +95,14 @@ export class CommandClient extends Client implements CommandClientOptions {
   categories: CategoriesManager = new CategoriesManager(this)
 
   middlewares = new Array<CommandContextMiddleware<CommandContext>>()
+
+  globalCommandCooldown = 0
+  globalCooldown = 0
+
+  private readonly lastUsed = new Map<
+    string,
+    { global: number; commands: { [key: string]: number } }
+  >()
 
   constructor(options: CommandClientOptions) {
     super(options)
@@ -124,6 +147,9 @@ export class CommandClient extends Client implements CommandClientOptions {
     this.allowDMs = options.allowDMs === undefined ? true : options.allowDMs
     this.caseSensitive =
       options.caseSensitive === undefined ? false : options.caseSensitive
+
+    this.globalCommandCooldown = options.globalCommandCooldown ?? 0
+    this.globalCooldown = options.globalCooldown ?? 0
 
     const self = this as any
     if (self._decoratedCommands !== undefined) {
@@ -404,6 +430,58 @@ export class CommandClient extends Client implements CommandClientOptions {
       }
     }
 
+    const userCooldowns = this.lastUsed.get(msg.author.id) ?? {
+      global: 0,
+      commands: {}
+    }
+    const botCooldowns = this.lastUsed.get('bot') ?? {
+      global: 0,
+      commands: {}
+    }
+
+    const userCanUseCommandAt =
+      (userCooldowns.commands[command.name] ?? 0) +
+      ((command.cooldown ?? 0) as number)
+    const userCanUseAnyCommandAt =
+      userCooldowns.global + this.globalCommandCooldown
+
+    const anyoneCanUseCommandAt =
+      (botCooldowns.commands[command.name] ?? 0) +
+      ((command.globalCooldown ?? 0) as number)
+    const anyoneCanUseAnyCommandAt = botCooldowns.global + this.globalCooldown
+
+    if (
+      Date.now() < anyoneCanUseCommandAt ||
+      Date.now() < anyoneCanUseAnyCommandAt
+    ) {
+      const forCommand = anyoneCanUseCommandAt > anyoneCanUseAnyCommandAt
+      return this.emit(
+        'commandOnCooldown',
+        ctx,
+        (forCommand ? anyoneCanUseCommandAt : anyoneCanUseAnyCommandAt) -
+          Date.now(),
+        forCommand
+          ? CommandCooldownType.BOT_COMMAND
+          : CommandCooldownType.BOT_GLOBAL
+      )
+    }
+
+    if (
+      Date.now() < userCanUseCommandAt ||
+      Date.now() < userCanUseAnyCommandAt
+    ) {
+      const forCommand = userCanUseCommandAt > userCanUseAnyCommandAt
+      return this.emit(
+        'commandOnCooldown',
+        ctx,
+        (forCommand ? userCanUseCommandAt : userCanUseAnyCommandAt) -
+          Date.now(),
+        forCommand
+          ? CommandCooldownType.USER_COMMAND
+          : CommandCooldownType.USER_GLOBAL
+      )
+    }
+
     const lastNext = async (): Promise<void> => {
       try {
         this.emit('commandUsed', ctx)
@@ -412,6 +490,14 @@ export class CommandClient extends Client implements CommandClientOptions {
 
         const result = await command.execute(ctx)
         await command.afterExecute(ctx, result)
+
+        userCooldowns.commands[command.name] = Date.now()
+        userCooldowns.global = Date.now()
+        botCooldowns.commands[command.name] = Date.now()
+        botCooldowns.global = Date.now()
+
+        this.lastUsed.set(msg.author.id, userCooldowns)
+        this.lastUsed.set('bot', botCooldowns)
       } catch (e) {
         try {
           await command.onError(ctx, e as Error)

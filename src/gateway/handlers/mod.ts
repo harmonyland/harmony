@@ -77,6 +77,7 @@ import { threadListSync } from './threadListSync.ts'
 import { guildStickersUpdate } from './guildStickersUpdate.ts'
 import { MessageSticker } from '../../structures/messageSticker.ts'
 import { guildAuditLogEntryCreate } from './guildAuditLogEntryCreate.ts'
+import { CommandCooldownType } from '../../commands/client.ts'
 
 export const gatewayHandlers: {
   [eventCode in GatewayEvents]: GatewayEventHandler | undefined
@@ -452,6 +453,11 @@ export type ClientEvents = {
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
   commandNotFound: [msg: Message, parsedCmd: ParsedCommand]
+  commandOnCooldown: [
+    ctx: CommandContext,
+    remaining: number,
+    type: CommandCooldownType
+  ]
   gatewayError: [err: ErrorEvent, shards: [number, number]]
   error: [error: Error]
 
