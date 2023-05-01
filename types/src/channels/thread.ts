@@ -25,8 +25,8 @@ export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
   member_count: number;
   thread_metadata: ThreadMetadataPayload;
   member: ThreadMemberPayload;
-  default_auto_archive_duration: number;
   permissions: string;
+  applied_tags?: string[];
 }
 
 // https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread

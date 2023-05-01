@@ -7,17 +7,20 @@ export enum ChannelType {
   GUILD_VOICE = 2,
   GROUP_DM = 3,
   GUILD_CATEGORY = 4,
-  GUILD_NEWS = 5,
-  GUILD_NEWS_THREAD = 10,
+  GUILD_ANNOUNCEMENT = 5,
+  ANNOUNCEMENT_THREAD = 10,
   GUILD_PUBLIC_THREAD = 11,
   GUILD_PRIVATE_THREAD = 12,
   GUILD_STAGE_VOICE = 13,
+  GUILD_DIRECTORY = 14,
+  GUILD_FORUM = 15,
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object */
 export interface ChannelPayload {
   id: string;
   type: ChannelType;
+  flags: number;
 }
 
 export interface TextChannelPayload extends ChannelPayload {

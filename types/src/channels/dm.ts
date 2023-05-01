@@ -1,14 +1,19 @@
 import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
-import { TextChannelPayload } from "./base.ts";
+import { ChannelType, TextChannelPayload } from "./base.ts";
 
-// https://discord.com/developers/docs/resources/channel#channel-object-example-dm-channel
-export interface DMChannelPayload extends TextChannelPayload {
+export interface DMBasedChannelPayload extends TextChannelPayload {
   recipients: UserPayload[];
 }
 
+// https://discord.com/developers/docs/resources/channel#channel-object-example-dm-channel
+export interface DMChannelPayload extends DMBasedChannelPayload {
+  type: ChannelType.DM;
+}
+
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-group-dm-channel */
-export interface GroupDMChannelPayload extends DMChannelPayload {
+export interface GroupDMChannelPayload extends DMBasedChannelPayload {
+  type: ChannelType.GROUP_DM;
   name: string;
   icon: string | null;
   owner_id: string;

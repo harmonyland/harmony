@@ -1,7 +1,9 @@
+import { AutoModerationRulePayload } from "../autoMod/autoMod.ts";
 import { OverwritePayload } from "../channels/guild.ts";
 import { GuildThreadChannelPayload } from "../channels/thread.ts";
 import { IntegrationPayload } from "../guilds/integration.ts";
 import { RolePayload } from "../guilds/role.ts";
+import { ApplicationCommandPayload } from "../interactions/command.ts";
 import {
   ScheduledEventPayload,
   ScheduledEventPrivacyLevel,
@@ -13,7 +15,9 @@ import { UserPayload } from "../users/user.ts";
 import { WebhookPayload } from "../webhooks/webhook.ts";
 
 export interface AuditLogPayload {
+  application_commands: ApplicationCommandPayload[];
   audit_log_entries: AuditLogEntryPayload[];
+  auto_moderation_rules: AutoModerationRulePayload[];
   guild_scheduled_events: ScheduledEventPayload[];
   integrations: IntegrationPayload[];
   threads: GuildThreadChannelPayload[];
@@ -79,9 +83,19 @@ export enum AuditLogEvents {
   THREAD_CREATE = 110,
   THREAD_UPDATE = 111,
   THREAD_DELETE = 112,
+  APPLICATION_COMMAND_PERMISSION_UPDATE = 121,
+  AUTO_MODERATION_RULE_CREATE = 140,
+  AUTO_MODERATION_RULE_UPDATE = 141,
+  AUTO_MODERATION_RULE_DELETE = 142,
+  AUTO_MODERATION_BLOCK_MESSAGE = 143,
+  AUTO_MODERATION_FLAG_TO_CHANNEL = 144,
+  AUTO_MODERATION_USER_COMMUNICATION_DISABLED = 145,
 }
 
 export interface AuditLogEntryInfoPayload {
+  application_id?: string;
+  auto_moderation_rule_name?: string;
+  auto_moderation_rule_trigger_type?: string;
   channel_id?: string;
   count?: string;
   delete_member_days?: string;
@@ -109,9 +123,10 @@ export interface AuditLogChangePayload {
   key: string;
 }
 
-export interface GetAuditLogPayload {
-  user_id: string;
-  action_type: AuditLogEvents;
-  before: string;
-  limit: number;
+export interface GetAuditLogParams {
+  user_id?: string;
+  action_type?: AuditLogEvents;
+  before?: string;
+  after?: string;
+  limit?: number;
 }
