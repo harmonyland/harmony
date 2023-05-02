@@ -1,6 +1,11 @@
 import { Reasonable } from "../etc/reasonable.ts";
+import { GuildMemberPayload } from "../guilds/member.ts";
+import { ComponentPayload } from "../interactions/components.ts";
 import { ChannelType } from "./base.ts";
+import { EmbedPayload } from "./embed.ts";
+import { AllowedMentionsPayload } from "./etc.ts";
 import { GuildTextChannelPayload } from "./guild.ts";
+import { AttachmentPayload } from "./message.ts";
 
 /** @link https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure */
 export interface ThreadMetadataPayload {
@@ -17,6 +22,7 @@ export interface ThreadMemberPayload {
   user_id?: string;
   join_timestamp: string;
   flags: number;
+  member?: GuildMemberPayload;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-thread-channel */
@@ -39,6 +45,8 @@ export interface EditGuildThreadChannelPayload extends Reasonable {
   invitable?: boolean;
   /** Duration in second */
   rate_limit_per_user?: number | null;
+  flags?: number;
+  applied_tags?: string[];
 }
 
 export interface StartThreadWithMessagePayload extends Reasonable {
@@ -53,6 +61,24 @@ export interface StartThreadWithoutMessagePayload extends Reasonable {
   invitable?: boolean;
 }
 
+export interface ForumThreadMessageParams {
+  content?: string;
+  embeds?: EmbedPayload[];
+  allowed_mentions?: AllowedMentionsPayload;
+  components?: ComponentPayload[];
+  sticker_ids?: string[];
+  attachments?: AttachmentPayload[];
+  flags?: number;
+}
+
+export interface StartThreadInForumChannelPayload extends Reasonable {
+  name: string;
+  auto_archive_duration?: number;
+  rate_limit_per_user?: number | null;
+  message: ForumThreadMessageParams;
+  applied_tags?: string[];
+}
+
 export interface ListThreadsPayload {
   threads: GuildThreadChannelPayload[];
   members: ThreadMemberPayload[];
@@ -63,3 +89,10 @@ export interface ListThreadsParams {
   before?: string;
   limit?: number;
 }
+
+export type ListPublicArchivedThreadsPayload = ListThreadsPayload;
+export type ListPublicArchivedThreadsParams = ListThreadsParams;
+export type ListPrivateArchivedThreadsPayload = ListThreadsPayload;
+export type ListPrivateArchivedThreadsParams = ListThreadsParams;
+export type ListJoinedPrivateArchivedThreadsPayload = ListThreadsPayload;
+export type ListJoinedPrivateArchivedThreadsParams = ListThreadsParams;

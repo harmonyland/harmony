@@ -17,7 +17,8 @@ export interface GroupDMChannelPayload extends DMBasedChannelPayload {
   name: string;
   icon: string | null;
   owner_id: string;
-  application_id: string;
+  application_id?: string;
+  managed: boolean;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-group-dm */

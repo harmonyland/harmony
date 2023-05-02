@@ -17,6 +17,14 @@ export interface OverwritePayload {
   deny: string;
 }
 
+export interface GuildForumTagPayload {
+  id: string;
+  name: string;
+  moderated: boolean;
+  emoji_id: string | null;
+  emoji_name: string | null;
+}
+
 export interface GuildVoiceBasedChannelPayload extends GuildChannelPayload {
   bitrate: number;
   user_limit: number;
@@ -50,6 +58,7 @@ export interface GuildForumChannelPayload
   default_reaction_emoji?: ForumDefaultReactionPayload | null;
   default_sort_order?: ForumSortOrder;
   default_forum_layout?: ForumLayout;
+  available_tags: GuildForumTagPayload[];
 }
 
 export enum ForumSortOrder {
@@ -107,23 +116,28 @@ export interface GuildStageChannelPayload
 export interface EditGuildChannelPayload extends Reasonable {
   name?: string;
   position?: number | null;
-  parent_id?: string | null;
   permission_overwrites?: OverwritePayload[] | null;
 }
 
+export type EditGuildCategoryPayload = EditGuildChannelPayload;
+
 export interface EditGuildAnnouncementChannelPayload
   extends EditGuildChannelPayload {
-  nsfw?: boolean | null;
-  type?: ChannelType;
+  type?: ChannelType.GUILD_TEXT | ChannelType.GUILD_ANNOUNCEMENT;
   topic?: string | null;
-  /** Duration in minute */
+  parent_id?: string | null;
   default_auto_archive_duration?: number | null;
+  nsfw?: boolean | null;
 }
 
-export interface EditGuildTextChannelPayload
-  extends EditGuildAnnouncementChannelPayload {
-  /** Duration in second */
+export interface EditGuildTextChannelPayload extends EditGuildChannelPayload {
+  type?: ChannelType.GUILD_TEXT | ChannelType.GUILD_ANNOUNCEMENT;
+  topic?: string | null;
+  parent_id?: string | null;
   rate_limit_per_user?: number | null;
+  default_thread_rate_limit_per_user?: number;
+  default_auto_archive_duration?: number | null;
+  nsfw?: boolean | null;
 }
 
 export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
@@ -131,12 +145,25 @@ export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
   user_limit?: number | null;
   rtc_region?: string | null;
   video_quality_mode?: VideoQualityModes | null;
+  parent_id?: string | null;
+  nsfw?: boolean | null;
 }
 
-export type EditGuildCategoryPayload = Omit<
-  EditGuildChannelPayload,
-  "parent_id"
->;
+export type EditGuildStageChannelPayload = EditGuildVoiceChannelPayload;
+
+export interface EditGuildForumChannelPayload extends EditGuildChannelPayload {
+  flags?: number;
+  available_tags?: GuildForumTagPayload[];
+  default_reaction_emoji?: ForumDefaultReactionPayload | null;
+  default_thread_rate_limit_per_user?: number;
+  default_sort_order?: ForumSortOrder | null;
+  default_forum_layout?: ForumLayout;
+  parent_id?: string | null;
+  nsfw?: boolean | null;
+  topic?: string | null;
+  rate_limit_per_user?: number | null;
+  default_auto_archive_duration?: number | null;
+}
 
 export interface EditChannelPermissionsPayload extends Reasonable {
   allow?: string;

@@ -3,7 +3,9 @@ import {
   ThreadMemberPayload,
 } from "../channels/thread.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
-import { GuildFeature } from "./guild.ts";
+import { StickerPayload } from "../stickers/sticker.ts";
+import { UserPayload } from "../users/user.ts";
+import { GuildFeature, MFALevel, PartialGuildChannelPayload } from "./guild.ts";
 
 export interface GuildPreviewPayload {
   id: string;
@@ -16,11 +18,21 @@ export interface GuildPreviewPayload {
   approximate_member_count: number;
   approximate_presence_count: number;
   description: string | null;
+  stickers: StickerPayload[];
+}
+
+export interface GuildWidgetSettingsPayload {
+  enabled: boolean;
+  channel_id: string | null;
 }
 
 export interface GuildWidgetPayload {
-  enabled: boolean;
-  channel_id: string | null;
+  id: string;
+  name: string;
+  instant_invite: string | null;
+  channels: PartialGuildChannelPayload[];
+  members: UserPayload[];
+  presence_count: number;
 }
 
 export interface WelcomeScreenChannelPayload {
@@ -78,4 +90,8 @@ export interface EditCurrentUserVoiceStatePayload {
 export interface EditUserVoiceStatePayload {
   channel_id: string;
   suppress?: boolean;
+}
+
+export interface EditGuildMFALevelPayload {
+  level: MFALevel;
 }

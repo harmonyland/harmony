@@ -34,5 +34,35 @@ export interface IntegrationPayload {
   synced_at?: string;
   subscriber_count?: number;
   revoked?: boolean;
-  application: IntegrationApplicationPayload;
+  application?: IntegrationApplicationPayload;
+  scopes?: (
+    | "activities.read"
+    | "activities.write"
+    | "applications.builds.read"
+    | "applications.builds.upload"
+    | "applications.commands"
+    | "applications.commands.update"
+    | "applications.commands.permissions.update"
+    | "applications.entitlements"
+    | "applications.store.update"
+    | "bot"
+    | "connections"
+    | "dm_channels.read"
+    | "email"
+    | "gdm.join"
+    | "guilds"
+    | "guilds.join"
+    | "guilds.members.read"
+    | "identify"
+    | "messages.read"
+    | "relationships.read"
+    | "role_connections.write"
+    | "rpc"
+    | "rpc.activities.write"
+    | "rpc.notifications.read"
+    | "rpc.voice.read"
+    | "rpc.voice.write"
+    | "voice"
+    | "webhook.incoming"
+  )[];
 }

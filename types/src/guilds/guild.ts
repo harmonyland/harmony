@@ -1,11 +1,20 @@
 import { ChannelType } from "../channels/base.ts";
-import { GuildChannelPayload, OverwritePayload } from "../channels/guild.ts";
+import {
+  ForumDefaultReactionPayload,
+  ForumSortOrder,
+  GuildChannelPayload,
+  GuildForumTagPayload,
+  OverwritePayload,
+  VideoQualityModes,
+} from "../channels/guild.ts";
+import { GuildThreadChannelPayload } from "../channels/thread.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { Locales } from "../etc/locales.ts";
+import { GatewayPresenceUpdatePayload } from "../gateways/gateway.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
 import { StickerPayload } from "../stickers/sticker.ts";
-import { VoiceStatePayload } from "../voices/voice.ts";
+import { VoiceRegionPayload, VoiceStatePayload } from "../voices/voice.ts";
 import { WelcomeScreenPayload } from "./etc.ts";
 import { GuildMemberPayload } from "./member.ts";
 import { RolePayload } from "./role.ts";
@@ -35,6 +44,7 @@ export interface GuildPayload {
   application_id: string | null;
   system_channel_id: string | null;
   system_channel_flags: number;
+  rules_channel_id: string | null;
   joined_at?: string;
   large?: boolean;
   unavailable?: boolean;
@@ -42,7 +52,8 @@ export interface GuildPayload {
   voice_states?: VoiceStatePayload[];
   members?: GuildMemberPayload[];
   channels?: GuildChannelPayload[];
-  // presences?: PresencePayload[];
+  threads?: GuildThreadChannelPayload[];
+  presences?: GatewayPresenceUpdatePayload[];
   max_presences?: number | null;
   max_members?: number;
   vanity_url_code: string | null;
@@ -53,6 +64,7 @@ export interface GuildPayload {
   preferred_locale: Locales;
   public_updates_channel_id: string | null;
   max_video_channel_users?: number;
+  max_stage_video_channel_users?: number;
   approximate_member_count?: number;
   approximate_presence_count?: number;
   welcome_screen?: WelcomeScreenPayload;
@@ -60,7 +72,7 @@ export interface GuildPayload {
   stage_instances?: StageInstancePayload[];
   stickers?: StickerPayload[];
   guild_scheduled_events?: ScheduledEventPayload[];
-  premium_progress_bar_enabled?: boolean;
+  premium_progress_bar_enabled: boolean;
 }
 
 export enum DefaultMessageNotificationLevel {
@@ -198,6 +210,12 @@ export interface CreateGuildChannelPayload {
   permission_overwrites?: OverwritePayload[];
   parent_id?: string;
   nsfw?: boolean;
+  rtc_region?: VoiceRegionPayload;
+  video_quality_mode?: VideoQualityModes;
+  default_auto_archive_duration?: number;
+  default_reaction_emoji?: ForumDefaultReactionPayload;
+  available_tags?: GuildForumTagPayload[];
+  default_sort_order?: ForumSortOrder;
 }
 
 export interface EditGuildChannelPositionPayload {

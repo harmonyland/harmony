@@ -64,6 +64,15 @@ export enum MessageType {
   APPLICATION_COMMAND = 20,
   THREAD_STARTER_MESSAGE = 21,
   GUILD_INVITE_REMINDER = 22,
+  CONTEXT_MENU_COMMAND = 23,
+  AUTO_MODERATION_ACTION = 24,
+  ROLE_SUBSCRIPTION_PURCHASE = 25,
+  INTERACTION_PREMIUM_UPSELL = 26,
+  STAGE_START = 27,
+  STAGE_END = 28,
+  STAGE_SPEAKER = 29,
+  STAGE_TOPIC = 31,
+  GUILD_APPLICATION_PREMIUM_SUBSCRIPTION = 32,
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-activity-types */
@@ -98,6 +107,16 @@ export enum MessageFlags {
   HAS_THREAD = 32,
   EPHEMERAL = 64,
   LOADING = 128,
+  FAILED_TO_MENTION_SOME_ROLES_IN_THREAD = 256,
+  SUPPRESS_NOTIFICATIONS = 4096,
+  IS_VOICE_MESSAGE = 8192,
+}
+
+export interface RoleSubscriptionDataPayload {
+  role_subscription_listing_id: string;
+  tier_name: string;
+  total_months_subscribed: number;
+  is_renewal: boolean;
 }
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-structure
@@ -107,7 +126,7 @@ export interface MessagePayload {
   guild_id?: string;
   author: UserPayload;
   member?: GuildMemberPayload;
-  content: string;
+  content?: string; // Check second note on https://discord.com/developers/docs/resources/channel#message-object-message-structure
   timestamp: string;
   edited_timestamp: string | null;
   tts: boolean;
@@ -115,8 +134,8 @@ export interface MessagePayload {
   mentions: UserPayload[];
   mention_roles: string[];
   mention_channels?: ChannelMentionPayload[];
-  attachments: AttachmentPayload[];
-  embeds: EmbedPayload[];
+  attachments?: AttachmentPayload[];
+  embeds?: EmbedPayload[];
   reactions?: ReactionPayload[];
   nonce?: string | number;
   pinned: boolean;
@@ -132,6 +151,8 @@ export interface MessagePayload {
   thread?: GuildThreadChannelPayload;
   components?: ComponentPayload[];
   sticker_items?: StickerItemPayload[];
+  position?: number;
+  role_subscription_data?: RoleSubscriptionDataPayload;
 }
 
 export interface GetChannelMessagesParams {

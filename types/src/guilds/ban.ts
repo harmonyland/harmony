@@ -6,5 +6,11 @@ export interface GuildBanPayload {
 }
 
 export interface CreateGuildBanPayload {
-  delete_message_days?: number;
+  delete_message_seconds?: number;
+}
+
+export interface GetGuildBansParams {
+  limit?: number;
+  before?: string;
+  after?: string;
 }

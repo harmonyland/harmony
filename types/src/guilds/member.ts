@@ -9,9 +9,17 @@ export interface GuildMemberPayload {
   premium_since?: string | null;
   deaf: boolean;
   mute: boolean;
+  flags: number;
   pending?: boolean;
   permissions: string;
   communication_disabled_until?: string | null;
+}
+
+export enum GuildMemberFlags {
+  DID_REJOIN = 1,
+  COMPLETED_ONBOARDING = 2,
+  BYPASSES_VERIFICATION = 4,
+  STARTED_ONBOARDING = 8,
 }
 
 export interface ListGuildMembersParams {
@@ -39,6 +47,7 @@ export interface EditGuildMemberPayload {
   deaf?: boolean | null;
   channel_id?: string | null;
   communication_disabled_until?: string | null;
+  flags?: number | null;
 }
 
 export interface EditGuildCurrentMemberPayload {
