@@ -25,14 +25,16 @@ export interface InteractionPayload {
     | ApplicationCommandInteractionDataPayload
     | ComponentInteractionDataPayload
     | SelectMenusComponentInteractionDataPayload
-    | CommandInterfaceDataPayload;
+    | ModalSubmitDataPayload;
   guild_id?: string;
+  channel?: ChannelPayload;
   channel_id?: string;
   member?: GuildMemberPayload;
   user?: UserPayload;
   token: string;
   version: 1;
   message?: MessagePayload;
+  app_permissions?: string;
   locale?: Locales;
   guild_locale?: Locales;
 }
@@ -42,6 +44,7 @@ export enum InteractionType {
   APPLICATION_COMMAND = 2,
   MESSAGE_COMPONENT = 3,
   APPLICATION_COMMAND_AUTOCOMPLETE = 4,
+  MODAL_SUBMIT = 5,
 }
 
 export interface ApplicationCommandInteractionDataPayload {
@@ -50,27 +53,32 @@ export interface ApplicationCommandInteractionDataPayload {
   type: ApplicationCommandType;
   resolved?: ResolvedDataPayload;
   options?: ApplicationCommandInteractionDataOptionPayload[];
+  guild_id?: string;
+  target_id?: string;
 }
 
 export interface ComponentInteractionDataPayload {
   custom_id?: string;
   component_type?: ComponentType;
 }
+
 export interface SelectMenusComponentInteractionDataPayload
   extends ComponentInteractionDataPayload {
   values?: SelectOptionsPayload[];
 }
 
-export interface CommandInterfaceDataPayload {
-  target_id?: string;
+export interface ModalSubmitDataPayload {
+  custom_id?: string;
+  components?: ComponentPayload[];
 }
 
 export interface ResolvedDataPayload {
-  users?: { string: UserPayload };
-  members?: { string: GuildMemberPayload };
-  roles?: { string: RolePayload };
-  channels?: { string: ChannelPayload };
-  messages?: { string: MessagePayload };
+  users?: Record<string, UserPayload>;
+  members?: Record<string, GuildMemberPayload>;
+  roles?: Record<string, RolePayload>;
+  channels?: Record<string, ChannelPayload>;
+  messages?: Record<string, MessagePayload>;
+  attachments?: Record<string, AttachmentPayload>;
 }
 
 export interface MessageInteractionPayload {
@@ -83,7 +91,10 @@ export interface MessageInteractionPayload {
 
 export interface InteractionResponsePayload {
   type: InteractionCallbackType;
-  data?: MessageInteractionCallbackData | AutocompleteInteractionCallbackData;
+  data?:
+    | MessageInteractionCallbackData
+    | AutocompleteInteractionCallbackData
+    | ModalInteractionCallbackPayload;
 }
 
 export enum InteractionCallbackType {
@@ -93,6 +104,7 @@ export enum InteractionCallbackType {
   DEFERRED_UPDATE_MESSAGE = 6,
   UPDATE_MESSAGE = 7,
   APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8,
+  MODAL = 9,
 }
 
 export interface MessageInteractionCallbackData {
@@ -107,4 +119,10 @@ export interface MessageInteractionCallbackData {
 
 export interface AutocompleteInteractionCallbackData {
   choices: ApplicationCommandOptionChoicePayload[];
+}
+
+export interface ModalInteractionCallbackPayload {
+  custom_id: string;
+  title: string;
+  components: ComponentPayload[];
 }

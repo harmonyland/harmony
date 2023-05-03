@@ -3,79 +3,171 @@
 import { snowflake } from "./common.ts";
 
 /**
- * Create Interaction Response
- * @method POST
- */
-export type CreateInteractionResponseEndpoint<
-  InteractionID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-> = `/interactions/${InteractionID}/${InteractionToken}/callback`;
-
-/**
- * Get Original Interaction Response
+ * Get Achievements
  * @method GET
  */
-export type GetOriginalInteractionResponseEndpoint<
+export type GetAchievementsEndpoint<
   ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/@original`;
+> = `/applications/${ApplicationID}/achievements`;
 
 /**
- * Edit Original Interaction Response
- * @method PATCH
- */
-export type EditOriginalInteractionResponseEndpoint<
-  ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/@original`;
-
-/**
- * Delete Original Interaction Response
- * @method DELETE
- */
-export type DeleteOriginalInteractionResponseEndpoint<
-  ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/@original`;
-
-/**
- * Create Followup Message
- * @method POST
- */
-export type CreateFollowupMessageEndpoint<
-  ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-> = `/webhooks/${ApplicationID}/${InteractionToken}`;
-
-/**
- * Get Followup Message
+ * Get Achievement
  * @method GET
  */
-export type GetFollowupMessageEndpoint<
+export type GetAchievementEndpoint<
   ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-  MessageID extends snowflake = snowflake,
-> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/${MessageID}`;
+  AchievementID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/achievements/${AchievementID}`;
 
 /**
- * Edit Followup Message
+ * Create Achievement
+ * @method POST
+ */
+export type CreateAchievementEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/achievements`;
+
+/**
+ * Update Achievement
  * @method PATCH
  */
-export type EditFollowupMessageEndpoint<
+export type UpdateAchievementEndpoint<
   ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-  MessageID extends snowflake = snowflake,
-> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/${MessageID}`;
+  AchievementID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/achievements/${AchievementID}`;
 
 /**
- * Delete Followup Message
+ * Delete Achievement
  * @method DELETE
  */
-export type DeleteFollowupMessageEndpoint<
+export type DeleteAchievementEndpoint<
   ApplicationID extends snowflake = snowflake,
-  InteractionToken extends string = string,
-  MessageID extends snowflake = snowflake,
-> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/${MessageID}`;
+  AchievementID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/achievements/${AchievementID}`;
+
+/**
+ * Update User Achievement
+ * @method PUT
+ */
+export type UpdateUserAchievementEndpoint<
+  UserID extends snowflake = snowflake,
+  ApplicationID extends snowflake = snowflake,
+  AchievementID extends snowflake = snowflake,
+> = `/users/${UserID}/applications/${ApplicationID}/achievements/${AchievementID}`;
+
+/**
+ * Get User Achievements
+ * @method GET
+ */
+export type GetUserAchievementsEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/users/@me/applications/${ApplicationID}/achievements`;
+
+/**
+ * Create Lobby
+ * @method POST
+ */
+export type CreateLobbyEndpoint = `/lobbies`;
+
+/**
+ * Update Lobby
+ * @method PATCH
+ */
+export type UpdateLobbyEndpoint<
+  LobbyID extends snowflake = snowflake,
+> = `/lobbies/${LobbyID}`;
+
+/**
+ * Delete Lobby
+ * @method DELETE
+ */
+export type DeleteLobbyEndpoint<
+  LobbyID extends snowflake = snowflake,
+> = `/lobbies/${LobbyID}`;
+
+/**
+ * Update Lobby Member
+ * @method PATCH
+ */
+export type UpdateLobbyMemberEndpoint<
+  LobbyID extends snowflake = snowflake,
+  UserID extends snowflake = snowflake,
+> = `/lobbies/${LobbyID}/members/${UserID}`;
+
+/**
+ * Create Lobby Search
+ * @method POST
+ */
+export type CreateLobbySearchEndpoint = `/lobbies/search`;
+
+/**
+ * Send Lobby Data
+ * @method POST
+ */
+export type SendLobbyDataEndpoint<
+  LobbyID extends snowflake = snowflake,
+> = `/lobbies/${LobbyID}/send`;
+
+/**
+ * Get Entitlements
+ * @method GET
+ */
+export type GetEntitlementsEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/entitlements`;
+
+/**
+ * Get Entitlement
+ * @method GET
+ */
+export type GetEntitlementEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  EntitlementID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/entitlements/${EntitlementID}`;
+
+/**
+ * Get SKUs
+ * @method GET
+ */
+export type GetSKUsEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/skus`;
+
+/**
+ * Consume SKU
+ * @method POST
+ */
+export type ConsumeSKUEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  EntitlementID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/entitlements/${EntitlementID}/consume`;
+
+/**
+ * Delete Test Entitlement
+ * @method DELETE
+ */
+export type DeleteTestEntitlementEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  EntitlementID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/entitlements/${EntitlementID}`;
+
+/**
+ * Create Purchase Discount
+ * @method PUT
+ */
+export type CreatePurchaseDiscountEndpoint<
+  SkuID extends snowflake = snowflake,
+  UserID extends snowflake = snowflake,
+> = `/store/skus/${SkuID}/discounts/${UserID}`;
+
+/**
+ * Delete Purchase Discount
+ * @method DELETE
+ */
+export type DeletePurchaseDiscountEndpoint<
+  SkuID extends snowflake = snowflake,
+  UserID extends snowflake = snowflake,
+> = `/store/skus/${SkuID}/discounts/${UserID}`;
 
 /**
  * Get Global Application Commands
@@ -202,8 +294,7 @@ export type GetApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> =
-  `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
 
 /**
  * Edit Application Command Permissions
@@ -213,8 +304,7 @@ export type EditApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> =
-  `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
 
 /**
  * Batch Edit Application Command Permissions
@@ -226,136 +316,109 @@ export type BatchEditApplicationCommandPermissionsEndpoint<
 > = `/applications/${ApplicationID}/guilds/${GuildID}/commands/permissions`;
 
 /**
- * Create Webhook
+ * Create Interaction Response
  * @method POST
  */
-export type CreateWebhookEndpoint<
-  ChannelID extends snowflake = snowflake,
-> = `/channels/${ChannelID}/webhooks`;
+export type CreateInteractionResponseEndpoint<
+  InteractionID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+> = `/interactions/${InteractionID}/${InteractionToken}/callback`;
 
 /**
- * Get Channel Webhooks
+ * Get Original Interaction Response
  * @method GET
  */
-export type GetChannelWebhooksEndpoint<
-  ChannelID extends snowflake = snowflake,
-> = `/channels/${ChannelID}/webhooks`;
+export type GetOriginalInteractionResponseEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/@original`;
 
 /**
- * Get Guild Webhooks
+ * Edit Original Interaction Response
+ * @method PATCH
+ */
+export type EditOriginalInteractionResponseEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/@original`;
+
+/**
+ * Delete Original Interaction Response
+ * @method DELETE
+ */
+export type DeleteOriginalInteractionResponseEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/@original`;
+
+/**
+ * Create Followup Message
+ * @method POST
+ */
+export type CreateFollowupMessageEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+> = `/webhooks/${ApplicationID}/${InteractionToken}`;
+
+/**
+ * Get Followup Message
  * @method GET
  */
-export type GetGuildWebhooksEndpoint<
+export type GetFollowupMessageEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+  MessageID extends snowflake = snowflake,
+> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/${MessageID}`;
+
+/**
+ * Edit Followup Message
+ * @method PATCH
+ */
+export type EditFollowupMessageEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+  MessageID extends snowflake = snowflake,
+> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/${MessageID}`;
+
+/**
+ * Delete Followup Message
+ * @method DELETE
+ */
+export type DeleteFollowupMessageEndpoint<
+  ApplicationID extends snowflake = snowflake,
+  InteractionToken extends string = string,
+  MessageID extends snowflake = snowflake,
+> = `/webhooks/${ApplicationID}/${InteractionToken}/messages/${MessageID}`;
+
+/**
+ * Get Application Role Connection Metadata Records
+ * @method GET
+ */
+export type GetApplicationRoleConnectionMetadataRecordsEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/role-connections/metadata`;
+
+/**
+ * Update Application Role Connection Metadata Records
+ * @method PUT
+ */
+export type UpdateApplicationRoleConnectionMetadataRecordsEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/applications/${ApplicationID}/role-connections/metadata`;
+
+/**
+ * List Voice Regions
+ * @method GET
+ */
+export type ListVoiceRegionsEndpoint = `/voice/regions`;
+
+/**
+ * Get Guild Audit Log
+ * @method GET
+ */
+export type GetGuildAuditLogEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/webhooks`;
-
-/**
- * Get Webhook
- * @method GET
- */
-export type GetWebhookEndpoint<
-  WebhookID extends snowflake = snowflake,
-> = `/webhooks/${WebhookID}`;
-
-/**
- * Get Webhook with Token
- * @method GET
- */
-export type GetWebhookwithTokenEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-> = `/webhooks/${WebhookID}/${WebhookToken}`;
-
-/**
- * Edit Webhook
- * @method PATCH
- */
-export type EditWebhookEndpoint<
-  WebhookID extends snowflake = snowflake,
-> = `/webhooks/${WebhookID}`;
-
-/**
- * Edit Webhook with Token
- * @method PATCH
- */
-export type EditWebhookwithTokenEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-> = `/webhooks/${WebhookID}/${WebhookToken}`;
-
-/**
- * Delete Webhook
- * @method DELETE
- */
-export type DeleteWebhookEndpoint<
-  WebhookID extends snowflake = snowflake,
-> = `/webhooks/${WebhookID}`;
-
-/**
- * Delete Webhook with Token
- * @method DELETE
- */
-export type DeleteWebhookwithTokenEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-> = `/webhooks/${WebhookID}/${WebhookToken}`;
-
-/**
- * Execute Webhook
- * @method POST
- */
-export type ExecuteWebhookEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-> = `/webhooks/${WebhookID}/${WebhookToken}`;
-
-/**
- * Execute Slack-Compatible Webhook
- * @method POST
- */
-export type ExecuteSlackCompatibleWebhookEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-> = `/webhooks/${WebhookID}/${WebhookToken}/slack`;
-
-/**
- * Execute GitHub-Compatible Webhook
- * @method POST
- */
-export type ExecuteGitHubCompatibleWebhookEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-> = `/webhooks/${WebhookID}/${WebhookToken}/github`;
-
-/**
- * Get Webhook Message
- * @method GET
- */
-export type GetWebhookMessageEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-  MessageID extends snowflake = snowflake,
-> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
-
-/**
- * Edit Webhook Message
- * @method PATCH
- */
-export type EditWebhookMessageEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-  MessageID extends snowflake = snowflake,
-> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
-
-/**
- * Delete Webhook Message
- * @method DELETE
- */
-export type DeleteWebhookMessageEndpoint<
-  WebhookID extends snowflake = snowflake,
-  WebhookToken extends string = string,
-  MessageID extends snowflake = snowflake,
-> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
+> = `/guilds/${GuildID}/audit-logs`;
 
 /**
  * Create Guild
@@ -584,6 +647,14 @@ export type EditGuildRoleEndpoint<
 > = `/guilds/${GuildID}/roles/${RoleID}`;
 
 /**
+ * Edit Guild MFA Level
+ * @method POST
+ */
+export type EditGuildMFALevelEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/mfa`;
+
+/**
  * Delete Guild Role
  * @method DELETE
  */
@@ -698,6 +769,14 @@ export type EditGuildWelcomeScreenEndpoint<
 > = `/guilds/${GuildID}/welcome-screen`;
 
 /**
+ * Get Guild Onboarding
+ * @method GET
+ */
+export type GetGuildOnboardingEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/onboarding`;
+
+/**
  * Edit Current User Voice State
  * @method PATCH
  */
@@ -713,6 +792,277 @@ export type EditUserVoiceStateEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
 > = `/guilds/${GuildID}/voice-states/${UserID}`;
+
+/**
+ * Create Stage Instance
+ * @method POST
+ */
+export type CreateStageInstanceEndpoint = `/stage-instances`;
+
+/**
+ * Get Stage Instance
+ * @method GET
+ */
+export type GetStageInstanceEndpoint<
+  ChannelID extends snowflake = snowflake,
+> = `/stage-instances/${ChannelID}`;
+
+/**
+ * Edit Stage Instance
+ * @method PATCH
+ */
+export type EditStageInstanceEndpoint<
+  ChannelID extends snowflake = snowflake,
+> = `/stage-instances/${ChannelID}`;
+
+/**
+ * Delete Stage Instance
+ * @method DELETE
+ */
+export type DeleteStageInstanceEndpoint<
+  ChannelID extends snowflake = snowflake,
+> = `/stage-instances/${ChannelID}`;
+
+/**
+ * List Scheduled Events for Guild
+ * @method GET
+ */
+export type ListScheduledEventsforGuildEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/scheduled-events`;
+
+/**
+ * Create Guild Scheduled Event
+ * @method POST
+ */
+export type CreateGuildScheduledEventEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/scheduled-events`;
+
+/**
+ * Get Guild Scheduled Event
+ * @method GET
+ */
+export type GetGuildScheduledEventEndpoint<
+  GuildID extends snowflake = snowflake,
+  Guild_scheduled_eventID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}`;
+
+/**
+ * Edit Guild Scheduled Event
+ * @method PATCH
+ */
+export type EditGuildScheduledEventEndpoint<
+  GuildID extends snowflake = snowflake,
+  Guild_scheduled_eventID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}`;
+
+/**
+ * Delete Guild Scheduled Event
+ * @method DELETE
+ */
+export type DeleteGuildScheduledEventEndpoint<
+  GuildID extends snowflake = snowflake,
+  Guild_scheduled_eventID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}`;
+
+/**
+ * Get Guild Scheduled Event Users
+ * @method GET
+ */
+export type GetGuildScheduledEventUsersEndpoint<
+  GuildID extends snowflake = snowflake,
+  Guild_scheduled_eventID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}/users`;
+
+/**
+ * Create Webhook
+ * @method POST
+ */
+export type CreateWebhookEndpoint<
+  ChannelID extends snowflake = snowflake,
+> = `/channels/${ChannelID}/webhooks`;
+
+/**
+ * Get Channel Webhooks
+ * @method GET
+ */
+export type GetChannelWebhooksEndpoint<
+  ChannelID extends snowflake = snowflake,
+> = `/channels/${ChannelID}/webhooks`;
+
+/**
+ * Get Guild Webhooks
+ * @method GET
+ */
+export type GetGuildWebhooksEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/webhooks`;
+
+/**
+ * Get Webhook
+ * @method GET
+ */
+export type GetWebhookEndpoint<
+  WebhookID extends snowflake = snowflake,
+> = `/webhooks/${WebhookID}`;
+
+/**
+ * Get Webhook with Token
+ * @method GET
+ */
+export type GetWebhookwithTokenEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
+
+/**
+ * Edit Webhook
+ * @method PATCH
+ */
+export type EditWebhookEndpoint<
+  WebhookID extends snowflake = snowflake,
+> = `/webhooks/${WebhookID}`;
+
+/**
+ * Edit Webhook with Token
+ * @method PATCH
+ */
+export type EditWebhookwithTokenEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
+
+/**
+ * Delete Webhook
+ * @method DELETE
+ */
+export type DeleteWebhookEndpoint<
+  WebhookID extends snowflake = snowflake,
+> = `/webhooks/${WebhookID}`;
+
+/**
+ * Delete Webhook with Token
+ * @method DELETE
+ */
+export type DeleteWebhookwithTokenEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
+
+/**
+ * Execute Webhook
+ * @method POST
+ */
+export type ExecuteWebhookEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
+
+/**
+ * Execute Slack-Compatible Webhook
+ * @method POST
+ */
+export type ExecuteSlackCompatibleWebhookEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+> = `/webhooks/${WebhookID}/${WebhookToken}/slack`;
+
+/**
+ * Execute GitHub-Compatible Webhook
+ * @method POST
+ */
+export type ExecuteGitHubCompatibleWebhookEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+> = `/webhooks/${WebhookID}/${WebhookToken}/github`;
+
+/**
+ * Get Webhook Message
+ * @method GET
+ */
+export type GetWebhookMessageEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+  MessageID extends snowflake = snowflake,
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
+
+/**
+ * Edit Webhook Message
+ * @method PATCH
+ */
+export type EditWebhookMessageEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+  MessageID extends snowflake = snowflake,
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
+
+/**
+ * Delete Webhook Message
+ * @method DELETE
+ */
+export type DeleteWebhookMessageEndpoint<
+  WebhookID extends snowflake = snowflake,
+  WebhookToken extends string = string,
+  MessageID extends snowflake = snowflake,
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
+
+/**
+ * Get Sticker
+ * @method GET
+ */
+export type GetStickerEndpoint<
+  StickerID extends snowflake = snowflake,
+> = `/stickers/${StickerID}`;
+
+/**
+ * List Nitro Sticker Packs
+ * @method GET
+ */
+export type ListNitroStickerPacksEndpoint = `/sticker-packs`;
+
+/**
+ * List Guild Stickers
+ * @method GET
+ */
+export type ListGuildStickersEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/stickers`;
+
+/**
+ * Get Guild Sticker
+ * @method GET
+ */
+export type GetGuildStickerEndpoint<
+  GuildID extends snowflake = snowflake,
+  StickerID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/stickers/${StickerID}`;
+
+/**
+ * Create Guild Sticker
+ * @method POST
+ */
+export type CreateGuildStickerEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/stickers`;
+
+/**
+ * Edit Guild Sticker
+ * @method PATCH
+ */
+export type EditGuildStickerEndpoint<
+  GuildID extends snowflake = snowflake,
+  StickerID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/stickers/${StickerID}`;
+
+/**
+ * Delete Guild Sticker
+ * @method DELETE
+ */
+export type DeleteGuildStickerEndpoint<
+  GuildID extends snowflake = snowflake,
+  StickerID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/stickers/${StickerID}`;
 
 /**
  * Get Current User
@@ -741,6 +1091,14 @@ export type EditCurrentUserEndpoint = `/users/@me`;
 export type GetCurrentUserGuildsEndpoint = `/users/@me/guilds`;
 
 /**
+ * Get Current User Guild Member
+ * @method GET
+ */
+export type GetCurrentUserGuildMemberEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/users/@me/guilds/${GuildID}/member`;
+
+/**
  * Leave Guild
  * @method DELETE
  */
@@ -767,34 +1125,20 @@ export type CreateGroupDMEndpoint = `/users/@me/channels`;
 export type GetUserConnectionsEndpoint = `/users/@me/connections`;
 
 /**
- * Get Invite
+ * Get User Application Role Connection
  * @method GET
  */
-export type GetInviteEndpoint<
-  InviteCode extends string = string,
-> = `/invites/${InviteCode}`;
+export type GetUserApplicationRoleConnectionEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/users/@me/applications/${ApplicationID}/role-connection`;
 
 /**
- * Delete Invite
- * @method DELETE
+ * Update User Application Role Connection
+ * @method PUT
  */
-export type DeleteInviteEndpoint<
-  InviteCode extends string = string,
-> = `/invites/${InviteCode}`;
-
-/**
- * List Voice Regions
- * @method GET
- */
-export type ListVoiceRegionsEndpoint = `/voice/regions`;
-
-/**
- * Get Guild Audit Log
- * @method GET
- */
-export type GetGuildAuditLogEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/audit-logs`;
+export type UpdateUserApplicationRoleConnectionEndpoint<
+  ApplicationID extends snowflake = snowflake,
+> = `/users/@me/applications/${ApplicationID}/role-connection`;
 
 /**
  * Get Guild Template
@@ -856,34 +1200,90 @@ export type DeleteGuildTemplateEndpoint<
 > = `/guilds/${GuildID}/templates/${TemplateCode}`;
 
 /**
- * Create Stage Instance
- * @method POST
- */
-export type CreateStageInstanceEndpoint = `/stage-instances`;
-
-/**
- * Get Stage Instance
+ * List Guild Emojis
  * @method GET
  */
-export type GetStageInstanceEndpoint<
-  ChannelID extends snowflake = snowflake,
-> = `/stage-instances/${ChannelID}`;
+export type ListGuildEmojisEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/emojis`;
 
 /**
- * Edit Stage Instance
+ * Get Guild Emoji
+ * @method GET
+ */
+export type GetGuildEmojiEndpoint<
+  GuildID extends snowflake = snowflake,
+  EmojiID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/emojis/${EmojiID}`;
+
+/**
+ * Create Guild Emoji
+ * @method POST
+ */
+export type CreateGuildEmojiEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/emojis`;
+
+/**
+ * Edit Guild Emoji
  * @method PATCH
  */
-export type EditStageInstanceEndpoint<
-  ChannelID extends snowflake = snowflake,
-> = `/stage-instances/${ChannelID}`;
+export type EditGuildEmojiEndpoint<
+  GuildID extends snowflake = snowflake,
+  EmojiID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/emojis/${EmojiID}`;
 
 /**
- * Delete Stage Instance
+ * Delete Guild Emoji
  * @method DELETE
  */
-export type DeleteStageInstanceEndpoint<
-  ChannelID extends snowflake = snowflake,
-> = `/stage-instances/${ChannelID}`;
+export type DeleteGuildEmojiEndpoint<
+  GuildID extends snowflake = snowflake,
+  EmojiID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/emojis/${EmojiID}`;
+
+/**
+ * List Auto Moderation Rules for Guild
+ * @method GET
+ */
+export type ListAutoModerationRulesforGuildEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/auto-moderation/rules`;
+
+/**
+ * Get Auto Moderation Rule
+ * @method GET
+ */
+export type GetAutoModerationRuleEndpoint<
+  GuildID extends snowflake = snowflake,
+  Auto_moderation_ruleID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/auto-moderation/rules/${Auto_moderation_ruleID}`;
+
+/**
+ * Create Auto Moderation Rule
+ * @method POST
+ */
+export type CreateAutoModerationRuleEndpoint<
+  GuildID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/auto-moderation/rules`;
+
+/**
+ * Edit Auto Moderation Rule
+ * @method PATCH
+ */
+export type EditAutoModerationRuleEndpoint<
+  GuildID extends snowflake = snowflake,
+  Auto_moderation_ruleID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/auto-moderation/rules/${Auto_moderation_ruleID}`;
+
+/**
+ * Delete Auto Moderation Rule
+ * @method DELETE
+ */
+export type DeleteAutoModerationRuleEndpoint<
+  GuildID extends snowflake = snowflake,
+  Auto_moderation_ruleID extends snowflake = snowflake,
+> = `/guilds/${GuildID}/auto-moderation/rules/${Auto_moderation_ruleID}`;
 
 /**
  * Get Channel
@@ -1056,10 +1456,10 @@ export type DeleteChannelPermissionEndpoint<
 > = `/channels/${ChannelID}/permissions/${OverwriteID}`;
 
 /**
- * Follow News Channel
+ * Follow Announcement Channel
  * @method POST
  */
-export type FollowNewsChannelEndpoint<
+export type FollowAnnouncementChannelEndpoint<
   ChannelID extends snowflake = snowflake,
 > = `/channels/${ChannelID}/followers`;
 
@@ -1116,10 +1516,10 @@ export type GroupDMRemoveRecipientEndpoint<
 > = `/channels/${ChannelID}/recipients/${UserID}`;
 
 /**
- * Start Thread with Message
+ * Start Thread from Message
  * @method POST
  */
-export type StartThreadwithMessageEndpoint<
+export type StartThreadfromMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
 > = `/channels/${ChannelID}/messages/${MessageID}/threads`;
@@ -1129,6 +1529,14 @@ export type StartThreadwithMessageEndpoint<
  * @method POST
  */
 export type StartThreadwithoutMessageEndpoint<
+  ChannelID extends snowflake = snowflake,
+> = `/channels/${ChannelID}/threads`;
+
+/**
+ * Start Thread in Forum Channel
+ * @method POST
+ */
+export type StartThreadinForumChannelEndpoint<
   ChannelID extends snowflake = snowflake,
 > = `/channels/${ChannelID}/threads`;
 
@@ -1184,14 +1592,6 @@ export type ListThreadMembersEndpoint<
 > = `/channels/${ChannelID}/thread-members`;
 
 /**
- * List Active Threads
- * @method GET
- */
-export type ListActiveThreadsEndpoint<
-  ChannelID extends snowflake = snowflake,
-> = `/channels/${ChannelID}/threads/active`;
-
-/**
  * List Public Archived Threads
  * @method GET
  */
@@ -1216,156 +1616,20 @@ export type ListJoinedPrivateArchivedThreadsEndpoint<
 > = `/channels/${ChannelID}/users/@me/threads/archived/private`;
 
 /**
- * List Guild Emojis
+ * Get Invite
  * @method GET
  */
-export type ListGuildEmojisEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/emojis`;
+export type GetInviteEndpoint<
+  InviteCode extends string = string,
+> = `/invites/${InviteCode}`;
 
 /**
- * Get Guild Emoji
- * @method GET
- */
-export type GetGuildEmojiEndpoint<
-  GuildID extends snowflake = snowflake,
-  EmojiID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/emojis/${EmojiID}`;
-
-/**
- * Create Guild Emoji
- * @method POST
- */
-export type CreateGuildEmojiEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/emojis`;
-
-/**
- * Edit Guild Emoji
- * @method PATCH
- */
-export type EditGuildEmojiEndpoint<
-  GuildID extends snowflake = snowflake,
-  EmojiID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/emojis/${EmojiID}`;
-
-/**
- * Delete Guild Emoji
+ * Delete Invite
  * @method DELETE
  */
-export type DeleteGuildEmojiEndpoint<
-  GuildID extends snowflake = snowflake,
-  EmojiID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/emojis/${EmojiID}`;
-
-/**
- * List Scheduled Events for Guild
- * @method GET
- */
-export type ListScheduledEventsforGuildEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/scheduled-events`;
-
-/**
- * Create Guild Scheduled Event
- * @method POST
- */
-export type CreateGuildScheduledEventEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/scheduled-events`;
-
-/**
- * Get Guild Scheduled Event
- * @method GET
- */
-export type GetGuildScheduledEventEndpoint<
-  GuildID extends snowflake = snowflake,
-  Guild_scheduled_eventID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}`;
-
-/**
- * Edit Guild Scheduled Event
- * @method PATCH
- */
-export type EditGuildScheduledEventEndpoint<
-  GuildID extends snowflake = snowflake,
-  Guild_scheduled_eventID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}`;
-
-/**
- * Delete Guild Scheduled Event
- * @method DELETE
- */
-export type DeleteGuildScheduledEventEndpoint<
-  GuildID extends snowflake = snowflake,
-  Guild_scheduled_eventID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}`;
-
-/**
- * Get Guild Scheduled Event Users
- * @method GET
- */
-export type GetGuildScheduledEventUsersEndpoint<
-  GuildID extends snowflake = snowflake,
-  Guild_scheduled_eventID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/scheduled-events/${Guild_scheduled_eventID}/users`;
-
-/**
- * Get Sticker
- * @method GET
- */
-export type GetStickerEndpoint<
-  StickerID extends snowflake = snowflake,
-> = `/stickers/${StickerID}`;
-
-/**
- * List Nitro Sticker Packs
- * @method GET
- */
-export type ListNitroStickerPacksEndpoint = `/sticker-packs`;
-
-/**
- * List Guild Stickers
- * @method GET
- */
-export type ListGuildStickersEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/stickers`;
-
-/**
- * Get Guild Sticker
- * @method GET
- */
-export type GetGuildStickerEndpoint<
-  GuildID extends snowflake = snowflake,
-  StickerID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/stickers/${StickerID}`;
-
-/**
- * Create Guild Sticker
- * @method POST
- */
-export type CreateGuildStickerEndpoint<
-  GuildID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/stickers`;
-
-/**
- * Edit Guild Sticker
- * @method PATCH
- */
-export type EditGuildStickerEndpoint<
-  GuildID extends snowflake = snowflake,
-  StickerID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/stickers/${StickerID}`;
-
-/**
- * Delete Guild Sticker
- * @method DELETE
- */
-export type DeleteGuildStickerEndpoint<
-  GuildID extends snowflake = snowflake,
-  StickerID extends snowflake = snowflake,
-> = `/guilds/${GuildID}/stickers/${StickerID}`;
+export type DeleteInviteEndpoint<
+  InviteCode extends string = string,
+> = `/invites/${InviteCode}`;
 
 /**
  * Get Gateway
@@ -1383,8 +1647,7 @@ export type GetGatewayBotEndpoint = `/gateway/bot`;
  * Get Current Bot Application Information
  * @method GET
  */
-export type GetCurrentBotApplicationInformationEndpoint =
-  `/oauth2/applications/@me`;
+export type GetCurrentBotApplicationInformationEndpoint = `/oauth2/applications/@me`;
 
 /**
  * Get Current Authorization Information
@@ -1392,76 +1655,27 @@ export type GetCurrentBotApplicationInformationEndpoint =
  */
 export type GetCurrentAuthorizationInformationEndpoint = `/oauth2/@me`;
 
-/**
- * Get Entitlements
- * @method GET
- */
-export type GetEntitlementsEndpoint<
-  ApplicationID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/entitlements`;
-
-/**
- * Get Entitlement
- * @method GET
- */
-export type GetEntitlementEndpoint<
-  ApplicationID extends snowflake = snowflake,
-  EntitlementID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/entitlements/${EntitlementID}`;
-
-/**
- * Get SKUs
- * @method GET
- */
-export type GetSKUsEndpoint<
-  ApplicationID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/skus`;
-
-/**
- * Consume SKU
- * @method POST
- */
-export type ConsumeSKUEndpoint<
-  ApplicationID extends snowflake = snowflake,
-  EntitlementID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/entitlements/${EntitlementID}/consume`;
-
-/**
- * Delete Test Entitlement
- * @method DELETE
- */
-export type DeleteTestEntitlementEndpoint<
-  ApplicationID extends snowflake = snowflake,
-  EntitlementID extends snowflake = snowflake,
-> = `/applications/${ApplicationID}/entitlements/${EntitlementID}`;
-
-/**
- * Create Purchase Discount
- * @method PUT
- */
-export type CreatePurchaseDiscountEndpoint<
-  SkuID extends snowflake = snowflake,
-  UserID extends snowflake = snowflake,
-> = `/store/skus/${SkuID}/discounts/${UserID}`;
-
-/**
- * Delete Purchase Discount
- * @method DELETE
- */
-export type DeletePurchaseDiscountEndpoint<
-  SkuID extends snowflake = snowflake,
-  UserID extends snowflake = snowflake,
-> = `/store/skus/${SkuID}/discounts/${UserID}`;
-
 export type Endpoint =
-  | CreateInteractionResponseEndpoint
-  | GetOriginalInteractionResponseEndpoint
-  | EditOriginalInteractionResponseEndpoint
-  | DeleteOriginalInteractionResponseEndpoint
-  | CreateFollowupMessageEndpoint
-  | GetFollowupMessageEndpoint
-  | EditFollowupMessageEndpoint
-  | DeleteFollowupMessageEndpoint
+  | GetAchievementsEndpoint
+  | GetAchievementEndpoint
+  | CreateAchievementEndpoint
+  | UpdateAchievementEndpoint
+  | DeleteAchievementEndpoint
+  | UpdateUserAchievementEndpoint
+  | GetUserAchievementsEndpoint
+  | CreateLobbyEndpoint
+  | UpdateLobbyEndpoint
+  | DeleteLobbyEndpoint
+  | UpdateLobbyMemberEndpoint
+  | CreateLobbySearchEndpoint
+  | SendLobbyDataEndpoint
+  | GetEntitlementsEndpoint
+  | GetEntitlementEndpoint
+  | GetSKUsEndpoint
+  | ConsumeSKUEndpoint
+  | DeleteTestEntitlementEndpoint
+  | CreatePurchaseDiscountEndpoint
+  | DeletePurchaseDiscountEndpoint
   | GetGlobalApplicationCommandsEndpoint
   | CreateGlobalApplicationCommandEndpoint
   | GetGlobalApplicationCommandEndpoint
@@ -1478,21 +1692,18 @@ export type Endpoint =
   | GetApplicationCommandPermissionsEndpoint
   | EditApplicationCommandPermissionsEndpoint
   | BatchEditApplicationCommandPermissionsEndpoint
-  | CreateWebhookEndpoint
-  | GetChannelWebhooksEndpoint
-  | GetGuildWebhooksEndpoint
-  | GetWebhookEndpoint
-  | GetWebhookwithTokenEndpoint
-  | EditWebhookEndpoint
-  | EditWebhookwithTokenEndpoint
-  | DeleteWebhookEndpoint
-  | DeleteWebhookwithTokenEndpoint
-  | ExecuteWebhookEndpoint
-  | ExecuteSlackCompatibleWebhookEndpoint
-  | ExecuteGitHubCompatibleWebhookEndpoint
-  | GetWebhookMessageEndpoint
-  | EditWebhookMessageEndpoint
-  | DeleteWebhookMessageEndpoint
+  | CreateInteractionResponseEndpoint
+  | GetOriginalInteractionResponseEndpoint
+  | EditOriginalInteractionResponseEndpoint
+  | DeleteOriginalInteractionResponseEndpoint
+  | CreateFollowupMessageEndpoint
+  | GetFollowupMessageEndpoint
+  | EditFollowupMessageEndpoint
+  | DeleteFollowupMessageEndpoint
+  | GetApplicationRoleConnectionMetadataRecordsEndpoint
+  | UpdateApplicationRoleConnectionMetadataRecordsEndpoint
+  | ListVoiceRegionsEndpoint
+  | GetGuildAuditLogEndpoint
   | CreateGuildEndpoint
   | GetGuildEndpoint
   | GetGuildPreviewEndpoint
@@ -1520,6 +1731,7 @@ export type Endpoint =
   | CreateGuildRoleEndpoint
   | EditGuildRolePositionsEndpoint
   | EditGuildRoleEndpoint
+  | EditGuildMFALevelEndpoint
   | DeleteGuildRoleEndpoint
   | GetGuildPruneCountEndpoint
   | BeginGuildPruneEndpoint
@@ -1534,20 +1746,52 @@ export type Endpoint =
   | GetGuildWidgetImageEndpoint
   | GetGuildWelcomeScreenEndpoint
   | EditGuildWelcomeScreenEndpoint
+  | GetGuildOnboardingEndpoint
   | EditCurrentUserVoiceStateEndpoint
   | EditUserVoiceStateEndpoint
+  | CreateStageInstanceEndpoint
+  | GetStageInstanceEndpoint
+  | EditStageInstanceEndpoint
+  | DeleteStageInstanceEndpoint
+  | ListScheduledEventsforGuildEndpoint
+  | CreateGuildScheduledEventEndpoint
+  | GetGuildScheduledEventEndpoint
+  | EditGuildScheduledEventEndpoint
+  | DeleteGuildScheduledEventEndpoint
+  | GetGuildScheduledEventUsersEndpoint
+  | CreateWebhookEndpoint
+  | GetChannelWebhooksEndpoint
+  | GetGuildWebhooksEndpoint
+  | GetWebhookEndpoint
+  | GetWebhookwithTokenEndpoint
+  | EditWebhookEndpoint
+  | EditWebhookwithTokenEndpoint
+  | DeleteWebhookEndpoint
+  | DeleteWebhookwithTokenEndpoint
+  | ExecuteWebhookEndpoint
+  | ExecuteSlackCompatibleWebhookEndpoint
+  | ExecuteGitHubCompatibleWebhookEndpoint
+  | GetWebhookMessageEndpoint
+  | EditWebhookMessageEndpoint
+  | DeleteWebhookMessageEndpoint
+  | GetStickerEndpoint
+  | ListNitroStickerPacksEndpoint
+  | ListGuildStickersEndpoint
+  | GetGuildStickerEndpoint
+  | CreateGuildStickerEndpoint
+  | EditGuildStickerEndpoint
+  | DeleteGuildStickerEndpoint
   | GetCurrentUserEndpoint
   | GetUserEndpoint
   | EditCurrentUserEndpoint
   | GetCurrentUserGuildsEndpoint
+  | GetCurrentUserGuildMemberEndpoint
   | LeaveGuildEndpoint
   | CreateDMEndpoint
   | CreateGroupDMEndpoint
   | GetUserConnectionsEndpoint
-  | GetInviteEndpoint
-  | DeleteInviteEndpoint
-  | ListVoiceRegionsEndpoint
-  | GetGuildAuditLogEndpoint
+  | GetUserApplicationRoleConnectionEndpoint
+  | UpdateUserApplicationRoleConnectionEndpoint
   | GetGuildTemplateEndpoint
   | CreateGuildfromGuildTemplateEndpoint
   | GetGuildTemplatesEndpoint
@@ -1555,10 +1799,16 @@ export type Endpoint =
   | SyncGuildTemplateEndpoint
   | EditGuildTemplateEndpoint
   | DeleteGuildTemplateEndpoint
-  | CreateStageInstanceEndpoint
-  | GetStageInstanceEndpoint
-  | EditStageInstanceEndpoint
-  | DeleteStageInstanceEndpoint
+  | ListGuildEmojisEndpoint
+  | GetGuildEmojiEndpoint
+  | CreateGuildEmojiEndpoint
+  | EditGuildEmojiEndpoint
+  | DeleteGuildEmojiEndpoint
+  | ListAutoModerationRulesforGuildEndpoint
+  | GetAutoModerationRuleEndpoint
+  | CreateAutoModerationRuleEndpoint
+  | EditAutoModerationRuleEndpoint
+  | DeleteAutoModerationRuleEndpoint
   | GetChannelEndpoint
   | EditChannelEndpoint
   | GetChannelMessagesEndpoint
@@ -1578,51 +1828,28 @@ export type Endpoint =
   | GetChannelInvitesEndpoint
   | CreateChannelInviteEndpoint
   | DeleteChannelPermissionEndpoint
-  | FollowNewsChannelEndpoint
+  | FollowAnnouncementChannelEndpoint
   | TriggerTypingIndicatorEndpoint
   | GetPinnedMessagesEndpoint
   | PinMessageEndpoint
   | UnpinMessageEndpoint
   | GroupDMAddRecipientEndpoint
   | GroupDMRemoveRecipientEndpoint
-  | StartThreadwithMessageEndpoint
+  | StartThreadfromMessageEndpoint
   | StartThreadwithoutMessageEndpoint
+  | StartThreadinForumChannelEndpoint
   | JoinThreadEndpoint
   | AddThreadMemberEndpoint
   | LeaveThreadEndpoint
   | RemoveThreadMemberEndpoint
   | GetThreadMemberEndpoint
   | ListThreadMembersEndpoint
-  | ListActiveThreadsEndpoint
   | ListPublicArchivedThreadsEndpoint
   | ListPrivateArchivedThreadsEndpoint
   | ListJoinedPrivateArchivedThreadsEndpoint
-  | ListGuildEmojisEndpoint
-  | GetGuildEmojiEndpoint
-  | CreateGuildEmojiEndpoint
-  | EditGuildEmojiEndpoint
-  | DeleteGuildEmojiEndpoint
-  | ListScheduledEventsforGuildEndpoint
-  | CreateGuildScheduledEventEndpoint
-  | GetGuildScheduledEventEndpoint
-  | EditGuildScheduledEventEndpoint
-  | DeleteGuildScheduledEventEndpoint
-  | GetGuildScheduledEventUsersEndpoint
-  | GetStickerEndpoint
-  | ListNitroStickerPacksEndpoint
-  | ListGuildStickersEndpoint
-  | GetGuildStickerEndpoint
-  | CreateGuildStickerEndpoint
-  | EditGuildStickerEndpoint
-  | DeleteGuildStickerEndpoint
+  | GetInviteEndpoint
+  | DeleteInviteEndpoint
   | GetGatewayEndpoint
   | GetGatewayBotEndpoint
   | GetCurrentBotApplicationInformationEndpoint
-  | GetCurrentAuthorizationInformationEndpoint
-  | GetEntitlementsEndpoint
-  | GetEntitlementEndpoint
-  | GetSKUsEndpoint
-  | ConsumeSKUEndpoint
-  | DeleteTestEntitlementEndpoint
-  | CreatePurchaseDiscountEndpoint
-  | DeletePurchaseDiscountEndpoint;
+  | GetCurrentAuthorizationInformationEndpoint;

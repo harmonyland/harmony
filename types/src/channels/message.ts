@@ -31,6 +31,9 @@ export interface AttachmentPayload {
   proxy_url: string;
   height?: number;
   width?: number;
+  ephemeral?: boolean;
+  duration_secs?: number;
+  waveform?: string;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#reaction-object-reaction-structure */

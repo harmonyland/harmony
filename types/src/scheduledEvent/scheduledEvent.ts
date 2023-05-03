@@ -17,6 +17,7 @@ export interface ScheduledEventPayload {
   entity_metadata: ScheduledEventEntityMetadataPayload;
   creator?: UserPayload;
   user_cound?: number;
+  image?: string | null;
 }
 
 export enum ScheduledEventPrivacyLevel {
@@ -59,6 +60,7 @@ export interface CreateScheduledEventPayload {
   scheduled_end_time?: string;
   description?: string;
   entity_type: ScheduledEventEntityType;
+  image?: string;
 }
 
 export interface GetScheduledEventPayload {
@@ -67,14 +69,15 @@ export interface GetScheduledEventPayload {
 
 export interface EditScheduledEventPayload {
   channel_id?: string | null;
-  entity_metadata?: ScheduledEventEntityMetadataPayload;
+  entity_metadata?: ScheduledEventEntityMetadataPayload | null;
   name?: string;
   privacy_level?: ScheduledEventPrivacyLevel;
   scheduled_start_time?: string;
   scheduled_end_time?: string;
-  description?: string;
+  description?: string | null;
   entity_type: ScheduledEventEntityType;
   status?: ScheduledEventStatus;
+  image?: string;
 }
 
 export interface GetScheduledEventUsersParams {

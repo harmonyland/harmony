@@ -1,5 +1,5 @@
 import { ApplicationPayload } from "../applications/application.ts";
-import { GuildChannelPayload } from "../channels/guild.ts";
+import { ChannelPayload } from "../channels/base.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
@@ -7,8 +7,9 @@ import { UserPayload } from "../users/user.ts";
 
 export interface InvitePayload {
   code: string;
-  guild: GuildPayload;
-  channel: GuildChannelPayload | null;
+  guild?: GuildPayload;
+  channel: ChannelPayload | null;
+  inviter?: UserPayload;
   target_type?: InviteTargetType;
   target_user?: UserPayload;
   target_application?: ApplicationPayload;

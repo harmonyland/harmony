@@ -3,6 +3,7 @@ import { EmbedPayload } from "../channels/embed.ts";
 import { AllowedMentionsPayload } from "../channels/etc.ts";
 import { AttachmentPayload } from "../channels/message.ts";
 import { GuildPayload } from "../guilds/guild.ts";
+import { ComponentPayload } from "../interactions/components.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface WebhookPayload {
@@ -50,10 +51,10 @@ export interface ExecuteWebhookPayload {
   tts?: boolean;
   embeds?: EmbedPayload[];
   allowed_mentions?: AllowedMentionsPayload[];
-  // components?: MessageComponentPayload[]
-  files?: Blob;
-  payload_json?: string;
+  components?: ComponentPayload[];
   attachments?: AttachmentPayload[];
+  flags?: number;
+  thread_name?: string;
 }
 
 export type ExecuteSlackCompatibleWebhookParams = ExecuteWebhookParams;
@@ -68,9 +69,7 @@ export interface EditWebhookMessagePayload {
   content?: string | null;
   embeds?: EmbedPayload[] | null;
   allowed_mentions?: AllowedMentionsPayload[] | null;
-  // components?: MessageComponentPayload[] | null
-  files?: Blob | null;
-  payload_json?: string | null;
+  components?: ComponentPayload[] | null;
   attachments?: AttachmentPayload[] | null;
 }
 

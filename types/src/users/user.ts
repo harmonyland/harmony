@@ -13,7 +13,7 @@ export interface UserPayload {
   email?: string | null;
   flags?: UserFlags;
   premium_type?: PremiumType;
-  public_flags?: UserFlags;
+  public_flags?: number;
 }
 
 export enum UserFlags {
@@ -32,12 +32,14 @@ export enum UserFlags {
   VERIFIED_DEVELOPER = 1 << 17,
   CERTIFIED_MODERATOR = 1 << 18,
   BOT_HTTP_INTERACTIONS = 1 << 19,
+  ACTIVE_DEVELOPER = 1 << 22,
 }
 
 export enum PremiumType {
   NONE = 0,
   NITRO_CLASSIC = 1,
   NITRO = 2,
+  NITRO_BASIC = 3,
 }
 
 export interface EditCurrentUserPayload {

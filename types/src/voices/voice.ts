@@ -10,6 +10,8 @@ export interface VoiceStatePayload {
   mute: boolean;
   self_deaf: boolean;
   self_mute: boolean;
+  self_stream?: boolean;
+  self_video: boolean;
   suppress: boolean;
   request_to_speak_timestamp: string | null;
 }
