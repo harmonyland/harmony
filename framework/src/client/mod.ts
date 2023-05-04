@@ -1,5 +1,4 @@
 import {
-  APIManager,
   APIManagerOptions,
   RESTClient,
   ShardedGateway,

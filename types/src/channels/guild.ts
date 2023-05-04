@@ -1,6 +1,5 @@
 // Thread channels are seperated to a different file.
 import { Reasonable } from "../etc/reasonable.ts";
-import { GuildFeature } from "../guilds/guild.ts";
 import { ChannelPayload, ChannelType, TextChannelPayload } from "./base.ts";
 
 /** @link https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure */

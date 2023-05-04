@@ -15,9 +15,9 @@ export class Message {
   editedTimestamp?: Date;
   tts: boolean;
   mentionEveryone: boolean;
-  private _mentions: UserPayload[];
-  private _mentionRoles: string[];
-  private _mentionChannels?: ChannelMentionPayload[];
+  _mentions: UserPayload[];
+  _mentionRoles: string[];
+  _mentionChannels?: ChannelMentionPayload[];
 
   constructor(client: Client, payload: MessagePayload) {
     this.client = client;
@@ -36,7 +36,7 @@ export class Message {
     this._mentionChannels = payload.mention_channels;
   }
 
-  /// TODO: make any time-consuming properties lazy
+  /// TODO: make all time-consuming properties lazy
   // get channel() {
   //   return this.client.channels.get(this.channelID);
   // }
@@ -48,8 +48,14 @@ export class Message {
   // }
 
   // get mentionRoles() {
-  //   return this._mentionRoles.map((roleID) => { /// NOTE: this.channel is always guild channel since role mentions are only allowed in guild channels
-  //     return this.channel.roles.get(roleID);
+  //   return this._mentionRoles.map((roleID) => {
+  //     return this.channel.roles.get(roleID); /// NOTE: this.channel is always guild channel since role mentions are only allowed in guild channels
+  //   })
+  // }
+
+  // get mentionChannels() {
+  //   return this._mentionChannels.map((channel) => {
+  //     return this.client.channels.get(channel.id);
   //   })
   // }
 }

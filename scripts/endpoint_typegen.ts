@@ -1,12 +1,11 @@
 const $ = async (...cmd: string[]) => {
-  const proc = Deno.run({
-    cmd,
+  const proc = new Deno.Command(cmd.join(" "), {
     stdout: "piped",
     stderr: "piped",
   });
-  const status = await proc.status();
-  proc.close();
-  return status;
+  const childProc = proc.spawn();
+  const status = await childProc.status;
+  return status.code;
 };
 
 const API_DOCS_PATH = new URL("./api_docs", import.meta.url);

@@ -6,8 +6,6 @@
   },
 
   "fmt": {
-    "files": {
-      "exclude": ["./scripts/api_docs"]
-    }
+    "exclude": ["./scripts/api_docs"]
   }
 }
