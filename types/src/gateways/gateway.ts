@@ -1,4 +1,8 @@
 import { ApplicationPayload } from "../applications/application.ts";
+import {
+  AutoModerationRuleAction,
+  AutoModerationRuleTriggerType,
+} from "../autoMod/autoMod.ts";
 import { ChannelPayload } from "../channels/base.ts";
 import { MessagePayload } from "../channels/message.ts";
 import { GuildPayload } from "../guilds/guild.ts";
@@ -162,7 +166,8 @@ export type GatewayDataType =
   | VoiceStatePayload
   | GatewayPresenceUpdatePayload
   | GatewayTypingStartPayload
-  | GatewayVoiceServerUpdatePayload;
+  | GatewayVoiceServerUpdatePayload
+  | GatewayAutoModerationActionExecutionEventPayload;
 
 export interface ConnectGatewayParams {
   v: number;
@@ -276,4 +281,18 @@ export interface GatewayVoiceServerUpdatePayload {
   token: string;
   guild_id: string;
   endpoint: string | null;
+}
+
+export interface GatewayAutoModerationActionExecutionEventPayload {
+  guild_id: string;
+  action: AutoModerationRuleAction;
+  rule_id: string;
+  rule_trigger_type: AutoModerationRuleTriggerType;
+  user_id: string;
+  channel_id?: string;
+  message_id?: string;
+  alert_system_message_id?: string;
+  content?: string;
+  matched_keyword: string | null;
+  matched_content?: string | null;
 }
