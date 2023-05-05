@@ -188,6 +188,7 @@ export class HTTPClient implements HTTPClientOptions {
 
       queue.shift();
       if (res.ok) {
+        if (res.status === 204) return null as unknown as T;
         return res.json();
       } else if (res.status >= 500 && res.status < 600) {
         await res.body?.cancel();
