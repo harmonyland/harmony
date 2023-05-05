@@ -195,9 +195,9 @@ export class HTTPClient implements HTTPClientOptions {
           `Discord API Internal Server Error (${res.status})`,
         );
       } else if (res.status >= 400 && res.status < 500) {
-        await res.body?.cancel();
+        const body = await res.text();
         throw new Error(
-          `Discord API Error (${res.status})`,
+          `Discord API Error (${res.status}): ${body}`,
         );
       } else {
         await res.body?.cancel();
