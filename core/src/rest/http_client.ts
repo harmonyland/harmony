@@ -208,13 +208,17 @@ export class HTTPClient implements HTTPClientOptions {
     };
 
     let tries = 0;
+    let nextCause;
     while (tries < this.maxRetries) {
       try {
         return await execute();
       } catch (error) {
         tries++;
+        if (nextCause !== undefined) error.cause = nextCause;
         if (tries === this.maxRetries) {
           throw error;
+        } else {
+          nextCause = error;
         }
       }
     }
