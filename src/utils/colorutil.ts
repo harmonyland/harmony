@@ -235,7 +235,9 @@ export class ColorUtil {
 
   /** Returns random hex code */
   static randomHex(): string {
-    const code = `#${Math.floor(Math.random() * (0xffffff + 1)).toString(16)}`
+    const code = `#${Math.floor(Math.random() * (0xffffff + 1))
+      .toString(16)
+      .padStart(6, '0')}`
     if (!ColorUtil.isHex(code)) return '#000000'
     return code
   }
