@@ -453,6 +453,9 @@ export type ClientEvents = {
   commandUsed: [ctx: CommandContext]
   commandError: [ctx: CommandContext, err: Error]
   commandNotFound: [msg: Message, parsedCmd: ParsedCommand]
+  commandBlockedUser: [ctx: CommandContext]
+  commandBlockedChannel: [ctx: CommandContext]
+  commandBlockedGuild: [ctx: CommandContext]
   commandOnCooldown: [
     ctx: CommandContext,
     remaining: number,

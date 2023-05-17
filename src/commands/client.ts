@@ -183,17 +183,6 @@ export class CommandClient extends Client implements CommandClientOptions {
   async processMessage(msg: Message): Promise<any> {
     if (!this.allowBots && msg.author.bot === true) return
 
-    const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
-    if (isUserBlacklisted) return
-
-    const isChannelBlacklisted = await this.isChannelBlacklisted(msg.channel.id)
-    if (isChannelBlacklisted) return
-
-    if (msg.guild !== undefined) {
-      const isGuildBlacklisted = await this.isGuildBlacklisted(msg.guild.id)
-      if (isGuildBlacklisted) return
-    }
-
     let prefix: PrefixType = []
     if (typeof this.prefix === 'string' || this.prefix instanceof RegExp)
       prefix = [...prefix, this.prefix]
@@ -315,6 +304,17 @@ export class CommandClient extends Client implements CommandClientOptions {
       command,
       channel: msg.channel,
       guild: msg.guild
+    }
+
+    const isUserBlacklisted = await this.isUserBlacklisted(msg.author.id)
+    if (isUserBlacklisted) return this.emit('commandBlockedUser', ctx)
+
+    const isChannelBlacklisted = await this.isChannelBlacklisted(msg.channel.id)
+    if (isChannelBlacklisted) return this.emit('commandBlockedChannel', ctx)
+
+    if (msg.guild !== undefined) {
+      const isGuildBlacklisted = await this.isGuildBlacklisted(msg.guild.id)
+      if (isGuildBlacklisted) return this.emit('commandBlockedGuild', ctx)
     }
 
     // In these checks too, Command overrides Category if present
