@@ -82,6 +82,12 @@ export class MessageReactionsManager extends BaseManager<
 
   /** Remove a specific Emoji from Reactions */
   async removeEmoji(emoji: Emoji | string): Promise<MessageReactionsManager> {
+    emoji =
+      emoji instanceof String && emoji[0] === '<' ? emoji.substring(1) : emoji
+    emoji =
+      emoji instanceof String && emoji[emoji.length - 1] === '>'
+        ? emoji.substring(0, emoji.length - 2)
+        : emoji
     const val = encodeURIComponent(
       (typeof emoji === 'object' ? emoji.id ?? emoji.name : emoji) as string
     )
@@ -96,6 +102,13 @@ export class MessageReactionsManager extends BaseManager<
     emoji: Emoji | string,
     user: User | string
   ): Promise<MessageReactionsManager> {
+    emoji =
+      emoji instanceof String && emoji[0] === '<' ? emoji.substring(1) : emoji
+    emoji =
+      emoji instanceof String && emoji[emoji.length - 1] === '>'
+        ? emoji.substring(0, emoji.length - 2)
+        : emoji
+
     const val = encodeURIComponent(
       (typeof emoji === 'object' ? emoji.id ?? emoji.name : emoji) as string
     )
