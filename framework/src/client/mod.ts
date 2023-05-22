@@ -5,6 +5,8 @@ import {
 } from "../../../core/mod.ts";
 import { EventEmitter } from "../../deps.ts";
 import { ClientEvents } from "./events.ts";
+import { GatewayHandlers } from "../gateway/mod.ts";
+import { ShardedGatewayEvents } from "../../../mod.ts";
 
 export interface ClientOptions extends APIManagerOptions {
   cache?: "memory" | "redis" | "none"; // TODO: implement a proper cache system
@@ -22,6 +24,11 @@ export class Client extends EventEmitter<ClientEvents> {
     this.gateway = new ShardedGateway(token, options.gateway?.intents ?? 0, {
       ...options.gateway,
     });
+    for (const [key, value] of Object.entries(GatewayHandlers)) {
+      this.gateway.on(key as keyof ShardedGatewayEvents, (...args) => {
+        value(this, args);
+      });
+    }
     this.rest = new RESTClient({ token, ...options.rest });
     this.token = token;
   }

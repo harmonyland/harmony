@@ -1,7 +1,9 @@
-import type { GatewayDataType } from "../../types/mod.ts";
+import type { ShardedGatewayEvents } from "../../mod.ts";
 import type { Client } from "../src/client/mod.ts";
 
-export type GatewayHandler<T extends GatewayDataType> = (
+export type GatewayHandler<
+  K extends keyof ShardedGatewayEvents,
+> = (
   client: Client,
-  d: T,
+  d: ShardedGatewayEvents[K],
 ) => void;

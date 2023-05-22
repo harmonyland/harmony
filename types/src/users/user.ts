@@ -11,7 +11,7 @@ export interface UserPayload {
   locale?: string;
   verified?: boolean;
   email?: string | null;
-  flags?: UserFlags;
+  flags?: number;
   premium_type?: PremiumType;
   public_flags?: number;
 }

@@ -1,13 +1,13 @@
 import type { MessagePayload } from "../../../types/mod.ts";
 import type { GatewayHandler } from "../../types/gateway.ts";
 import type { Client } from "../client/mod.ts";
-import { Message } from "../structures/message.ts";
+import { Message } from "../structures/messages/message.ts";
 
-const messageCreate: GatewayHandler<MessagePayload> = (
+const messageCreate: GatewayHandler<"MESSAGE_CREATE"> = (
   client: Client,
-  data: MessagePayload,
+  data: [number, MessagePayload],
 ) => {
-  const message = new Message(client, data);
+  const message = new Message(client, data[1]);
   client.emit("messageCreate", message);
 };
 
