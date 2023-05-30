@@ -47,28 +47,33 @@ export class Member extends SnowflakeBase {
     this.guild = guild
     this.roles = new MemberRolesManager(this.client, this.guild.roles, this)
     this.permissions = perms ?? new Permissions(Permissions.DEFAULT)
-    this.roles.array().then((roles) => {
-      const rolePermissions: string[] = []
+    this.roles
+      .array()
+      .then((roles) => {
+        const rolePermissions: string[] = []
 
-      for (const role of roles) {
-        rolePermissions.push(
-          ...role.permissions
+        for (const role of roles) {
+          rolePermissions.push(
+            ...role.permissions
+              .toArray()
+              .filter((p) => !rolePermissions.includes(p))
+          )
+        }
+
+        this.permissions.remove(
+          ...this.permissions
             .toArray()
             .filter((p) => !rolePermissions.includes(p))
         )
-      }
-
-      this.permissions.remove(
-        ...this.permissions
-          .toArray()
-          .filter((p) => !rolePermissions.includes(p))
-      )
-      this.permissions.add(
-        ...rolePermissions.filter(
-          (p) => this.permissions.toArray().includes(p) === false
+        this.permissions.add(
+          ...rolePermissions.filter(
+            (p) => this.permissions.toArray().includes(p) === false
+          )
         )
-      )
-    })
+      })
+      .catch((e) => {
+        // probably missing permissions, ignore
+      })
   }
 
   get displayName(): string {
