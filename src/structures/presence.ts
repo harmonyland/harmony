@@ -61,16 +61,21 @@ export class ClientPresence {
 
   constructor(data?: ClientActivity | StatusPayload | ActivityGame) {
     if (data !== undefined) {
-      if ((data as ClientActivity).activity !== undefined) {
-        Object.assign(this, data)
-      } else if ((data as StatusPayload).activities !== undefined) {
-        this.parse(data as StatusPayload)
-      } else if ((data as ActivityGame).name !== undefined) {
+      if (['name', 'type', 'url'].some((k) => k in data)) {
+        // ActivityGame
         if (this.activity === undefined) {
           this.activity = data as ActivityGame
         } else if (this.activity instanceof Array) {
           this.activity.push(data as ActivityGame)
         } else this.activity = [this.activity, data as ActivityGame]
+      } else if (['client_status', 'activities'].some((k) => k in data)) {
+        // StatusPayload
+        this.parse(data as StatusPayload)
+      } else if (
+        ['since', 'activity', 'status', 'afk'].some((k) => k in data)
+      ) {
+        // ClientActivity
+        Object.assign(this, data)
       }
     }
   }
