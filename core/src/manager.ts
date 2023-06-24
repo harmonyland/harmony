@@ -75,25 +75,25 @@ export class APIManager {
 
   get<T>(
     ...args: Parameters<RESTClient["get"]>
-  ): ReturnType<RESTClient["get"]> {
+  ) {
     return this.rest.get<T>(...args);
   }
 
   post<T>(
     ...args: Parameters<RESTClient["post"]>
-  ): ReturnType<RESTClient["post"]> {
+  ) {
     return this.rest.post<T>(...args);
   }
 
   patch<T>(
     ...args: Parameters<RESTClient["patch"]>
-  ): ReturnType<RESTClient["patch"]> {
+  ) {
     return this.rest.patch<T>(...args);
   }
 
   put<T>(
     ...args: Parameters<RESTClient["put"]>
-  ): ReturnType<RESTClient["put"]> {
+  ) {
     return this.rest.put<T>(...args);
   }
 
