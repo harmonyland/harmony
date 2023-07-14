@@ -7,20 +7,22 @@ import { EventEmitter } from "../../deps.ts";
 import { ClientEvents } from "./events.ts";
 import { GatewayHandlers } from "../gateway/mod.ts";
 import { ShardedGatewayEvents } from "../../../mod.ts";
+import { BaseCache } from "../cache/base.ts";
+import { MemoryCache } from "../cache/memory.ts";
 
 export interface ClientOptions extends APIManagerOptions {
-  cache?: "memory" | "redis" | "none"; // TODO: implement a proper cache system
+  cache?: BaseCache;
 }
 
 export class Client extends EventEmitter<ClientEvents> {
-  cache: "memory" | "redis" | "none"; // TODO: implement a proper cache system
   gateway: ShardedGateway;
   rest: RESTClient;
   token: string;
+  cache: BaseCache;
 
   constructor(token: string, options: ClientOptions = {}) {
     super();
-    this.cache = options.cache ?? "memory";
+    this.cache = options.cache ?? new MemoryCache();
     this.gateway = new ShardedGateway(token, options.gateway?.intents ?? 0, {
       ...options.gateway,
     });
