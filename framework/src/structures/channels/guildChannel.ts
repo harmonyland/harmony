@@ -2,23 +2,30 @@ import { Channel } from "./channel.ts";
 import type { Client } from "../../client/mod.ts";
 import type { GuildChannelPayload } from "../../../../types/mod.ts";
 
-export class GuildChannel extends Channel {
-  guildID: string;
-  name: string;
-  position: number;
-  // permissionOverwrites: Overwrite[];
-  nsfw: boolean;
-  parentID: string | null;
-  topic: string | null;
-
-  constructor(client: Client, payload: GuildChannelPayload) {
+export class GuildChannel<T extends GuildChannelPayload> extends Channel<T> {
+  constructor(client: Client, payload: T) {
     super(client, payload);
-    this.guildID = payload.guild_id;
-    this.name = payload.name;
-    this.position = payload.position;
-    // this.permissionOverwrites = payload.permission_overwrites;
-    this.nsfw = payload.nsfw;
-    this.parentID = payload.parent_id;
-    this.topic = payload.topic;
+  }
+
+  get guildID(): string {
+    return this.payload.guild_id;
+  }
+  get name(): string {
+    return this.payload.name;
+  }
+  get position(): number {
+    return this.payload.position;
+  }
+  // get permissionOverwrites(): Overwrite[] {
+  //   return this.payload.permission_overwrites;
+  // }
+  get nsfw(): boolean {
+    return this.payload.nsfw;
+  }
+  get parentID(): string | null {
+    return this.payload.parent_id;
+  }
+  get topic(): string | null {
+    return this.payload.topic;
   }
 }
