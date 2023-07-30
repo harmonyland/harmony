@@ -1,39 +1,66 @@
-import { ChannelPayload } from "../../../mod.ts";
-import { Client } from "../client/mod.ts";
+import type { ChannelPayload, GuildTextChannelPayload } from "../../../mod.ts";
+import { ChannelType } from "../../../mod.ts";
+import type { Client } from "../client/mod.ts";
 import { Channel } from "../structures/channels/channel.ts";
-import { BaseManager } from "./base.ts";
+import { GuildTextChannel } from "../structures/channels/guildTextChannel.ts";
+import type { BaseManager } from "./base.ts";
 
-export class ChannelsManager implements BaseManager<ChannelPayload, Channel> {
+export class ChannelsManager
+  implements BaseManager<ChannelPayload, Channel<ChannelPayload>> {
   client: Client;
 
   constructor(client: Client) {
     this.client = client;
   }
 
-  _get(id: string): ChannelPayload | undefined {
-    return this.client.cache.get(`channel:${id}`);
+  private createChannel<P extends ChannelPayload>(payload: P) {
+    switch (payload.type) {
+      case ChannelType.GUILD_TEXT:
+        return new GuildTextChannel(
+          this.client,
+          payload as unknown as GuildTextChannelPayload,
+        );
+      default:
+        return new Channel(this.client, payload);
+    }
   }
 
-  async get(id: string): Promise<Channel | undefined> { // TODO: make a better way to convert payload to other structures
-    const cached = this._get(id);
-    if (!cached) return await this.fetch(id);
-    return new Channel(this.client, cached);
+  _get<P extends ChannelPayload>(id: string): P | undefined {
+    return this.client.cache.get(`channel:${id}`);
   }
-  async fetch(id: string): Promise<Channel | undefined> {
+  async _fetch<P extends ChannelPayload>(id: string): Promise<P | undefined> {
     try {
-      const resp: ChannelPayload | undefined = await this.client.rest.get(
+      const resp: P | undefined = await this.client.rest.get(
         `/channels/${id}`,
       );
       if (!resp) return;
       this.set(id, resp);
-      const channel = new Channel(this.client, resp);
-      return channel;
+      return resp;
     } catch (_err) {
       return;
     }
   }
 
-  set(id: string, channel: ChannelPayload): void {
+  async get(
+    id: string,
+  ) {
+    const cached = this._get(id) ?? await this._fetch(id);
+    if (!cached) return;
+    return this.createChannel(cached);
+  }
+  async fetch<P extends ChannelPayload>(
+    id: string,
+  ) {
+    try {
+      const payload = await this._fetch<P>(id);
+      if (!payload) return;
+      return this.createChannel(payload);
+    } catch (_err) {
+      return;
+    }
+  }
+
+  set<P extends ChannelPayload>(id: string, channel: P): void {
     this.client.cache.set(`channel:${id}`, channel);
   }
 

@@ -1,4 +1,4 @@
-import { GatewayHandler } from "../../types/gateway.ts";
+import type { GatewayHandler } from "../../types/gateway.ts";
 import messageCreate from "./messageCreate.ts";
 
 // deno-lint-ignore no-explicit-any

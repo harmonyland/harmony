@@ -4,11 +4,11 @@ import type {
   TextChannelPayload,
 } from "../../../../types/mod.ts";
 import type { Client } from "../../client/mod.ts";
-import { Message } from "../messages/message.ts";
+import { Message } from "../messages/mod.ts";
 import { Channel } from "./channel.ts";
 
-export class TextChannel<T extends TextChannelPayload> extends Channel<T> {
-  constructor(client: Client, payload: T) {
+export class TextChannel<P extends TextChannelPayload> extends Channel<P> {
+  constructor(client: Client, payload: P) {
     super(client, payload);
   }
 

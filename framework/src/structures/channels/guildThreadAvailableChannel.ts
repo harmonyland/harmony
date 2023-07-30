@@ -3,9 +3,9 @@ import type { Client } from "../../client/mod.ts";
 import { GuildChannel } from "./guildChannel.ts";
 
 export class GuildThreadAvailableChannel<
-  T extends GuildThreadAvailableChannelPayload,
-> extends GuildChannel<T> {
-  constructor(client: Client, payload: T) {
+  P extends GuildThreadAvailableChannelPayload,
+> extends GuildChannel<P> {
+  constructor(client: Client, payload: P) {
     super(client, payload);
   }
 }

@@ -1,11 +1,11 @@
 import type { ChannelPayload, ChannelType } from "../../../../types/mod.ts";
 import type { Client } from "../../client/mod.ts";
 
-export class Channel<T extends ChannelPayload> {
+export class Channel<P extends ChannelPayload> {
   client: Client;
-  payload: T;
+  payload: P;
 
-  constructor(client: Client, payload: T) {
+  constructor(client: Client, payload: P) {
     this.client = client;
     this.payload = payload;
   }

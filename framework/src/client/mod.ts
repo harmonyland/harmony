@@ -1,14 +1,14 @@
-import {
+import type {
   APIManagerOptions,
-  RESTClient,
-  ShardedGateway,
+  ShardedGatewayEvents,
 } from "../../../core/mod.ts";
+import { RESTClient, ShardedGateway } from "../../../core/mod.ts";
 import { EventEmitter } from "../../deps.ts";
-import { ClientEvents } from "./events.ts";
+import type { ClientEvents } from "./events.ts";
 import { GatewayHandlers } from "../gateway/mod.ts";
-import { ShardedGatewayEvents } from "../../../mod.ts";
-import { BaseCache } from "../cache/base.ts";
+import type { BaseCache } from "../cache/base.ts";
 import { MemoryCache } from "../cache/memory.ts";
+import { ChannelsManager } from "../managers/mod.ts";
 
 export interface ClientOptions extends APIManagerOptions {
   cache?: BaseCache;
@@ -19,6 +19,7 @@ export class Client extends EventEmitter<ClientEvents> {
   rest: RESTClient;
   token: string;
   cache: BaseCache;
+  channels = new ChannelsManager(this);
 
   constructor(token: string, options: ClientOptions = {}) {
     super();

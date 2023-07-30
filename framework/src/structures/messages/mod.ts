@@ -17,7 +17,7 @@ import type {
   UserPayload,
 } from "../../../../types/mod.ts";
 import type { Client } from "../../client/mod.ts";
-import { User } from "../users/user.ts";
+import { User } from "../users/mod.ts";
 
 export class Message {
   client: Client;
@@ -94,9 +94,9 @@ export class Message {
     return new User(this.client, this._author);
   }
 
-  // get channel() {
-  //   return this.client.channels.get(this.channelID);
-  // }
+  get channel() {
+    return this.client.channels.get(this.channelID);
+  }
 
   // get mentions() {
   //   return this._mentions.map((mention) => {

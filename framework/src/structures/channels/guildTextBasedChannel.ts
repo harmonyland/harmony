@@ -4,9 +4,9 @@ import { TextChannel } from "./textChannel.ts";
 import { GuildChannel } from "./guildChannel.ts";
 import type { GuildTextBasedChannelPayload } from "../../../../types/mod.ts";
 
-export class GuildTextBasedChannel<T extends GuildTextBasedChannelPayload>
+export class GuildTextBasedChannel<P extends GuildTextBasedChannelPayload>
   extends Mixin(GuildChannel, TextChannel) {
-  constructor(client: Client, payload: T) {
+  constructor(client: Client, payload: P) {
     super(client, payload);
   }
 

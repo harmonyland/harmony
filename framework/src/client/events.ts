@@ -1,4 +1,4 @@
-import type { Message } from "../structures/messages/message.ts";
+import type { Message } from "../structures/mod.ts";
 
 // ...this is gonna be very painful to fix
 export type ClientEvents = {

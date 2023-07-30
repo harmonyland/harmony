@@ -1,4 +1,4 @@
-import { Client } from "../client/mod.ts";
+import type { Client } from "../client/mod.ts";
 
 export declare class BaseManager<P, T> {
   client: Client;
@@ -6,6 +6,7 @@ export declare class BaseManager<P, T> {
   constructor(client: Client);
 
   _get(key: string): P | undefined;
+  _fetch(key: string): Promise<P | undefined>;
 
   // try _get first, if not found, fetch
   get(key: string): Promise<T | undefined>;
