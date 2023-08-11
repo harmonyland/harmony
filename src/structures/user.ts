@@ -34,7 +34,9 @@ export class User extends SnowflakeBase {
   publicFlags!: UserFlagsManager
 
   get tag(): string {
-    return this.discriminator === "0" ? this.displayName : `${this.username}#${this.discriminator}`
+    return this.discriminator === '0'
+      ? this.displayName
+      : `${this.username}#${this.discriminator}`
   }
 
   get nickMention(): string {
@@ -63,7 +65,7 @@ export class User extends SnowflakeBase {
 
   readFromData(data: UserPayload): void {
     this.username = data.username ?? this.username
-	this.displayName = data.global_name ?? this.displayName ?? this.username
+    this.displayName = data.global_name ?? this.displayName ?? this.username
     this.discriminator = data.discriminator ?? this.discriminator
     this.avatar = data.avatar ?? this.avatar
     this.bot = data.bot ?? this.bot
