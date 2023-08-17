@@ -97,6 +97,7 @@ export class BucketHandler {
         timeout =
           // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
           Number(this.manager.globalReset) +
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
           this.manager.restTimeOffset -
           Date.now()
         if (typeof this.manager.globalDelay !== 'number') {

@@ -393,6 +393,7 @@ export class CommandsLoader {
     const mod = await import(
       // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       'file:///' +
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         join(Deno.cwd(), filePath) +
         (seq === undefined ? '' : `#${seq}`)
     )
