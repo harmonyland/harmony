@@ -81,7 +81,7 @@ export function init(options: DeploySlashInitOptions): void {
           return res
         }
       })
-      if (!interaction) {
+      if (interaction === false) {
         // ... unauthorized
         return new Response('Not Authorized', {
           status: 400
