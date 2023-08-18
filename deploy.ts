@@ -75,7 +75,7 @@ export function init(options: DeploySlashInitOptions): void {
     }
     try {
       const interaction = await client.verifyFetchEvent({ request, respondWith: (res: Response) => { return res; } });
-      if (!interaction) {
+      if (interaction === false) {
         // ... unauthorized
         return new Response('Not Authorized', {
           status: 400
