@@ -1,6 +1,7 @@
 export interface UserPayload {
   id: string
   username: string
+  global_name?: string
   discriminator: string
   avatar?: string
   bot?: boolean

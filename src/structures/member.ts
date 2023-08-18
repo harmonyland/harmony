@@ -77,7 +77,9 @@ export class Member extends SnowflakeBase {
   }
 
   get displayName(): string {
-    return this.nick !== null ? this.nick : this.user.username
+    return this.nick !== null
+      ? this.nick
+      : this.user.displayName ?? this.user.username
   }
 
   toString(): string {
