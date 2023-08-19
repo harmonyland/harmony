@@ -67,41 +67,43 @@ export function init(options: DeploySlashInitOptions): void {
 
   commands = client.commands
 
-  const cb = async (evt: {
-    respondWith: CallableFunction
-    request: Request
-  }): Promise<void> => {
+  const requestHandler = async (request: Request): Promise<Response> => {
     if (options.path !== undefined) {
-      if (new URL(evt.request.url).pathname !== options.path) return
+      if (new URL(request.url).pathname !== options.path)
+        return new Response('Bad Request', {
+          status: 400
+        })
     }
     try {
-      // we have to wrap because there are some weird scope errors
-      const d = await client.verifyFetchEvent({
-        respondWith: (...args: unknown[]) => evt.respondWith(...args),
-        request: evt.request
+      const interaction = await client.verifyFetchEvent({
+        request,
+        respondWith: (res: Response) => {
+          return res
+        }
       })
-      if (d === false) {
-        await evt.respondWith(
-          new Response('Not Authorized', {
-            status: 400
-          })
-        )
-        return
+      if (interaction === false) {
+        // ... unauthorized
+        return new Response('Not Authorized', {
+          status: 400
+        })
+      }
+      if (interaction.type === InteractionType.PING) {
+        await interaction.respond({ type: InteractionResponseType.PONG })
+        await client.emit('ping')
       }
 
-      if (d.type === InteractionType.PING) {
-        await d.respond({ type: InteractionResponseType.PONG })
-        client.emit('ping')
-        return
-      }
-
-      await client._process(d)
+      await client._process(interaction)
+      return new Response('Error', {
+        status: 500
+      })
     } catch (e) {
-      await client.emit('interactionError', e as Error)
+      client.emit('interactionError', e as Error)
+      return new Response('Error', {
+        status: 500
+      })
     }
   }
-
-  addEventListener('fetch', cb as unknown as EventListener)
+  Deno.serve(requestHandler)
 }
 
 /**
@@ -170,9 +172,9 @@ export function autocomplete(
 
 /** Listen for Interactions Event */
 export function interactions(
-  cb: (i: Interaction) => unknown | Promise<unknown>
+  requestHandler: (i: Interaction) => Promise<Response>
 ): void {
-  client.on('interaction', cb)
+  client.on('interaction', requestHandler)
 }
 
 export { commands, client }
