@@ -21,7 +21,7 @@
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
-We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.6.1`.
+We also have a (fancy) custom registry for importing Harmony! It's at [code.harmony.rocks](https://code.harmony.rocks), example import URL: `https://code.harmony.rocks/v2.9.0`.
 
 ## Usage (Node.js)
 
@@ -29,14 +29,14 @@ You can install and use the NPM package published under `@harmonyland/harmony`.
 
 ## Documentation
 
-Documentation is available [main branch](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts) or [latest stable version (v2.6.1)](https://doc.deno.land/https/deno.land/x/harmony@v2.6.1/mod.ts). You can also check out the [guide](https://harmony.mod.land).
+Documentation is available [main branch](https://doc.deno.land/https/raw.githubusercontent.com/harmonyland/harmony/main/mod.ts) or [latest stable version (v2.6.1)](https://doc.deno.land/https/deno.land/x/harmony@v2.9.0/mod.ts). You can also check out the [guide](https://harmony.mod.land).
 
 ## Example
 
 For a quick example, run this:
 
 ```bash
-deno run --allow-net https://deno.land/x/harmony@v2.6.1/examples/ping.ts
+deno run --allow-net https://deno.land/x/harmony@v2.9.0/examples/ping.ts
 ```
 
 And input your bot's token.
@@ -48,7 +48,7 @@ import {
   Client,
   Message,
   GatewayIntents
-} from 'https://deno.land/x/harmony@v2.6.1/mod.ts'
+} from 'https://deno.land/x/harmony@v2.9.0/mod.ts'
 
 const client = new Client({
   intents: [
@@ -83,7 +83,7 @@ import {
   Command,
   CommandContext,
   GatewayIntents
-} from 'https://deno.land/x/harmony@v2.6.1/mod.ts'
+} from 'https://deno.land/x/harmony@v2.9.0/mod.ts'
 
 const client = new CommandClient({
   prefix: '!',
@@ -124,7 +124,7 @@ import {
   command,
   CommandContext,
   GatewayIntents
-} from 'https://deno.land/x/harmony@v2.6.1/mod.ts'
+} from 'https://deno.land/x/harmony@v2.9.0/mod.ts'
 
 class MyClient extends CommandClient {
   constructor() {
