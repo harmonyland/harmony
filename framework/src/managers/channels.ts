@@ -41,10 +41,10 @@ export class ChannelsManager
     }
   }
 
-  async get(
+  get(
     id: string,
   ) {
-    const cached = this._get(id) ?? await this._fetch(id);
+    const cached = this._get(id);
     if (!cached) return;
     return this.createChannel(cached);
   }
@@ -66,5 +66,9 @@ export class ChannelsManager
 
   delete(id: string): boolean {
     return this.client.cache.delete(`channel:${id}`);
+  }
+
+  async resolve(key: string) {
+    return this.get(key) ?? await this.fetch(key);
   }
 }

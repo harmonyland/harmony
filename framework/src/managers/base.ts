@@ -15,4 +15,6 @@ export declare class BaseManager<P, T> {
   set(key: string, value: P): void;
 
   delete(key: string): boolean;
+
+  resolve(key: string): Promise<T | undefined>;
 }
