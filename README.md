@@ -21,8 +21,6 @@
 
 You can import the package from https://deno.land/x/harmony/mod.ts (with latest version) or can add a version too, and raw GitHub URL (latest unpublished version) https://raw.githubusercontent.com/harmonyland/harmony/main/mod.ts too.
 
-We also have a (fancy) custom registry for importing Harmony!
-
 ## Usage (Node.js)
 
 You can install and use the NPM package published under `@harmonyland/harmony`.
