@@ -12,6 +12,7 @@ import { ChannelsManager } from "../managers/mod.ts";
 
 export interface ClientOptions extends APIManagerOptions {
   cache?: BaseCache;
+  intents?: number;
 }
 
 export class Client extends EventEmitter<ClientEvents> {
@@ -24,6 +25,10 @@ export class Client extends EventEmitter<ClientEvents> {
   constructor(token: string, options: ClientOptions = {}) {
     super();
     this.cache = options.cache ?? new MemoryCache();
+    if (options.intents !== undefined) {
+      options.gateway ??= {};
+      options.gateway.intents = options.intents;
+    }
     this.gateway = new ShardedGateway(token, options.gateway?.intents ?? 0, {
       ...options.gateway,
     });
@@ -58,5 +63,9 @@ export class Client extends EventEmitter<ClientEvents> {
       };
       this.on(event, eventFunc);
     });
+  }
+
+  async connect() {
+    return await this.gateway.spawnAndRunAll();
   }
 }

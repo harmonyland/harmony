@@ -3,37 +3,55 @@ import type { Client } from "../../client/mod.ts";
 
 export class User {
   client: Client;
-  id: string;
-  username: string;
-  discriminator: string;
-  avatar: string | null;
-  bot?: boolean;
-  system?: boolean;
-  mfaEnabled?: boolean;
-  banner?: string | null;
-  accentColor?: number | null;
-  locale?: string;
-  verified?: boolean;
-  email?: string | null;
-  flags?: number;
-  premiumType?: PremiumType;
-  publicFlags?: number;
+  payload: UserPayload;
   constructor(client: Client, payload: UserPayload) {
     this.client = client;
-    this.id = payload.id;
-    this.username = payload.username;
-    this.discriminator = payload.discriminator;
-    this.avatar = payload.avatar;
-    this.bot = payload.bot;
-    this.system = payload.system;
-    this.mfaEnabled = payload.mfa_enabled;
-    this.banner = payload.banner;
-    this.accentColor = payload.accent_color;
-    this.locale = payload.locale;
-    this.verified = payload.verified;
-    this.email = payload.email;
-    this.flags = payload.flags;
-    this.premiumType = payload.premium_type;
-    this.publicFlags = payload.public_flags;
+    this.payload = payload;
+  }
+
+  get id(): string {
+    return this.payload.id;
+  }
+  get username(): string {
+    return this.payload.username;
+  }
+  get discriminator(): string {
+    return this.payload.discriminator;
+  }
+  get avatar(): string | null {
+    return this.payload.avatar;
+  }
+  get bot(): boolean {
+    return this.payload.bot ?? false;
+  }
+  get system(): boolean {
+    return this.payload.system ?? false;
+  }
+  get mfaEnabled(): boolean {
+    return this.payload.mfa_enabled ?? false;
+  }
+  get banner(): string | null | undefined {
+    return this.payload.banner;
+  }
+  get accentColor(): number | null | undefined {
+    return this.payload.accent_color;
+  }
+  get locale(): string | undefined {
+    return this.payload.locale;
+  }
+  get verified(): boolean {
+    return this.payload.verified ?? false;
+  }
+  get email(): string | null | undefined {
+    return this.payload.email;
+  }
+  get flags(): number | undefined {
+    return this.payload.flags;
+  }
+  get premiumType(): PremiumType | undefined {
+    return this.payload.premium_type;
+  }
+  get publicFlags(): number | undefined {
+    return this.payload.public_flags;
   }
 }

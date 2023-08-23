@@ -9,7 +9,7 @@ export declare class BaseManager<P, T> {
   _fetch(key: string): Promise<P | undefined>;
 
   // try _get first, if not found, fetch
-  get(key: string): Promise<T | undefined>;
+  get(key: string): T | undefined;
   fetch(key: string): Promise<T | undefined>;
 
   set(key: string, value: P): void;
