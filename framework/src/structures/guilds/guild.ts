@@ -1,10 +1,10 @@
 import type {
   DefaultMessageNotificationLevel,
   ExplicitContentFilterLevel,
-  GuildPayload,
   MFALevel,
   VerificationLevel,
 } from "../../../../types/mod.ts";
+import { LightGuildPayload } from "../../../types/guild.ts";
 import { Client } from "../../client/mod.ts";
 import { GuildEmojisManager } from "../../managers/guildEmojis.ts";
 import { GuildRolesManager } from "../../managers/guildRoles.ts";
@@ -13,13 +13,17 @@ import { UnavailableGuild } from "./unavaliable.ts";
 export class Guild extends UnavailableGuild {
   roles: GuildRolesManager;
   emojis: GuildEmojisManager;
-  constructor(client: Client, payload: GuildPayload) {
+  constructor(client: Client, payload: LightGuildPayload) {
     // TODO: think about fill methods
     super(client, payload);
     this.roles = new GuildRolesManager(client, client.roles, payload.id);
-    // this.roles._fill(payload.roles);
+    if (payload.roles) {
+      this.roles._fill(payload.roles);
+    }
     this.emojis = new GuildEmojisManager(client, client.emojis, payload.id);
-    // this.emojis._fill(payload.emojis);
+    if (payload.emojis) {
+      this.emojis._fill(payload.emojis);
+    }
   }
 
   get name(): string {

@@ -1,18 +1,18 @@
 import type { GuildPayload } from "../../../types/mod.ts";
+import type { LightGuildPayload } from "../../types/guild.ts";
 import { Collection } from "../cache/collection.ts";
 import type { Client } from "../client/mod.ts";
 import { Guild } from "../structures/guilds/guild.ts";
 import { BaseManager } from "./base.ts";
 
-// TODO: remove any duplication
-export class GuildsManager extends BaseManager<GuildPayload, Guild> {
+export class GuildsManager extends BaseManager<LightGuildPayload, Guild> {
   client: Client;
-  cache: Collection<string, GuildPayload>;
+  cache: Collection<string, LightGuildPayload>;
 
   constructor(client: Client) {
     super(client);
     this.client = client;
-    this.cache = new Collection<string, GuildPayload>();
+    this.cache = new Collection<string, LightGuildPayload>();
   }
 
   async _fetch(id: string): Promise<GuildPayload | undefined> {
@@ -28,6 +28,15 @@ export class GuildsManager extends BaseManager<GuildPayload, Guild> {
     }
   }
 
+  set(key: string, value: LightGuildPayload): void {
+    // TODO: remove more duplication
+    const lightGuild: LightGuildPayload = {
+      ...value,
+      roles: undefined,
+      emojis: undefined,
+    };
+    this.cache.set(key, lightGuild);
+  }
   get(
     id: string,
   ) {

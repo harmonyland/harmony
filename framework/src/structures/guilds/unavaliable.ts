@@ -1,11 +1,11 @@
-import type { GuildPayload } from "../../../../types/mod.ts";
+import type { LightGuildPayload } from "../../../types/guild.ts";
 import { Client } from "../../client/mod.ts";
 
 export class UnavailableGuild {
   client: Client;
-  payload: GuildPayload;
+  payload: LightGuildPayload;
 
-  constructor(client: Client, payload: GuildPayload) {
+  constructor(client: Client, payload: LightGuildPayload) {
     this.client = client;
     this.payload = payload;
   }
