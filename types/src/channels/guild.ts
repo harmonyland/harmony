@@ -72,8 +72,8 @@ export enum ForumLayout {
 }
 
 export interface ForumDefaultReactionPayload {
-  emoji_id: string;
-  emoji_name: string;
+  emoji_id: string | null;
+  emoji_name: string | null;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-guild-text-channel */
