@@ -1,4 +1,4 @@
-import { DMChannelPayload } from "../../../../types/mod.ts";
+import type { DMChannelPayload } from "../../../../types/mod.ts";
 import { DMBasedChannel } from "./DMBasedChannel.ts";
 
 export class DMChannel extends DMBasedChannel<DMChannelPayload> {

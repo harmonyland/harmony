@@ -4,6 +4,7 @@ import type { Client } from "../client/mod.ts";
 import { Guild } from "../structures/guilds/guild.ts";
 import { BaseManager } from "./base.ts";
 
+// TODO: remove any duplication
 export class GuildsManager extends BaseManager<GuildPayload, Guild> {
   client: Client;
   cache: Collection<string, GuildPayload>;

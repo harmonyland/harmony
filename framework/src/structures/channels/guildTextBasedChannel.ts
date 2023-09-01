@@ -12,6 +12,11 @@ export class GuildTextBasedChannel<P extends GuildTextBasedChannelPayload>
   constructor(client: Client, payload: P) {
     super(client, payload);
   }
+
+  get rateLimitPerUser(): number {
+    return this.payload.rate_limit_per_user;
+  }
+
   // async bulkDelete(
   //   messages: Array<Message | string> | number
   // ): Promise<void> {

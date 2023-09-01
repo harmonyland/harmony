@@ -1,4 +1,4 @@
-import { DMBasedChannelPayload } from "../../../../types/mod.ts";
+import type { DMBasedChannelPayload } from "../../../../types/mod.ts";
 import { User } from "../users/mod.ts";
 import { TextChannel } from "./textChannel.ts";
 
