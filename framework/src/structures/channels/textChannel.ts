@@ -3,15 +3,10 @@ import type {
   MessagePayload,
   TextChannelPayload,
 } from "../../../../types/mod.ts";
-import type { Client } from "../../client/mod.ts";
 import { Message } from "../messages/mod.ts";
 import { Channel } from "./channel.ts";
 
 export class TextChannel<P extends TextChannelPayload> extends Channel<P> {
-  constructor(client: Client, payload: P) {
-    super(client, payload);
-  }
-
   get lastPinTimestamp(): string | null {
     return this.payload.last_pin_timestamp;
   }

@@ -1,12 +1,7 @@
 import { Channel } from "./channel.ts";
-import type { Client } from "../../client/mod.ts";
 import type { GuildChannelPayload } from "../../../../types/mod.ts";
 
 export class GuildChannel<P extends GuildChannelPayload> extends Channel<P> {
-  constructor(c: Client, payload: P) {
-    super(c, payload);
-  }
-
   get guildID(): string {
     return this.payload.guild_id;
   }

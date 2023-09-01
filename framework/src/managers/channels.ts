@@ -1,18 +1,14 @@
-import type { ChannelPayload, GuildTextChannelPayload } from "../../../mod.ts";
-import { ChannelType } from "../../../mod.ts";
-import type { Client } from "../client/mod.ts";
+import {
+  type ChannelPayload,
+  ChannelType,
+  type GuildTextChannelPayload,
+} from "../../../types/mod.ts";
 import { Channel } from "../structures/channels/channel.ts";
 import { GuildTextChannel } from "../structures/channels/guildTextChannel.ts";
-import type { BaseManager } from "./base.ts";
+import { BaseManager } from "./base.ts";
 
 export class ChannelsManager
-  implements BaseManager<ChannelPayload, Channel<ChannelPayload>> {
-  client: Client;
-
-  constructor(client: Client) {
-    this.client = client;
-  }
-
+  extends BaseManager<ChannelPayload, Channel<ChannelPayload>> {
   private createChannel<P extends ChannelPayload>(payload: P) {
     switch (payload.type) {
       case ChannelType.GUILD_TEXT:
@@ -26,8 +22,9 @@ export class ChannelsManager
   }
 
   _get<P extends ChannelPayload>(id: string): P | undefined {
-    return this.client.cache.get(`channel:${id}`);
+    return this.cache.get(id) as P | undefined;
   }
+
   async _fetch<P extends ChannelPayload>(id: string): Promise<P | undefined> {
     try {
       const resp: P | undefined = await this.client.rest.get(
@@ -58,17 +55,5 @@ export class ChannelsManager
     } catch (_err) {
       return;
     }
-  }
-
-  set<P extends ChannelPayload>(id: string, channel: P): void {
-    this.client.cache.set(`channel:${id}`, channel);
-  }
-
-  delete(id: string): boolean {
-    return this.client.cache.delete(`channel:${id}`);
-  }
-
-  async resolve(key: string) {
-    return this.get(key) ?? await this.fetch(key);
   }
 }

@@ -6,12 +6,12 @@ import { RESTClient, ShardedGateway } from "../../../core/mod.ts";
 import { EventEmitter } from "../../deps.ts";
 import type { ClientEvents } from "./events.ts";
 import { GatewayHandlers } from "../gateway/mod.ts";
-import type { BaseCache } from "../cache/base.ts";
-import { MemoryCache } from "../cache/memory.ts";
 import { ChannelsManager } from "../managers/mod.ts";
+import { GuildsManager } from "../managers/guilds.ts";
+import { UsersManager } from "../managers/users.ts";
+import { RolesManager } from "../managers/roles.ts";
 
 export interface ClientOptions extends APIManagerOptions {
-  cache?: BaseCache;
   intents?: number;
 }
 
@@ -19,12 +19,13 @@ export class Client extends EventEmitter<ClientEvents> {
   gateway: ShardedGateway;
   rest: RESTClient;
   token: string;
-  cache: BaseCache;
   channels = new ChannelsManager(this);
+  guilds = new GuildsManager(this);
+  users = new UsersManager(this);
+  roles = new RolesManager(this);
 
   constructor(token: string, options: ClientOptions = {}) {
     super();
-    this.cache = options.cache ?? new MemoryCache();
     if (options.intents !== undefined) {
       options.gateway ??= {};
       options.gateway.intents = options.intents;

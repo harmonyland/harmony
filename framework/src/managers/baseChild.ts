@@ -1,17 +1,17 @@
-import { Collection } from "../cache/collection.ts";
 import type { Client } from "../client/mod.ts";
+import type { BaseManager } from "./base.ts";
 
-export class BaseManager<P, T> {
+export class BaseChildManager<P, T> {
   client: Client;
-  cache: Collection<string, P>;
+  parent: BaseManager<P, T>;
 
-  constructor(client: Client) {
+  constructor(client: Client, parent: BaseManager<P, T>) {
     this.client = client;
-    this.cache = new Collection<string, P>();
+    this.parent = parent;
   }
 
   _get(key: string): P | undefined {
-    return this.cache.get(key);
+    return this.parent._get(key);
   }
   _fetch(_key: string, ..._: string[]): Promise<P | undefined> {
     throw new Error("Not implemented");
@@ -26,11 +26,11 @@ export class BaseManager<P, T> {
   }
 
   set(key: string, value: P): void {
-    this.cache.set(key, value);
+    this.parent.set(key, value);
   }
 
   delete(key: string): boolean {
-    return this.cache.delete(key);
+    return this.parent.delete(key);
   }
 
   async resolve(key: string): Promise<T | undefined> {
