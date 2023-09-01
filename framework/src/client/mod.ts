@@ -10,6 +10,7 @@ import { ChannelsManager } from "../managers/mod.ts";
 import { GuildsManager } from "../managers/guilds.ts";
 import { UsersManager } from "../managers/users.ts";
 import { RolesManager } from "../managers/roles.ts";
+import { EmojisManager } from "../managers/emojis.ts";
 
 export interface ClientOptions extends APIManagerOptions {
   intents?: number;
@@ -23,6 +24,7 @@ export class Client extends EventEmitter<ClientEvents> {
   guilds = new GuildsManager(this);
   users = new UsersManager(this);
   roles = new RolesManager(this);
+  emojis = new EmojisManager(this);
 
   constructor(token: string, options: ClientOptions = {}) {
     super();

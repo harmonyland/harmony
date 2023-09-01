@@ -6,15 +6,20 @@ import type {
   VerificationLevel,
 } from "../../../../types/mod.ts";
 import { Client } from "../../client/mod.ts";
+import { GuildEmojisManager } from "../../managers/guildEmojis.ts";
 import { GuildRolesManager } from "../../managers/guildRoles.ts";
 import { UnavailableGuild } from "./unavaliable.ts";
 
 export class Guild extends UnavailableGuild {
   roles: GuildRolesManager;
+  emojis: GuildEmojisManager;
   constructor(client: Client, payload: GuildPayload) {
+    // TODO: think about fill methods
     super(client, payload);
-    this.roles = new GuildRolesManager(client, payload.id);
-    this.roles._fill(payload.roles);
+    this.roles = new GuildRolesManager(client, client.roles, payload.id);
+    // this.roles._fill(payload.roles);
+    this.emojis = new GuildEmojisManager(client, client.emojis, payload.id);
+    // this.emojis._fill(payload.emojis);
   }
 
   get name(): string {
@@ -64,9 +69,6 @@ export class Guild extends UnavailableGuild {
   }
   get explicitContentFilter(): ExplicitContentFilterLevel {
     return this.payload.explicit_content_filter;
-  }
-  get emojis(): string[] {
-    return this.payload.emojis;
   }
   get features(): string[] {
     return this.payload.features;

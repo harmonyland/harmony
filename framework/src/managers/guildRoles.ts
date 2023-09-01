@@ -1,15 +1,16 @@
-import { RolePayload } from "../../../types/mod.ts";
+import type { RolePayload } from "../../../types/mod.ts";
 import type { RolePayloadWithGuildID } from "../../types/role.ts";
 import type { Client } from "../client/mod.ts";
 import { Role } from "../structures/guilds/role.ts";
 import { BaseChildManager } from "./baseChild.ts";
+import type { RolesManager } from "./roles.ts";
 
 export class GuildRolesManager
   extends BaseChildManager<RolePayloadWithGuildID, Role> {
   guildID: string;
 
-  constructor(client: Client, guildID: string) {
-    super(client, client.roles);
+  constructor(client: Client, parent: RolesManager, guildID: string) {
+    super(client, parent);
     this.guildID = guildID;
   }
 
