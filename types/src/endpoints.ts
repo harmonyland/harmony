@@ -98,7 +98,7 @@ export type CreateGuildEndpoint = `/guilds`;
  */
 export type ListMyPrivateArchivedThreadsEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/users/@me/threads/archived/private`;
+> = `/channels/${ChannelID}/users/@me/threads/archived/private`;
 
 /**
  * List Guild Application Command Permissions
@@ -107,7 +107,7 @@ export type ListMyPrivateArchivedThreadsEndpoint<
 export type ListGuildApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands/permissions`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/permissions`;
 
 /**
  * Get Guild Application Command Permissions
@@ -117,7 +117,8 @@ export type GetGuildApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions`;
+> =
+  `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
 
 /**
  * Set Guild Application Command Permissions
@@ -127,7 +128,8 @@ export type SetGuildApplicationCommandPermissionsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions`;
+> =
+  `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}/permissions`;
 
 /**
  * Add My Message Reaction
@@ -137,7 +139,7 @@ export type AddMyMessageReactionEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
   EmojiName extends string = string,
-> = `/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me`;
+> = `/channels/${ChannelID}/messages/${MessageID}/reactions/${EmojiName}/@me`;
 
 /**
  * Delete My Message Reaction
@@ -147,7 +149,7 @@ export type DeleteMyMessageReactionEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
   EmojiName extends string = string,
-> = `/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me`;
+> = `/channels/${ChannelID}/messages/${MessageID}/reactions/${EmojiName}/@me`;
 
 /**
  * List Private Archived Threads
@@ -155,7 +157,7 @@ export type DeleteMyMessageReactionEndpoint<
  */
 export type ListPrivateArchivedThreadsEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/threads/archived/private`;
+> = `/channels/${ChannelID}/threads/archived/private`;
 
 /**
  * List Public Archived Threads
@@ -163,7 +165,7 @@ export type ListPrivateArchivedThreadsEndpoint<
  */
 export type ListPublicArchivedThreadsEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/threads/archived/public`;
+> = `/channels/${ChannelID}/threads/archived/public`;
 
 /**
  * Get Application User Role Connection
@@ -171,7 +173,7 @@ export type ListPublicArchivedThreadsEndpoint<
  */
 export type GetApplicationUserRoleConnectionEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/users/@me/applications/{application_id}/role-connection`;
+> = `/users/@me/applications/${ApplicationID}/role-connection`;
 
 /**
  * Update Application User Role Connection
@@ -179,7 +181,7 @@ export type GetApplicationUserRoleConnectionEndpoint<
  */
 export type UpdateApplicationUserRoleConnectionEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/users/@me/applications/{application_id}/role-connection`;
+> = `/users/@me/applications/${ApplicationID}/role-connection`;
 
 /**
  * Get My Guild Member
@@ -187,7 +189,7 @@ export type UpdateApplicationUserRoleConnectionEndpoint<
  */
 export type GetMyGuildMemberEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/users/@me/guilds/{guild_id}/member`;
+> = `/users/@me/guilds/${GuildID}/member`;
 
 /**
  * Get Application Role Connections Metadata
@@ -195,7 +197,7 @@ export type GetMyGuildMemberEndpoint<
  */
 export type GetApplicationRoleConnectionsMetadataEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}/role-connections/metadata`;
+> = `/applications/${ApplicationID}/role-connections/metadata`;
 
 /**
  * Update Application Role Connections Metadata
@@ -203,7 +205,7 @@ export type GetApplicationRoleConnectionsMetadataEndpoint<
  */
 export type UpdateApplicationRoleConnectionsMetadataEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}/role-connections/metadata`;
+> = `/applications/${ApplicationID}/role-connections/metadata`;
 
 /**
  * Get Guild Application Command
@@ -213,7 +215,7 @@ export type GetGuildApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands/{command_id}`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}`;
 
 /**
  * Delete Guild Application Command
@@ -223,7 +225,7 @@ export type DeleteGuildApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands/{command_id}`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}`;
 
 /**
  * Update Guild Application Command
@@ -233,7 +235,7 @@ export type UpdateGuildApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands/{command_id}`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands/${CommandID}`;
 
 /**
  * List Guild Application Commands
@@ -242,7 +244,7 @@ export type UpdateGuildApplicationCommandEndpoint<
 export type ListGuildApplicationCommandsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands`;
 
 /**
  * Bulk Set Guild Application Commands
@@ -251,7 +253,7 @@ export type ListGuildApplicationCommandsEndpoint<
 export type BulkSetGuildApplicationCommandsEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands`;
 
 /**
  * Create Guild Application Command
@@ -260,7 +262,7 @@ export type BulkSetGuildApplicationCommandsEndpoint<
 export type CreateGuildApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   GuildID extends snowflake = snowflake,
-> = `/applications/{application_id}/guilds/{guild_id}/commands`;
+> = `/applications/${ApplicationID}/guilds/${GuildID}/commands`;
 
 /**
  * Join Thread
@@ -268,7 +270,7 @@ export type CreateGuildApplicationCommandEndpoint<
  */
 export type JoinThreadEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/thread-members/@me`;
+> = `/channels/${ChannelID}/thread-members/@me`;
 
 /**
  * Leave Thread
@@ -276,7 +278,7 @@ export type JoinThreadEndpoint<
  */
 export type LeaveThreadEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/thread-members/@me`;
+> = `/channels/${ChannelID}/thread-members/@me`;
 
 /**
  * Bulk Delete Messages
@@ -284,7 +286,7 @@ export type LeaveThreadEndpoint<
  */
 export type BulkDeleteMessagesEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/bulk-delete`;
+> = `/channels/${ChannelID}/messages/bulk-delete`;
 
 /**
  * Delete User Message Reaction
@@ -295,7 +297,8 @@ export type DeleteUserMessageReactionEndpoint<
   MessageID extends snowflake = snowflake,
   EmojiName extends string = string,
   UserID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/{user_id}`;
+> =
+  `/channels/${ChannelID}/messages/${MessageID}/reactions/${EmojiName}/${UserID}`;
 
 /**
  * List Message Reactions By Emoji
@@ -305,7 +308,7 @@ export type ListMessageReactionsByEmojiEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
   EmojiName extends string = string,
-> = `/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}`;
+> = `/channels/${ChannelID}/messages/${MessageID}/reactions/${EmojiName}`;
 
 /**
  * Delete All Message Reactions By Emoji
@@ -315,7 +318,7 @@ export type DeleteAllMessageReactionsByEmojiEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
   EmojiName extends string = string,
-> = `/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}`;
+> = `/channels/${ChannelID}/messages/${MessageID}/reactions/${EmojiName}`;
 
 /**
  * Delete All Message Reactions
@@ -324,7 +327,7 @@ export type DeleteAllMessageReactionsByEmojiEndpoint<
 export type DeleteAllMessageReactionsEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}/reactions`;
+> = `/channels/${ChannelID}/messages/${MessageID}/reactions`;
 
 /**
  * Crosspost Message
@@ -333,7 +336,7 @@ export type DeleteAllMessageReactionsEndpoint<
 export type CrosspostMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}/crosspost`;
+> = `/channels/${ChannelID}/messages/${MessageID}/crosspost`;
 
 /**
  * Create Thread From Message
@@ -342,7 +345,7 @@ export type CrosspostMessageEndpoint<
 export type CreateThreadFromMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}/threads`;
+> = `/channels/${ChannelID}/messages/${MessageID}/threads`;
 
 /**
  * Get Original Webhook Message
@@ -351,7 +354,7 @@ export type CreateThreadFromMessageEndpoint<
 export type GetOriginalWebhookMessageEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}/messages/@original`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/@original`;
 
 /**
  * Delete Original Webhook Message
@@ -360,7 +363,7 @@ export type GetOriginalWebhookMessageEndpoint<
 export type DeleteOriginalWebhookMessageEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}/messages/@original`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/@original`;
 
 /**
  * Update Original Webhook Message
@@ -369,7 +372,7 @@ export type DeleteOriginalWebhookMessageEndpoint<
 export type UpdateOriginalWebhookMessageEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}/messages/@original`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/@original`;
 
 /**
  * List Guild Scheduled Event Users
@@ -378,7 +381,7 @@ export type UpdateOriginalWebhookMessageEndpoint<
 export type ListGuildScheduledEventUsersEndpoint<
   GuildID extends snowflake = snowflake,
   GuildScheduledEventID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users`;
+> = `/guilds/${GuildID}/scheduled-events/${GuildScheduledEventID}/users`;
 
 /**
  * Get Auto Moderation Rule
@@ -387,7 +390,7 @@ export type ListGuildScheduledEventUsersEndpoint<
 export type GetAutoModerationRuleEndpoint<
   GuildID extends snowflake = snowflake,
   RuleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/auto-moderation/rules/{rule_id}`;
+> = `/guilds/${GuildID}/auto-moderation/rules/${RuleID}`;
 
 /**
  * Delete Auto Moderation Rule
@@ -396,7 +399,7 @@ export type GetAutoModerationRuleEndpoint<
 export type DeleteAutoModerationRuleEndpoint<
   GuildID extends snowflake = snowflake,
   RuleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/auto-moderation/rules/{rule_id}`;
+> = `/guilds/${GuildID}/auto-moderation/rules/${RuleID}`;
 
 /**
  * Update Auto Moderation Rule
@@ -405,7 +408,7 @@ export type DeleteAutoModerationRuleEndpoint<
 export type UpdateAutoModerationRuleEndpoint<
   GuildID extends snowflake = snowflake,
   RuleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/auto-moderation/rules/{rule_id}`;
+> = `/guilds/${GuildID}/auto-moderation/rules/${RuleID}`;
 
 /**
  * List Auto Moderation Rules
@@ -413,7 +416,7 @@ export type UpdateAutoModerationRuleEndpoint<
  */
 export type ListAutoModerationRulesEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/auto-moderation/rules`;
+> = `/guilds/${GuildID}/auto-moderation/rules`;
 
 /**
  * Create Auto Moderation Rule
@@ -421,7 +424,7 @@ export type ListAutoModerationRulesEndpoint<
  */
 export type CreateAutoModerationRuleEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/auto-moderation/rules`;
+> = `/guilds/${GuildID}/auto-moderation/rules`;
 
 /**
  * Update Self Voice State
@@ -429,7 +432,7 @@ export type CreateAutoModerationRuleEndpoint<
  */
 export type UpdateSelfVoiceStateEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/voice-states/@me`;
+> = `/guilds/${GuildID}/voice-states/@me`;
 
 /**
  * Search Guild Members
@@ -437,7 +440,7 @@ export type UpdateSelfVoiceStateEndpoint<
  */
 export type SearchGuildMembersEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/search`;
+> = `/guilds/${GuildID}/members/search`;
 
 /**
  * Get Active Guild Threads
@@ -445,7 +448,7 @@ export type SearchGuildMembersEndpoint<
  */
 export type GetActiveGuildThreadsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/threads/active`;
+> = `/guilds/${GuildID}/threads/active`;
 
 /**
  * Update My Guild Member
@@ -453,7 +456,7 @@ export type GetActiveGuildThreadsEndpoint<
  */
 export type UpdateMyGuildMemberEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/@me`;
+> = `/guilds/${GuildID}/members/@me`;
 
 /**
  * Add Guild Member Role
@@ -463,7 +466,7 @@ export type AddGuildMemberRoleEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
   RoleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/{user_id}/roles/{role_id}`;
+> = `/guilds/${GuildID}/members/${UserID}/roles/${RoleID}`;
 
 /**
  * Delete Guild Member Role
@@ -473,7 +476,7 @@ export type DeleteGuildMemberRoleEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
   RoleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/{user_id}/roles/{role_id}`;
+> = `/guilds/${GuildID}/members/${UserID}/roles/${RoleID}`;
 
 /**
  * Leave Guild
@@ -481,7 +484,7 @@ export type DeleteGuildMemberRoleEndpoint<
  */
 export type LeaveGuildEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/users/@me/guilds/{guild_id}`;
+> = `/users/@me/guilds/${GuildID}`;
 
 /**
  * Get Application Command
@@ -490,7 +493,7 @@ export type LeaveGuildEndpoint<
 export type GetApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/commands/{command_id}`;
+> = `/applications/${ApplicationID}/commands/${CommandID}`;
 
 /**
  * Delete Application Command
@@ -499,7 +502,7 @@ export type GetApplicationCommandEndpoint<
 export type DeleteApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/commands/{command_id}`;
+> = `/applications/${ApplicationID}/commands/${CommandID}`;
 
 /**
  * Update Application Command
@@ -508,7 +511,7 @@ export type DeleteApplicationCommandEndpoint<
 export type UpdateApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
   CommandID extends snowflake = snowflake,
-> = `/applications/{application_id}/commands/{command_id}`;
+> = `/applications/${ApplicationID}/commands/${CommandID}`;
 
 /**
  * List Application Commands
@@ -516,7 +519,7 @@ export type UpdateApplicationCommandEndpoint<
  */
 export type ListApplicationCommandsEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}/commands`;
+> = `/applications/${ApplicationID}/commands`;
 
 /**
  * Bulk Set Application Commands
@@ -524,7 +527,7 @@ export type ListApplicationCommandsEndpoint<
  */
 export type BulkSetApplicationCommandsEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}/commands`;
+> = `/applications/${ApplicationID}/commands`;
 
 /**
  * Create Application Command
@@ -532,7 +535,7 @@ export type BulkSetApplicationCommandsEndpoint<
  */
 export type CreateApplicationCommandEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}/commands`;
+> = `/applications/${ApplicationID}/commands`;
 
 /**
  * Create Interaction Response
@@ -541,7 +544,7 @@ export type CreateApplicationCommandEndpoint<
 export type CreateInteractionResponseEndpoint<
   InteractionID extends snowflake = snowflake,
   InteractionToken extends string = string,
-> = `/interactions/{interaction_id}/{interaction_token}/callback`;
+> = `/interactions/${InteractionID}/${InteractionToken}/callback`;
 
 /**
  * Get Thread Member
@@ -550,7 +553,7 @@ export type CreateInteractionResponseEndpoint<
 export type GetThreadMemberEndpoint<
   ChannelID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/channels/{channel_id}/thread-members/{user_id}`;
+> = `/channels/${ChannelID}/thread-members/${UserID}`;
 
 /**
  * Add Thread Member
@@ -559,7 +562,7 @@ export type GetThreadMemberEndpoint<
 export type AddThreadMemberEndpoint<
   ChannelID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/channels/{channel_id}/thread-members/{user_id}`;
+> = `/channels/${ChannelID}/thread-members/${UserID}`;
 
 /**
  * Delete Thread Member
@@ -568,7 +571,7 @@ export type AddThreadMemberEndpoint<
 export type DeleteThreadMemberEndpoint<
   ChannelID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/channels/{channel_id}/thread-members/{user_id}`;
+> = `/channels/${ChannelID}/thread-members/${UserID}`;
 
 /**
  * List Thread Members
@@ -576,7 +579,7 @@ export type DeleteThreadMemberEndpoint<
  */
 export type ListThreadMembersEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/thread-members`;
+> = `/channels/${ChannelID}/thread-members`;
 
 /**
  * Set Channel Permission Overwrite
@@ -585,7 +588,7 @@ export type ListThreadMembersEndpoint<
 export type SetChannelPermissionOverwriteEndpoint<
   ChannelID extends snowflake = snowflake,
   OverwriteID extends snowflake = snowflake,
-> = `/channels/{channel_id}/permissions/{overwrite_id}`;
+> = `/channels/${ChannelID}/permissions/${OverwriteID}`;
 
 /**
  * Delete Channel Permission Overwrite
@@ -594,7 +597,7 @@ export type SetChannelPermissionOverwriteEndpoint<
 export type DeleteChannelPermissionOverwriteEndpoint<
   ChannelID extends snowflake = snowflake,
   OverwriteID extends snowflake = snowflake,
-> = `/channels/{channel_id}/permissions/{overwrite_id}`;
+> = `/channels/${ChannelID}/permissions/${OverwriteID}`;
 
 /**
  * Add Group Dm User
@@ -603,7 +606,7 @@ export type DeleteChannelPermissionOverwriteEndpoint<
 export type AddGroupDmUserEndpoint<
   ChannelID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/channels/{channel_id}/recipients/{user_id}`;
+> = `/channels/${ChannelID}/recipients/${UserID}`;
 
 /**
  * Delete Group Dm User
@@ -612,7 +615,7 @@ export type AddGroupDmUserEndpoint<
 export type DeleteGroupDmUserEndpoint<
   ChannelID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/channels/{channel_id}/recipients/{user_id}`;
+> = `/channels/${ChannelID}/recipients/${UserID}`;
 
 /**
  * Follow Channel
@@ -620,7 +623,7 @@ export type DeleteGroupDmUserEndpoint<
  */
 export type FollowChannelEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/followers`;
+> = `/channels/${ChannelID}/followers`;
 
 /**
  * Get Message
@@ -629,7 +632,7 @@ export type FollowChannelEndpoint<
 export type GetMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}`;
+> = `/channels/${ChannelID}/messages/${MessageID}`;
 
 /**
  * Delete Message
@@ -638,7 +641,7 @@ export type GetMessageEndpoint<
 export type DeleteMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}`;
+> = `/channels/${ChannelID}/messages/${MessageID}`;
 
 /**
  * Update Message
@@ -647,7 +650,7 @@ export type DeleteMessageEndpoint<
 export type UpdateMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages/{message_id}`;
+> = `/channels/${ChannelID}/messages/${MessageID}`;
 
 /**
  * List Messages
@@ -655,7 +658,7 @@ export type UpdateMessageEndpoint<
  */
 export type ListMessagesEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages`;
+> = `/channels/${ChannelID}/messages`;
 
 /**
  * Create Message
@@ -663,7 +666,7 @@ export type ListMessagesEndpoint<
  */
 export type CreateMessageEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/messages`;
+> = `/channels/${ChannelID}/messages`;
 
 /**
  * List Channel Webhooks
@@ -671,7 +674,7 @@ export type CreateMessageEndpoint<
  */
 export type ListChannelWebhooksEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/webhooks`;
+> = `/channels/${ChannelID}/webhooks`;
 
 /**
  * Create Webhook
@@ -679,7 +682,7 @@ export type ListChannelWebhooksEndpoint<
  */
 export type CreateWebhookEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/webhooks`;
+> = `/channels/${ChannelID}/webhooks`;
 
 /**
  * List Channel Invites
@@ -687,7 +690,7 @@ export type CreateWebhookEndpoint<
  */
 export type ListChannelInvitesEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/invites`;
+> = `/channels/${ChannelID}/invites`;
 
 /**
  * Create Channel Invite
@@ -695,7 +698,7 @@ export type ListChannelInvitesEndpoint<
  */
 export type CreateChannelInviteEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/invites`;
+> = `/channels/${ChannelID}/invites`;
 
 /**
  * Create Thread
@@ -703,7 +706,7 @@ export type CreateChannelInviteEndpoint<
  */
 export type CreateThreadEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/threads`;
+> = `/channels/${ChannelID}/threads`;
 
 /**
  * Trigger Typing Indicator
@@ -711,7 +714,7 @@ export type CreateThreadEndpoint<
  */
 export type TriggerTypingIndicatorEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/typing`;
+> = `/channels/${ChannelID}/typing`;
 
 /**
  * Pin Message
@@ -720,7 +723,7 @@ export type TriggerTypingIndicatorEndpoint<
 export type PinMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/pins/{message_id}`;
+> = `/channels/${ChannelID}/pins/${MessageID}`;
 
 /**
  * Unpin Message
@@ -729,7 +732,7 @@ export type PinMessageEndpoint<
 export type UnpinMessageEndpoint<
   ChannelID extends snowflake = snowflake,
   MessageID extends snowflake = snowflake,
-> = `/channels/{channel_id}/pins/{message_id}`;
+> = `/channels/${ChannelID}/pins/${MessageID}`;
 
 /**
  * List Pinned Messages
@@ -737,7 +740,7 @@ export type UnpinMessageEndpoint<
  */
 export type ListPinnedMessagesEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}/pins`;
+> = `/channels/${ChannelID}/pins`;
 
 /**
  * Get Webhook Message
@@ -747,7 +750,7 @@ export type GetWebhookMessageEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
   MessageID extends snowflake = snowflake,
-> = `/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
 
 /**
  * Delete Webhook Message
@@ -757,7 +760,7 @@ export type DeleteWebhookMessageEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
   MessageID extends snowflake = snowflake,
-> = `/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
 
 /**
  * Update Webhook Message
@@ -767,7 +770,7 @@ export type UpdateWebhookMessageEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
   MessageID extends snowflake = snowflake,
-> = `/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/messages/${MessageID}`;
 
 /**
  * Execute Github Compatible Webhook
@@ -776,7 +779,7 @@ export type UpdateWebhookMessageEndpoint<
 export type ExecuteGithubCompatibleWebhookEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}/github`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/github`;
 
 /**
  * Execute Slack Compatible Webhook
@@ -785,7 +788,7 @@ export type ExecuteGithubCompatibleWebhookEndpoint<
 export type ExecuteSlackCompatibleWebhookEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}/slack`;
+> = `/webhooks/${WebhookID}/${WebhookToken}/slack`;
 
 /**
  * Get Guild Template
@@ -793,7 +796,7 @@ export type ExecuteSlackCompatibleWebhookEndpoint<
  */
 export type GetGuildTemplateEndpoint<
   Code extends string = string,
-> = `/guilds/templates/{code}`;
+> = `/guilds/templates/${Code}`;
 
 /**
  * Create Guild From Template
@@ -801,7 +804,7 @@ export type GetGuildTemplateEndpoint<
  */
 export type CreateGuildFromTemplateEndpoint<
   Code extends string = string,
-> = `/guilds/templates/{code}`;
+> = `/guilds/templates/${Code}`;
 
 /**
  * Get Guild New Member Welcome
@@ -809,7 +812,7 @@ export type CreateGuildFromTemplateEndpoint<
  */
 export type GetGuildNewMemberWelcomeEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/new-member-welcome`;
+> = `/guilds/${GuildID}/new-member-welcome`;
 
 /**
  * Get Guild Scheduled Event
@@ -818,7 +821,7 @@ export type GetGuildNewMemberWelcomeEndpoint<
 export type GetGuildScheduledEventEndpoint<
   GuildID extends snowflake = snowflake,
   GuildScheduledEventID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}`;
+> = `/guilds/${GuildID}/scheduled-events/${GuildScheduledEventID}`;
 
 /**
  * Delete Guild Scheduled Event
@@ -827,7 +830,7 @@ export type GetGuildScheduledEventEndpoint<
 export type DeleteGuildScheduledEventEndpoint<
   GuildID extends snowflake = snowflake,
   GuildScheduledEventID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}`;
+> = `/guilds/${GuildID}/scheduled-events/${GuildScheduledEventID}`;
 
 /**
  * Update Guild Scheduled Event
@@ -836,7 +839,7 @@ export type DeleteGuildScheduledEventEndpoint<
 export type UpdateGuildScheduledEventEndpoint<
   GuildID extends snowflake = snowflake,
   GuildScheduledEventID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}`;
+> = `/guilds/${GuildID}/scheduled-events/${GuildScheduledEventID}`;
 
 /**
  * List Guild Scheduled Events
@@ -844,7 +847,7 @@ export type UpdateGuildScheduledEventEndpoint<
  */
 export type ListGuildScheduledEventsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/scheduled-events`;
+> = `/guilds/${GuildID}/scheduled-events`;
 
 /**
  * Create Guild Scheduled Event
@@ -852,7 +855,7 @@ export type ListGuildScheduledEventsEndpoint<
  */
 export type CreateGuildScheduledEventEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/scheduled-events`;
+> = `/guilds/${GuildID}/scheduled-events`;
 
 /**
  * Get Guild Welcome Screen
@@ -860,7 +863,7 @@ export type CreateGuildScheduledEventEndpoint<
  */
 export type GetGuildWelcomeScreenEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/welcome-screen`;
+> = `/guilds/${GuildID}/welcome-screen`;
 
 /**
  * Update Guild Welcome Screen
@@ -868,7 +871,7 @@ export type GetGuildWelcomeScreenEndpoint<
  */
 export type UpdateGuildWelcomeScreenEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/welcome-screen`;
+> = `/guilds/${GuildID}/welcome-screen`;
 
 /**
  * Update Voice State
@@ -877,7 +880,7 @@ export type UpdateGuildWelcomeScreenEndpoint<
 export type UpdateVoiceStateEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/voice-states/{user_id}`;
+> = `/guilds/${GuildID}/voice-states/${UserID}`;
 
 /**
  * Delete Guild Integration
@@ -886,7 +889,7 @@ export type UpdateVoiceStateEndpoint<
 export type DeleteGuildIntegrationEndpoint<
   GuildID extends snowflake = snowflake,
   IntegrationID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/integrations/{integration_id}`;
+> = `/guilds/${GuildID}/integrations/${IntegrationID}`;
 
 /**
  * List Guild Integrations
@@ -894,7 +897,7 @@ export type DeleteGuildIntegrationEndpoint<
  */
 export type ListGuildIntegrationsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/integrations`;
+> = `/guilds/${GuildID}/integrations`;
 
 /**
  * Get Guild Widget
@@ -902,7 +905,7 @@ export type ListGuildIntegrationsEndpoint<
  */
 export type GetGuildWidgetEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/widget.json`;
+> = `/guilds/${GuildID}/widget.json`;
 
 /**
  * Get Guilds Onboarding
@@ -910,7 +913,7 @@ export type GetGuildWidgetEndpoint<
  */
 export type GetGuildsOnboardingEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/onboarding`;
+> = `/guilds/${GuildID}/onboarding`;
 
 /**
  * Put Guilds Onboarding
@@ -918,7 +921,7 @@ export type GetGuildsOnboardingEndpoint<
  */
 export type PutGuildsOnboardingEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/onboarding`;
+> = `/guilds/${GuildID}/onboarding`;
 
 /**
  * Get Guild Vanity Url
@@ -926,7 +929,7 @@ export type PutGuildsOnboardingEndpoint<
  */
 export type GetGuildVanityUrlEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/vanity-url`;
+> = `/guilds/${GuildID}/vanity-url`;
 
 /**
  * List Guild Audit Log Entries
@@ -934,7 +937,7 @@ export type GetGuildVanityUrlEndpoint<
  */
 export type ListGuildAuditLogEntriesEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/audit-logs`;
+> = `/guilds/${GuildID}/audit-logs`;
 
 /**
  * Get Guild Widget Png
@@ -942,7 +945,7 @@ export type ListGuildAuditLogEntriesEndpoint<
  */
 export type GetGuildWidgetPngEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/widget.png`;
+> = `/guilds/${GuildID}/widget.png`;
 
 /**
  * Sync Guild Template
@@ -951,7 +954,7 @@ export type GetGuildWidgetPngEndpoint<
 export type SyncGuildTemplateEndpoint<
   GuildID extends snowflake = snowflake,
   Code extends string = string,
-> = `/guilds/{guild_id}/templates/{code}`;
+> = `/guilds/${GuildID}/templates/${Code}`;
 
 /**
  * Delete Guild Template
@@ -960,7 +963,7 @@ export type SyncGuildTemplateEndpoint<
 export type DeleteGuildTemplateEndpoint<
   GuildID extends snowflake = snowflake,
   Code extends string = string,
-> = `/guilds/{guild_id}/templates/{code}`;
+> = `/guilds/${GuildID}/templates/${Code}`;
 
 /**
  * Update Guild Template
@@ -969,7 +972,7 @@ export type DeleteGuildTemplateEndpoint<
 export type UpdateGuildTemplateEndpoint<
   GuildID extends snowflake = snowflake,
   Code extends string = string,
-> = `/guilds/{guild_id}/templates/{code}`;
+> = `/guilds/${GuildID}/templates/${Code}`;
 
 /**
  * List Guild Templates
@@ -977,7 +980,7 @@ export type UpdateGuildTemplateEndpoint<
  */
 export type ListGuildTemplatesEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/templates`;
+> = `/guilds/${GuildID}/templates`;
 
 /**
  * Create Guild Template
@@ -985,7 +988,7 @@ export type ListGuildTemplatesEndpoint<
  */
 export type CreateGuildTemplateEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/templates`;
+> = `/guilds/${GuildID}/templates`;
 
 /**
  * Get Guild Sticker
@@ -994,7 +997,7 @@ export type CreateGuildTemplateEndpoint<
 export type GetGuildStickerEndpoint<
   GuildID extends snowflake = snowflake,
   StickerID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/stickers/{sticker_id}`;
+> = `/guilds/${GuildID}/stickers/${StickerID}`;
 
 /**
  * Delete Guild Sticker
@@ -1003,7 +1006,7 @@ export type GetGuildStickerEndpoint<
 export type DeleteGuildStickerEndpoint<
   GuildID extends snowflake = snowflake,
   StickerID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/stickers/{sticker_id}`;
+> = `/guilds/${GuildID}/stickers/${StickerID}`;
 
 /**
  * Update Guild Sticker
@@ -1012,7 +1015,7 @@ export type DeleteGuildStickerEndpoint<
 export type UpdateGuildStickerEndpoint<
   GuildID extends snowflake = snowflake,
   StickerID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/stickers/{sticker_id}`;
+> = `/guilds/${GuildID}/stickers/${StickerID}`;
 
 /**
  * List Guild Channels
@@ -1020,7 +1023,7 @@ export type UpdateGuildStickerEndpoint<
  */
 export type ListGuildChannelsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/channels`;
+> = `/guilds/${GuildID}/channels`;
 
 /**
  * Create Guild Channel
@@ -1028,7 +1031,7 @@ export type ListGuildChannelsEndpoint<
  */
 export type CreateGuildChannelEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/channels`;
+> = `/guilds/${GuildID}/channels`;
 
 /**
  * Bulk Update Guild Channels
@@ -1036,7 +1039,7 @@ export type CreateGuildChannelEndpoint<
  */
 export type BulkUpdateGuildChannelsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/channels`;
+> = `/guilds/${GuildID}/channels`;
 
 /**
  * List Guild Stickers
@@ -1044,7 +1047,7 @@ export type BulkUpdateGuildChannelsEndpoint<
  */
 export type ListGuildStickersEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/stickers`;
+> = `/guilds/${GuildID}/stickers`;
 
 /**
  * Create Guild Sticker
@@ -1052,7 +1055,7 @@ export type ListGuildStickersEndpoint<
  */
 export type CreateGuildStickerEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/stickers`;
+> = `/guilds/${GuildID}/stickers`;
 
 /**
  * Get Guild Webhooks
@@ -1060,7 +1063,7 @@ export type CreateGuildStickerEndpoint<
  */
 export type GetGuildWebhooksEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/webhooks`;
+> = `/guilds/${GuildID}/webhooks`;
 
 /**
  * Get Guild Member
@@ -1069,7 +1072,7 @@ export type GetGuildWebhooksEndpoint<
 export type GetGuildMemberEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/{user_id}`;
+> = `/guilds/${GuildID}/members/${UserID}`;
 
 /**
  * Add Guild Member
@@ -1078,7 +1081,7 @@ export type GetGuildMemberEndpoint<
 export type AddGuildMemberEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/{user_id}`;
+> = `/guilds/${GuildID}/members/${UserID}`;
 
 /**
  * Delete Guild Member
@@ -1087,7 +1090,7 @@ export type AddGuildMemberEndpoint<
 export type DeleteGuildMemberEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/{user_id}`;
+> = `/guilds/${GuildID}/members/${UserID}`;
 
 /**
  * Update Guild Member
@@ -1096,7 +1099,7 @@ export type DeleteGuildMemberEndpoint<
 export type UpdateGuildMemberEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members/{user_id}`;
+> = `/guilds/${GuildID}/members/${UserID}`;
 
 /**
  * List Guild Members
@@ -1104,7 +1107,7 @@ export type UpdateGuildMemberEndpoint<
  */
 export type ListGuildMembersEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/members`;
+> = `/guilds/${GuildID}/members`;
 
 /**
  * Get Guild Preview
@@ -1112,7 +1115,7 @@ export type ListGuildMembersEndpoint<
  */
 export type GetGuildPreviewEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/preview`;
+> = `/guilds/${GuildID}/preview`;
 
 /**
  * List Guild Invites
@@ -1120,7 +1123,7 @@ export type GetGuildPreviewEndpoint<
  */
 export type ListGuildInvitesEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/invites`;
+> = `/guilds/${GuildID}/invites`;
 
 /**
  * List Guild Voice Regions
@@ -1128,7 +1131,7 @@ export type ListGuildInvitesEndpoint<
  */
 export type ListGuildVoiceRegionsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/regions`;
+> = `/guilds/${GuildID}/regions`;
 
 /**
  * Get Guild Emoji
@@ -1137,7 +1140,7 @@ export type ListGuildVoiceRegionsEndpoint<
 export type GetGuildEmojiEndpoint<
   GuildID extends snowflake = snowflake,
   EmojiID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/emojis/{emoji_id}`;
+> = `/guilds/${GuildID}/emojis/${EmojiID}`;
 
 /**
  * Delete Guild Emoji
@@ -1146,7 +1149,7 @@ export type GetGuildEmojiEndpoint<
 export type DeleteGuildEmojiEndpoint<
   GuildID extends snowflake = snowflake,
   EmojiID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/emojis/{emoji_id}`;
+> = `/guilds/${GuildID}/emojis/${EmojiID}`;
 
 /**
  * Update Guild Emoji
@@ -1155,7 +1158,7 @@ export type DeleteGuildEmojiEndpoint<
 export type UpdateGuildEmojiEndpoint<
   GuildID extends snowflake = snowflake,
   EmojiID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/emojis/{emoji_id}`;
+> = `/guilds/${GuildID}/emojis/${EmojiID}`;
 
 /**
  * List Guild Emojis
@@ -1163,7 +1166,7 @@ export type UpdateGuildEmojiEndpoint<
  */
 export type ListGuildEmojisEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/emojis`;
+> = `/guilds/${GuildID}/emojis`;
 
 /**
  * Create Guild Emoji
@@ -1171,7 +1174,7 @@ export type ListGuildEmojisEndpoint<
  */
 export type CreateGuildEmojiEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/emojis`;
+> = `/guilds/${GuildID}/emojis`;
 
 /**
  * Get Guild Widget Settings
@@ -1179,7 +1182,7 @@ export type CreateGuildEmojiEndpoint<
  */
 export type GetGuildWidgetSettingsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/widget`;
+> = `/guilds/${GuildID}/widget`;
 
 /**
  * Update Guild Widget Settings
@@ -1187,7 +1190,7 @@ export type GetGuildWidgetSettingsEndpoint<
  */
 export type UpdateGuildWidgetSettingsEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/widget`;
+> = `/guilds/${GuildID}/widget`;
 
 /**
  * Delete Guild Role
@@ -1196,7 +1199,7 @@ export type UpdateGuildWidgetSettingsEndpoint<
 export type DeleteGuildRoleEndpoint<
   GuildID extends snowflake = snowflake,
   RoleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/roles/{role_id}`;
+> = `/guilds/${GuildID}/roles/${RoleID}`;
 
 /**
  * Update Guild Role
@@ -1205,7 +1208,7 @@ export type DeleteGuildRoleEndpoint<
 export type UpdateGuildRoleEndpoint<
   GuildID extends snowflake = snowflake,
   RoleID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/roles/{role_id}`;
+> = `/guilds/${GuildID}/roles/${RoleID}`;
 
 /**
  * List Guild Roles
@@ -1213,7 +1216,7 @@ export type UpdateGuildRoleEndpoint<
  */
 export type ListGuildRolesEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/roles`;
+> = `/guilds/${GuildID}/roles`;
 
 /**
  * Create Guild Role
@@ -1221,7 +1224,7 @@ export type ListGuildRolesEndpoint<
  */
 export type CreateGuildRoleEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/roles`;
+> = `/guilds/${GuildID}/roles`;
 
 /**
  * Bulk Update Guild Roles
@@ -1229,7 +1232,7 @@ export type CreateGuildRoleEndpoint<
  */
 export type BulkUpdateGuildRolesEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/roles`;
+> = `/guilds/${GuildID}/roles`;
 
 /**
  * Preview Prune Guild
@@ -1237,7 +1240,7 @@ export type BulkUpdateGuildRolesEndpoint<
  */
 export type PreviewPruneGuildEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/prune`;
+> = `/guilds/${GuildID}/prune`;
 
 /**
  * Prune Guild
@@ -1245,7 +1248,7 @@ export type PreviewPruneGuildEndpoint<
  */
 export type PruneGuildEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/prune`;
+> = `/guilds/${GuildID}/prune`;
 
 /**
  * Get Guild Ban
@@ -1254,7 +1257,7 @@ export type PruneGuildEndpoint<
 export type GetGuildBanEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/bans/{user_id}`;
+> = `/guilds/${GuildID}/bans/${UserID}`;
 
 /**
  * Ban User From Guild
@@ -1263,7 +1266,7 @@ export type GetGuildBanEndpoint<
 export type BanUserFromGuildEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/bans/{user_id}`;
+> = `/guilds/${GuildID}/bans/${UserID}`;
 
 /**
  * Unban User From Guild
@@ -1272,7 +1275,7 @@ export type BanUserFromGuildEndpoint<
 export type UnbanUserFromGuildEndpoint<
   GuildID extends snowflake = snowflake,
   UserID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/bans/{user_id}`;
+> = `/guilds/${GuildID}/bans/${UserID}`;
 
 /**
  * List Guild Bans
@@ -1280,7 +1283,7 @@ export type UnbanUserFromGuildEndpoint<
  */
 export type ListGuildBansEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/bans`;
+> = `/guilds/${GuildID}/bans`;
 
 /**
  * Set Guild Mfa Level
@@ -1288,7 +1291,7 @@ export type ListGuildBansEndpoint<
  */
 export type SetGuildMfaLevelEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}/mfa`;
+> = `/guilds/${GuildID}/mfa`;
 
 /**
  * Get Stage Instance
@@ -1296,7 +1299,7 @@ export type SetGuildMfaLevelEndpoint<
  */
 export type GetStageInstanceEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/stage-instances/{channel_id}`;
+> = `/stage-instances/${ChannelID}`;
 
 /**
  * Delete Stage Instance
@@ -1304,7 +1307,7 @@ export type GetStageInstanceEndpoint<
  */
 export type DeleteStageInstanceEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/stage-instances/{channel_id}`;
+> = `/stage-instances/${ChannelID}`;
 
 /**
  * Update Stage Instance
@@ -1312,7 +1315,7 @@ export type DeleteStageInstanceEndpoint<
  */
 export type UpdateStageInstanceEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/stage-instances/{channel_id}`;
+> = `/stage-instances/${ChannelID}`;
 
 /**
  * Get Application
@@ -1320,7 +1323,7 @@ export type UpdateStageInstanceEndpoint<
  */
 export type GetApplicationEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}`;
+> = `/applications/${ApplicationID}`;
 
 /**
  * Update Application
@@ -1328,7 +1331,7 @@ export type GetApplicationEndpoint<
  */
 export type UpdateApplicationEndpoint<
   ApplicationID extends snowflake = snowflake,
-> = `/applications/{application_id}`;
+> = `/applications/${ApplicationID}`;
 
 /**
  * Get Webhook By Token
@@ -1337,7 +1340,7 @@ export type UpdateApplicationEndpoint<
 export type GetWebhookByTokenEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
 
 /**
  * Execute Webhook
@@ -1346,7 +1349,7 @@ export type GetWebhookByTokenEndpoint<
 export type ExecuteWebhookEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
 
 /**
  * Delete Webhook By Token
@@ -1355,7 +1358,7 @@ export type ExecuteWebhookEndpoint<
 export type DeleteWebhookByTokenEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
 
 /**
  * Update Webhook By Token
@@ -1364,7 +1367,7 @@ export type DeleteWebhookByTokenEndpoint<
 export type UpdateWebhookByTokenEndpoint<
   WebhookID extends snowflake = snowflake,
   WebhookToken extends string = string,
-> = `/webhooks/{webhook_id}/{webhook_token}`;
+> = `/webhooks/${WebhookID}/${WebhookToken}`;
 
 /**
  * Get Channel
@@ -1372,7 +1375,7 @@ export type UpdateWebhookByTokenEndpoint<
  */
 export type GetChannelEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}`;
+> = `/channels/${ChannelID}`;
 
 /**
  * Delete Channel
@@ -1380,7 +1383,7 @@ export type GetChannelEndpoint<
  */
 export type DeleteChannelEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}`;
+> = `/channels/${ChannelID}`;
 
 /**
  * Update Channel
@@ -1388,7 +1391,7 @@ export type DeleteChannelEndpoint<
  */
 export type UpdateChannelEndpoint<
   ChannelID extends snowflake = snowflake,
-> = `/channels/{channel_id}`;
+> = `/channels/${ChannelID}`;
 
 /**
  * Get Sticker
@@ -1396,7 +1399,7 @@ export type UpdateChannelEndpoint<
  */
 export type GetStickerEndpoint<
   StickerID extends snowflake = snowflake,
-> = `/stickers/{sticker_id}`;
+> = `/stickers/${StickerID}`;
 
 /**
  * Get Webhook
@@ -1404,7 +1407,7 @@ export type GetStickerEndpoint<
  */
 export type GetWebhookEndpoint<
   WebhookID extends snowflake = snowflake,
-> = `/webhooks/{webhook_id}`;
+> = `/webhooks/${WebhookID}`;
 
 /**
  * Delete Webhook
@@ -1412,7 +1415,7 @@ export type GetWebhookEndpoint<
  */
 export type DeleteWebhookEndpoint<
   WebhookID extends snowflake = snowflake,
-> = `/webhooks/{webhook_id}`;
+> = `/webhooks/${WebhookID}`;
 
 /**
  * Update Webhook
@@ -1420,7 +1423,7 @@ export type DeleteWebhookEndpoint<
  */
 export type UpdateWebhookEndpoint<
   WebhookID extends snowflake = snowflake,
-> = `/webhooks/{webhook_id}`;
+> = `/webhooks/${WebhookID}`;
 
 /**
  * Invite Resolve
@@ -1428,7 +1431,7 @@ export type UpdateWebhookEndpoint<
  */
 export type InviteResolveEndpoint<
   Code extends string = string,
-> = `/invites/{code}`;
+> = `/invites/${Code}`;
 
 /**
  * Invite Revoke
@@ -1436,7 +1439,7 @@ export type InviteResolveEndpoint<
  */
 export type InviteRevokeEndpoint<
   Code extends string = string,
-> = `/invites/{code}`;
+> = `/invites/${Code}`;
 
 /**
  * Get Guild
@@ -1444,7 +1447,7 @@ export type InviteRevokeEndpoint<
  */
 export type GetGuildEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}`;
+> = `/guilds/${GuildID}`;
 
 /**
  * Delete Guild
@@ -1452,7 +1455,7 @@ export type GetGuildEndpoint<
  */
 export type DeleteGuildEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}`;
+> = `/guilds/${GuildID}`;
 
 /**
  * Update Guild
@@ -1460,7 +1463,7 @@ export type DeleteGuildEndpoint<
  */
 export type UpdateGuildEndpoint<
   GuildID extends snowflake = snowflake,
-> = `/guilds/{guild_id}`;
+> = `/guilds/${GuildID}`;
 
 /**
  * Get User
@@ -1468,7 +1471,7 @@ export type UpdateGuildEndpoint<
  */
 export type GetUserEndpoint<
   UserID extends snowflake = snowflake,
-> = `/users/{user_id}`;
+> = `/users/${UserID}`;
 
 export type Endpoint =
   | GetMyOauth2ApplicationEndpoint
