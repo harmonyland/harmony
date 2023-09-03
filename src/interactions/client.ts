@@ -636,6 +636,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
       return res
     } catch (e) {
+      console.error(e)
       return false
     }
   }
