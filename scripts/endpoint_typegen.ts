@@ -8,20 +8,8 @@ const $ = async (...cmd: string[]) => {
   return status.code;
 };
 
-const API_DOCS_PATH = new URL("./api_docs", import.meta.url);
-if (!(await Deno.lstat(API_DOCS_PATH).catch(() => false))) {
-  console.log("API Docs not found locally, cloning repository.");
-  await $(
-    "git",
-    "clone",
-    "https://github.com/discord/discord-api-docs",
-    API_DOCS_PATH.pathname,
-  );
-} else {
-  console.log("Pulling Latest API Docs");
-  Deno.chdir(API_DOCS_PATH);
-  await $("git", "pull");
-}
+const API_DOCS_URL =
+  "https://raw.githubusercontent.com/discord/discord-api-spec/main/specs/openapi.json";
 
 interface Endpoint {
   title: string;
@@ -33,71 +21,73 @@ interface Endpoint {
 
 const endpoints: Endpoint[] = [];
 
-async function handleEntry(
-  dir: URL,
-  { isFile, isDirectory, name }: Deno.DirEntry,
-) {
-  if (name === ".git") return;
+const jsonDocs = await fetch(API_DOCS_URL).then((e) => e.json());
 
-  if (isFile) {
-    if (name.endsWith(".md")) {
-      const data = await Deno.readTextFile(new URL(dir.href + "/" + name));
+type ApiParam = {
+  name: string;
+  in: "query" | "path";
+  schema: {
+    type: string[];
+    format: string;
+  };
+};
 
-      for (
-        let [_, name, method, url] of data.matchAll(
-          /#+ ([a-zA-Z0-9_ \-]+) % (GET|POST|PUT|DELETE|PATCH) ([a-zA-Z0-9\.\- /{}#_@]+)/g,
-        )
-      ) {
-        name = name.replaceAll("Modify", "Edit");
-        const params = [
-          ...url.matchAll(/{([a-zA-Z0-9_/\-\.]+)#DOCS_([a-zA-Z0-9_\-/]+)}/g),
-        ].map((
-          e,
-        ) => [
-          e[0],
-          e[1].split(/(\.| +)/).map((e) =>
-            e === "id" ? "ID" : `${e[0].toUpperCase()}${e.slice(1)}`
-          ).join("").replaceAll(".", "").replaceAll(" ", ""),
-        ]);
+type OpenApiInfo = {
+  operationId: string;
+  responses: Record<string, { description: string; content: string }>;
+  security: Record<string, never>[];
+  parameters?: ApiParam[];
+};
 
-        for (const param of params) {
-          url = url.replace(param[0], "${" + param[1] + "}");
-        }
+for (const [path, data] of Object.entries(jsonDocs.paths)) {
+  const preParams: ApiParam[] = [];
 
-        let title = name;
-        name = name.split(" ").join("").replaceAll("-", "").trim();
-
-        if (
-          name === "ListActiveThreads" && params.find((e) => e[1] === "GuildID")
-        ) {
-          name = "ListActiveGuildThreads";
-          title = "List Active Guild Threads";
-        }
-
-        if (endpoints.find((e) => e.name === name)) {
-          throw new Error(`Found endpoint with same name: ${name}`);
-        }
-
-        endpoints.push({
-          title,
-          name,
-          method: method as Endpoint["method"],
-          url,
-          params: params.map((e) => e[1]),
-        });
+  Object.entries(data as Record<string, OpenApiInfo | ApiParam[]>).find(
+    ([method, info]) => {
+      if (method === "parameters") {
+        preParams.push(...info as ApiParam[]);
       }
-    }
-  } else if (isDirectory) {
-    const path = new URL(dir.href + "/" + name);
-    for await (const entry of Deno.readDir(path)) {
-      await handleEntry(path, entry);
-    }
-  } else throw new Error("Invalid entry");
-}
+    },
+  );
 
-for await (const entry of Deno.readDir(API_DOCS_PATH)) {
-  if (entry.name !== "docs" || !entry.isDirectory) continue;
-  await handleEntry(API_DOCS_PATH, entry);
+  for (
+    const [method, info] of Object.entries(data as Record<string, OpenApiInfo>)
+  ) {
+    if (method === "parameters") continue;
+
+    const swapped: Record<string, string> = {};
+
+    const splitName = info.operationId.split("_").map((e) =>
+      e[0].toUpperCase() + e.slice(1)
+    );
+
+    const params = [...preParams, ...(info?.parameters ?? [])].filter((e) =>
+      e.in === "path"
+    );
+
+    let url = path;
+
+    params.forEach((param) => {
+      const oldName = param.name;
+      const newName = param.name.split("_").map((e) =>
+        e[0].toUpperCase() + e.slice(1)
+      ).join("").replace("Id", "ID");
+
+      swapped[oldName] = newName;
+    });
+
+    for (const [oldName, newName] of Object.entries(swapped)) {
+      url = url.replace(`{${oldName}}`, "${" + newName + "}");
+    }
+
+    endpoints.push({
+      title: splitName.join(" "),
+      name: splitName.join(""),
+      method: method.toUpperCase() as Endpoint["method"],
+      url: url,
+      params: params.map((e) => swapped[e.name]),
+    });
+  }
 }
 
 let types =
@@ -107,7 +97,8 @@ function getParamType(name: string): string {
   if (name.endsWith("ID")) {
     return "snowflake";
   } else if (
-    name.endsWith("Token") || name.endsWith("Emoji") || name.endsWith("Code")
+    name.endsWith("Token") || name.endsWith("Emoji") || name.endsWith("Code") ||
+    name === "EmojiName"
   ) {
     return "string";
   } else throw new Error(`Unable to infer Param Type: ${name}`);
@@ -146,7 +137,7 @@ await $(
   "deno",
   "fmt",
   "-c",
-  new URL("../Deno.jsonc", import.meta.url).pathname,
+  new URL("../deno.json", import.meta.url).pathname,
   TYPES_FILE.pathname,
 );
 
