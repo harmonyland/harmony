@@ -540,7 +540,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
             client,
             data,
             resolved.users[id],
-            undefined as unknown as Guild
+            guild!
           )
         }
 
@@ -552,7 +552,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
           resolved.roles[id] = new Role(
             client,
             data,
-            undefined as unknown as Guild
+            guild!
           )
         }
 
