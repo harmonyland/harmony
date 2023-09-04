@@ -387,7 +387,7 @@ export function messageComponent(customID?: string): MessageComponentDecorator {
     if (client._decoratedComponents === undefined)
       client._decoratedComponents = []
     if (typeof desc.value !== 'function') {
-      throw new Error('@userContextMenu decorator requires a function')
+      throw new Error('@messageComponent decorator requires a function')
     } else
       client._decoratedComponents.push({
         customID: customID ?? prop,
