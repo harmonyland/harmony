@@ -109,14 +109,36 @@ export function autocomplete(
   ) {
     if (client._decoratedAutocomplete === undefined)
       client._decoratedAutocomplete = []
+
     if (typeof desc.value !== 'function') {
       throw new Error('@autocomplete decorator requires a function')
-    } else
-      client._decoratedAutocomplete.push({
+    } else {
+      const handle: AutocompleteHandler = {
         cmd: command,
         option,
         handler: desc.value
-      })
+      }
+
+      if (
+        handle.cmd.includes(' ') === true &&
+        handle.parent === undefined &&
+        handle.group === undefined
+      ) {
+        const parts = handle.cmd.split(/ +/).filter((e) => e !== '')
+        if (parts.length > 3 || parts.length < 1) {
+          throw new Error('Invalid command name')
+        }
+        const root = parts.shift() as string
+        const group = parts.length === 2 ? parts.shift() : undefined
+        const sub = parts.shift()
+
+        handle.cmd = sub ?? root
+        handle.group = group
+        handle.parent = sub === undefined ? undefined : root
+      }
+
+      client._decoratedAutocomplete.push(handle)
+    }
   }
 }
 
