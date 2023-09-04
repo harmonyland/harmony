@@ -120,7 +120,7 @@ export function autocomplete(
       }
 
       if (
-        handle.cmd.includes(' ') == true &&
+        handle.cmd.includes(' ') === true &&
         handle.parent === undefined &&
         handle.group === undefined
       ) {
