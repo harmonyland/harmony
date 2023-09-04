@@ -116,7 +116,8 @@ export class Webhook {
       tts: (option as WebhookMessageOptions)?.tts,
       allowed_mentions: (option as WebhookMessageOptions)?.allowedMentions,
       username: undefined as undefined | string,
-      avatar_url: undefined as undefined | string
+      avatar_url: undefined as undefined | string,
+      components: (option as WebhookMessageOptions)?.components
     }
 
     if ((option as WebhookMessageOptions)?.name !== undefined) {
