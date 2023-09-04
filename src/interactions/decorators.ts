@@ -3,7 +3,9 @@ import {
   ApplicationCommandHandlerCallback,
   AutocompleteHandler,
   AutocompleteHandlerCallback,
-  InteractionsClient
+  ComponentInteractionCallback,
+  InteractionsClient,
+  ComponentInteractionHandler
 } from './client.ts'
 import type { Client } from '../client/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
@@ -15,6 +17,7 @@ import { ApplicationCommandType } from '../types/applicationCommand.ts'
 interface DecoratedAppExt {
   _decoratedAppCmd?: ApplicationCommandHandler[]
   _decoratedAutocomplete?: AutocompleteHandler[]
+  _decoratedComponents?: ComponentInteractionHandler[]
 }
 
 // Maybe a better name for this would be `ApplicationCommandBase` or `ApplicationCommandObject` or something else
@@ -45,6 +48,12 @@ type AutocompleteDecorator = (
   client: ApplicationCommandClientExt,
   prop: string,
   desc: TypedPropertyDescriptor<AutocompleteHandlerCallback>
+) => void
+
+type MessageComponentDecorator = (
+  client: ApplicationCommandClientExt,
+  prop: string,
+  desc: TypedPropertyDescriptor<ComponentInteractionCallback>
 ) => void
 
 /**
@@ -364,6 +373,24 @@ export function userContextMenu(name?: string): ApplicationCommandDecorator {
       client._decoratedAppCmd.push({
         name: name ?? prop,
         type: ApplicationCommandType.USER,
+        handler: desc.value
+      })
+  }
+}
+
+export function messageComponent(customID?: string): MessageComponentDecorator {
+  return function (
+    client: ApplicationCommandClientExt,
+    prop: string,
+    desc: TypedPropertyDescriptor<ComponentInteractionCallback>
+  ) {
+    if (client._decoratedComponents === undefined)
+      client._decoratedComponents = []
+    if (typeof desc.value !== 'function') {
+      throw new Error('@userContextMenu decorator requires a function')
+    } else
+      client._decoratedComponents.push({
+        customID: customID ?? prop,
         handler: desc.value
       })
   }

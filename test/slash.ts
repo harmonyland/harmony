@@ -1,4 +1,12 @@
-import { Client, Intents, event, slash } from '../mod.ts'
+import {
+  Client,
+  Intents,
+  event,
+  slash,
+  messageComponent,
+  MessageComponentInteraction,
+  SlashCommandInteraction
+} from '../mod.ts'
 import { ApplicationCommandInteraction } from '../src/structures/applicationCommand.ts'
 import { ApplicationCommandOptionType as Type } from '../src/types/applicationCommand.ts'
 import { TOKEN, GUILD } from './config.ts'
@@ -68,16 +76,42 @@ export class MyClient extends Client {
               ]
             }
           ]
+        },
+        {
+          name: 'test3',
+          description: 'Test command with a message component decorators.'
         }
       ],
       GUILD
     )
-    this.slash.commands.bulkEdit([])
+    this.interactions.commands.bulkEdit([])
+  }
+
+  @slash() test3(d: SlashCommandInteraction): void {
+    d.reply({
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              type: 2,
+              customID: 'button_id',
+              label: 'Test',
+              style: 1
+            }
+          ]
+        }
+      ]
+    })
   }
 
   @slash() test(d: ApplicationCommandInteraction): void {
     console.log(d.resolved)
     console.log(d.options)
+  }
+
+  @messageComponent('button_id') cid(d: MessageComponentInteraction): void {
+    d.reply('Working as intented')
   }
 
   @event() raw(evt: string, d: any): void {
@@ -90,6 +124,10 @@ const client = new MyClient({
     status: 'dnd',
     activity: { name: 'Slash Commands', type: 'LISTENING' }
   }
+})
+
+client.interactions.on('interactionError', (d) => {
+  console.log(d)
 })
 
 client.connect(TOKEN, Intents.None)

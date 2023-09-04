@@ -51,6 +51,9 @@ export type { ApplicationCommandHandlerCallback as SlashCommandHandlerCallback }
 export type { ApplicationCommandHandler as SlashCommandHandler }
 
 export type AutocompleteHandlerCallback = (d: AutocompleteInteraction) => any
+export type ComponentInteractionCallback = (
+  d: MessageComponentInteraction
+) => any
 
 export interface AutocompleteHandler {
   cmd: string
@@ -58,6 +61,11 @@ export interface AutocompleteHandler {
   parent?: string
   group?: string
   handler: AutocompleteHandlerCallback
+}
+
+export interface ComponentInteractionHandler {
+  customID: string
+  handler: ComponentInteractionCallback
 }
 
 /** Options for InteractionsClient */
@@ -96,6 +104,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   commands: ApplicationCommandsManager
   handlers: ApplicationCommandHandler[] = []
   autocompleteHandlers: AutocompleteHandler[] = []
+  componentHandlers: ComponentInteractionHandler[] = []
   readonly rest!: RESTManager
   modules: ApplicationCommandsModule[] = []
   publicKey?: string
@@ -125,6 +134,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     const client = this.client as unknown as {
       _decoratedAppCmd: ApplicationCommandHandler[]
       _decoratedAutocomplete: AutocompleteHandler[]
+      _decoratedComponents: ComponentInteractionHandler[]
     }
     if (client?._decoratedAppCmd !== undefined) {
       client._decoratedAppCmd.forEach((e) => {
@@ -140,9 +150,17 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       })
     }
 
+    if (client?._decoratedComponents !== undefined) {
+      client._decoratedComponents.forEach((e) => {
+        e.handler = e.handler.bind(this.client)
+        this.componentHandlers.push(e)
+      })
+    }
+
     const self = this as unknown as InteractionsClient & {
       _decoratedAppCmd: ApplicationCommandHandler[]
       _decoratedAutocomplete: AutocompleteHandler[]
+      _decoratedComponents: ComponentInteractionHandler[]
     }
 
     if (self._decoratedAppCmd !== undefined) {
@@ -156,6 +174,13 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       self._decoratedAutocomplete.forEach((e) => {
         e.handler = e.handler.bind(this.client)
         self.autocompleteHandlers.push(e)
+      })
+    }
+
+    if (self._decoratedComponents !== undefined) {
+      self._decoratedComponents.forEach((e) => {
+        e.handler = e.handler.bind(this.client)
+        self.componentHandlers.push(e)
       })
     }
 
@@ -385,6 +410,18 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     })
   }
 
+  /** Get Handler for an autocomplete Interaction. Supports nested sub commands and sub command groups. */
+  private _getComponentHandler(
+    i: MessageComponentInteraction
+  ): ComponentInteractionHandler | undefined {
+    return [
+      ...this.componentHandlers,
+      ...this.modules.map((e) => e.components).flat()
+    ].find((e) => {
+      return i.customID === e.customID
+    })
+  }
+
   /** Process an incoming Interaction */
   async _process(
     interaction: Interaction | ApplicationCommandInteraction
@@ -401,6 +438,23 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
           ...this.autocompleteHandlers,
           ...this.modules.map((e) => e.autocomplete).flat()
         ].find((e) => e.cmd === '*')
+      try {
+        await handle?.handler(interaction)
+      } catch (e) {
+        await this.emit('interactionError', e as Error)
+      }
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (interaction.isMessageComponent()) {
+      const handle =
+        this._getComponentHandler(interaction) ??
+        [
+          ...this.componentHandlers,
+          ...this.modules.map((e) => e.components).flat()
+        ].find((e) => e.customID === '*')
+
       try {
         await handle?.handler(interaction)
       } catch (e) {
