@@ -11,6 +11,7 @@ import { GuildsManager } from "../managers/guilds.ts";
 import { UsersManager } from "../managers/users.ts";
 import { RolesManager } from "../managers/roles.ts";
 import { EmojisManager } from "../managers/emojis.ts";
+import { User } from "../structures/mod.ts";
 
 export interface ClientOptions extends APIManagerOptions {
   intents?: number;
@@ -20,6 +21,7 @@ export class Client extends EventEmitter<ClientEvents> {
   gateway: ShardedGateway;
   rest: RESTClient;
   token: string;
+  user?: User; // it's empty until the ready event is fired
   channels = new ChannelsManager(this);
   guilds = new GuildsManager(this);
   users = new UsersManager(this);

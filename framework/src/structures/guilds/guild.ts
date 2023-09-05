@@ -1,8 +1,13 @@
 import type {
   DefaultMessageNotificationLevel,
   ExplicitContentFilterLevel,
+  GuildNSFWLevel,
   MFALevel,
+  PremiumTier,
+  ScheduledEventPayload,
+  StageInstancePayload,
   VerificationLevel,
+  WelcomeScreenPayload,
 } from "../../../../types/mod.ts";
 import { LightGuildPayload } from "../../../types/guild.ts";
 import { Client } from "../../client/mod.ts";
@@ -101,25 +106,25 @@ export class Guild extends UnavailableGuild {
   get memberCount(): number | undefined {
     return this.payload.member_count;
   }
-  get voiceStates(): string[] {
-    return this.payload.voice_states;
-  }
-  get members(): string[] {
-    return this.payload.members;
-  }
-  get channels(): string[] {
-    return this.payload.channels;
-  }
-  get threads(): string[] {
-    return this.payload.threads;
-  }
-  get presences(): string[] {
-    return this.payload.presences;
-  }
-  get maxPresences(): number | null {
+  // get voiceStates(): string[] {
+  //   return this.payload.voice_states;
+  // }
+  // get members(): string[] {
+  //   return this.payload.members;
+  // }
+  // get channels(): string[] {
+  //   return this.payload.channels;
+  // }
+  // get threads(): string[] {
+  //   return this.payload.threads;
+  // }
+  // get presences(): string[] {
+  //   return this.payload.presences;
+  // }
+  get maxPresences(): number | null | undefined {
     return this.payload.max_presences;
   }
-  get maxMembers(): number | null {
+  get maxMembers(): number | undefined {
     return this.payload.max_members;
   }
   get vanityURLCode(): string | null {
@@ -131,10 +136,10 @@ export class Guild extends UnavailableGuild {
   get banner(): string | null {
     return this.payload.banner;
   }
-  get premiumTier(): number {
+  get premiumTier(): PremiumTier {
     return this.payload.premium_tier;
   }
-  get premiumSubscriptionCount(): number | null {
+  get premiumSubscriptionCount(): number | undefined {
     return this.payload.premium_subscription_count;
   }
   get preferredLocale(): string {
@@ -143,31 +148,31 @@ export class Guild extends UnavailableGuild {
   get publicUpdatesChannelID(): string | null {
     return this.payload.public_updates_channel_id;
   }
-  get maxVideoChannelUsers(): number | null {
+  get maxVideoChannelUsers(): number | undefined {
     return this.payload.max_video_channel_users;
   }
-  get maxStageVideoChannelUsers(): number | null {
+  get maxStageVideoChannelUsers(): number | undefined {
     return this.payload.max_stage_video_channel_users;
   }
-  get approximateMemberCount(): number | null {
+  get approximateMemberCount(): number | undefined {
     return this.payload.approximate_member_count;
   }
-  get approximatePresenceCount(): number | null {
+  get approximatePresenceCount(): number | undefined {
     return this.payload.approximate_presence_count;
   }
-  get welcomeScreen(): string | null {
+  get welcomeScreen(): WelcomeScreenPayload | undefined {
     return this.payload.welcome_screen;
   }
-  get nsfwLevel(): number {
+  get nsfwLevel(): GuildNSFWLevel {
     return this.payload.nsfw_level;
   }
-  get stageInstances(): string[] {
+  get stageInstances(): StageInstancePayload[] | undefined {
     return this.payload.stage_instances;
   }
-  get stickers(): string[] {
-    return this.payload.stickers;
-  }
-  get guildScheduledEvents(): string[] {
+  // get stickers(): string[] {
+  //   return this.payload.stickers;
+  // }
+  get guildScheduledEvents(): ScheduledEventPayload[] | undefined {
     return this.payload.guild_scheduled_events;
   }
   get premiumProgressBarEnabled(): boolean {

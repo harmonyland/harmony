@@ -1,5 +1,6 @@
 import type { MessagePayload } from "../../../../types/mod.ts";
 import type { Client } from "../../client/mod.ts";
+import type { TextChannel } from "../channels/textChannel.ts";
 import { User } from "../users/mod.ts";
 
 export class Message {
@@ -54,8 +55,11 @@ export class Message {
     return new User(this.client, this.payload.author);
   }
 
-  get channel() {
-    return this.client.channels.get(this.payload.channel_id);
+  get channel(): TextChannel | undefined {
+    // this.channel is always TextChannel since Message is only allowed in TextChannel
+    return this.client.channels.get(this.payload.channel_id) as
+      | TextChannel
+      | undefined;
   }
 
   get mentions() {

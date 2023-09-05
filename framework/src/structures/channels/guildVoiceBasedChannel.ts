@@ -1,8 +1,13 @@
 import type { GuildVoiceBasedChannelPayload } from "../../../../types/mod.ts";
+import type { Client } from "../../client/mod.ts";
 import { GuildChannel } from "./guildChannel.ts";
 
-export class GuildVoiceBasedChannel<P extends GuildVoiceBasedChannelPayload>
-  extends GuildChannel<P> {
+export class GuildVoiceBasedChannel extends GuildChannel {
+  payload: GuildVoiceBasedChannelPayload;
+  constructor(client: Client, payload: GuildVoiceBasedChannelPayload) {
+    super(client, payload);
+    this.payload = payload;
+  }
   get bitrate() {
     return this.payload.bitrate;
   }

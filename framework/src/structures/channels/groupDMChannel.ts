@@ -1,8 +1,15 @@
 import type { GroupDMChannelPayload } from "../../../../types/mod.ts";
+import type { Client } from "../../client/mod.ts";
 import { User } from "../users/mod.ts";
 import { DMBasedChannel } from "./DMBasedChannel.ts";
 
-export class GroupDMChannel extends DMBasedChannel<GroupDMChannelPayload> {
+export class GroupDMChannel extends DMBasedChannel {
+  payload: GroupDMChannelPayload;
+  constructor(client: Client, payload: GroupDMChannelPayload) {
+    super(client, payload);
+    this.payload = payload;
+  }
+
   get name(): string {
     return this.payload.name;
   }

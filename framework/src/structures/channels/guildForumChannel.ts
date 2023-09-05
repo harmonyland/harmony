@@ -1,14 +1,21 @@
 import type { GuildForumChannelPayload } from "../../../../types/mod.ts";
 import { Mixin } from "../../../deps.ts";
 import type { GuildForumTag } from "../../../types/forum.ts";
+import type { Client } from "../../client/mod.ts";
 import { Emoji } from "../emojis/mod.ts";
 import { GuildTextBasedChannel } from "./guildTextBasedChannel.ts";
 import { GuildThreadAvailableChannel } from "./guildThreadAvailableChannel.ts";
 
 export class GuildForumChannel extends Mixin(
-  GuildThreadAvailableChannel<GuildForumChannelPayload>,
-  GuildTextBasedChannel<GuildForumChannelPayload>,
+  GuildThreadAvailableChannel,
+  GuildTextBasedChannel,
 ) {
+  payload: GuildForumChannelPayload;
+  constructor(client: Client, payload: GuildForumChannelPayload) {
+    super(client, payload);
+    this.payload = payload;
+  }
+
   get defaultReactionEmoji(): Emoji | undefined {
     if (this.payload.default_reaction_emoji) {
       if (this.payload.default_reaction_emoji.emoji_id !== null) {
@@ -30,25 +37,27 @@ export class GuildForumChannel extends Mixin(
   get defaultForumLayout() {
     return this.payload.default_auto_archive_duration;
   }
-  get availableTags(): GuildForumTag {
-    let result: Emoji;
+  get availableTags(): GuildForumTag[] {
+    return this.payload.available_tags.map((t) => {
+      let result: Emoji;
 
-    if (this.payload.available_tags.emoji_id !== null) {
-      result = this.client.emojis.get(
-        this.payload.available_tags.emoji_id,
-      )!;
-    } else if (this.payload.available_tags.emoji_name !== null) {
-      result = new Emoji(this.client, {
-        id: null,
-        name: this.payload.available_tags.emoji_name,
-      });
-    }
+      if (t.emoji_id !== null) {
+        result = this.client.emojis.get(
+          t.emoji_id,
+        )!;
+      } else if (t.emoji_name !== null) {
+        result = new Emoji(this.client, {
+          id: null,
+          name: t.emoji_name,
+        });
+      }
 
-    return {
-      id: this.payload.available_tags.id,
-      name: this.payload.available_tags.name,
-      moderated: this.payload.available_tags.moderated,
-      emoji: result!,
-    };
+      return {
+        id: t.id,
+        name: t.name,
+        moderated: t.moderated,
+        emoji: result!,
+      };
+    });
   }
 }

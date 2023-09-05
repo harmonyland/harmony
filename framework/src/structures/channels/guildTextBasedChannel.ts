@@ -4,13 +4,14 @@ import { GuildChannel } from "./guildChannel.ts";
 import type { GuildTextBasedChannelPayload } from "../../../../types/mod.ts";
 import type { Client } from "../../client/mod.ts";
 
-export class GuildTextBasedChannel<P extends GuildTextBasedChannelPayload>
-  extends Mixin(
-    GuildChannel,
-    TextChannel,
-  ) {
-  constructor(client: Client, payload: P) {
+export class GuildTextBasedChannel extends Mixin(
+  GuildChannel,
+  TextChannel,
+) {
+  payload: GuildTextBasedChannelPayload;
+  constructor(client: Client, payload: GuildTextBasedChannelPayload) {
     super(client, payload);
+    this.payload = payload;
   }
 
   get rateLimitPerUser(): number {
