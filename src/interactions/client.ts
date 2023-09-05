@@ -32,6 +32,7 @@ import { Message } from '../structures/message.ts'
 import { MessageComponentInteraction } from '../structures/messageComponents.ts'
 import { AutocompleteInteraction } from '../structures/autocompleteInteraction.ts'
 import { ModalSubmitInteraction } from '../structures/modalSubmitInteraction.ts'
+import { MessageComponentType } from '../types/messageComponents.ts'
 
 export type ApplicationCommandHandlerCallback = (
   interaction: ApplicationCommandInteraction
@@ -51,9 +52,7 @@ export type { ApplicationCommandHandlerCallback as SlashCommandHandlerCallback }
 export type { ApplicationCommandHandler as SlashCommandHandler }
 
 export type AutocompleteHandlerCallback = (d: AutocompleteInteraction) => any
-export type ComponentInteractionCallback = (
-  d: MessageComponentInteraction
-) => any
+export type ComponentInteractionCallback<T> = (d: T) => any
 
 export interface AutocompleteHandler {
   cmd: string
@@ -63,9 +62,11 @@ export interface AutocompleteHandler {
   handler: AutocompleteHandlerCallback
 }
 
-export interface ComponentInteractionHandler {
+// deno-lint-ignore no-explicit-any
+export interface ComponentInteractionHandler<T = any> {
   customID: string
-  handler: ComponentInteractionCallback
+  handler: ComponentInteractionCallback<T>
+  type: 'button' | 'modal'
 }
 
 /** Options for InteractionsClient */
@@ -410,7 +411,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     })
   }
 
-  /** Get Handler for an autocomplete Interaction. Supports nested sub commands and sub command groups. */
+  /** Get Handler for an component Interaction. */
   private _getComponentHandler(
     i: MessageComponentInteraction
   ): ComponentInteractionHandler | undefined {
@@ -418,7 +419,34 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       ...this.componentHandlers,
       ...this.modules.map((e) => e.components).flat()
     ].find((e) => {
-      return i.customID === e.customID
+      if (i.customID !== e.customID) return false
+
+      if (i.isMessageComponent() === true) {
+        return (
+          e.type === 'button' &&
+          i.data.component_type === MessageComponentType.BUTTON
+        )
+      }
+
+      return false
+    })
+  }
+
+  /** Get Handler for an modal submit Interaction. */
+  private _getModalSubmitHandler(
+    i: ModalSubmitInteraction
+  ): ComponentInteractionHandler | undefined {
+    return [
+      ...this.componentHandlers,
+      ...this.modules.map((e) => e.components).flat()
+    ].find((e) => {
+      if (i.customID !== e.customID) return false
+
+      if (e.type === 'modal' && i.isModalSubmit() === true) {
+        return true
+      }
+
+      return false
     })
   }
 
@@ -453,7 +481,24 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
         [
           ...this.componentHandlers,
           ...this.modules.map((e) => e.components).flat()
-        ].find((e) => e.customID === '*')
+        ].find((e) => e.customID === '*' && e.type === 'button')
+
+      try {
+        await handle?.handler(interaction)
+      } catch (e) {
+        await this.emit('interactionError', e as Error)
+      }
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (interaction.isModalSubmit()) {
+      const handle =
+        this._getModalSubmitHandler(interaction) ??
+        [
+          ...this.componentHandlers,
+          ...this.modules.map((e) => e.components).flat()
+        ].find((e) => e.customID === '*' && e.type === 'modal')
 
       try {
         await handle?.handler(interaction)

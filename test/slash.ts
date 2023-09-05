@@ -5,7 +5,9 @@ import {
   slash,
   messageComponent,
   MessageComponentInteraction,
-  SlashCommandInteraction
+  SlashCommandInteraction,
+  modalHandler,
+  ModalSubmitInteraction
 } from '../mod.ts'
 import { ApplicationCommandInteraction } from '../src/structures/applicationCommand.ts'
 import { ApplicationCommandOptionType as Type } from '../src/types/applicationCommand.ts'
@@ -80,11 +82,40 @@ export class MyClient extends Client {
         {
           name: 'test3',
           description: 'Test command with a message component decorators.'
+        },
+        {
+          name: 'test4',
+          description: 'Test command with a modal decorators.'
         }
       ],
       GUILD
     )
     this.interactions.commands.bulkEdit([])
+  }
+
+  @slash() test4(d: SlashCommandInteraction): void {
+    d.showModal({
+      title: 'Test',
+      customID: 'modal_id',
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              type: 4,
+              customID: 'text_field_id',
+              placeholder: 'Test',
+              label: 'Test',
+              style: 1
+            }
+          ]
+        }
+      ]
+    })
+  }
+
+  @modalHandler('modal_id') modal(d: ModalSubmitInteraction): void {
+    d.reply(JSON.stringify(d.data.components))
   }
 
   @slash() test3(d: SlashCommandInteraction): void {

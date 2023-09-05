@@ -12,6 +12,8 @@ import { ApplicationCommandsModule } from './commandModule.ts'
 import { ApplicationCommandInteraction } from '../structures/applicationCommand.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { ApplicationCommandType } from '../types/applicationCommand.ts'
+import { MessageComponentInteraction } from '../structures/messageComponents.ts';
+import { ModalSubmitInteraction } from '../structures/modalSubmitInteraction.ts';
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
 interface DecoratedAppExt {
@@ -50,10 +52,10 @@ type AutocompleteDecorator = (
   desc: TypedPropertyDescriptor<AutocompleteHandlerCallback>
 ) => void
 
-type MessageComponentDecorator = (
+type MessageComponentDecorator<T = any> = (
   client: ApplicationCommandClientExt,
   prop: string,
-  desc: TypedPropertyDescriptor<ComponentInteractionCallback>
+  desc: TypedPropertyDescriptor<ComponentInteractionCallback<T>>
 ) => void
 
 /**
@@ -378,11 +380,29 @@ export function userContextMenu(name?: string): ApplicationCommandDecorator {
   }
 }
 
-export function messageComponent(customID?: string): MessageComponentDecorator {
+/**
+ * Decorator to create a Button message component interaction handler.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @messageComponent("custom_id")
+ *   buttonHandler(i: MessageComponentInteraction) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * First argument that is `name` is optional and can be
+ * inferred from method name.
+ */
+export function messageComponent(customID?: string): MessageComponentDecorator<MessageComponentInteraction> {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
-    desc: TypedPropertyDescriptor<ComponentInteractionCallback>
+    desc: TypedPropertyDescriptor<ComponentInteractionCallback<MessageComponentInteraction>>
   ) {
     if (client._decoratedComponents === undefined)
       client._decoratedComponents = []
@@ -391,7 +411,45 @@ export function messageComponent(customID?: string): MessageComponentDecorator {
     } else
       client._decoratedComponents.push({
         customID: customID ?? prop,
-        handler: desc.value
+        handler: desc.value,
+        type: 'button'
+      })
+  }
+}
+
+/**
+ * Decorator to create a Modal submit interaction handler.
+ *
+ * Example:
+ * ```ts
+ * class MyClient extends Client {
+ *   // ...
+ *
+ *   @modalHandler("custom_id")
+ *   modalSubmit(i: ModalSubmitInteraction) {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * First argument that is `name` is optional and can be
+ * inferred from method name.
+ */
+export function modalHandler(customID?: string): MessageComponentDecorator<ModalSubmitInteraction> {
+  return function (
+    client: ApplicationCommandClientExt,
+    prop: string,
+    desc: TypedPropertyDescriptor<ComponentInteractionCallback<ModalSubmitInteraction>>
+  ) {
+    if (client._decoratedComponents === undefined)
+      client._decoratedComponents = []
+    if (typeof desc.value !== 'function') {
+      throw new Error('@modalHandler decorator requires a function')
+    } else
+      client._decoratedComponents.push({
+        customID: customID ?? prop,
+        handler: desc.value,
+        type: 'modal'
       })
   }
 }
