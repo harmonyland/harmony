@@ -12,8 +12,8 @@ import { ApplicationCommandsModule } from './commandModule.ts'
 import { ApplicationCommandInteraction } from '../structures/applicationCommand.ts'
 import { GatewayIntents } from '../types/gateway.ts'
 import { ApplicationCommandType } from '../types/applicationCommand.ts'
-import { MessageComponentInteraction } from '../structures/messageComponents.ts';
-import { ModalSubmitInteraction } from '../structures/modalSubmitInteraction.ts';
+import { MessageComponentInteraction } from '../structures/messageComponents.ts'
+import { ModalSubmitInteraction } from '../structures/modalSubmitInteraction.ts'
 
 /**  Type extension that adds the `_decoratedAppCmd` list. */
 interface DecoratedAppExt {
@@ -398,11 +398,15 @@ export function userContextMenu(name?: string): ApplicationCommandDecorator {
  * First argument that is `name` is optional and can be
  * inferred from method name.
  */
-export function messageComponent(customID?: string): MessageComponentDecorator<MessageComponentInteraction> {
+export function messageComponent(
+  customID?: string
+): MessageComponentDecorator<MessageComponentInteraction> {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
-    desc: TypedPropertyDescriptor<ComponentInteractionCallback<MessageComponentInteraction>>
+    desc: TypedPropertyDescriptor<
+      ComponentInteractionCallback<MessageComponentInteraction>
+    >
   ) {
     if (client._decoratedComponents === undefined)
       client._decoratedComponents = []
@@ -435,11 +439,15 @@ export function messageComponent(customID?: string): MessageComponentDecorator<M
  * First argument that is `name` is optional and can be
  * inferred from method name.
  */
-export function modalHandler(customID?: string): MessageComponentDecorator<ModalSubmitInteraction> {
+export function modalHandler(
+  customID?: string
+): MessageComponentDecorator<ModalSubmitInteraction> {
   return function (
     client: ApplicationCommandClientExt,
     prop: string,
-    desc: TypedPropertyDescriptor<ComponentInteractionCallback<ModalSubmitInteraction>>
+    desc: TypedPropertyDescriptor<
+      ComponentInteractionCallback<ModalSubmitInteraction>
+    >
   ) {
     if (client._decoratedComponents === undefined)
       client._decoratedComponents = []
