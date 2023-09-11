@@ -7,9 +7,8 @@ import { Channel } from "../structures/channels/channel.ts";
 import { GuildTextChannel } from "../structures/channels/guildTextChannel.ts";
 import { BaseManager } from "./base.ts";
 
-export class ChannelsManager
-  extends BaseManager<ChannelPayload, Channel<ChannelPayload>> {
-  private createChannel<P extends ChannelPayload>(payload: P) {
+export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
+  private _createChannel<P extends ChannelPayload>(payload: P) {
     switch (payload.type) {
       case ChannelType.GUILD_TEXT:
         return new GuildTextChannel(
@@ -43,7 +42,7 @@ export class ChannelsManager
   ) {
     const cached = this._get(id);
     if (!cached) return;
-    return this.createChannel(cached);
+    return this._createChannel(cached);
   }
   async fetch<P extends ChannelPayload>(
     id: string,
@@ -51,7 +50,7 @@ export class ChannelsManager
     try {
       const payload = await this._fetch<P>(id);
       if (!payload) return;
-      return this.createChannel(payload);
+      return this._createChannel(payload);
     } catch (_err) {
       return;
     }

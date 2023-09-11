@@ -15,6 +15,8 @@ const ready: GatewayHandler<"READY"> = (
     client.guilds.set(g.id, g);
   });
 
+  // TODO: implement application loading
+
   client.emit("ready");
 };
 

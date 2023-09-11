@@ -48,7 +48,7 @@ export class Client extends EventEmitter<ClientEvents> {
 
   waitFor<K extends keyof ClientEvents>(
     event: K,
-    check: (...args: ClientEvents[K]) => boolean,
+    check?: (...args: ClientEvents[K]) => boolean,
     timeout?: number,
   ): Promise<ClientEvents[K] | []> {
     return new Promise((resolve) => {
@@ -60,7 +60,7 @@ export class Client extends EventEmitter<ClientEvents> {
         }, timeout);
       }
       const eventFunc = (...args: ClientEvents[K]): void => {
-        if (check(...args)) {
+        if (check && check(...args) || !check) {
           resolve(args);
           this.off(event, eventFunc);
           if (timeoutID !== undefined) clearTimeout(timeoutID);

@@ -11,6 +11,7 @@ import type {
 } from "../../../../types/mod.ts";
 import { LightGuildPayload } from "../../../types/guild.ts";
 import { Client } from "../../client/mod.ts";
+import { GuildChannelsManager } from "../../managers/guildChannels.ts";
 import { GuildEmojisManager } from "../../managers/guildEmojis.ts";
 import { GuildRolesManager } from "../../managers/guildRoles.ts";
 import { UnavailableGuild } from "./unavaliable.ts";
@@ -18,6 +19,7 @@ import { UnavailableGuild } from "./unavaliable.ts";
 export class Guild extends UnavailableGuild {
   roles: GuildRolesManager;
   emojis: GuildEmojisManager;
+  channels: GuildChannelsManager;
   constructor(client: Client, payload: LightGuildPayload) {
     // TODO: think about fill methods
     super(client, payload);
@@ -28,6 +30,14 @@ export class Guild extends UnavailableGuild {
     this.emojis = new GuildEmojisManager(client, client.emojis, payload.id);
     if (payload.emojis) {
       this.emojis._fill(payload.emojis);
+    }
+    this.channels = new GuildChannelsManager(
+      client,
+      client.channels,
+      payload.id,
+    );
+    if (payload.channels) {
+      this.channels._fill(payload.channels);
     }
   }
 
@@ -111,9 +121,6 @@ export class Guild extends UnavailableGuild {
   // }
   // get members(): string[] {
   //   return this.payload.members;
-  // }
-  // get channels(): string[] {
-  //   return this.payload.channels;
   // }
   // get threads(): string[] {
   //   return this.payload.threads;

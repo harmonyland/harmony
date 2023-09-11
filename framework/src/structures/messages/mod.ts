@@ -79,4 +79,10 @@ export class Message {
   //     return this.client.channels.get(channel.id);
   //   })
   // }
+
+  get guild() {
+    return this.payload.guild_id
+      ? this.client.guilds.get(this.payload.guild_id)
+      : undefined;
+  }
 }

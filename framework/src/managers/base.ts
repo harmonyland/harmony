@@ -17,7 +17,6 @@ export class BaseManager<P, T> {
     throw new Error("Not implemented");
   }
 
-  // try _get first, if not found, fetch
   get(_key: string): T | undefined {
     throw new Error("Not implemented");
   }

@@ -3,5 +3,5 @@ import { SelectivePartial } from "./utils.ts";
 
 export type LightGuildPayload = SelectivePartial<
   GuildPayload,
-  "roles" | "emojis"
+  "roles" | "emojis" | "channels"
 >;

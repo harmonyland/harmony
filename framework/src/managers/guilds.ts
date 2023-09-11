@@ -32,6 +32,7 @@ export class GuildsManager extends BaseManager<LightGuildPayload, Guild> {
     // TODO: remove more duplication
     const lightGuild: LightGuildPayload = {
       ...value,
+      channels: undefined,
       roles: undefined,
       emojis: undefined,
     };
