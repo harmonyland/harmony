@@ -1,7 +1,7 @@
-import { GatewayReadyPayload } from "../../../types/mod.ts";
-import { GatewayHandler } from "../../types/gateway.ts";
-import type { Client } from "../client/mod.ts";
-import { User } from "../structures/mod.ts";
+import { GatewayReadyPayload } from "../../../../types/mod.ts";
+import { GatewayHandler } from "../../../types/gateway.ts";
+import type { Client } from "../../client/mod.ts";
+import { User } from "../../structures/mod.ts";
 
 const ready: GatewayHandler<"READY"> = (
   client: Client,

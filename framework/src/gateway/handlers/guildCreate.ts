@@ -1,4 +1,5 @@
-import { GatewayHandler } from "../../types/mod.ts";
+import { GatewayHandler } from "../../../types/mod.ts";
+import { Guild } from "../../structures/guilds/guild.ts";
 
 const guildCreate: GatewayHandler<"GUILD_CREATE"> = async (
   client,
@@ -6,7 +7,7 @@ const guildCreate: GatewayHandler<"GUILD_CREATE"> = async (
 ) => {
   client.guilds.set(guild.id, guild);
 
-  const guildObj = client.guilds.get(guild.id)!;
+  const guildObj = new Guild(client, guild);
   await guildObj.channels.fetchAll();
 
   client.emit("guildCreate", guildObj);

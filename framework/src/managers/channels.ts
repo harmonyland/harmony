@@ -1,25 +1,9 @@
-import {
-  type ChannelPayload,
-  ChannelType,
-  type GuildTextChannelPayload,
-} from "../../../types/mod.ts";
+import { type ChannelPayload } from "../../../types/mod.ts";
 import { Channel } from "../structures/channels/channel.ts";
-import { GuildTextChannel } from "../structures/channels/guildTextChannel.ts";
+import { createChannel } from "../utils/channel.ts";
 import { BaseManager } from "./base.ts";
 
 export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
-  private _createChannel<P extends ChannelPayload>(payload: P) {
-    switch (payload.type) {
-      case ChannelType.GUILD_TEXT:
-        return new GuildTextChannel(
-          this.client,
-          payload as unknown as GuildTextChannelPayload,
-        );
-      default:
-        return new Channel(this.client, payload);
-    }
-  }
-
   _get<P extends ChannelPayload>(id: string): P | undefined {
     return this.cache.get(id) as P | undefined;
   }
@@ -42,7 +26,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   ) {
     const cached = this._get(id);
     if (!cached) return;
-    return this._createChannel(cached);
+    return createChannel(this.client, cached);
   }
   async fetch<P extends ChannelPayload>(
     id: string,
@@ -50,7 +34,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     try {
       const payload = await this._fetch<P>(id);
       if (!payload) return;
-      return this._createChannel(payload);
+      return createChannel(this.client, payload);
     } catch (_err) {
       return;
     }

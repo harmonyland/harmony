@@ -14,6 +14,7 @@ export enum ChannelType {
   GUILD_STAGE_VOICE = 13,
   GUILD_DIRECTORY = 14,
   GUILD_FORUM = 15,
+  GUILD_MEDIA = 16,
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object */
