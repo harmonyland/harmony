@@ -14,7 +14,7 @@ export const voiceStateUpdate: GatewayEventHandler = async (
   )) as unknown as Guild
 
   const voiceState = await guild.voiceStates.get(d.user_id)
-  
+
   await guild.members.set(d.user_id, d.member as unknown as MemberPayload)
 
   if (d.channel_id === null) {
