@@ -2,6 +2,7 @@ export interface UserPayload {
   id: string;
   username: string;
   discriminator: string;
+  global_name: string | null;
   avatar: string | null;
   bot?: boolean;
   system?: boolean;

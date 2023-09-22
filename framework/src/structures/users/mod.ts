@@ -18,6 +18,9 @@ export class User {
   get discriminator(): string {
     return this.payload.discriminator;
   }
+  get name(): string {
+    return this.payload.global_name ?? this.username;
+  }
   get avatar(): string | null {
     return this.payload.avatar;
   }
