@@ -1,12 +1,14 @@
 import type {
   ApplicationCommandHandler,
-  AutocompleteHandler
+  AutocompleteHandler,
+  ComponentInteractionHandler
 } from './client.ts'
 
 export class ApplicationCommandsModule {
   name: string = ''
   commands: ApplicationCommandHandler[] = []
   autocomplete: AutocompleteHandler[] = []
+  components: ComponentInteractionHandler[] = []
 
   constructor() {
     if ((this as any)._decoratedAppCmd !== undefined) {
@@ -15,6 +17,10 @@ export class ApplicationCommandsModule {
 
     if ((this as any)._decoratedAutocomplete !== undefined) {
       this.autocomplete = (this as any)._decoratedAutocomplete
+    }
+
+    if ((this as any)._decoratedComponents !== undefined) {
+      this.components = (this as any)._decoratedComponents
     }
   }
 

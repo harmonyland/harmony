@@ -1,4 +1,14 @@
-import { Client, Intents, event, slash } from '../mod.ts'
+import {
+  Client,
+  Intents,
+  event,
+  slash,
+  messageComponent,
+  MessageComponentInteraction,
+  SlashCommandInteraction,
+  modalHandler,
+  ModalSubmitInteraction
+} from '../mod.ts'
 import { ApplicationCommandInteraction } from '../src/structures/applicationCommand.ts'
 import { ApplicationCommandOptionType as Type } from '../src/types/applicationCommand.ts'
 import { TOKEN, GUILD } from './config.ts'
@@ -68,16 +78,71 @@ export class MyClient extends Client {
               ]
             }
           ]
+        },
+        {
+          name: 'test3',
+          description: 'Test command with a message component decorators.'
+        },
+        {
+          name: 'test4',
+          description: 'Test command with a modal decorators.'
         }
       ],
       GUILD
     )
-    this.slash.commands.bulkEdit([])
+    this.interactions.commands.bulkEdit([])
+  }
+
+  @slash() test4(d: SlashCommandInteraction): void {
+    d.showModal({
+      title: 'Test',
+      customID: 'modal_id',
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              type: 4,
+              customID: 'text_field_id',
+              placeholder: 'Test',
+              label: 'Test',
+              style: 1
+            }
+          ]
+        }
+      ]
+    })
+  }
+
+  @modalHandler('modal_id') modal(d: ModalSubmitInteraction): void {
+    d.reply(JSON.stringify(d.data.components))
+  }
+
+  @slash() test3(d: SlashCommandInteraction): void {
+    d.reply({
+      components: [
+        {
+          type: 1,
+          components: [
+            {
+              type: 2,
+              customID: 'button_id',
+              label: 'Test',
+              style: 1
+            }
+          ]
+        }
+      ]
+    })
   }
 
   @slash() test(d: ApplicationCommandInteraction): void {
     console.log(d.resolved)
     console.log(d.options)
+  }
+
+  @messageComponent('button_id') cid(d: MessageComponentInteraction): void {
+    d.reply('Working as intented')
   }
 
   @event() raw(evt: string, d: any): void {
@@ -90,6 +155,10 @@ const client = new MyClient({
     status: 'dnd',
     activity: { name: 'Slash Commands', type: 'LISTENING' }
   }
+})
+
+client.interactions.on('interactionError', (d) => {
+  console.log(d)
 })
 
 client.connect(TOKEN, Intents.None)
