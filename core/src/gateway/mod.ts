@@ -196,8 +196,10 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       case GatewayCloseCode.INVALID_INTENT:
       case GatewayCloseCode.DISALLOWED_INTENT:
       case GatewayCloseCode.AUTHENTICATION_FAILED:
+        this.emit("CLOSED", e.code, false, true);
+        break;
       default:
-        this.emit("CLOSED", e.code, this.retryCount < 5, false);
+        this.emit("CLOSED", e.code, this.retryCount < 5, !this.connectionError);
         if (!this.reconnecting && this.retryCount < 5) {
           setTimeout(() => {
             this.retryCount++;
