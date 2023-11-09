@@ -42,6 +42,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   private connected = false;
   private retryCount = 0;
   private connectionError = false;
+  private reconnecting = false;
 
   constructor(
     token: string,
@@ -178,20 +179,15 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       case GatewayCloseCode.ALREADY_AUTHENTICATED:
       case GatewayCloseCode.RATE_LIMITED:
         this.emit("CLOSED", e.code, true, true);
-        this.reconnect(true);
+        if (!this.reconnecting) {
+          this.reconnect(true);
+        }
         break;
       case GatewayCloseCode.NOT_AUTHENTICATED:
       case GatewayCloseCode.SESSION_TIMEOUT:
         this.emit("CLOSED", e.code, true, false);
-        this.reconnect();
-        break;
-      case 0:
-        this.emit("CLOSED", e.code, true, false);
-        if (this.retryCount < 5) {
-          setTimeout(() => {
-            this.retryCount++;
-            this.reconnect(!this.connectionError);
-          }, 500);
+        if (!this.reconnecting) {
+          this.reconnect();
         }
         break;
       case GatewayCloseCode.INVALID_SHARD:
@@ -201,9 +197,16 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       case GatewayCloseCode.DISALLOWED_INTENT:
       case GatewayCloseCode.AUTHENTICATION_FAILED:
       default:
-        this.emit("CLOSED", e.code, false, false);
+        this.emit("CLOSED", e.code, this.retryCount < 5, false);
+        if (!this.reconnecting && this.retryCount < 5) {
+          setTimeout(() => {
+            this.retryCount++;
+            this.reconnect(!this.connectionError);
+          }, 500);
+        }
         break;
     }
+    this.reconnecting = false;
   }
 
   private onerror(ev: Event | ErrorEvent) {
@@ -213,6 +216,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
 
   reconnect(resume = false, code?: number) {
     this.resume = resume;
+    this.reconnecting = true;
     if (this.connected) {
       this.disconnect(code, "reconnect");
     }
@@ -225,7 +229,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       this.send(GatewayOpcode.HEARTBEAT, this.sequence);
     } else {
       // oh my god, the server is dead
-      this.reconnect(true, 4000);
+      this.disconnect(4000, "heartbeat timeout");
     }
   }
 
