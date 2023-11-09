@@ -1,4 +1,5 @@
 export enum GatewayCloseCode {
+  NORMAL = 1000,
   UNKNOWN_ERROR = 4000,
   UNKNOWN_OPCODE = 4001,
   DECODE_ERROR = 4002,

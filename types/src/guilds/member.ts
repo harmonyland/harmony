@@ -11,7 +11,7 @@ export interface GuildMemberPayload {
   mute: boolean;
   flags: number;
   pending?: boolean;
-  permissions: string;
+  permissions?: string;
   communication_disabled_until?: string | null;
 }
 

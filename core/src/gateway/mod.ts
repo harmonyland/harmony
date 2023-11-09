@@ -40,6 +40,8 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   private sequence: number | null = null;
   private sessionID: string | null = null;
   private connected = false;
+  private retryCount = 0;
+  private connectionError = false;
 
   constructor(
     token: string,
@@ -66,7 +68,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   }
 
   connect() {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       this.ws = new WebSocket(
         `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
       );
@@ -77,20 +79,18 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       };
       this.ws.onmessage = this.onmessage.bind(this);
       this.ws.onclose = this.onclose.bind(this);
-      this.ws.onerror = (e) => {
-        reject(e);
-      };
+      this.ws.onerror = this.onerror.bind(this);
       this.ws.binaryType = "arraybuffer";
     });
   }
 
-  disconnect(code?: GatewayCloseCode) {
+  disconnect(code?: GatewayCloseCode, reason?: string) {
     return new Promise<void>((resolve) => {
       this.ws.onclose = (e) => {
         this.onclose.bind(this)(e);
         resolve();
       };
-      this.ws.close(code);
+      this.ws.close(code, reason ?? "");
       this.initVariables();
       this.connected = false;
     });
@@ -98,6 +98,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
 
   private onopen() {
     this.connected = true;
+    this.retryCount = 0;
     this.emit("CONNECTED");
   }
 
@@ -184,6 +185,15 @@ export class Gateway extends EventEmitter<GatewayEvents> {
         this.emit("CLOSED", e.code, true, false);
         this.reconnect();
         break;
+      case 0:
+        this.emit("CLOSED", e.code, true, false);
+        if (this.retryCount < 5) {
+          setTimeout(() => {
+            this.retryCount++;
+            this.reconnect(!this.connectionError);
+          }, 500);
+        }
+        break;
       case GatewayCloseCode.INVALID_SHARD:
       case GatewayCloseCode.SHARDING_REQUIRED:
       case GatewayCloseCode.INVALID_VERSION:
@@ -196,10 +206,15 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     }
   }
 
+  private onerror(ev: Event | ErrorEvent) {
+    this.emit("ERROR", ev);
+    this.connectionError = true;
+  }
+
   reconnect(resume = false, code?: number) {
     this.resume = resume;
     if (this.connected) {
-      this.disconnect(code);
+      this.disconnect(code, "reconnect");
     }
     this.connect();
   }

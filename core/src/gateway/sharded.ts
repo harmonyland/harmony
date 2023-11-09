@@ -1,4 +1,4 @@
-import { GetGatewayBotPayload } from "../../../types/mod.ts";
+import { GatewayCloseCode, GetGatewayBotPayload } from "../../../types/mod.ts";
 import { EventEmitter } from "../../deps.ts";
 import {
   GatewayEvents,
@@ -98,7 +98,7 @@ export class ShardedGateway extends EventEmitter<ShardedGatewayEvents> {
 
   async destroy(shardID: number) {
     if (!this.shards[shardID]) return;
-    await this.shards[shardID].disconnect();
+    await this.shards[shardID].disconnect(GatewayCloseCode.NORMAL, "destroy");
     delete this.shards[shardID];
   }
 
