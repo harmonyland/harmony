@@ -465,7 +465,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       await this.cache.delete(`seq_${this.shards?.join('-') ?? '0'}`)
     }
 
-    this.closeGateway(3999)
+    this.closeGateway(RECONNECT_CODE, 'Reconnecting...')
     this.initWebsocket()
   }
 
@@ -494,7 +494,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
         reason !== undefined && reason !== '' ? ` and reason ${reason}` : ''
       }`
     )
-    return this.websocket?.close(code, reason)
+    this.websocket?.close(code, reason)
   }
 
   // Alias for backward compat, since event@2.0.0 removed close again...

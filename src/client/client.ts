@@ -392,9 +392,9 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
   /** Attempt to Close current Gateway connection and Resume */
   async reconnect(): Promise<Client> {
-    this.gateway.closeGateway()
-    this.gateway.initWebsocket()
-    return this.waitFor('ready', () => true).then(() => this)
+    await this.gateway.reconnect()
+    await this.waitFor('resumed')
+    return this
   }
 
   /** Add a new Collector */
