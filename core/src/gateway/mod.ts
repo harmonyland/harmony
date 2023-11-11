@@ -200,15 +200,17 @@ export class Gateway extends EventEmitter<GatewayEvents> {
         break;
       default:
         this.emit("CLOSED", e.code, this.retryCount < 5, !this.connectionError);
-        if (!this.reconnecting && this.retryCount < 5) {
-          setTimeout(() => {
-            this.retryCount++;
-            this.reconnect(!this.connectionError);
-          }, 500);
-        } else {
-          throw new Error(
-            `Gateway connection closed with code ${e.code}, retry limit reached(${this.retryCount})`,
-          );
+        if (!this.reconnecting) {
+          if (this.retryCount < 5) {
+            setTimeout(() => {
+              this.retryCount++;
+              this.reconnect(!this.connectionError);
+            }, 500);
+          } else {
+            throw new Error(
+              `Gateway connection closed with code ${e.code}, retry limit reached(${this.retryCount})`,
+            );
+          }
         }
         break;
     }
