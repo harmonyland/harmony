@@ -428,7 +428,6 @@ export class CommandsLoader {
   async loadDirectory(
     path: string,
     options?: {
-      recursive?: boolean
       exportName?: string
       maxDepth?: number
       exts?: string[]
