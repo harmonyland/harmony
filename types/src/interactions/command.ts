@@ -113,6 +113,8 @@ export interface CreateGlobalApplicationCommandPayload {
   dm_permission?: boolean;
   type?: ApplicationCommandType;
   nsfw?: boolean;
+  contexts?: ApplicationCommandContextType[];
+  integration_types?: ApplicationIntegrationType[];
 }
 
 export interface EditGlobalApplicationCommandPayload {
@@ -124,6 +126,8 @@ export interface EditGlobalApplicationCommandPayload {
   default_member_permissions?: string | null;
   dm_permission?: boolean;
   nsfw?: boolean;
+  contexts?: ApplicationCommandContextType[];
+  integration_types?: ApplicationIntegrationType[];
 }
 
 export type BulkOverwriteGlobalApplicationCommandsPayload =
