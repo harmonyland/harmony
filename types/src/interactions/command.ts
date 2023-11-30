@@ -1,3 +1,4 @@
+import { ApplicationIntegrationType } from "../applications/application.ts";
 import { ChannelType } from "../channels/base.ts";
 import { Locales } from "../etc/locales.ts";
 
@@ -15,6 +16,14 @@ export interface ApplicationCommandPayload {
   dm_permission?: boolean;
   nsfw?: boolean;
   version: string;
+  contexts?: ApplicationCommandContextType[];
+  integration_types?: ApplicationIntegrationType[];
+}
+
+export enum ApplicationCommandContextType {
+  GUILD = 0,
+  BOT_DM = 1,
+  PRIVATE_CHANNEL = 2,
 }
 
 export enum ApplicationCommandType {

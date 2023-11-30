@@ -1,3 +1,4 @@
+import { ApplicationIntegrationType } from "../applications/application.ts";
 import { ChannelPayload } from "../channels/base.ts";
 import { EmbedPayload } from "../channels/embed.ts";
 import { AllowedMentionsPayload } from "../channels/etc.ts";
@@ -37,6 +38,7 @@ export interface InteractionPayload {
   app_permissions?: string;
   locale?: Locales;
   guild_locale?: Locales;
+  authorizing_integration_owners: Record<ApplicationIntegrationType, string>;
 }
 
 export enum InteractionType {

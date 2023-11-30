@@ -26,6 +26,12 @@ export interface ApplicationPayload {
   install_params?: ApplicationInstallParams;
   custom_install_url?: string;
   role_connections_verification_url?: string;
+  integration_types?: ApplicationIntegrationType[];
+}
+
+export enum ApplicationIntegrationType {
+  GUILD_INSTALL = 0,
+  USER_INSTALL = 1,
 }
 
 export interface ApplicationInstallParams {
