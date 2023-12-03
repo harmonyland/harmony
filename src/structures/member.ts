@@ -46,7 +46,10 @@ export class Member extends SnowflakeBase {
     this.user = user
     this.guild = guild
     this.roles = new MemberRolesManager(this.client, this.guild.roles, this)
-    this.permissions = perms ?? new Permissions(Permissions.DEFAULT)
+    this.permissions =
+      this.guild.ownerID === this.id
+        ? new Permissions(Permissions.ALL)
+        : perms ?? new Permissions(Permissions.DEFAULT)
     this.roles
       .array()
       .then((roles) => {
