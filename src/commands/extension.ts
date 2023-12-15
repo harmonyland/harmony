@@ -2,6 +2,7 @@ import { Collection } from '../utils/collection.ts'
 import { Command } from './command.ts'
 import { CommandClient } from './client.ts'
 import type { ClientEvents } from '../gateway/handlers/mod.ts'
+import { join, walk } from '../../deps.ts'
 
 // Breaking change if we change to unknown
 export type ExtensionEventCallback = (ext: Extension, ...args: any[]) => any
@@ -150,6 +151,47 @@ export class ExtensionsManager {
       throw new Error(`Extension with name '${ext.name}' already exists`)
     this.list.set(ext.name, ext)
     ext.load()
+  }
+
+  /**
+   * Load extensions from a Directory.
+   *
+   * NOTE: Relative paths resolve from cwd
+   *
+   * @param path Path of the directory.
+   * @param options Options to configure loading.
+   */
+  async loadDirectory(
+    path: string,
+    options?: {
+      exportName?: string
+      maxDepth?: number
+      exts?: string[]
+      onlyRead?: boolean
+    }
+  ): Promise<Extension[]> {
+    const extensions: Extension[] = []
+
+    for await (const entry of walk(path, {
+      maxDepth: options?.maxDepth,
+      exts: options?.exts,
+      includeDirs: false
+    })) {
+      if (entry.isFile !== true) continue
+      const ext = (
+        await import(
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+          'file:///' +
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+            join(Deno.cwd(), entry.path)
+        )
+      )[options?.exportName ?? 'default']
+
+      extensions.push(ext)
+      if (options?.onlyRead !== true) this.load(ext)
+    }
+
+    return extensions
   }
 
   /** Unloads an Extension from Command Client */
