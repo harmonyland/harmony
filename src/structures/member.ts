@@ -41,7 +41,7 @@ export class Member extends SnowflakeBase {
     perms?: Permissions
   ) {
     super(client)
-    this.id = data.user.id
+    this.id = user.id
     this.readFromData(data)
     this.user = user
     this.guild = guild
