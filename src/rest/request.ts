@@ -128,6 +128,16 @@ export class APIRequest {
       // this should not be required, but seems like CloudFlare is not
       // letting these requests without a body through.
       body = this.options.data ?? {}
+      if (this.options.data.message !== undefined) {
+        if (
+          this.options.data.message.files !== undefined &&
+          this.options.data.message.files.length > 0
+        ) {
+          this.options.files = this.options.data.message.files
+        } else if (this.options.data.message.file !== undefined) {
+          this.options.files = [this.options.data.message.file]
+        }
+      }
       if (this.options.files !== undefined && this.options.files.length > 0) {
         contentType = undefined
         const form = new FormData()
