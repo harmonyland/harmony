@@ -124,6 +124,12 @@ export class ClientPresence {
     else {
       activity.map((e) => {
         if (typeof e.type === 'string') e.type = ActivityTypes[e.type]
+
+        if (e.type === ActivityTypes.CUSTOM_STATUS) {
+          e.state = e.name
+          e.name = 'Custom Status'
+        }
+
         return e
       })
       return activity

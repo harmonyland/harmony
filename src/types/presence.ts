@@ -72,6 +72,8 @@ export interface ActivityGame {
   name: string
   type: 0 | 1 | 2 | 3 | 4 | 5 | ActivityType
   url?: string
+  /** Used for CUSTOM_STATUS */
+  state?: string
 }
 
 export interface ClientActivity {
