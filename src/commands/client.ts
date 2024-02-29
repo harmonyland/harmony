@@ -151,14 +151,6 @@ export class CommandClient extends Client implements CommandClientOptions {
     this.globalCommandCooldown = options.globalCommandCooldown ?? 0
     this.globalCooldown = options.globalCooldown ?? 0
 
-    const self = this as any
-    if (self._decoratedCommands !== undefined) {
-      Object.values(self._decoratedCommands).forEach((entry: any) => {
-        this.commands.add(entry)
-      })
-      self._decoratedCommands = undefined
-    }
-
     this.on(
       'messageCreate',
       async (msg: Message) => await this.processMessage(msg)
@@ -527,26 +519,33 @@ export class CommandClient extends Client implements CommandClientOptions {
  * Command decorator. Decorates the function with optional metadata as a Command registered upon constructing class.
  */
 export function command(options?: CommandOptions) {
-  return function (target: CommandClient | Extension, name: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = target as any
-    if (c._decoratedCommands === undefined) c._decoratedCommands = {}
+  return function (
+    original: (...args: any[]) => any,
+    {
+      name,
+      addInitializer,
+      private: _private
+    }: ClassMethodDecoratorContext<CommandClient | Extension>
+  ) {
+    if (_private === true)
+      throw new TypeError('Not supported on private methods.')
 
-    const prop = c[name]
+    addInitializer(function () {
+      const command = new Command()
 
-    if (typeof prop !== 'function')
-      throw new Error('@command decorator can only be used on class methods')
+      command.name = name.toString()
+      command.execute = original.bind(this)
 
-    const command = new Command()
+      if (options !== undefined) Object.assign(command, options)
 
-    command.name = name
-    command.execute = prop
+      if (this instanceof Extension) {
+        command.extension = this
+      }
 
-    if (options !== undefined) Object.assign(command, options)
+      this.commands.add(command)
+    })
 
-    if (target instanceof Extension) command.extension = target
-
-    c._decoratedCommands[command.name] = command
+    return original
   }
 }
 
@@ -554,22 +553,28 @@ export function command(options?: CommandOptions) {
  * Sub Command decorator. Decorates the function with optional metadata as a Sub Command registered upon constructing class.
  */
 export function subcommand(options?: CommandOptions) {
-  return function (target: Command, name: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = target as any
-    if (c._decoratedSubCommands === undefined) c._decoratedSubCommands = []
+  return function (
+    original: (...args: any[]) => any,
+    {
+      name,
+      addInitializer,
+      private: _private
+    }: ClassMethodDecoratorContext<Command>
+  ) {
+    if (_private === true)
+      throw new TypeError('Not supported on private methods.')
 
-    const prop = c[name]
+    addInitializer(function () {
+      const command = new Command()
 
-    if (typeof prop !== 'function')
-      throw new Error('@command decorator can only be used on class methods')
+      command.name = name.toString()
+      command.execute = original.bind(this)
 
-    const command = new Command()
+      if (options !== undefined) Object.assign(command, options)
+      if (this.subCommands === undefined) this.subCommands = []
+      this.subCommands.push(command)
+    })
 
-    command.name = name
-    command.execute = prop
-
-    if (options !== undefined) Object.assign(command, options)
-    c._decoratedSubCommands.push(command)
+    return original
   }
 }

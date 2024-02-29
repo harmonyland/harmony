@@ -111,8 +111,6 @@ export class Command implements CommandOptions {
   /** Global command cooldown in MS */
   globalCooldown?: number
 
-  declare readonly _decoratedSubCommands?: Command[]
-
   /** Method called when the command errors */
   onError(ctx: CommandContext, error: Error): unknown | Promise<unknown> {
     return
@@ -153,24 +151,9 @@ export class Command implements CommandOptions {
     }`
   }
 
-  constructor() {
-    if (
-      this._decoratedSubCommands !== undefined &&
-      this._decoratedSubCommands.length > 0
-    ) {
-      if (this.subCommands === undefined) this.subCommands = []
-      const commands = this._decoratedSubCommands
-      delete (this as unknown as Record<string, unknown>)._decoratedSubCommands
-      Object.defineProperty(this, '_decoratedSubCommands', {
-        value: commands,
-        enumerable: false
-      })
-    }
-  }
-
   /** Get an Array of Sub Commands, including decorated ones */
   getSubCommands(): Command[] {
-    return [...(this._decoratedSubCommands ?? []), ...(this.subCommands ?? [])]
+    return this.subCommands ?? []
   }
 }
 

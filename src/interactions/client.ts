@@ -131,60 +131,6 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
 
     this.enabled = options.enabled ?? true
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const client = this.client as unknown as {
-      _decoratedAppCmd: ApplicationCommandHandler[]
-      _decoratedAutocomplete: AutocompleteHandler[]
-      _decoratedComponents: ComponentInteractionHandler[]
-    }
-    if (client?._decoratedAppCmd !== undefined) {
-      client._decoratedAppCmd.forEach((e) => {
-        e.handler = e.handler.bind(this.client)
-        this.handlers.push(e)
-      })
-    }
-
-    if (client?._decoratedAutocomplete !== undefined) {
-      client._decoratedAutocomplete.forEach((e) => {
-        e.handler = e.handler.bind(this.client)
-        this.autocompleteHandlers.push(e)
-      })
-    }
-
-    if (client?._decoratedComponents !== undefined) {
-      client._decoratedComponents.forEach((e) => {
-        e.handler = e.handler.bind(this.client)
-        this.componentHandlers.push(e)
-      })
-    }
-
-    const self = this as unknown as InteractionsClient & {
-      _decoratedAppCmd: ApplicationCommandHandler[]
-      _decoratedAutocomplete: AutocompleteHandler[]
-      _decoratedComponents: ComponentInteractionHandler[]
-    }
-
-    if (self._decoratedAppCmd !== undefined) {
-      self._decoratedAppCmd.forEach((e) => {
-        e.handler = e.handler.bind(this.client)
-        self.handlers.push(e)
-      })
-    }
-
-    if (self._decoratedAutocomplete !== undefined) {
-      self._decoratedAutocomplete.forEach((e) => {
-        e.handler = e.handler.bind(this.client)
-        self.autocompleteHandlers.push(e)
-      })
-    }
-
-    if (self._decoratedComponents !== undefined) {
-      self._decoratedComponents.forEach((e) => {
-        e.handler = e.handler.bind(this.client)
-        self.componentHandlers.push(e)
-      })
-    }
-
     Object.defineProperty(this, 'rest', {
       value:
         options.client === undefined
@@ -540,9 +486,9 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     ])
 
     return edverify(
-      decodeHex(encodeText(this.publicKey)),
+      decodeHex(this.publicKey),
       decodeHex(
-        signature instanceof Uint8Array ? signature : encodeText(signature)
+        signature instanceof Uint8Array ? decodeText(signature) : signature
       ),
       fullBody
     )

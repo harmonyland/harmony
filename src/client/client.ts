@@ -10,7 +10,7 @@ import { ChannelsManager } from '../managers/channels.ts'
 import { ClientPresence } from '../structures/presence.ts'
 import { EmojisManager } from '../managers/emojis.ts'
 import { ActivityGame, ClientActivity } from '../types/presence.ts'
-import type { Extension } from '../commands/extension.ts'
+import { Extension } from '../commands/extension.ts'
 import { InteractionsClient } from '../interactions/client.ts'
 import { ShardManager } from './shard.ts'
 import { Application } from '../structures/application.ts'
@@ -216,16 +216,6 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
       this.messageCacheMax = options.messageCacheMax
     }
     if (options.compress !== undefined) this.compress = options.compress
-
-    if (
-      (this as any)._decoratedEvents !== undefined &&
-      Object.keys((this as any)._decoratedEvents).length !== 0
-    ) {
-      Object.entries((this as any)._decoratedEvents).forEach((entry) => {
-        this.on(entry[0] as keyof ClientEvents, (entry as any)[1].bind(this))
-      })
-      ;(this as any)._decoratedEvents = undefined
-    }
 
     Object.defineProperty(this, 'clientProperties', {
       value:
@@ -499,23 +489,24 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function event(name?: keyof ClientEvents) {
   return function (
-    client: Client | Extension,
-    prop: keyof ClientEvents | string
+    original: (...args: any[]) => any,
+    {
+      name: prop,
+      addInitializer,
+      private: _private
+    }: ClassMethodDecoratorContext<Client | Extension>
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const c = client as any
-    const listener = (
-      client as unknown as {
-        [name in keyof ClientEvents]: (...args: ClientEvents[name]) => any
+    if (_private === true)
+      throw new TypeError('Not supported on private methods.')
+
+    addInitializer(function () {
+      const key = name === undefined ? prop.toString() : name
+      if (this instanceof Client) {
+        this.on(key as keyof ClientEvents, original.bind(this))
+      } else if (this instanceof Extension) {
+        this.listen(key as keyof ClientEvents, original.bind(this))
       }
-    )[prop as unknown as keyof ClientEvents]
-    if (typeof listener !== 'function') {
-      throw new Error('@event decorator requires a function')
-    }
-
-    if (c._decoratedEvents === undefined) c._decoratedEvents = {}
-    const key = name === undefined ? prop : name
-
-    c._decoratedEvents[key] = listener
+    })
+    return original
   }
 }
