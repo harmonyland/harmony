@@ -56,7 +56,7 @@ export interface ActionRowComponent {
 
 export interface ButtonComponentPayload {
   type: MessageComponentType.BUTTON
-  label: string
+  label?: string
   style: ButtonStyle
   custom_id?: string
   url?: string

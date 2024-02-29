@@ -60,6 +60,7 @@ export interface SelectProps {
   placeholder?: string
   minValues?: number
   maxValues?: number
+  disabled?: boolean
 }
 
 /** Select (drop down) component. Allows user to choose one or more options */
@@ -149,31 +150,36 @@ export function fragment(
 
     component.children
       ?.flat(2)
-      .forEach((el: Element<ButtonProps & SelectProps>) => {
-        if (el.type !== 'Button' && el.type !== 'Select') {
+      .forEach((el: Element<ButtonProps | SelectProps>) => {
+        if (el.type === 'Button') {
+          const props = el.props as ButtonProps
+          row.components?.push({
+            type: 2,
+            custom_id: props.id,
+            label: props.label,
+            style: resolveStyle(props.style),
+            url: props.url,
+            emoji: props.emoji,
+            disabled: props.disabled
+          })
+        } else if (el.type === 'Select') {
+          const props = el.props as SelectProps
+          row.components?.push({
+            type: 3,
+            custom_id: props.id,
+            min_values: props.minValues,
+            max_values: props.maxValues,
+            placeholder: props.placeholder,
+            disabled: props.disabled,
+            options: Array.isArray(el.children)
+              ? el.children.map((e) => {
+                  return e.props
+                })
+              : []
+          })
+        } else {
           throw new Error('Invalid second level component: ' + el.type)
         }
-
-        row.components?.push({
-          type: el.type === 'Button' ? 2 : 3,
-          custom_id: el.props.id,
-          label: el.props.label,
-          style:
-            el.props.style !== undefined
-              ? resolveStyle(el.props.style)
-              : undefined,
-          url: el.props.url,
-          emoji: el.props.emoji,
-          min_values: el.props.minValues,
-          max_values: el.props.maxValues,
-          placeholder: el.props.placeholder,
-          disabled: el.props.disabled,
-          options: Array.isArray(el.children)
-            ? el.children.map((e) => {
-                return e.props
-              })
-            : []
-        })
       })
 
     if (row.components !== undefined && row.components.length > 5) {
