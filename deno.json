@@ -4,5 +4,8 @@
     "lint": "npx eslint src/ test/ mod.ts deploy.ts deps.ts",
     "check": "deno run -A --check mod.ts",
     "build-npm": "deno run -A --no-check ./scripts/build_npm.ts"
-  }
+  },
+  "name": "@harmony/harmony",
+  "version": "2.9.1",
+  "exports": "./mod.ts"
 }
