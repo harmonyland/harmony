@@ -585,7 +585,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
             client,
             data,
             resolved.users[id],
-            undefined as unknown as Guild
+            guild as Guild
           )
         }
 
@@ -594,11 +594,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
           (payload.data as InteractionApplicationCommandData).resolved?.roles ??
             {}
         )) {
-          resolved.roles[id] = new Role(
-            client,
-            data,
-            undefined as unknown as Guild
-          )
+          resolved.roles[id] = new Role(client, data, guild as Guild)
         }
 
         for (const [id, data] of Object.entries(

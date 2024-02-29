@@ -51,6 +51,9 @@ export class MessageMentions {
     if (matchChannels !== null) {
       for (const id of matchChannels) {
         const parsedID = id.substr(2, id.length - 3)
+
+        if (this.client === undefined) continue
+
         const channel = await this.client.channels.get<GuildTextBasedChannel>(
           parsedID
         )
