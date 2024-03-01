@@ -6,7 +6,7 @@ import type { EmojiPayload } from '../types/emoji.ts'
 import { CHANNEL, GUILD_EMOJI, GUILD_EMOJIS } from '../types/endpoint.ts'
 import { BaseChildManager } from './baseChild.ts'
 import type { EmojisManager } from './emojis.ts'
-import { fetchAuto } from '../../deps.ts'
+import { fetchAuto } from '../utils/fetchBase64.ts'
 
 export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
   guild: Guild

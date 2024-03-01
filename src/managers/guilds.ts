@@ -1,4 +1,4 @@
-import { fetchAuto } from '../../deps.ts'
+import { fetchAuto } from '../utils/fetchBase64.ts'
 import type { Client } from '../client/mod.ts'
 import { Guild } from '../structures/guild.ts'
 import type { Template } from '../structures/template.ts'

@@ -1,5 +1,5 @@
 import { Permissions } from '../../mod.ts'
-import { fetchAuto } from '../../deps.ts'
+import { fetchAuto } from '../utils/fetchBase64.ts'
 import type { Client } from '../client/mod.ts'
 import type { Guild } from '../structures/guild.ts'
 import { Role } from '../structures/role.ts'
