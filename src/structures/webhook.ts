@@ -204,10 +204,10 @@ export class Webhook {
       }
     }
   ): Promise<Webhook> {
-    await this.client?.rest.patch(
+    await this.rest.patch(
       WEBHOOK_MESSAGE(
         this.id,
-        (this.token ?? this.client.token) as string,
+        (this.token ?? this.client?.token) as string,
         typeof message === 'string' ? message : message.id
       ),
       data
@@ -216,10 +216,10 @@ export class Webhook {
   }
 
   async deleteMessage(message: string | Message): Promise<Webhook> {
-    await this.client?.rest.delete(
+    await this.rest.delete(
       WEBHOOK_MESSAGE(
         this.id,
-        (this.token ?? this.client.token) as string,
+        (this.token ?? this.client?.token) as string,
         typeof message === 'string' ? message : message.id
       )
     )
