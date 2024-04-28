@@ -94,7 +94,9 @@ export class CommandClient extends Client implements CommandClientOptions {
   commands: CommandsManager = new CommandsManager(this)
   categories: CategoriesManager = new CategoriesManager(this)
 
-  middlewares = new Array<CommandContextMiddleware<CommandContext>>()
+  middlewares: Array<CommandContextMiddleware<CommandContext>> = new Array<
+    CommandContextMiddleware<CommandContext>
+  >()
 
   globalCommandCooldown = 0
   globalCooldown = 0
@@ -518,7 +520,12 @@ export class CommandClient extends Client implements CommandClientOptions {
 /**
  * Command decorator. Decorates the function with optional metadata as a Command registered upon constructing class.
  */
-export function command(options?: CommandOptions) {
+export function command(
+  options?: CommandOptions
+): (
+  original: (...args: any[]) => any,
+  ctx: ClassMethodDecoratorContext<CommandClient | Extension>
+) => (...args: any[]) => any {
   return function (
     original: (...args: any[]) => any,
     {
@@ -552,7 +559,12 @@ export function command(options?: CommandOptions) {
 /**
  * Sub Command decorator. Decorates the function with optional metadata as a Sub Command registered upon constructing class.
  */
-export function subcommand(options?: CommandOptions) {
+export function subcommand(
+  options?: CommandOptions
+): (
+  original: (...args: any[]) => any,
+  ctx: ClassMethodDecoratorContext<Command>
+) => (...args: any[]) => any {
   return function (
     original: (...args: any[]) => any,
     {

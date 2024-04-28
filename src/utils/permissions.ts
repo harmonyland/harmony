@@ -7,7 +7,7 @@ export type PermissionResolvable = BitFieldResolvable
 /** Represents permissions BitField */
 export class Permissions extends BitField {
   static DEFAULT = 104324673n
-  static ALL = Object.values(PermissionFlags).reduce(
+  static ALL: bigint = Object.values(PermissionFlags).reduce(
     (all, p) => BigInt(all) | BigInt(p),
     0n
   )

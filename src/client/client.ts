@@ -136,7 +136,7 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
   fetchGatewayInfo: boolean = true
 
   /** Voice Connections Manager */
-  readonly voice = new VoiceManager(this)
+  readonly voice: VoiceManager = new VoiceManager(this)
 
   /** Users Manager, containing all Users cached */
   readonly users: UsersManager = new UsersManager(this)
@@ -487,7 +487,12 @@ export class Client extends HarmonyEventEmitter<ClientEvents> {
 
 /** Event decorator to create an Event handler from function */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function event(name?: keyof ClientEvents) {
+export function event(
+  name?: keyof ClientEvents
+): (
+  original: (...args: any[]) => any,
+  ctx: ClassMethodDecoratorContext<Client | Extension>
+) => (...args: any[]) => any {
   return function (
     original: (...args: any[]) => any,
     {

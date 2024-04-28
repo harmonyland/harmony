@@ -17,14 +17,26 @@ import type {
 import { Mixin } from '../../deps.ts'
 import { TextChannel } from './textChannel.ts'
 
-export class VoiceChannel extends Mixin(GuildChannel, TextChannel) {
+const VoiceChannelSuper: (abstract new (
+  client: Client,
+  data: GuildVoiceChannelPayload,
+  guild: Guild
+) => TextChannel & GuildChannel) &
+  Pick<typeof TextChannel, keyof typeof TextChannel> &
+  Pick<typeof GuildChannel, keyof typeof GuildChannel> = Mixin(
+  TextChannel,
+  GuildChannel
+)
+
+export class VoiceChannel extends VoiceChannelSuper {
   bitrate!: string
   userLimit!: number
-  voiceStates = new GuildChannelVoiceStatesManager(
-    this.client,
-    this.guild.voiceStates,
-    this
-  )
+  voiceStates: GuildChannelVoiceStatesManager =
+    new GuildChannelVoiceStatesManager(
+      this.client,
+      this.guild.voiceStates,
+      this
+    )
 
   constructor(client: Client, data: GuildVoiceChannelPayload, guild: Guild) {
     super(client, data, guild)

@@ -12,8 +12,19 @@ import { CHANNEL } from '../types/endpoint.ts'
 import type { Message } from './message.ts'
 import { GuildThreadAvailableChannel } from './guildThreadAvailableChannel.ts'
 
+const GuildTextBasedChannelSuper: (abstract new (
+  client: Client,
+  data: GuildTextBasedChannelPayload,
+  guild: Guild
+) => TextChannel & GuildChannel) &
+  Pick<typeof TextChannel, keyof typeof TextChannel> &
+  Pick<typeof GuildChannel, keyof typeof GuildChannel> = Mixin(
+  TextChannel,
+  GuildChannel
+)
+
 /** Represents a Text Channel but in a Guild */
-export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
+export class GuildTextBasedChannel extends GuildTextBasedChannelSuper {
   constructor(
     client: Client,
     data: GuildTextBasedChannelPayload,
@@ -81,8 +92,16 @@ export class GuildTextBasedChannel extends Mixin(TextChannel, GuildChannel) {
   }
 }
 
+const GuildTextChannelSuper: (abstract new (
+  client: Client,
+  data: any,
+  guild: Guild
+) => GuildTextBasedChannel & GuildThreadAvailableChannel) &
+  Pick<typeof GuildTextBasedChannel, keyof typeof GuildTextBasedChannel> &
+  Pick<
+    typeof GuildThreadAvailableChannel,
+    keyof typeof GuildThreadAvailableChannel
+  > = Mixin(GuildTextBasedChannel, GuildThreadAvailableChannel)
+
 // Still exist for API compatibility
-export class GuildTextChannel extends Mixin(
-  GuildTextBasedChannel,
-  GuildThreadAvailableChannel
-) {}
+export class GuildTextChannel extends GuildTextChannelSuper {}

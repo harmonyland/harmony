@@ -40,7 +40,7 @@ let invalidCount = 0
 let invalidCountResetTime: number | null = null
 
 export class BucketHandler {
-  queue = new RequestQueue()
+  queue: RequestQueue = new RequestQueue()
   reset = -1
   remaining = -1
   limit = -1
