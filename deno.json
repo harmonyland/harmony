@@ -16,7 +16,8 @@
       "src/**/*",
       "assets/*",
       "README.md",
-      "tsconfig.json"
+      "tsconfig.json",
+      "deno.json"
     ]
   }
 }
