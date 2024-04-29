@@ -24,11 +24,12 @@ export enum AutoModerationRuleTriggerType {
 }
 
 export interface AutoModerationRuleTriggerMetadata {
-  keyword_filter?: string[];
-  regex_patterns?: string[];
-  presets?: AutoModerationRuleKeywordPreset[];
-  allow_list?: string[];
-  mention_total_limit?: number;
+  keyword_filter: string[];
+  regex_patterns: string[];
+  presets: AutoModerationRuleKeywordPreset[];
+  allow_list: string[];
+  mention_total_limit: number;
+  mention_raid_protection_enabled: boolean;
 }
 
 export enum AutoModerationRuleKeywordPreset {
@@ -49,8 +50,8 @@ export enum AutoModerationRuleActionType {
 }
 
 export interface AutoModerationRuleActionMetadata {
-  channel_id?: string;
-  duration_seconds?: number;
+  channel_id: string;
+  duration_seconds: number;
   custom_message?: string;
 }
 

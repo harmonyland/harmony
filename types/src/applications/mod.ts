@@ -1,2 +1,2 @@
 export * from "./application.ts";
-export * from "./team.ts";
+export * from "./roleConnectionMetadata.ts";

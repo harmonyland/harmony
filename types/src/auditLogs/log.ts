@@ -1,18 +1,32 @@
 import { AutoModerationRulePayload } from "../autoMod/autoMod.ts";
 import { OverwritePayload } from "../channels/guild.ts";
-import { GuildThreadChannelPayload } from "../channels/thread.ts";
+import {
+  GuildThreadChannelPayload,
+  ThreadMetadataPayload,
+} from "../channels/thread.ts";
 import { IntegrationPayload } from "../guilds/integration.ts";
+import { GuildPayload } from "../guilds/guild.ts";
 import { RolePayload } from "../guilds/role.ts";
-import { ApplicationCommandPayload } from "../interactions/command.ts";
+import {
+  ApplicationCommandPayload,
+  ApplicationCommandPermissions,
+} from "../interactions/command.ts";
 import {
   ScheduledEventPayload,
   ScheduledEventPrivacyLevel,
   ScheduledEventStatus,
 } from "../scheduledEvent/scheduledEvent.ts";
-import { StagePrivacyLevel } from "../stageInstances/stage.ts";
-import { StickerFormatType } from "../stickers/sticker.ts";
+import {
+  StageInstancePayload,
+  StagePrivacyLevel,
+} from "../stageInstances/stage.ts";
+import { StickerFormatType, StickerPayload } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
 import { WebhookPayload } from "../webhooks/webhook.ts";
+import { ChannelPayload } from "../channels/base.ts";
+import { GuildMemberPayload } from "../guilds/member.ts";
+import { InvitePayload } from "../invites/intive.ts";
+import { EmojiPayload } from "../emojis/emoij.ts";
 
 export interface AuditLogPayload {
   application_commands: ApplicationCommandPayload[];
@@ -90,6 +104,8 @@ export enum AuditLogEvents {
   AUTO_MODERATION_BLOCK_MESSAGE = 143,
   AUTO_MODERATION_FLAG_TO_CHANNEL = 144,
   AUTO_MODERATION_USER_COMMUNICATION_DISABLED = 145,
+  CREATOR_MONETIZATION_REQUEST_CREATED = 150,
+  CREATOR_MONETIZATION_TERMS_ACCEPTED = 151,
 }
 
 export interface AuditLogEntryInfoPayload {
@@ -104,6 +120,7 @@ export interface AuditLogEntryInfoPayload {
   message_id?: string;
   role_name?: string;
   type?: string;
+  integration_type?: string;
 }
 
 type AuditLogChangeValue =
@@ -115,7 +132,20 @@ type AuditLogChangeValue =
   | StagePrivacyLevel
   | ScheduledEventPrivacyLevel
   | ScheduledEventStatus
-  | RolePayload;
+  | RolePayload
+  | GuildPayload
+  | ChannelPayload
+  | GuildMemberPayload
+  | InvitePayload
+  | WebhookPayload
+  | EmojiPayload
+  | IntegrationPayload
+  | StageInstancePayload
+  | StickerPayload
+  // | GuildScheduledEventPayload
+  | ThreadMetadataPayload
+  | ApplicationCommandPermissions
+  | AutoModerationRulePayload;
 
 export interface AuditLogChangePayload {
   new_value?: AuditLogChangeValue;

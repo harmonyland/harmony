@@ -10,12 +10,19 @@ export interface TeamPayload {
 
 export interface TeamMemberPayload {
   membership_state: MembershipState;
-  permissions: ["*"];
   team_id: string;
   user: UserPayload;
+  role: string;
 }
 
 export enum MembershipState {
   INVITED = 1,
   ACCEPTED = 2,
+}
+
+export enum TeamMemberRole {
+  OWNER = "",
+  ADMIN = "admin",
+  DEVELOPER = "developer",
+  READ_ONLY = "read_only",
 }

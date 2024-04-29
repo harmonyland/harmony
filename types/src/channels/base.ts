@@ -21,7 +21,13 @@ export enum ChannelType {
 export interface ChannelPayload {
   id: string;
   type: ChannelType;
-  flags: number;
+  flags?: number;
+}
+
+export enum ChannelFlags {
+  PINNED = 1 << 1,
+  REQUIRE_TAG = 1 << 4,
+  HIDE_MEDIA_DOWNLOAD_OPTIONS = 1 << 15,
 }
 
 export interface TextChannelPayload extends ChannelPayload {

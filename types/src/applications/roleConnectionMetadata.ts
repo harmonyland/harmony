@@ -4,9 +4,9 @@ export interface ApplicationRoleConnectionMetadata {
   type: ApplicationRoleConnectionMetadataType;
   key: string;
   name: string;
-  name_localization: Record<Locales, string>;
+  name_localization?: Record<Locales, string>;
   description: string;
-  description_localization: Record<Locales, string>;
+  description_localization?: Record<Locales, string>;
 }
 
 export enum ApplicationRoleConnectionMetadataType {
