@@ -1,3 +1,4 @@
+import { snowflake } from "../common.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 import { ChannelType, TextChannelPayload } from "./base.ts";
@@ -16,8 +17,8 @@ export interface GroupDMChannelPayload extends DMBasedChannelPayload {
   type: ChannelType.GROUP_DM;
   name: string;
   icon: string | null;
-  owner_id: string;
-  application_id?: string;
+  owner_id: snowflake;
+  application_id?: snowflake;
   managed: boolean;
 }
 
@@ -25,4 +26,9 @@ export interface GroupDMChannelPayload extends DMBasedChannelPayload {
 export interface EditGroupDMChannelPayload extends Reasonable {
   name?: string;
   icon?: string;
+}
+
+export interface GroupDMAddRecipientPayload {
+  access_token: string;
+  nick?: string;
 }

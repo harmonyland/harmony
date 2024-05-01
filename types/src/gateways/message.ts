@@ -1,23 +1,24 @@
+import { snowflake } from "../common.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 
 export interface GatewayMessageDeletePayload {
-  id: string;
-  channel_id: string;
-  guild_id?: string;
+  id: snowflake;
+  channel_id: snowflake;
+  guild_id?: snowflake;
 }
 
 export interface GatewayMessageDeleteBulkPayload {
-  ids: string;
-  channel_id: string;
-  guild_id?: string;
+  ids: snowflake;
+  channel_id: snowflake;
+  guild_id?: snowflake;
 }
 
 export interface GatewayMessageReactionAddPayload {
-  user_id: string;
-  channel_id: string;
-  message_id: string;
-  guild_id?: string;
+  user_id: snowflake;
+  channel_id: snowflake;
+  message_id: snowflake;
+  guild_id?: snowflake;
   member?: GuildMemberPayload;
   emoji: EmojiPayload;
 }
@@ -27,9 +28,9 @@ export type GatewayMessageReactionRemovePayload = Omit<
 >;
 
 export interface GatewayMessageReactionRemoveAllPayload {
-  channel_id: string;
-  message_id: string;
-  guild_id?: string;
+  channel_id: snowflake;
+  message_id: snowflake;
+  guild_id?: snowflake;
 }
 
 export interface GatewayMessageReactionRemoveEmojiPayload

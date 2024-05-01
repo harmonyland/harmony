@@ -1,1 +1,1 @@
-export * from "./intive.ts";
+export * from "./invite.ts";

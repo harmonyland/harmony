@@ -1,5 +1,7 @@
+import { snowflake } from "../common.ts";
+
 export interface UserPayload {
-  id: string;
+  id: snowflake;
   username: string;
   discriminator: string;
   global_name: string | null;
@@ -15,6 +17,7 @@ export interface UserPayload {
   flags?: number;
   premium_type?: PremiumType;
   public_flags?: number;
+  avatar_decoration?: string | null;
 }
 
 export enum UserFlags {
@@ -49,16 +52,17 @@ export interface EditCurrentUserPayload {
 }
 
 export interface GetCurrentUserGuildsParams {
-  before?: string;
-  after?: string;
+  before?: snowflake;
+  after?: snowflake;
   limit?: number;
+  with_counts?: boolean;
 }
 
 export interface CreateDMPayload {
-  recipient_id: string;
+  recipient_id: snowflake;
 }
 
 export interface CreateGroupDMPayload {
   access_tokens: string[];
-  nicks: { string: string };
+  nicks: Record<string, string>;
 }

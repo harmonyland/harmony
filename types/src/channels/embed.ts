@@ -10,7 +10,7 @@ export enum EmbedType {
 
 /** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure */
 export interface EmbedVideoPayload {
-  url?: string;
+  url: string;
   proxy_url?: string;
   height?: number;
   width?: number;
@@ -18,7 +18,7 @@ export interface EmbedVideoPayload {
 
 /** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure */
 export interface EmbedImagePayload {
-  url?: string;
+  url: string;
   proxy_url?: string;
   height?: number;
   width?: number;
@@ -35,7 +35,7 @@ export interface EmbedProviderPayload {
 
 /** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure */
 export interface EmbedAuthorPayload {
-  name?: string;
+  name: string;
   url?: string;
   icon_url?: string;
   proxy_icon_url?: string;
@@ -43,15 +43,15 @@ export interface EmbedAuthorPayload {
 
 /** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure */
 export interface EmbedFooterPayload {
-  text?: string;
+  text: string;
   icon_url?: string;
   proxy_icon_url?: string;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure */
 export interface EmbedFieldPayload {
-  name?: string;
-  value?: string;
+  name: string;
+  value: string;
   inline?: boolean;
 }
 

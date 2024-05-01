@@ -2,13 +2,15 @@ import {
   GuildThreadChannelPayload,
   ThreadMemberPayload,
 } from "../channels/thread.ts";
+import { snowflake } from "../common.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
+import { Reasonable } from "../etc/reasonable.ts";
 import { StickerPayload } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
 import { GuildFeature, MFALevel, PartialGuildChannelPayload } from "./guild.ts";
 
 export interface GuildPreviewPayload {
-  id: string;
+  id: snowflake;
   name: string;
   icon: string | null;
   splash: string | null;
@@ -23,11 +25,11 @@ export interface GuildPreviewPayload {
 
 export interface GuildWidgetSettingsPayload {
   enabled: boolean;
-  channel_id: string | null;
+  channel_id: snowflake | null;
 }
 
 export interface GuildWidgetPayload {
-  id: string;
+  id: snowflake;
   name: string;
   instant_invite: string | null;
   channels: PartialGuildChannelPayload[];
@@ -36,9 +38,9 @@ export interface GuildWidgetPayload {
 }
 
 export interface WelcomeScreenChannelPayload {
-  channel_id: string;
+  channel_id: snowflake;
   description: string;
-  emoji_id: string | null;
+  emoji_id: snowflake | null;
   emoji_name: string | null;
 }
 
@@ -54,14 +56,13 @@ export interface ActiveThreadsPayload {
 
 export interface GetGuildPruneCountParams {
   days?: number;
-  include_roles?: string[];
+  include_roles?: snowflake[];
 }
 
-export interface BeginGuildPrunePayload {
+export interface BeginGuildPrunePayload extends Reasonable {
   days?: number;
   compute_prune_count?: boolean;
-  include_roles?: string[];
-  reason?: string;
+  include_roles?: snowflake[];
 }
 
 type GuildWidgetImageStyle =
@@ -72,26 +73,26 @@ type GuildWidgetImageStyle =
   | "banner4";
 
 export interface GetGuildWidgetImageParams {
-  style: GuildWidgetImageStyle;
+  style?: GuildWidgetImageStyle;
 }
 
-export interface EditWelcomeScreenPayload {
+export interface EditWelcomeScreenPayload extends Reasonable {
   enabled?: boolean | null;
   welcome_channels?: WelcomeScreenChannelPayload[] | null;
   description?: string | null;
 }
 
 export interface EditCurrentUserVoiceStatePayload {
-  channel_id: string;
+  channel_id?: snowflake;
   suppress?: boolean;
   request_to_speak_timestamp?: string | null;
 }
 
 export interface EditUserVoiceStatePayload {
-  channel_id: string;
+  channel_id: snowflake;
   suppress?: boolean;
 }
 
-export interface EditGuildMFALevelPayload {
+export interface EditGuildMFALevelPayload extends Reasonable {
   level: MFALevel;
 }

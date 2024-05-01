@@ -1,15 +1,17 @@
+import { snowflake } from "../common.ts";
+
 export interface AutoModerationRulePayload {
-  id: string;
-  guild_id: string;
+  id: snowflake;
+  guild_id: snowflake;
   name: string;
-  creator_id: string;
+  creator_id: snowflake;
   event_type: AutoModerationRuleEventType;
   trigger_type: AutoModerationRuleTriggerType;
   trigger_metadata: AutoModerationRuleTriggerMetadata;
   actions: AutoModerationRuleAction[];
   enabled: boolean;
-  exempt_roles: string[];
-  exempt_channels: string[];
+  exempt_roles: snowflake[];
+  exempt_channels: snowflake[];
 }
 
 export enum AutoModerationRuleEventType {
@@ -50,7 +52,7 @@ export enum AutoModerationRuleActionType {
 }
 
 export interface AutoModerationRuleActionMetadata {
-  channel_id: string;
+  channel_id: snowflake;
   duration_seconds: number;
   custom_message?: string;
 }
@@ -62,8 +64,8 @@ export interface AutoModerationRuleCreatePayload {
   trigger_metadata?: AutoModerationRuleTriggerMetadata;
   actions: AutoModerationRuleAction[];
   enabled?: boolean;
-  exempt_roles?: string[];
-  exempt_channels?: string[];
+  exempt_roles?: snowflake[];
+  exempt_channels?: snowflake[];
 }
 
 export interface AutoModerationRuleUpdatePayload {
@@ -72,6 +74,6 @@ export interface AutoModerationRuleUpdatePayload {
   trigger_metadata?: AutoModerationRuleTriggerMetadata;
   actions?: AutoModerationRuleAction[];
   enabled?: boolean;
-  exempt_roles?: string[];
-  exempt_channels?: string[];
+  exempt_roles?: snowflake[];
+  exempt_channels?: snowflake[];
 }

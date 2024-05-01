@@ -1,28 +1,35 @@
+import { ApplicationRoleConnectionMetadata } from "../applications/mod.ts";
+import { snowflake } from "../common.ts";
 import { IntegrationPayload } from "../guilds/integration.ts";
 
+export enum Services {
+  BATTLENET = "battlenet",
+  BUNGIE_NET = "bungie",
+  EBAY = "ebay",
+  EPIC_GAMES = "epicgames",
+  FACEBOOK = "facebook",
+  GITHUB = "github",
+  INSTAGRAM = "instagram",
+  LEAGUE_OF_LEGENDS = "leagueoflegends",
+  PAYPAL = "paypal",
+  PLAYSTATION_NETWORK = "playstation",
+  REDDIT = "reddit",
+  RIOT_GAMES = "riotgames",
+  SPOTIFY = "spotify",
+  SKYPE = "skype",
+  STEAM = "steam",
+  TIKTOK = "tiktok",
+  TWITCH = "twitch",
+  TWITTER = "twitter", // i miss twitter
+  X = "twitter",
+  XBOX = "xbox",
+  YOUTUBE = "youtube",
+}
+
 export interface ConnectionPayload {
-  id: string;
+  id: snowflake;
   name: string;
-  type:
-    | "battlenet"
-    | "ebay"
-    | "epicgames"
-    | "facebook"
-    | "github"
-    | "instagram"
-    | "leagueoflegends"
-    | "paypal"
-    | "playstation"
-    | "reddit"
-    | "riotgames"
-    | "spotify"
-    | "skype"
-    | "steam"
-    | "tiktok"
-    | "twitch"
-    | "twitter"
-    | "xbox"
-    | "youtube";
+  type: Services;
   revoked?: boolean;
   integrations?: IntegrationPayload[];
   verified: boolean;
@@ -35,4 +42,16 @@ export interface ConnectionPayload {
 export enum VisibilityType {
   NONE = 0,
   EVERYONE = 1,
+}
+
+export interface ApplicationRoleConnectionPayload {
+  platform_name: string | null;
+  platform_username: string | null;
+  metadata: ApplicationRoleConnectionMetadata;
+}
+
+export interface EditApplicationRoleConnectionPayload {
+  platform_name?: string;
+  platform_username?: string;
+  metadata?: ApplicationRoleConnectionMetadata;
 }

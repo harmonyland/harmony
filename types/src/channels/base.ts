@@ -1,4 +1,6 @@
-import { InviteTargetType } from "../invites/intive.ts";
+import { snowflake } from "../common.ts";
+import { Reasonable } from "../etc/reasonable.ts";
+import { InviteTargetType } from "../invites/invite.ts";
 
 // https://discord.com/developers/docs/resources/channel#channel-object-channel-types
 export enum ChannelType {
@@ -19,7 +21,7 @@ export enum ChannelType {
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object */
 export interface ChannelPayload {
-  id: string;
+  id: snowflake;
   type: ChannelType;
   flags?: number;
 }
@@ -32,15 +34,15 @@ export enum ChannelFlags {
 
 export interface TextChannelPayload extends ChannelPayload {
   last_pin_timestamp: string | null;
-  last_message_id: string | null;
+  last_message_id: snowflake | null;
 }
 
-export interface CreateChannelInvitePayload {
+export interface CreateChannelInvitePayload extends Reasonable {
   max_age?: number;
   max_uses?: number;
   temporary?: boolean;
   unique?: boolean;
   target_type?: InviteTargetType;
-  target_user_id?: string;
-  target_applicaton_id?: string;
+  target_user_id?: snowflake;
+  target_applicaton_id?: snowflake;
 }

@@ -1,3 +1,4 @@
+import { snowflake } from "../common.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { UserPayload } from "../users/user.ts";
 
@@ -13,7 +14,7 @@ export interface PollPayload {
 export interface PollCreateRequestPayload {
   question: PollMediaPayload;
   answers: PollAnswerPayload[];
-  expiry: string | null;
+  duration: number;
   allow_multiselect: boolean;
   layout_type?: PollLayoutType;
 }
@@ -44,7 +45,7 @@ export interface PollAnswerCountPayload {
 }
 
 export interface GetAnswerVotersParams {
-  after?: string;
+  after?: snowflake;
   limit?: number;
 }
 

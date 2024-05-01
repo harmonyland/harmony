@@ -1,11 +1,14 @@
+import { snowflake } from "../common.ts";
+import { Reasonable } from "../etc/reasonable.ts";
+
 export interface RoleTagsPayload {
-  bot_id?: string;
-  integration_id?: string;
+  bot_id?: snowflake;
+  integration_id?: snowflake;
   premium_subscriber: null;
 }
 
 export interface RolePayload {
-  id: string;
+  id: snowflake;
   name: string;
   color: number;
   hoist: boolean;
@@ -17,22 +20,22 @@ export interface RolePayload {
   tags?: RoleTagsPayload;
 }
 
-export interface CreateGuildRolePayload {
-  name: string;
-  permissions: string;
-  color: number;
-  hoist: boolean;
-  icon: string | null;
-  unicode_emoji: string | null;
-  mentionable: boolean;
+export interface CreateGuildRolePayload extends Reasonable {
+  name?: string;
+  permissions?: string;
+  color?: number;
+  hoist?: boolean;
+  icon?: string | null;
+  unicode_emoji?: string | null;
+  mentionable?: boolean;
 }
 
-export interface EditGuildRolePositionPayload {
-  id: string;
+export interface EditGuildRolePositionPayload extends Reasonable {
+  id: snowflake;
   position?: number | null;
 }
 
-export interface EditGuildRolePayload {
+export interface EditGuildRolePayload extends Reasonable {
   name?: string | null;
   permissions?: string | null;
   color?: number | null;

@@ -1,4 +1,5 @@
 import { ChannelType } from "../channels/base.ts";
+import { snowflake } from "../common.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 
 export interface ComponentPayload {
@@ -37,6 +38,7 @@ export interface SelectMenusComponentPayload extends ComponentPayload {
   options?: SelectOptionsPayload;
   channel_types?: ChannelType[];
   placeholder?: string;
+  default_values?: SelectDefaultValuePayload[];
   min_values?: number;
   max_values?: number;
   disabled?: boolean;
@@ -78,4 +80,9 @@ export interface SelectOptionsPayload {
   descripion?: string;
   emoji?: EmojiPayload;
   default?: boolean;
+}
+
+export interface SelectDefaultValuePayload {
+  id: snowflake;
+  type: "user" | "role" | "channel";
 }

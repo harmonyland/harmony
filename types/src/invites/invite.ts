@@ -1,5 +1,6 @@
 import { ApplicationPayload } from "../applications/application.ts";
 import { ChannelPayload } from "../channels/base.ts";
+import { snowflake } from "../common.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
@@ -43,5 +44,5 @@ export interface InviteMetadataPayload {
 export interface GetInviteParams {
   with_counts?: boolean;
   with_expiration?: boolean;
-  guild_scheduled_event_id?: string;
+  guild_scheduled_event_id?: snowflake;
 }

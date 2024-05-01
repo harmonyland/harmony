@@ -3,11 +3,15 @@ import { ChannelPayload } from "../channels/base.ts";
 import { EmbedPayload } from "../channels/embed.ts";
 import { AllowedMentionsPayload } from "../channels/etc.ts";
 import { AttachmentPayload, MessagePayload } from "../channels/message.ts";
+import { snowflake } from "../common.ts";
+import { EntitlementPayload } from "../entitlements/entitlements.ts";
 import { Locales } from "../etc/locales.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 import { RolePayload } from "../guilds/role.ts";
+import { PollCreateRequestPayload } from "../poll/poll.ts";
 import { UserPayload } from "../users/user.ts";
 import {
+  ApplicationCommandContextType,
   ApplicationCommandInteractionDataOptionPayload,
   ApplicationCommandOptionChoicePayload,
   ApplicationCommandType,
@@ -19,17 +23,17 @@ import {
 } from "./components.ts";
 
 export interface InteractionPayload {
-  id: string;
-  application_id: string;
+  id: snowflake;
+  application_id: snowflake;
   type: InteractionType;
   data?:
     | ApplicationCommandInteractionDataPayload
     | ComponentInteractionDataPayload
-    | SelectMenusComponentInteractionDataPayload
-    | ModalSubmitDataPayload;
-  guild_id?: string;
+    | ModalSubmitDataPayload
+    | ResolvedDataPayload;
+  guild_id?: snowflake;
   channel?: ChannelPayload;
-  channel_id?: string;
+  channel_id?: snowflake;
   member?: GuildMemberPayload;
   user?: UserPayload;
   token: string;
@@ -38,7 +42,9 @@ export interface InteractionPayload {
   app_permissions?: string;
   locale?: Locales;
   guild_locale?: Locales;
+  entitlements: EntitlementPayload[];
   authorizing_integration_owners: Record<ApplicationIntegrationType, string>;
+  context: ApplicationCommandContextType;
 }
 
 export enum InteractionType {
@@ -50,23 +56,20 @@ export enum InteractionType {
 }
 
 export interface ApplicationCommandInteractionDataPayload {
-  id: string;
+  id: snowflake;
   name: string;
   type: ApplicationCommandType;
   resolved?: ResolvedDataPayload;
   options?: ApplicationCommandInteractionDataOptionPayload[];
-  guild_id?: string;
-  target_id?: string;
+  guild_id?: snowflake;
+  target_id?: snowflake;
 }
 
 export interface ComponentInteractionDataPayload {
   custom_id?: string;
   component_type?: ComponentType;
-}
-
-export interface SelectMenusComponentInteractionDataPayload
-  extends ComponentInteractionDataPayload {
   values?: SelectOptionsPayload[];
+  resolved?: ResolvedDataPayload;
 }
 
 export interface ModalSubmitDataPayload {
@@ -75,16 +78,16 @@ export interface ModalSubmitDataPayload {
 }
 
 export interface ResolvedDataPayload {
-  users?: Record<string, UserPayload>;
-  members?: Record<string, GuildMemberPayload>;
-  roles?: Record<string, RolePayload>;
-  channels?: Record<string, ChannelPayload>;
-  messages?: Record<string, MessagePayload>;
-  attachments?: Record<string, AttachmentPayload>;
+  users?: Record<snowflake, UserPayload>;
+  members?: Record<snowflake, GuildMemberPayload>;
+  roles?: Record<snowflake, RolePayload>;
+  channels?: Record<snowflake, ChannelPayload>;
+  messages?: Record<snowflake, MessagePayload>;
+  attachments?: Record<snowflake, AttachmentPayload>;
 }
 
 export interface MessageInteractionPayload {
-  id: string;
+  id: snowflake;
   type: InteractionType;
   name: string;
   user: UserPayload;
@@ -107,6 +110,7 @@ export enum InteractionCallbackType {
   UPDATE_MESSAGE = 7,
   APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8,
   MODAL = 9,
+  PREMIUM_REQUIRED = 100,
 }
 
 export interface MessageInteractionCallbackData {
@@ -117,6 +121,7 @@ export interface MessageInteractionCallbackData {
   flags?: number;
   components?: ComponentPayload[];
   attachments?: AttachmentPayload[];
+  poll?: PollCreateRequestPayload;
 }
 
 export interface AutocompleteInteractionCallbackData {

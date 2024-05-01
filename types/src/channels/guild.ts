@@ -1,4 +1,5 @@
 // Thread channels are seperated to a different file.
+import { snowflake } from "../common.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { ChannelPayload, ChannelType, TextChannelPayload } from "./base.ts";
 
@@ -10,17 +11,17 @@ export enum OverwriteType {
 
 /** @link https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure */
 export interface OverwritePayload {
-  id: string;
+  id: snowflake;
   type: OverwriteType;
   allow: string;
   deny: string;
 }
 
 export interface GuildForumTagPayload {
-  id: string;
+  id: snowflake;
   name: string;
   moderated: boolean;
-  emoji_id: string | null;
+  emoji_id: snowflake | null;
   emoji_name: string | null;
 }
 
@@ -42,12 +43,12 @@ export interface GuildThreadAvailableChannelPayload
 }
 
 export interface GuildChannelPayload extends ChannelPayload {
-  guild_id: string;
+  guild_id: snowflake;
   name: string;
   position: number;
   permission_overwrites: OverwritePayload[];
   nsfw: boolean;
-  parent_id: string | null;
+  parent_id: snowflake | null;
   topic: string | null;
 }
 
@@ -72,7 +73,7 @@ export enum ForumLayout {
 }
 
 export interface ForumDefaultReactionPayload {
-  emoji_id: string | null;
+  emoji_id: snowflake | null;
   emoji_name: string | null;
 }
 
@@ -124,7 +125,7 @@ export interface EditGuildAnnouncementChannelPayload
   extends EditGuildChannelPayload {
   type?: ChannelType.GUILD_TEXT | ChannelType.GUILD_ANNOUNCEMENT;
   topic?: string | null;
-  parent_id?: string | null;
+  parent_id?: snowflake | null;
   default_auto_archive_duration?: number | null;
   nsfw?: boolean | null;
 }
@@ -132,7 +133,7 @@ export interface EditGuildAnnouncementChannelPayload
 export interface EditGuildTextChannelPayload extends EditGuildChannelPayload {
   type?: ChannelType.GUILD_TEXT | ChannelType.GUILD_ANNOUNCEMENT;
   topic?: string | null;
-  parent_id?: string | null;
+  parent_id?: snowflake | null;
   rate_limit_per_user?: number | null;
   default_thread_rate_limit_per_user?: number;
   default_auto_archive_duration?: number | null;
@@ -144,7 +145,7 @@ export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
   user_limit?: number | null;
   rtc_region?: string | null;
   video_quality_mode?: VideoQualityModes | null;
-  parent_id?: string | null;
+  parent_id?: snowflake | null;
   nsfw?: boolean | null;
 }
 
@@ -157,7 +158,7 @@ export interface EditGuildForumChannelPayload extends EditGuildChannelPayload {
   default_thread_rate_limit_per_user?: number;
   default_sort_order?: ForumSortOrder | null;
   default_forum_layout?: ForumLayout;
-  parent_id?: string | null;
+  parent_id?: snowflake | null;
   nsfw?: boolean | null;
   topic?: string | null;
   rate_limit_per_user?: number | null;
@@ -168,4 +169,8 @@ export interface EditChannelPermissionsPayload extends Reasonable {
   allow?: string;
   deny?: string;
   type: OverwriteType;
+}
+
+export interface FollowAnnouncementChannelPayload {
+  webhook_channel_id: snowflake;
 }

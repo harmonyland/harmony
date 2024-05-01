@@ -1,12 +1,13 @@
 import { ApplicationIntegrationType } from "../applications/application.ts";
 import { ChannelType } from "../channels/base.ts";
+import { snowflake } from "../common.ts";
 import { Locales } from "../etc/locales.ts";
 
 export interface ApplicationCommandPayload {
-  id: string;
+  id: snowflake;
   type?: ApplicationCommandType;
-  application_id: string;
-  guild_id?: string;
+  application_id: snowflake;
+  guild_id?: snowflake;
   name: string;
   name_localizations?: Record<Locales, string | null>;
   description: string;
@@ -14,9 +15,10 @@ export interface ApplicationCommandPayload {
   options?: ApplicationCommandOptionPayload[];
   default_member_permissions: string | null;
   dm_permission?: boolean;
+  default_permission?: boolean | null;
   nsfw?: boolean;
-  version: string;
-  contexts?: ApplicationCommandContextType[];
+  version: snowflake;
+  contexts?: ApplicationCommandContextType[] | null;
   integration_types?: ApplicationIntegrationType[];
 }
 
@@ -78,14 +80,14 @@ export interface ApplicationCommandInteractionDataOptionPayload {
 }
 
 export interface GuildApplicationCommandPermissionPayload {
-  id: string;
-  application_id: string;
-  guild_id: string;
+  id: snowflake;
+  application_id: snowflake;
+  guild_id: snowflake;
   permissions: ApplicationCommandPermissions[];
 }
 
 export interface ApplicationCommandPermissions {
-  id: string;
+  id: snowflake;
   type: ApplicationCommandPermissionType;
   permission: boolean;
 }
@@ -110,7 +112,8 @@ export interface CreateGlobalApplicationCommandPayload {
   description_localizations?: Record<Locales, string | null>;
   options?: ApplicationCommandOptionPayload[];
   default_member_permissions?: string | null;
-  dm_permission?: boolean;
+  dm_permission?: boolean | null;
+  default_permission?: boolean;
   type?: ApplicationCommandType;
   nsfw?: boolean;
   contexts?: ApplicationCommandContextType[];
@@ -124,7 +127,8 @@ export interface EditGlobalApplicationCommandPayload {
   description_localizations?: Record<Locales, string | null>;
   options?: ApplicationCommandOptionPayload[];
   default_member_permissions?: string | null;
-  dm_permission?: boolean;
+  dm_permission?: boolean | null;
+  default_permission?: boolean;
   nsfw?: boolean;
   contexts?: ApplicationCommandContextType[];
   integration_types?: ApplicationIntegrationType[];
@@ -140,6 +144,7 @@ export interface CreateGuildApplicationCommandPayload {
   description_localizations?: Record<Locales, string | null>;
   options?: ApplicationCommandOptionPayload[];
   default_member_permissions?: string | null;
+  default_permission?: boolean;
   type?: ApplicationCommandType;
   nsfw?: boolean;
 }
@@ -151,11 +156,12 @@ export interface EditGuildApplicationCommandPayload {
   description_localizations?: Record<Locales, string | null>;
   options?: ApplicationCommandOptionPayload[];
   default_member_permissions?: string | null;
+  default_permission?: boolean;
   nsfw?: boolean;
 }
 
 export interface BulkOverwriteGuildApplicationCommandsPayload {
-  id?: string;
+  id?: snowflake;
   name: string;
   name_localizations?: Record<Locales, string | null>;
   description: string;
@@ -163,6 +169,9 @@ export interface BulkOverwriteGuildApplicationCommandsPayload {
   options?: ApplicationCommandOptionPayload[];
   default_member_permissions?: string | null;
   dm_permission?: boolean | null;
+  default_permission?: boolean;
+  contexts?: ApplicationCommandContextType[];
+  integration_types?: ApplicationIntegrationType[];
   type?: ApplicationCommandType;
   nsfw?: boolean;
 }

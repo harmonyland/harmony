@@ -1,10 +1,12 @@
+import { snowflake } from "../common.ts";
+import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface GuildMemberPayload {
   user?: UserPayload;
   nick?: string | null;
   avatar?: string | null;
-  roles: string[];
+  roles: snowflake[];
   joined_at: string;
   premium_since?: string | null;
   deaf: boolean;
@@ -17,14 +19,14 @@ export interface GuildMemberPayload {
 
 export enum GuildMemberFlags {
   DID_REJOIN = 1,
-  COMPLETED_ONBOARDING = 2,
-  BYPASSES_VERIFICATION = 4,
-  STARTED_ONBOARDING = 8,
+  COMPLETED_ONBOARDING = 1 << 1,
+  BYPASSES_VERIFICATION = 1 << 2,
+  STARTED_ONBOARDING = 1 << 3,
 }
 
 export interface ListGuildMembersParams {
   limit?: number;
-  after?: string;
+  after?: snowflake;
 }
 
 export interface SearchGuildMembersParams {
@@ -35,21 +37,21 @@ export interface SearchGuildMembersParams {
 export interface AddGuildMemberPayload {
   access_token: string;
   nick?: string;
-  roles?: string[];
+  roles?: snowflake[];
   mute?: boolean;
   deaf?: boolean;
 }
 
-export interface EditGuildMemberPayload {
+export interface EditGuildMemberPayload extends Reasonable {
   nick?: string | null;
-  roles?: string[] | null;
+  roles?: snowflake[] | null;
   mute?: boolean | null;
   deaf?: boolean | null;
-  channel_id?: string | null;
+  channel_id?: snowflake | null;
   communication_disabled_until?: string | null;
   flags?: number | null;
 }
 
-export interface EditGuildCurrentMemberPayload {
+export interface EditGuildCurrentMemberPayload extends Reasonable {
   nick?: string | null;
 }

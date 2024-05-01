@@ -2,20 +2,22 @@ import { ChannelPayload } from "../channels/base.ts";
 import { EmbedPayload } from "../channels/embed.ts";
 import { AllowedMentionsPayload } from "../channels/etc.ts";
 import { AttachmentPayload } from "../channels/message.ts";
+import { snowflake } from "../common.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { ComponentPayload } from "../interactions/components.ts";
+import { PollPayload } from "../poll/poll.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface WebhookPayload {
-  id: string;
+  id: snowflake;
   type: WebhookType;
-  guild_id?: string | null;
-  channel_id: string | null;
+  guild_id?: snowflake | null;
+  channel_id: snowflake | null;
   user?: UserPayload;
   name: string | null;
   avatar: string | null;
   token?: string;
-  application_id: string | null;
+  application_id: snowflake | null;
   source_guild?: GuildPayload;
   source_channel?: ChannelPayload;
   url?: string;
@@ -28,7 +30,7 @@ export enum WebhookType {
 }
 
 export interface CreateWebhookPayload {
-  // Fun fact: name cannot be 'clyde'
+  // Fun fact: name cannot include 'clyde' or 'discord' in it
   name: string;
   avatar?: string | null;
 }
@@ -36,12 +38,12 @@ export interface CreateWebhookPayload {
 export interface EditWebhookPayload {
   name: string;
   avatar: string | null;
-  channel_id: string;
+  channel_id: snowflake;
 }
 
 export interface ExecuteWebhookParams {
   wait?: boolean;
-  thread_id?: string;
+  thread_id?: snowflake;
 }
 
 export interface ExecuteWebhookPayload {
@@ -55,13 +57,15 @@ export interface ExecuteWebhookPayload {
   attachments?: AttachmentPayload[];
   flags?: number;
   thread_name?: string;
+  applied_tags?: string[];
+  poll?: PollPayload;
 }
 
 export type ExecuteSlackCompatibleWebhookParams = ExecuteWebhookParams;
 export type ExecuteGitHubCompatibleWebhookParams = ExecuteWebhookParams;
 
 export interface GetWebhookMessageParams {
-  thread_id?: string;
+  thread_id?: snowflake;
 }
 
 export type EditWebhookMessageParams = GetWebhookMessageParams;

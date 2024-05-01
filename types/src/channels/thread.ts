@@ -1,3 +1,4 @@
+import { snowflake } from "../common.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 import { ComponentPayload } from "../interactions/components.ts";
@@ -14,12 +15,13 @@ export interface ThreadMetadataPayload {
   archive_timestamp: string;
   locked: boolean;
   invitable?: boolean;
+  create_timestamp?: string | null;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#thread-member-object-thread-member-structure */
 export interface ThreadMemberPayload {
-  id?: string;
-  user_id?: string;
+  id?: snowflake;
+  user_id?: snowflake;
   join_timestamp: string;
   flags: number;
   member?: GuildMemberPayload;
@@ -32,7 +34,7 @@ export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
   thread_metadata: ThreadMetadataPayload;
   member: ThreadMemberPayload;
   permissions: string;
-  applied_tags?: string[];
+  applied_tags?: snowflake[];
 }
 
 // https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread
@@ -46,12 +48,13 @@ export interface EditGuildThreadChannelPayload extends Reasonable {
   /** Duration in second */
   rate_limit_per_user?: number | null;
   flags?: number;
-  applied_tags?: string[];
+  applied_tags?: snowflake[];
 }
 
 export interface StartThreadWithMessagePayload extends Reasonable {
   name: string;
   auto_archive_duration?: number;
+  rate_limit_per_user?: number | null;
 }
 
 export interface StartThreadWithoutMessagePayload extends Reasonable {
@@ -59,6 +62,7 @@ export interface StartThreadWithoutMessagePayload extends Reasonable {
   auto_archive_duration?: number;
   type?: ChannelType;
   invitable?: boolean;
+  rate_limit_per_user?: number | null;
 }
 
 export interface ForumThreadMessageParams {
@@ -66,7 +70,7 @@ export interface ForumThreadMessageParams {
   embeds?: EmbedPayload[];
   allowed_mentions?: AllowedMentionsPayload;
   components?: ComponentPayload[];
-  sticker_ids?: string[];
+  sticker_ids?: snowflake[];
   attachments?: AttachmentPayload[];
   flags?: number;
 }
@@ -76,7 +80,7 @@ export interface StartThreadInForumChannelPayload extends Reasonable {
   auto_archive_duration?: number;
   rate_limit_per_user?: number | null;
   message: ForumThreadMessageParams;
-  applied_tags?: string[];
+  applied_tags?: snowflake[];
 }
 
 export interface ListThreadsPayload {
@@ -86,7 +90,17 @@ export interface ListThreadsPayload {
 }
 
 export interface ListThreadsParams {
-  before?: string;
+  before?: snowflake;
+  limit?: number;
+}
+
+export interface GetThreadMemberPayload {
+  with_member?: boolean;
+}
+
+export interface ListThreadMembersPayload {
+  with_member?: boolean;
+  after?: snowflake;
   limit?: number;
 }
 

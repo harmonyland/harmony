@@ -1,6 +1,7 @@
 import { ChannelType } from "../channels/base.ts";
 import {
   ForumDefaultReactionPayload,
+  ForumLayout,
   ForumSortOrder,
   GuildChannelPayload,
   GuildForumTagPayload,
@@ -8,8 +9,10 @@ import {
   VideoQualityModes,
 } from "../channels/guild.ts";
 import { GuildThreadChannelPayload } from "../channels/thread.ts";
+import { snowflake } from "../common.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { Locales } from "../etc/locales.ts";
+import { Reasonable } from "../etc/reasonable.ts";
 import { GatewayPresenceUpdatePayload } from "../gateways/gateway.ts";
 import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { StageInstancePayload } from "../stageInstances/stage.ts";
@@ -20,20 +23,20 @@ import { GuildMemberPayload } from "./member.ts";
 import { RolePayload } from "./role.ts";
 
 export interface GuildPayload {
-  id: string;
+  id: snowflake;
   name: string;
   icon: string | null;
   icon_hash?: string | null;
   splash: string | null;
   discovery_splash: string | null;
   owner?: boolean;
-  owner_id: string;
+  owner_id: snowflake;
   permissions?: string;
   region?: string | null;
-  afk_channel_id: string | null;
+  afk_channel_id: snowflake | null;
   afk_timeout: number;
   widget_enabled: boolean;
-  widget_channel_id?: string | null;
+  widget_channel_id?: snowflake | null;
   verification_level: VerificationLevel;
   default_message_notifications: DefaultMessageNotificationLevel;
   explicit_content_filter: ExplicitContentFilterLevel;
@@ -41,10 +44,10 @@ export interface GuildPayload {
   emojis: EmojiPayload[];
   features: GuildFeature[];
   mfa_level: MFALevel;
-  application_id: string | null;
-  system_channel_id: string | null;
+  application_id: snowflake | null;
+  system_channel_id: snowflake | null;
   system_channel_flags: number;
-  rules_channel_id: string | null;
+  rules_channel_id: snowflake | null;
   joined_at?: string;
   large?: boolean;
   unavailable?: boolean;
@@ -62,7 +65,7 @@ export interface GuildPayload {
   premium_tier: PremiumTier;
   premium_subscription_count?: number;
   preferred_locale: Locales;
-  public_updates_channel_id: string | null;
+  public_updates_channel_id: snowflake | null;
   max_video_channel_users?: number;
   max_stage_video_channel_users?: number;
   approximate_member_count?: number;
@@ -73,6 +76,7 @@ export interface GuildPayload {
   stickers?: StickerPayload[];
   guild_scheduled_events?: ScheduledEventPayload[];
   premium_progress_bar_enabled: boolean;
+  safety_alerts_channel_id: snowflake | null;
 }
 
 export enum DefaultMessageNotificationLevel {
@@ -114,12 +118,12 @@ export enum PremiumTier {
 }
 
 export enum SystemChannelFlags {
-  SUPPRESS_JOIN_NOTIFICATIONS = 1,
-  SUPPRESS_PREMIUM_SUBSCRIPTIONS = 2,
-  SUPPRESS_GUILD_REMINDER_NOTIFICATIONS = 4,
-  SUPPRESS_JOIN_NOTIFICATION_REPLIES = 8,
-  SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS = 16,
-  SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES = 32,
+  SUPPRESS_JOIN_NOTIFICATIONS = 1 << 0,
+  SUPPRESS_PREMIUM_SUBSCRIPTIONS = 1 << 1,
+  SUPPRESS_GUILD_REMINDER_NOTIFICATIONS = 1 << 2,
+  SUPPRESS_JOIN_NOTIFICATION_REPLIES = 1 << 3,
+  SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATIONS = 1 << 4,
+  SUPPRESS_ROLE_SUBSCRIPTION_PURCHASE_NOTIFICATION_REPLIES = 1 << 5,
 }
 
 export enum GuildFeature {
@@ -150,6 +154,7 @@ export enum GuildFeature {
   VERIFIED = "VERIFIED",
   VIP_REGIONS = "VIP_REGIONS",
   WELCOME_SCREEN_ENABLED = "WELCOME_SCREEN_ENABLED",
+  RAID_ALERTS_DISABLED = "RAID_ALERTS_DISABLED",
 }
 
 export interface PartialGuildChannelPayload {
@@ -167,9 +172,9 @@ export interface CreateGuildPayload {
   explicit_content_filter?: ExplicitContentFilterLevel;
   roles?: RolePayload[];
   channels?: PartialGuildChannelPayload[];
-  afk_channel_id?: string;
+  afk_channel_id?: snowflake;
   afk_timeout?: number;
-  system_channel_id?: string;
+  system_channel_id?: snowflake;
   system_channel_flags?: SystemChannelFlags;
 }
 
@@ -177,29 +182,30 @@ export interface GetGuildParams {
   with_counts?: boolean;
 }
 
-export interface EditGuildPayload {
+export interface EditGuildPayload extends Reasonable {
   name?: string;
   verification_level?: VerificationLevel | null;
   default_message_notifications?: DefaultMessageNotificationLevel | null;
   explicit_content_filter?: ExplicitContentFilterLevel | null;
-  afk_channel_id?: string | null;
+  afk_channel_id?: snowflake | null;
   afk_timeout?: number;
   icon?: string | null;
-  owner_id?: string;
+  owner_id?: snowflake;
   splash?: string | null;
   discovery_splash?: string | null;
   banner?: string | null;
-  system_channel_id?: string | null;
+  system_channel_id?: snowflake | null;
   system_channel_flags?: SystemChannelFlags;
-  rules_channel_id?: string | null;
-  public_updates_channel_id?: string | null;
+  rules_channel_id?: snowflake | null;
+  public_updates_channel_id?: snowflake | null;
   preferred_locale?: string | null;
   features?: GuildFeature[];
   description?: string | null;
   premium_progress_bar_enabled?: boolean;
+  safety_alerts_channel_id?: snowflake | null;
 }
 
-export interface CreateGuildChannelPayload {
+export interface CreateGuildChannelPayload extends Reasonable {
   name: string;
   type?: ChannelType;
   topic?: string;
@@ -208,7 +214,7 @@ export interface CreateGuildChannelPayload {
   rate_limit_per_user?: number;
   position?: number;
   permission_overwrites?: OverwritePayload[];
-  parent_id?: string;
+  parent_id?: snowflake;
   nsfw?: boolean;
   rtc_region?: VoiceRegionPayload;
   video_quality_mode?: VideoQualityModes;
@@ -216,11 +222,13 @@ export interface CreateGuildChannelPayload {
   default_reaction_emoji?: ForumDefaultReactionPayload;
   available_tags?: GuildForumTagPayload[];
   default_sort_order?: ForumSortOrder;
+  default_forum_layout?: ForumLayout;
+  default_thread_rate_limit_per_user?: number;
 }
 
 export interface EditGuildChannelPositionPayload {
-  id: string;
-  position: number | null;
-  lock_permissions: boolean | null;
-  parent_id: string | null;
+  id: snowflake;
+  position?: number | null;
+  lock_permissions?: boolean | null;
+  parent_id?: snowflake | null;
 }

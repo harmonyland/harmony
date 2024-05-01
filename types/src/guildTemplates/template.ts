@@ -1,3 +1,4 @@
+import { snowflake } from "../common.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { UserPayload } from "../users/user.ts";
 
@@ -6,11 +7,11 @@ export interface GuildTemplatePayload {
   name: string;
   description: string | null;
   usage_count: number;
-  creator_id: string;
+  creator_id: snowflake;
   creator: UserPayload;
   created_at: string;
   updated_at: string;
-  source_guild_id: string;
+  source_guild_id: snowflake;
   serialized_source_guild: GuildPayload;
   is_dirty: boolean | null;
 }

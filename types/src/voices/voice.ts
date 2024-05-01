@@ -1,9 +1,10 @@
+import { snowflake } from "../common.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 
 export interface VoiceStatePayload {
-  guild_id?: string;
-  channel_id: string;
-  user_id: string;
+  guild_id?: snowflake;
+  channel_id: snowflake;
+  user_id: snowflake;
   member?: GuildMemberPayload;
   session_id: string;
   deaf: boolean;

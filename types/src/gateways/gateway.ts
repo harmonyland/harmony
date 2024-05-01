@@ -5,6 +5,7 @@ import {
 } from "../autoMod/autoMod.ts";
 import { ChannelPayload } from "../channels/base.ts";
 import { MessagePayload } from "../channels/message.ts";
+import { snowflake } from "../common.ts";
 import { GuildPayload } from "../guilds/guild.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 import { InteractionPayload } from "../interactions/interaction.ts";
@@ -195,7 +196,7 @@ export interface GatewayIdentifyPayload {
 
 export interface GatewayResumePayload {
   token: string;
-  session_id: string;
+  session_id: snowflake;
   seq: number;
 }
 
@@ -203,11 +204,11 @@ export type HeartbeatPayload = number | null;
 export type Reasumable = boolean;
 
 export interface GetGatewayGuildMembersPayload {
-  guild_id: string;
+  guild_id: snowflake;
   query?: string;
   limit: number;
   presence?: boolean;
-  user_ids?: string | string[];
+  user_ids?: snowflake | snowflake[];
   nonce?: string;
 }
 
@@ -230,14 +231,14 @@ export interface GatewayReadyPayload {
 }
 
 export interface GatewayChannelPinsUpdatePayload {
-  guild_id?: string;
-  channel_id: string;
+  guild_id?: snowflake;
+  channel_id: snowflake;
   last_pin_timestamp?: string | null;
 }
 
 export interface GatewayWebhookUpdatePayload {
-  guild_id: string;
-  channel_id: string;
+  guild_id: snowflake;
+  channel_id: snowflake;
 }
 
 export interface GetGatewayBotPayload {
@@ -263,35 +264,35 @@ export interface ClientStatusPayload {
 
 export interface GatewayPresenceUpdatePayload {
   user: UserPayload;
-  guild_id: string;
+  guild_id: snowflake;
   status: StatusType;
   activities: ActivityPayload[];
   client_status: ClientStatusPayload;
 }
 
 export interface GatewayTypingStartPayload {
-  channel_id: string;
-  guild_id?: string;
-  user_id: string;
+  channel_id: snowflake;
+  guild_id?: snowflake;
+  user_id: snowflake;
   timestamp: number;
   member?: GuildMemberPayload;
 }
 
 export interface GatewayVoiceServerUpdatePayload {
   token: string;
-  guild_id: string;
+  guild_id: snowflake;
   endpoint: string | null;
 }
 
 export interface GatewayAutoModerationActionExecutionEventPayload {
-  guild_id: string;
+  guild_id: snowflake;
   action: AutoModerationRuleAction;
   rule_id: string;
   rule_trigger_type: AutoModerationRuleTriggerType;
-  user_id: string;
-  channel_id?: string;
-  message_id?: string;
-  alert_system_message_id?: string;
+  user_id: snowflake;
+  channel_id?: snowflake;
+  message_id?: snowflake;
+  alert_system_message_id?: snowflake;
   content?: string;
   matched_keyword: string | null;
   matched_content?: string | null;

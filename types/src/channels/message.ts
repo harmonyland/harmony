@@ -1,11 +1,18 @@
-import { ApplicationPayload } from "../applications/application.ts";
+import {
+  ApplicationIntegrationType,
+  ApplicationPayload,
+} from "../applications/application.ts";
+import { snowflake } from "../common.ts";
 import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
+import { InteractionType } from "../interactions/interaction.ts";
+import { ResolvedDataPayload } from "../interactions/interaction.ts";
 import {
   ComponentPayload,
   MessageInteractionPayload,
 } from "../interactions/mod.ts";
+import { PollCreateRequestPayload } from "../poll/poll.ts";
 import { StickerItemPayload } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
 import { ChannelType } from "./base.ts";
@@ -15,17 +22,18 @@ import { GuildThreadChannelPayload } from "./thread.ts";
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-mention-object-channel-mention-structure */
 export interface ChannelMentionPayload {
-  id: string;
-  guild_id: string;
+  id: snowflake;
+  guild_id: snowflake;
   type: ChannelType;
   name: string;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure */
 export interface AttachmentPayload {
-  id: string;
+  id: snowflake;
   filename: string;
-  content_type: string;
+  description?: string;
+  content_type?: string;
   size: number;
   url: string;
   proxy_url: string;
@@ -34,13 +42,26 @@ export interface AttachmentPayload {
   ephemeral?: boolean;
   duration_secs?: number;
   waveform?: string;
+  flags?: number;
+}
+
+export enum AttachmentFlags {
+  IS_REMIX = 1 << 2,
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#reaction-object-reaction-structure */
 export interface ReactionPayload {
   count: number;
+  count_details: ReactionCountDetailsPayload;
   me: boolean;
+  me_burst: boolean;
   emoji: EmojiPayload;
+  burst_colors: string[];
+}
+
+export interface ReactionCountDetailsPayload {
+  burst: number;
+  normal: number;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-types */
@@ -94,9 +115,9 @@ export interface MessageActivityPayload {
 
 /** @link https://discord.com/developers/docs/resources/channel#message-reference-object */
 export interface MessageReferencePayload {
-  message_id?: string;
-  channel_id?: string;
-  guild_id?: string;
+  message_id?: snowflake;
+  channel_id?: snowflake;
+  guild_id?: snowflake;
   fail_if_not_exists?: boolean;
 }
 
@@ -116,7 +137,7 @@ export enum MessageFlags {
 }
 
 export interface RoleSubscriptionDataPayload {
-  role_subscription_listing_id: string;
+  role_subscription_listing_id: snowflake;
   tier_name: string;
   total_months_subscribed: number;
   is_renewal: boolean;
@@ -124,9 +145,9 @@ export interface RoleSubscriptionDataPayload {
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-structure
 export interface MessagePayload {
-  id: string;
-  channel_id: string;
-  guild_id?: string;
+  id: snowflake;
+  channel_id: snowflake;
+  guild_id?: snowflake;
   author: UserPayload;
   member?: GuildMemberPayload;
   content?: string; // Check second note on https://discord.com/developers/docs/resources/channel#message-object-message-structure
@@ -142,50 +163,67 @@ export interface MessagePayload {
   reactions?: ReactionPayload[];
   nonce?: string | number;
   pinned: boolean;
-  webhook_id?: string;
+  webhook_id?: snowflake;
   type: MessageType;
   activity?: MessageActivityPayload;
   application?: ApplicationPayload;
-  application_id?: string;
+  application_id?: snowflake;
   message_reference?: MessageReferencePayload;
-  flags?: MessageFlags;
+  flags?: number;
   referenced_message?: MessagePayload | null;
   interaction?: MessageInteractionPayload;
+  interaction_metadata?: MessageInteractionMetadataPayload;
   thread?: GuildThreadChannelPayload;
   components?: ComponentPayload[];
   sticker_items?: StickerItemPayload[];
   position?: number;
   role_subscription_data?: RoleSubscriptionDataPayload;
+  resolved?: ResolvedDataPayload;
+  poll?: PollCreateRequestPayload;
+}
+
+export interface MessageInteractionMetadataPayload {
+  id: snowflake;
+  type: InteractionType;
+  user: UserPayload;
+  authorizing_integration_owners: Record<ApplicationIntegrationType, string[]>;
+  original_response_message_id?: snowflake;
+  interacted_message_id?: snowflake;
+  triggering_interaction_metadata?: MessageInteractionMetadataPayload;
 }
 
 export interface GetChannelMessagesParams {
-  around?: string;
-  before?: string;
-  after?: string;
+  around?: snowflake;
+  before?: snowflake;
+  after?: snowflake;
   limit?: number;
 }
 
 export interface CreateMessagePayload {
   content: string;
+  nonce?: number | string;
   tts?: boolean;
-  file?: AttachmentPayload;
-  files?: AttachmentPayload[];
   embeds?: EmbedPayload[];
   allowed_mentions?: AllowedMentionsPayload;
   message_reference?: MessageReferencePayload;
   components: ComponentPayload[];
-  sticker_ids?: string[];
+  sticker_ids?: snowflake[];
+  file?: AttachmentPayload;
+  attachments?: AttachmentPayload[];
+  flags?: number;
+  enforce_nonce?: boolean;
+  poll?: PollCreateRequestPayload;
 }
 
 export interface GetMessageReactionParams {
-  after?: string;
+  after?: snowflake;
   limit?: number;
 }
 
 export interface EditMessagePayload {
   content?: string | null;
   embeds?: EmbedPayload[] | null;
-  flags?: MessageFlags | null;
+  flags?: number | null;
   file?: AttachmentPayload | null;
   allowed_mentions?: AllowedMentionsPayload | null;
   attachments?: AttachmentPayload[] | null;
@@ -193,5 +231,5 @@ export interface EditMessagePayload {
 }
 
 export interface BulkDeleteMessagesPayload extends Reasonable {
-  messages: string[];
+  messages: snowflake[];
 }

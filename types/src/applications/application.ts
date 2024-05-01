@@ -1,8 +1,9 @@
 import { UserPayload } from "../users/user.ts";
 import { TeamPayload } from "../teams/team.ts";
+import { snowflake } from "../common.ts";
 
 export interface ApplicationPayload {
-  id: string;
+  id: snowflake;
   name: string;
   icon: string | null;
   description: string;
@@ -16,8 +17,8 @@ export interface ApplicationPayload {
   summary: string;
   verify_key: string;
   team: TeamPayload | null;
-  guild_id?: string;
-  primary_sku_id?: string;
+  guild_id?: snowflake;
+  primary_sku_id?: snowflake;
   slug?: string;
   cover_image?: string;
   /** Use it with ApplicationFlags. */
@@ -29,7 +30,6 @@ export interface ApplicationPayload {
   install_params?: ApplicationInstallParams;
   custom_install_url?: string;
   role_connections_verification_url?: string;
-  integration_types?: ApplicationIntegrationType[];
   integration_types_config?: Record<
     keyof ApplicationIntegrationType,
     ApplicationIntegrationTypeConfig

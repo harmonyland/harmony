@@ -1,3 +1,4 @@
+import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface StickerPayload {
@@ -46,14 +47,14 @@ export interface ListNitroStickerPacksPayload {
   sticker_packs: StickerPackPayload[];
 }
 
-export interface CreateGuildStickerPayload {
+export interface CreateGuildStickerPayload extends Reasonable {
   name: string;
   description: string;
   tags: string;
   file: Blob;
 }
 
-export interface EditGuildStickerPayload {
+export interface EditGuildStickerPayload extends Reasonable {
   name?: string;
   description?: string;
   tags?: string;

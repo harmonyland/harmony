@@ -1,7 +1,9 @@
+import { snowflake } from "../common.ts";
+import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface EmojiPayload {
-  id: string | null;
+  id: snowflake | null;
   name: string | null;
   roles?: string[];
   user?: UserPayload;
@@ -11,13 +13,13 @@ export interface EmojiPayload {
   available?: boolean;
 }
 
-export interface CreateGuildEmojiPayload {
+export interface CreateGuildEmojiPayload extends Reasonable {
   name: string;
   image: string;
-  roles: string[];
+  roles: snowflake[];
 }
 
-export interface EditGuildEmojiPayload {
+export interface EditGuildEmojiPayload extends Reasonable {
   name?: string;
-  roles?: string[] | null;
+  roles?: snowflake[] | null;
 }
