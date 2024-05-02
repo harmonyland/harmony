@@ -1,16 +1,17 @@
+import { snowflake } from "../common.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface StickerPayload {
-  id: string;
-  pack_id?: string;
+  id: snowflake;
+  pack_id?: snowflake;
   name: string;
   description: string | null;
   tags: string;
   type: StickerType;
   format_type: StickerFormatType;
   available?: boolean;
-  guild_id?: string;
+  guild_id?: snowflake;
   user?: UserPayload;
   sort_value?: number;
 }
@@ -28,19 +29,19 @@ export enum StickerFormatType {
 }
 
 export interface StickerItemPayload {
-  id: string;
+  id: snowflake;
   name: string;
   format_type: StickerFormatType;
 }
 
 export interface StickerPackPayload {
-  id: string;
+  id: snowflake;
   stickers: StickerPayload[];
   name: string;
-  sku_id: string;
-  cover_sticker_id?: string;
+  sku_id: snowflake;
+  cover_sticker_id?: snowflake;
   description: string;
-  banner_asset_id?: string;
+  banner_asset_id?: snowflake;
 }
 
 export interface ListNitroStickerPacksPayload {

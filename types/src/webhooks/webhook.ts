@@ -57,7 +57,7 @@ export interface ExecuteWebhookPayload {
   attachments?: AttachmentPayload[];
   flags?: number;
   thread_name?: string;
-  applied_tags?: string[];
+  applied_tags?: snowflake[];
   poll?: PollPayload;
 }
 

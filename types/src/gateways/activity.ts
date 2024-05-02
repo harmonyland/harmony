@@ -1,10 +1,12 @@
+import { snowflake } from "../common.ts";
+
 export interface ActivityPayload {
   name: string;
   type: ActivityType;
   url?: string | null;
   created_at: number;
   timestamps?: ActivityTimestamps;
-  application_id?: string;
+  application_id?: snowflake;
   details?: string | null;
   state?: string | null;
   emoji?: ActivityEmoji | null;
@@ -32,7 +34,7 @@ export interface ActivityTimestamps {
 
 export interface ActivityEmoji {
   name: string;
-  id?: string;
+  id?: snowflake;
   animated?: boolean;
 }
 
