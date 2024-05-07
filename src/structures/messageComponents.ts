@@ -26,7 +26,7 @@ export class MessageComponents extends Array<MessageComponentData> {
     cb(components)
     this.push({
       type: MessageComponentType.ACTION_ROW,
-      components: this as MessageComponentData[]
+      components
     })
     return this
   }
