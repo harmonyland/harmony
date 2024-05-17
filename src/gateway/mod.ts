@@ -342,9 +342,9 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     const payload: IdentityPayload = {
       token: this.client.token,
       properties: {
-        $os: this.client.clientProperties.os ?? Deno.build.os,
-        $browser: this.client.clientProperties.browser ?? 'harmony',
-        $device: this.client.clientProperties.device ?? 'harmony'
+        os: this.client.clientProperties.os ?? Deno.build.os,
+        browser: this.client.clientProperties.browser ?? 'harmony',
+        device: this.client.clientProperties.device ?? 'harmony'
       },
       compress: this.client.compress,
       shard:
