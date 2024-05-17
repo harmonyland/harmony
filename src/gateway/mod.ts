@@ -70,6 +70,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
   shards?: number[]
   ping: number = 0
 
+  _resumeGatewayURL?: string
   _readyReceived: Promise<void>
   _resolveReadyReceived?: () => void
   _guildsToBeLoaded?: number
@@ -466,17 +467,21 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
     }
 
     this.closeGateway(RECONNECT_CODE, 'Reconnecting...')
-    this.initWebsocket()
+    this.initWebsocket(!(forceNew ?? false))
   }
 
-  initWebsocket(): void {
+  initWebsocket(resume: boolean = false): void {
     if (this.#destroyCalled) return
+    if (resume && this._resumeGatewayURL === undefined)
+      throw new Error('Resume was requested but no resume URL was found')
 
     this.emit('init')
     this.debug('Initializing WebSocket...')
+    const url = resume ? this._resumeGatewayURL : Constants.DISCORD_GATEWAY_URL
+    this._resumeGatewayURL = undefined
     this.websocket = new WebSocket(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `${Constants.DISCORD_GATEWAY_URL}/?v=${Constants.DISCORD_API_VERSION}&encoding=json`,
+      `${url}/?v=${Constants.DISCORD_API_VERSION}&encoding=json`,
       []
     )
     this.websocket.binaryType = 'arraybuffer'

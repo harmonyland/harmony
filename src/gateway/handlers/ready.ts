@@ -6,6 +6,7 @@ export const ready: GatewayEventHandler = async (
   gateway: Gateway,
   d: Ready
 ) => {
+  gateway._resumeGatewayURL = d.resume_gateway_url
   gateway._guildsToBeLoaded =
     gateway.client.intents!.includes(GatewayIntents.GUILDS) === true
       ? d.guilds.length
