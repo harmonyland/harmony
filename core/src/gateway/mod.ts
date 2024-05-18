@@ -208,11 +208,15 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       case GatewayCloseCode.AUTHENTICATION_FAILED:
         this.emit("CLOSED", e.code, false, true);
         break;
+      case GatewayCloseCode.NORMAL:
+        this.emit("CLOSED", e.code, false, false);
+        break;
       default:
         this.emit("CLOSED", e.code, this.retryCount < 5, !this.connectionError);
         if (!this.reconnecting) {
           if (this.retryCount < 5) {
-            setTimeout(() => {
+            const id = setTimeout(() => {
+              clearTimeout(id);
               this.retryCount++;
               this.reconnect(!this.connectionError);
             }, 500);
