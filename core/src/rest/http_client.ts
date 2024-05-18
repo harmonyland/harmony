@@ -5,6 +5,11 @@ import {
 } from "../../../types/src/constants.ts";
 import { Endpoint } from "../../../types/src/endpoints.ts";
 import { getRouteBucket } from "./bucket.ts";
+import {
+  DiscordAPIError,
+  DiscordAPIInternalError,
+  DiscordAPITimeoutError,
+} from "./errors.ts";
 
 export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -54,6 +59,9 @@ export interface HTTPClientOptions {
 
   /** Max request retries. Defaults to 5. */
   maxRetries?: number;
+
+  /** Request timeout in milliseconds. Defaults to 10000. */
+  timeout?: number;
 }
 
 export class Queue {
@@ -107,6 +115,7 @@ export class HTTPClient implements HTTPClientOptions {
   baseURL: string;
   version: number;
   maxRetries = 5;
+  timeout = 10000;
 
   private queue = new Map<string, Queue>();
 
@@ -117,6 +126,7 @@ export class HTTPClient implements HTTPClientOptions {
     this.baseURL = options?.baseURL ?? DISCORD_API_BASE;
     this.version = options?.version ?? DISCORD_API_VERSION;
     this.maxRetries = options?.maxRetries ?? this.maxRetries;
+    this.timeout = options?.timeout ?? this.timeout;
   }
 
   async request<T>(
@@ -166,14 +176,22 @@ export class HTTPClient implements HTTPClientOptions {
         }
       }
 
+      const abortController = new AbortController();
+      const timeoutID = setTimeout(() => {
+        abortController.abort();
+      }, this.timeout);
+
       const res = await fetch(
         `${this.baseURL}/v${this.version}${endpoint}`,
         {
           method,
           headers,
           body,
+          signal: abortController.signal,
         },
       );
+
+      clearTimeout(timeoutID);
 
       const resetTime = Date.now() +
         Number(res.headers.get("X-RateLimit-Reset-After")) * 1000 + 5; // add a little bit of delay to avoid 429s
@@ -192,12 +210,15 @@ export class HTTPClient implements HTTPClientOptions {
         return res.json();
       } else if (res.status >= 500 && res.status < 600) {
         await res.body?.cancel();
-        throw new Error(
+        throw new DiscordAPIInternalError(
+          res.status,
           `Discord API Internal Server Error (${res.status})`,
         );
       } else if (res.status >= 400 && res.status < 500) {
         const body = await res.text();
-        throw new Error(
+        throw new DiscordAPIError(
+          res.status,
+          body,
           `Discord API Error (${res.status}): ${body}`,
         );
       } else {
@@ -214,9 +235,15 @@ export class HTTPClient implements HTTPClientOptions {
       try {
         return await execute();
       } catch (error) {
+        if (error instanceof DiscordAPIError) {
+          throw error;
+        }
         tries++;
         if (nextCause !== undefined) error.cause = nextCause;
         if (tries === this.maxRetries) {
+          if (error instanceof DOMException && error.name === "AbortError") {
+            throw new DiscordAPITimeoutError(this.timeout, "Request timed out");
+          }
           throw error;
         } else {
           nextCause = error;
