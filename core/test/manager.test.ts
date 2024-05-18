@@ -1,4 +1,5 @@
 import { APIManager } from "../src/manager.ts";
+import { wait } from "./wait.ts";
 
 Deno.test("mix rest and gateway", async () => {
   const client = new APIManager(Deno.env.get("BOT_TOKEN")!, {
@@ -8,7 +9,6 @@ Deno.test("mix rest and gateway", async () => {
   });
 
   client.on("READY", async () => {
-    console.log("READY");
     await client.post(`/channels/749139969192230995/messages`, {
       body: {
         content: "test",
@@ -18,4 +18,6 @@ Deno.test("mix rest and gateway", async () => {
   });
 
   await client.spawnAndRunAll();
+
+  await wait();
 });
