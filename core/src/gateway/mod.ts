@@ -43,6 +43,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   private retryCount = 0;
   private connectionError = false;
   private reconnecting = false;
+  private resumeGatewayURL?: string;
 
   constructor(
     token: string,
@@ -53,9 +54,9 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.token = token;
     this.intents = intents;
     this.properties = {
-      "$os": properties?.os ?? Deno.build.os,
-      "$browser": properties?.browser ?? "harmony",
-      "$device": properties?.device ?? "harmony",
+      os: properties?.os ?? Deno.build.os,
+      browser: properties?.browser ?? "harmony",
+      device: properties?.device ?? "harmony",
     };
     this.shard = shard;
   }
@@ -69,9 +70,13 @@ export class Gateway extends EventEmitter<GatewayEvents> {
   }
 
   connect() {
+    if (this.resume && !this.resumeGatewayURL) {
+      throw new Error("Resume is requested but no resume gateway url provided");
+    }
+    const url = this.resume ? this.resumeGatewayURL : DISCORD_GATEWAY_BASE;
     return new Promise<void>((resolve) => {
       this.ws = new WebSocket(
-        `${DISCORD_GATEWAY_BASE}/?v=${DISCORD_API_VERSION}&encoding=json`,
+        `${url}/?v=${DISCORD_API_VERSION}&encoding=json`,
       );
       const onopen = this.onopen.bind(this);
       this.ws.onopen = () => {
@@ -163,6 +168,8 @@ export class Gateway extends EventEmitter<GatewayEvents> {
         switch (t) {
           case "READY":
             this.sessionID = (d as GatewayReadyPayload).session_id;
+            this.resumeGatewayURL =
+              (d as GatewayReadyPayload).resume_gateway_url;
             break;
         }
         // @ts-ignore - every events are implemented anyway
