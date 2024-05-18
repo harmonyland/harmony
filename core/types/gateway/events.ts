@@ -119,6 +119,7 @@ export type GatewayEvents = {
   CLOSED: [number, boolean, boolean];
   CONNECTED: [];
   ERROR: [Event | ErrorEvent];
+  DEBUG: [string];
 };
 export type ShardedGatewayEvents = {
   [K in keyof GatewayEvents]: [number, ...GatewayEvents[K]];
