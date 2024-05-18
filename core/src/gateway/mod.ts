@@ -75,6 +75,7 @@ export class Gateway extends EventEmitter<GatewayEvents> {
       );
       const onopen = this.onopen.bind(this);
       this.ws.onopen = () => {
+        this.ws.onopen = onopen;
         onopen();
         resolve();
       };
@@ -99,6 +100,8 @@ export class Gateway extends EventEmitter<GatewayEvents> {
 
   private onopen() {
     this.connected = true;
+    this.reconnecting = false;
+    this.resume = false;
     this.retryCount = 0;
     this.emit("CONNECTED");
   }
@@ -222,13 +225,13 @@ export class Gateway extends EventEmitter<GatewayEvents> {
     this.connectionError = true;
   }
 
-  reconnect(resume = false, code?: number) {
+  async reconnect(resume = false, code?: number) {
     this.resume = resume;
     this.reconnecting = true;
     if (this.connected) {
-      this.disconnect(code, "reconnect");
+      await this.disconnect(code, "reconnect");
     }
-    this.connect();
+    await this.connect();
   }
 
   heartbeat() {
