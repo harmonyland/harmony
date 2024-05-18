@@ -32,6 +32,7 @@ export interface GatewayGuildMemberAddPayload extends GuildMemberPayload {
 }
 
 export interface GatewayGuildMemberRemovePayload {
+  guild_id: snowflake;
   user: UserPayload;
 }
 

@@ -21,10 +21,11 @@ export interface GatewayMessageReactionAddPayload {
   guild_id?: snowflake;
   member?: GuildMemberPayload;
   emoji: EmojiPayload;
+  message_author_id?: snowflake;
 }
 export type GatewayMessageReactionRemovePayload = Omit<
   GatewayMessageReactionAddPayload,
-  "member"
+  "member" | "message_author_id"
 >;
 
 export interface GatewayMessageReactionRemoveAllPayload {
