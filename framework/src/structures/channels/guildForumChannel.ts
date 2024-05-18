@@ -6,10 +6,22 @@ import { Emoji } from "../emojis/mod.ts";
 import { GuildTextBasedChannel } from "./guildTextBasedChannel.ts";
 import { GuildThreadAvailableChannel } from "./guildThreadAvailableChannel.ts";
 
-export class GuildForumChannel extends Mixin(
-  GuildThreadAvailableChannel,
-  GuildTextBasedChannel,
-) {
+const GuildForumChannelSuper:
+  & (abstract new (
+    client: Client,
+    payload: GuildForumChannelPayload,
+  ) => GuildThreadAvailableChannel & GuildTextBasedChannel)
+  & Pick<
+    typeof GuildThreadAvailableChannel,
+    keyof typeof GuildThreadAvailableChannel
+  >
+  & Pick<typeof GuildTextBasedChannel, keyof typeof GuildTextBasedChannel> =
+    Mixin(
+      GuildThreadAvailableChannel,
+      GuildTextBasedChannel,
+    );
+
+export class GuildForumChannel extends GuildForumChannelSuper {
   payload: GuildForumChannelPayload;
   constructor(client: Client, payload: GuildForumChannelPayload) {
     super(client, payload);
