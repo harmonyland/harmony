@@ -1,6 +1,5 @@
 import { ChannelType } from "../../../types/mod.ts";
 import type {
-  ChannelPayload,
   DMChannelPayload,
   GroupDMChannelPayload,
   GuildAnnouncementChannelPayload,
@@ -11,7 +10,7 @@ import type {
   GuildVoiceChannelPayload,
 } from "../../../types/mod.ts";
 import type { Client } from "../client/mod.ts";
-import { EveryChannels } from "../../types/channel.ts";
+import { EveryChannelPayloads, EveryChannels } from "../../types/channel.ts";
 import {
   DMChannel,
   GroupDMChannel,
@@ -23,7 +22,7 @@ import {
   GuildVoiceChannel,
 } from "../structures/channels/mod.ts";
 
-export const createChannel = <P extends ChannelPayload>(
+export const createChannel = <P extends EveryChannelPayloads>(
   client: Client,
   payload: P,
 ): EveryChannels => {
@@ -31,32 +30,32 @@ export const createChannel = <P extends ChannelPayload>(
     case ChannelType.GUILD_TEXT:
       return new GuildTextChannel(
         client,
-        payload as unknown as GuildTextChannelPayload,
+        payload as GuildTextChannelPayload,
       );
     case ChannelType.DM:
       return new DMChannel(
         client,
-        payload as unknown as DMChannelPayload,
+        payload as DMChannelPayload,
       );
     case ChannelType.GUILD_VOICE:
       return new GuildVoiceChannel(
         client,
-        payload as unknown as GuildVoiceChannelPayload,
+        payload as GuildVoiceChannelPayload,
       );
     case ChannelType.GROUP_DM:
       return new GroupDMChannel(
         client,
-        payload as unknown as GroupDMChannelPayload,
+        payload as GroupDMChannelPayload,
       );
     case ChannelType.GUILD_CATEGORY:
       return new GuildCategory(
         client,
-        payload as unknown as GuildCategoryPayload,
+        payload as GuildCategoryPayload,
       );
     case ChannelType.GUILD_ANNOUNCEMENT:
       return new GuildAnnouncementChannel(
         client,
-        payload as unknown as GuildAnnouncementChannelPayload,
+        payload as GuildAnnouncementChannelPayload,
       );
     // case ChannelType.ANNOUNCEMENT_THREAD:
     // case ChannelType.GUILD_PUBLIC_THREAD:
@@ -64,13 +63,13 @@ export const createChannel = <P extends ChannelPayload>(
     case ChannelType.GUILD_STAGE_VOICE:
       return new GuildStageChannel(
         client,
-        payload as unknown as GuildStageChannelPayload,
+        payload as GuildStageChannelPayload,
       );
     // case ChannelType.GUILD_DIRECTORY:
     case ChannelType.GUILD_FORUM:
       return new GuildForumChannel(
         client,
-        payload as unknown as GuildForumChannelPayload,
+        payload as GuildForumChannelPayload,
       );
     // case ChannelType.GUILD_MEDIA:
     default:

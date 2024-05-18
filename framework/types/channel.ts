@@ -1,4 +1,14 @@
-import { ChannelType } from "../../mod.ts";
+import {
+  ChannelType,
+  DMChannelPayload,
+  GroupDMChannelPayload,
+  GuildAnnouncementChannelPayload,
+  GuildCategoryPayload,
+  GuildForumChannelPayload,
+  GuildStageChannelPayload,
+  GuildTextChannelPayload,
+  GuildVoiceChannelPayload,
+} from "../../types/mod.ts";
 import type {
   DMChannel,
   GroupDMChannel,
@@ -9,6 +19,39 @@ import type {
   GuildTextChannel,
   GuildVoiceChannel,
 } from "../src/structures/channels/mod.ts";
+
+export type GuildTextBasedChannelPayloads =
+  | GuildAnnouncementChannelPayload
+  | GuildForumChannelPayload
+  | GuildTextChannelPayload
+  | GuildVoiceChannelPayload;
+
+export type GuildThreadAvailableChannelPayloads =
+  | GuildAnnouncementChannelPayload
+  | GuildForumChannelPayload
+  | GuildTextChannelPayload;
+
+export type GuildVoiceBasedChannelPayloads =
+  | GuildStageChannelPayload
+  | GuildVoiceChannelPayload;
+
+export type GuildChannelPayloads =
+  | GuildTextBasedChannelPayloads
+  | GuildVoiceBasedChannelPayloads
+  | GuildThreadAvailableChannelPayloads
+  | GuildCategoryPayload;
+
+export type DMChannelPayloads = DMChannelPayload | GroupDMChannelPayload;
+
+export type VoiceChannelPayloads =
+  | GuildVoiceBasedChannelPayloads
+  | DMChannelPayloads;
+
+export type TextChannelPayloads =
+  | GuildTextBasedChannelPayloads
+  | DMChannelPayloads;
+
+export type EveryChannelPayloads = GuildChannelPayloads | DMChannelPayloads;
 
 export type GuildTextBasedChannels =
   | GuildAnnouncementChannel

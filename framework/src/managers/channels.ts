@@ -1,14 +1,19 @@
-import { type ChannelPayload } from "../../../types/mod.ts";
-import { Channel } from "../structures/channels/channel.ts";
+import type {
+  EveryChannelPayloads,
+  EveryChannels,
+} from "../../types/channel.ts";
 import { createChannel } from "../utils/channel.ts";
 import { BaseManager } from "./base.ts";
 
-export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
-  _get<P extends ChannelPayload>(id: string): P | undefined {
+export class ChannelsManager
+  extends BaseManager<EveryChannelPayloads, EveryChannels> {
+  _get<P extends EveryChannelPayloads>(id: string): P | undefined {
     return this.cache.get(id) as P | undefined;
   }
 
-  async _fetch<P extends ChannelPayload>(id: string): Promise<P | undefined> {
+  async _fetch<P extends EveryChannelPayloads>(
+    id: string,
+  ): Promise<P | undefined> {
     try {
       const resp: P | undefined = await this.client.rest.get(
         `/channels/${id}`,
@@ -28,7 +33,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     if (!cached) return;
     return createChannel(this.client, cached);
   }
-  async fetch<P extends ChannelPayload>(
+  async fetch<P extends EveryChannelPayloads>(
     id: string,
   ) {
     try {
