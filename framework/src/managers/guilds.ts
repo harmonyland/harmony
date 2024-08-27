@@ -35,6 +35,7 @@ export class GuildsManager extends BaseManager<LightGuildPayload, Guild> {
       channels: undefined,
       roles: undefined,
       emojis: undefined,
+      members: undefined,
     };
     this.cache.set(key, lightGuild);
   }

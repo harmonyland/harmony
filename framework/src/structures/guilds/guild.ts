@@ -13,12 +13,14 @@ import { LightGuildPayload } from "../../../types/guild.ts";
 import { Client } from "../../client/mod.ts";
 import { GuildChannelsManager } from "../../managers/guildChannels.ts";
 import { GuildEmojisManager } from "../../managers/guildEmojis.ts";
+import { GuildMembersManager } from "../../managers/guildMembers.ts";
 import { GuildRolesManager } from "../../managers/guildRoles.ts";
 import { UnavailableGuild } from "./unavaliable.ts";
 
 export class Guild extends UnavailableGuild {
   roles: GuildRolesManager;
   emojis: GuildEmojisManager;
+  members: GuildMembersManager;
   channels: GuildChannelsManager;
   constructor(client: Client, payload: LightGuildPayload) {
     // TODO: think about fill methods
@@ -38,6 +40,10 @@ export class Guild extends UnavailableGuild {
     );
     if (payload.channels) {
       this.channels._fill(payload.channels);
+    }
+    this.members = client.members.get(payload.id);
+    if (payload.members) {
+      client.members._fill(payload.id, payload.members);
     }
   }
 
@@ -118,9 +124,6 @@ export class Guild extends UnavailableGuild {
   }
   // get voiceStates(): string[] {
   //   return this.payload.voice_states;
-  // }
-  // get members(): string[] {
-  //   return this.payload.members;
   // }
   // get threads(): string[] {
   //   return this.payload.threads;

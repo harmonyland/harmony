@@ -17,7 +17,7 @@ export interface RequestOptions {
   bucket?: string;
   body?: unknown;
   headers?: Record<string, string>;
-  query?: Record<string, string>;
+  query?: Record<string, string | undefined>;
   reason?: string;
 }
 
@@ -176,7 +176,9 @@ export class HTTPClient implements HTTPClientOptions {
         }
       }
 
-      const query = new URLSearchParams(options?.query).toString();
+      const query = new URLSearchParams(
+        options?.query as Record<string, string>,
+      ).toString();
 
       const abortController = new AbortController();
       const timeoutID = setTimeout(() => {

@@ -11,6 +11,7 @@ import { GuildsManager } from "../managers/guilds.ts";
 import { UsersManager } from "../managers/users.ts";
 import { RolesManager } from "../managers/roles.ts";
 import { EmojisManager } from "../managers/emojis.ts";
+import { MembersManager } from "../managers/members.ts";
 import { User } from "../structures/mod.ts";
 
 export interface ClientOptions extends APIManagerOptions {
@@ -27,6 +28,7 @@ export class Client extends EventEmitter<ClientEvents> {
   users = new UsersManager(this);
   roles = new RolesManager(this);
   emojis = new EmojisManager(this);
+  members = new MembersManager(this);
 
   constructor(token: string, options: ClientOptions = {}) {
     super();
