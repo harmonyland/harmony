@@ -72,4 +72,7 @@ export class GuildForumChannel extends GuildForumChannelSuper {
       };
     });
   }
+  get flags(): number {
+    return this.payload.flags!;
+  }
 }

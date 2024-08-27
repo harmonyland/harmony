@@ -18,47 +18,47 @@ export enum ComponentType {
 }
 
 export interface ButtonComponentPayload extends ComponentPayload {
-  type: ComponentType.BUTTON;
   custom_id?: string;
   disabled?: boolean;
-  style: ButtonStylesType;
-  label?: string;
   emoji?: EmojiPayload;
+  label?: string;
+  style: ButtonStylesType;
+  type: ComponentType.BUTTON;
   url?: string;
 }
 
 export interface SelectMenusComponentPayload extends ComponentPayload {
-  type:
-    | ComponentType.STRING_SELECT
-    | ComponentType.USER_SELECT
-    | ComponentType.ROLE_SELECT
-    | ComponentType.MENTIONABLE_SELECT
-    | ComponentType.CHANNEL_SELECT;
-  custom_id: string;
-  options?: SelectOptionsPayload;
   channel_types?: ChannelType[];
-  placeholder?: string;
+  custom_id: string;
   default_values?: SelectDefaultValuePayload[];
-  min_values?: number;
-  max_values?: number;
   disabled?: boolean;
+  max_values?: number;
+  min_values?: number;
+  options?: SelectOptionsPayload;
+  placeholder?: string;
+  type:
+    | ComponentType.CHANNEL_SELECT
+    | ComponentType.MENTIONABLE_SELECT
+    | ComponentType.ROLE_SELECT
+    | ComponentType.STRING_SELECT
+    | ComponentType.USER_SELECT;
 }
 
 export interface ActionRowsComponentPayload extends ComponentPayload {
-  type: ComponentType.ACTION_ROW;
   components?: ComponentPayload[];
+  type: ComponentType.ACTION_ROW;
 }
 
 export interface TextInputComponentPayload extends ComponentPayload {
-  type: ComponentType.TEXT_INPUT;
   custom_id: string;
-  style: TextInputStyles;
   label: string;
-  min_length?: number;
   max_length?: number;
-  required?: boolean;
-  value?: string;
+  min_length?: number;
   placeholder?: string;
+  required?: boolean;
+  style: TextInputStyles;
+  type: ComponentType.TEXT_INPUT;
+  value?: string;
 }
 
 export enum TextInputStyles {
@@ -75,14 +75,14 @@ export enum ButtonStylesType {
 }
 
 export interface SelectOptionsPayload {
-  label: string;
-  value: string;
+  default?: boolean;
   descripion?: string;
   emoji?: EmojiPayload;
-  default?: boolean;
+  label: string;
+  value: string;
 }
 
 export interface SelectDefaultValuePayload {
   id: snowflake;
-  type: "user" | "role" | "channel";
+  type: "channel" | "role" | "user";
 }

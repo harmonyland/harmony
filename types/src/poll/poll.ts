@@ -3,20 +3,20 @@ import { EmojiPayload } from "../emojis/emoij.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface PollPayload {
-  question: PollMediaPayload;
-  answers: PollAnswerPayload[];
-  expiry: string | null;
   allow_multiselect: boolean;
+  answers: PollAnswerPayload[];
+  expiry: null | string;
   layout_type: PollLayoutType;
+  question: PollMediaPayload;
   results?: PollResultPayload;
 }
 
 export interface PollCreateRequestPayload {
-  question: PollMediaPayload;
+  allow_multiselect: boolean;
   answers: PollAnswerPayload[];
   duration: number;
-  allow_multiselect: boolean;
   layout_type?: PollLayoutType;
+  question: PollMediaPayload;
 }
 
 export enum PollLayoutType {
@@ -24,8 +24,8 @@ export enum PollLayoutType {
 }
 
 export interface PollMediaPayload {
-  text?: string;
   emoji?: EmojiPayload;
+  text?: string;
 }
 
 export interface PollAnswerPayload {
@@ -34,13 +34,13 @@ export interface PollAnswerPayload {
 }
 
 export interface PollResultPayload {
-  is_finalized: boolean;
   answer_counts: PollAnswerCountPayload[];
+  is_finalized: boolean;
 }
 
 export interface PollAnswerCountPayload {
-  id: number;
   count: number;
+  id: number;
   me_voted: boolean;
 }
 

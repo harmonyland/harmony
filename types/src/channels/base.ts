@@ -23,7 +23,6 @@ export enum ChannelType {
 export interface ChannelPayload {
   id: snowflake;
   type: ChannelType;
-  flags?: number;
 }
 
 export enum ChannelFlags {
@@ -33,16 +32,16 @@ export enum ChannelFlags {
 }
 
 export interface TextChannelPayload extends ChannelPayload {
-  last_pin_timestamp: string | null;
-  last_message_id: snowflake | null;
+  last_message_id: null | snowflake;
+  last_pin_timestamp: null | string;
 }
 
 export interface CreateChannelInvitePayload extends Reasonable {
   max_age?: number;
   max_uses?: number;
-  temporary?: boolean;
-  unique?: boolean;
+  target_applicaton_id?: snowflake;
   target_type?: InviteTargetType;
   target_user_id?: snowflake;
-  target_applicaton_id?: snowflake;
+  temporary?: boolean;
+  unique?: boolean;
 }

@@ -1,16 +1,21 @@
 import { AutoModerationRulePayload } from "../autoMod/autoMod.ts";
+import { ChannelPayload } from "../channels/base.ts";
 import { OverwritePayload } from "../channels/guild.ts";
 import {
   GuildThreadChannelPayload,
   ThreadMetadataPayload,
 } from "../channels/thread.ts";
-import { IntegrationPayload } from "../guilds/integration.ts";
+import { snowflake } from "../common.ts";
+import { EmojiPayload } from "../emojis/emoij.ts";
 import { GuildPayload } from "../guilds/guild.ts";
+import { IntegrationPayload } from "../guilds/integration.ts";
+import { GuildMemberPayload } from "../guilds/member.ts";
 import { RolePayload } from "../guilds/role.ts";
 import {
   ApplicationCommandPayload,
   ApplicationCommandPermissions,
 } from "../interactions/command.ts";
+import { InvitePayload } from "../invites/invite.ts";
 import {
   ScheduledEventPayload,
   ScheduledEventPrivacyLevel,
@@ -23,11 +28,6 @@ import {
 import { StickerFormatType, StickerPayload } from "../stickers/sticker.ts";
 import { UserPayload } from "../users/user.ts";
 import { WebhookPayload } from "../webhooks/webhook.ts";
-import { ChannelPayload } from "../channels/base.ts";
-import { GuildMemberPayload } from "../guilds/member.ts";
-import { InvitePayload } from "../invites/invite.ts";
-import { EmojiPayload } from "../emojis/emoij.ts";
-import { snowflake } from "../common.ts";
 
 export interface AuditLogPayload {
   application_commands: ApplicationCommandPayload[];
@@ -41,13 +41,13 @@ export interface AuditLogPayload {
 }
 
 export interface AuditLogEntryPayload {
-  target_id: string | null;
-  changes?: AuditLogChangePayload[];
-  user_id: snowflake | null;
-  id: snowflake;
   action_type: AuditLogEvents;
+  changes?: AuditLogChangePayload[];
+  id: snowflake;
   options?: AuditLogEntryInfoPayload;
   reason?: string;
+  target_id: null | string;
+  user_id: null | snowflake;
 }
 
 export enum AuditLogEvents {
@@ -117,47 +117,47 @@ export interface AuditLogEntryInfoPayload {
   count?: string;
   delete_member_days?: string;
   id?: snowflake;
+  integration_type?: string;
   members_removed?: string;
   message_id?: snowflake;
   role_name?: string;
   type?: string;
-  integration_type?: string;
 }
 
 type AuditLogChangeValue =
-  | string
-  | number
+  | ApplicationCommandPermissions
+  | AutoModerationRulePayload
   | boolean
-  | StickerFormatType
+  | ChannelPayload
+  | EmojiPayload
+  | GuildMemberPayload
+  | GuildPayload
+  | IntegrationPayload
+  | InvitePayload
+  | number
   | OverwritePayload
-  | StagePrivacyLevel
+  | RolePayload
   | ScheduledEventPrivacyLevel
   | ScheduledEventStatus
-  | RolePayload
-  | GuildPayload
-  | ChannelPayload
-  | GuildMemberPayload
-  | InvitePayload
-  | WebhookPayload
-  | EmojiPayload
-  | IntegrationPayload
   | StageInstancePayload
+  | StagePrivacyLevel
+  | StickerFormatType
   | StickerPayload
   // | GuildScheduledEventPayload
+  | string
   | ThreadMetadataPayload
-  | ApplicationCommandPermissions
-  | AutoModerationRulePayload;
+  | WebhookPayload;
 
 export interface AuditLogChangePayload {
+  key: string;
   new_value?: AuditLogChangeValue;
   old_value?: AuditLogChangeValue;
-  key: string;
 }
 
 export interface GetAuditLogParams {
-  user_id?: snowflake;
   action_type?: AuditLogEvents;
-  before?: snowflake;
   after?: snowflake;
+  before?: snowflake;
   limit?: number;
+  user_id?: snowflake;
 }

@@ -17,7 +17,7 @@ export class GuildChannelsManager
   constructor(client: Client, parent: ChannelsManager, guildID: string) {
     super(
       client,
-      parent as unknown as BaseManager<GuildChannelPayload, GuildChannel>,
+      parent as BaseManager<GuildChannelPayload, GuildChannel>,
     );
     this.guildID = guildID;
   }

@@ -15,8 +15,8 @@ export enum Services {
   PLAYSTATION_NETWORK = "playstation",
   REDDIT = "reddit",
   RIOT_GAMES = "riotgames",
-  SPOTIFY = "spotify",
   SKYPE = "skype",
+  SPOTIFY = "spotify",
   STEAM = "steam",
   TIKTOK = "tiktok",
   TWITCH = "twitch",
@@ -27,15 +27,15 @@ export enum Services {
 }
 
 export interface ConnectionPayload {
-  id: snowflake;
-  name: string;
-  type: Services;
-  revoked?: boolean;
-  integrations?: IntegrationPayload[];
-  verified: boolean;
   friend_sync: boolean;
+  id: snowflake;
+  integrations?: IntegrationPayload[];
+  name: string;
+  revoked?: boolean;
   show_activity: boolean;
   two_way_link: boolean;
+  type: Services;
+  verified: boolean;
   visibility: VisibilityType;
 }
 
@@ -45,13 +45,13 @@ export enum VisibilityType {
 }
 
 export interface ApplicationRoleConnectionPayload {
-  platform_name: string | null;
-  platform_username: string | null;
   metadata: ApplicationRoleConnectionMetadata;
+  platform_name: null | string;
+  platform_username: null | string;
 }
 
 export interface EditApplicationRoleConnectionPayload {
+  metadata?: ApplicationRoleConnectionMetadata;
   platform_name?: string;
   platform_username?: string;
-  metadata?: ApplicationRoleConnectionMetadata;
 }

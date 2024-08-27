@@ -14,18 +14,18 @@ export interface DMChannelPayload extends DMBasedChannelPayload {
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-group-dm-channel */
 export interface GroupDMChannelPayload extends DMBasedChannelPayload {
-  type: ChannelType.GROUP_DM;
-  name: string;
-  icon: string | null;
-  owner_id: snowflake;
   application_id?: snowflake;
+  icon: null | string;
   managed: boolean;
+  name: string;
+  owner_id: snowflake;
+  type: ChannelType.GROUP_DM;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-group-dm */
 export interface EditGroupDMChannelPayload extends Reasonable {
-  name?: string;
   icon?: string;
+  name?: string;
 }
 
 export interface GroupDMAddRecipientPayload {

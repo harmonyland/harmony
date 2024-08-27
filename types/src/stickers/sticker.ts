@@ -3,17 +3,17 @@ import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface StickerPayload {
+  available?: boolean;
+  description: null | string;
+  format_type: StickerFormatType;
+  guild_id?: snowflake;
   id: snowflake;
-  pack_id?: snowflake;
   name: string;
-  description: string | null;
+  pack_id?: snowflake;
+  sort_value?: number;
   tags: string;
   type: StickerType;
-  format_type: StickerFormatType;
-  available?: boolean;
-  guild_id?: snowflake;
   user?: UserPayload;
-  sort_value?: number;
 }
 
 export enum StickerType {
@@ -29,19 +29,19 @@ export enum StickerFormatType {
 }
 
 export interface StickerItemPayload {
+  format_type: StickerFormatType;
   id: snowflake;
   name: string;
-  format_type: StickerFormatType;
 }
 
 export interface StickerPackPayload {
-  id: snowflake;
-  stickers: StickerPayload[];
-  name: string;
-  sku_id: snowflake;
+  banner_asset_id?: snowflake;
   cover_sticker_id?: snowflake;
   description: string;
-  banner_asset_id?: snowflake;
+  id: snowflake;
+  name: string;
+  sku_id: snowflake;
+  stickers: StickerPayload[];
 }
 
 export interface ListNitroStickerPacksPayload {
@@ -49,14 +49,14 @@ export interface ListNitroStickerPacksPayload {
 }
 
 export interface CreateGuildStickerPayload extends Reasonable {
-  name: string;
   description: string;
-  tags: string;
   file: Blob;
+  name: string;
+  tags: string;
 }
 
 export interface EditGuildStickerPayload extends Reasonable {
-  name?: string;
   description?: string;
+  name?: string;
   tags?: string;
 }

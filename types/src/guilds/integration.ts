@@ -13,28 +13,28 @@ export interface IntegrationAccountPayload {
 }
 
 export interface IntegrationApplicationPayload {
+  bot?: UserPayload;
+  description: string;
+  icon: null | string;
   id: snowflake;
   name: string;
-  icon: string | null;
-  description: string;
-  bot?: UserPayload;
 }
 
 export interface IntegrationPayload {
-  id: snowflake;
-  name: string;
-  type: string;
-  enabled: boolean;
-  syncing?: boolean;
-  role_id?: snowflake;
+  account: IntegrationAccountPayload;
+  application?: IntegrationApplicationPayload;
   enable_emoticons?: boolean;
+  enabled: boolean;
   expire_behavior?: IntegrationExpireBehaviors;
   expire_grace_period?: number;
-  user?: UserPayload;
-  account: IntegrationAccountPayload;
-  synced_at?: string;
-  subscriber_count?: number;
+  id: snowflake;
+  name: string;
   revoked?: boolean;
-  application?: IntegrationApplicationPayload;
+  role_id?: snowflake;
   scopes?: Scopes[];
+  subscriber_count?: number;
+  synced_at?: string;
+  syncing?: boolean;
+  type: string;
+  user?: UserPayload;
 }

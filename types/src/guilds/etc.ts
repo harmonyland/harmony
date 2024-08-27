@@ -10,48 +10,48 @@ import { UserPayload } from "../users/user.ts";
 import { GuildFeature, MFALevel, PartialGuildChannelPayload } from "./guild.ts";
 
 export interface GuildPreviewPayload {
-  id: snowflake;
-  name: string;
-  icon: string | null;
-  splash: string | null;
-  discovery_splash: string | null;
-  emojis: EmojiPayload[];
-  features: GuildFeature[];
   approximate_member_count: number;
   approximate_presence_count: number;
-  description: string | null;
+  description: null | string;
+  discovery_splash: null | string;
+  emojis: EmojiPayload[];
+  features: GuildFeature[];
+  icon: null | string;
+  id: snowflake;
+  name: string;
+  splash: null | string;
   stickers: StickerPayload[];
 }
 
 export interface GuildWidgetSettingsPayload {
+  channel_id: null | snowflake;
   enabled: boolean;
-  channel_id: snowflake | null;
 }
 
 export interface GuildWidgetPayload {
-  id: snowflake;
-  name: string;
-  instant_invite: string | null;
   channels: PartialGuildChannelPayload[];
+  id: snowflake;
+  instant_invite: null | string;
   members: UserPayload[];
+  name: string;
   presence_count: number;
 }
 
 export interface WelcomeScreenChannelPayload {
   channel_id: snowflake;
   description: string;
-  emoji_id: snowflake | null;
-  emoji_name: string | null;
+  emoji_id: null | snowflake;
+  emoji_name: null | string;
 }
 
 export interface WelcomeScreenPayload {
-  description: string | null;
+  description: null | string;
   welcome_channels: WelcomeScreenChannelPayload[];
 }
 
 export interface ActiveThreadsPayload {
-  threads: GuildThreadChannelPayload[];
   members: ThreadMemberPayload[];
+  threads: GuildThreadChannelPayload[];
 }
 
 export interface GetGuildPruneCountParams {
@@ -60,32 +60,32 @@ export interface GetGuildPruneCountParams {
 }
 
 export interface BeginGuildPrunePayload extends Reasonable {
-  days?: number;
   compute_prune_count?: boolean;
+  days?: number;
   include_roles?: snowflake[];
 }
 
 type GuildWidgetImageStyle =
-  | "shield"
   | "banner1"
   | "banner2"
   | "banner3"
-  | "banner4";
+  | "banner4"
+  | "shield";
 
 export interface GetGuildWidgetImageParams {
   style?: GuildWidgetImageStyle;
 }
 
 export interface EditWelcomeScreenPayload extends Reasonable {
+  description?: null | string;
   enabled?: boolean | null;
-  welcome_channels?: WelcomeScreenChannelPayload[] | null;
-  description?: string | null;
+  welcome_channels?: null | WelcomeScreenChannelPayload[];
 }
 
 export interface EditCurrentUserVoiceStatePayload {
   channel_id?: snowflake;
+  request_to_speak_timestamp?: null | string;
   suppress?: boolean;
-  request_to_speak_timestamp?: string | null;
 }
 
 export interface EditUserVoiceStatePayload {

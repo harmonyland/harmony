@@ -1,27 +1,26 @@
 import { snowflake } from "../common.ts";
 
 export interface UserPayload {
-  id: snowflake;
-  username: string;
-  discriminator: string;
-  global_name: string | null;
-  avatar: string | null;
+  accent_color?: null | number;
+  avatar: null | string;
+  avatar_decoration?: null | string;
+  banner?: null | string;
   bot?: boolean;
-  system?: boolean;
-  mfa_enabled?: boolean;
-  banner?: string | null;
-  accent_color?: number | null;
-  locale?: string;
-  verified?: boolean;
-  email?: string | null;
+  discriminator: string;
+  email?: null | string;
   flags?: number;
+  global_name: null | string;
+  id: snowflake;
+  locale?: string;
+  mfa_enabled?: boolean;
   premium_type?: PremiumType;
   public_flags?: number;
-  avatar_decoration?: string | null;
+  system?: boolean;
+  username: string;
+  verified?: boolean;
 }
 
 export enum UserFlags {
-  None = 0,
   STAFF = 1 << 0,
   PARTNER = 1 << 1,
   HYPESQUAD = 1 << 2,
@@ -37,6 +36,7 @@ export enum UserFlags {
   CERTIFIED_MODERATOR = 1 << 18,
   BOT_HTTP_INTERACTIONS = 1 << 19,
   ACTIVE_DEVELOPER = 1 << 22,
+  None = 0,
 }
 
 export enum PremiumType {
@@ -47,13 +47,13 @@ export enum PremiumType {
 }
 
 export interface EditCurrentUserPayload {
+  avatar?: null | string;
   username?: string;
-  avatar?: string | null;
 }
 
 export interface GetCurrentUserGuildsParams {
-  before?: snowflake;
   after?: snowflake;
+  before?: snowflake;
   limit?: number;
   with_counts?: boolean;
 }

@@ -1,21 +1,21 @@
 import { snowflake } from "../common.ts";
 
 export interface ActivityPayload {
-  name: string;
-  type: ActivityType;
-  url?: string | null;
-  created_at: number;
-  timestamps?: ActivityTimestamps;
   application_id?: snowflake;
-  details?: string | null;
-  state?: string | null;
-  emoji?: ActivityEmoji | null;
-  party?: ActivityParty;
   assets?: ActivityAsset;
-  secrets?: ActivitySecret;
-  instance?: boolean;
-  flags?: number;
   buttons?: ActivityButton[];
+  created_at: number;
+  details?: null | string;
+  emoji?: ActivityEmoji | null;
+  flags?: number;
+  instance?: boolean;
+  name: string;
+  party?: ActivityParty;
+  secrets?: ActivitySecret;
+  state?: null | string;
+  timestamps?: ActivityTimestamps;
+  type: ActivityType;
+  url?: null | string;
 }
 
 export enum ActivityType {
@@ -28,14 +28,14 @@ export enum ActivityType {
 }
 
 export interface ActivityTimestamps {
-  start?: number;
   end?: number;
+  start?: number;
 }
 
 export interface ActivityEmoji {
-  name: string;
-  id?: snowflake;
   animated?: boolean;
+  id?: snowflake;
+  name: string;
 }
 
 export interface ActivityParty {
@@ -52,12 +52,11 @@ export interface ActivityAsset {
 
 export interface ActivitySecret {
   join?: string;
-  spectate?: string;
   match?: string;
+  spectate?: string;
 }
 
 export enum ActivityFlag {
-  INSTANCE = 1,
   JOIN = 1 << 1,
   SPECTATE = 1 << 2,
   JOIN_REQUEST = 1 << 3,
@@ -66,6 +65,7 @@ export enum ActivityFlag {
   PARTY_PRIVACY_FRIENDS = 1 << 6,
   PARTY_PRIVACY_VOICE_CHANNEL = 1 << 7,
   EMBEDDED = 1 << 8,
+  INSTANCE = 1,
 }
 
 export interface ActivityButton {

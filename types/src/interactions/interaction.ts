@@ -23,28 +23,28 @@ import {
 } from "./components.ts";
 
 export interface InteractionPayload {
-  id: snowflake;
+  app_permissions?: string;
   application_id: snowflake;
-  type: InteractionType;
+  authorizing_integration_owners: Record<ApplicationIntegrationType, string>;
+  channel?: ChannelPayload;
+  channel_id?: snowflake;
+  context: ApplicationCommandContextType;
   data?:
     | ApplicationCommandInteractionDataPayload
     | ComponentInteractionDataPayload
     | ModalSubmitDataPayload
     | ResolvedDataPayload;
-  guild_id?: snowflake;
-  channel?: ChannelPayload;
-  channel_id?: snowflake;
-  member?: GuildMemberPayload;
-  user?: UserPayload;
-  token: string;
-  version: 1;
-  message?: MessagePayload;
-  app_permissions?: string;
-  locale?: Locales;
-  guild_locale?: Locales;
   entitlements: EntitlementPayload[];
-  authorizing_integration_owners: Record<ApplicationIntegrationType, string>;
-  context: ApplicationCommandContextType;
+  guild_id?: snowflake;
+  guild_locale?: Locales;
+  id: snowflake;
+  locale?: Locales;
+  member?: GuildMemberPayload;
+  message?: MessagePayload;
+  token: string;
+  type: InteractionType;
+  user?: UserPayload;
+  version: 1;
 }
 
 export enum InteractionType {
@@ -56,50 +56,50 @@ export enum InteractionType {
 }
 
 export interface ApplicationCommandInteractionDataPayload {
+  guild_id?: snowflake;
   id: snowflake;
   name: string;
-  type: ApplicationCommandType;
-  resolved?: ResolvedDataPayload;
   options?: ApplicationCommandInteractionDataOptionPayload[];
-  guild_id?: snowflake;
+  resolved?: ResolvedDataPayload;
   target_id?: snowflake;
+  type: ApplicationCommandType;
 }
 
 export interface ComponentInteractionDataPayload {
-  custom_id?: string;
   component_type?: ComponentType;
-  values?: SelectOptionsPayload[];
+  custom_id?: string;
   resolved?: ResolvedDataPayload;
+  values?: SelectOptionsPayload[];
 }
 
 export interface ModalSubmitDataPayload {
-  custom_id?: string;
   components?: ComponentPayload[];
+  custom_id?: string;
 }
 
 export interface ResolvedDataPayload {
-  users?: Record<snowflake, UserPayload>;
-  members?: Record<snowflake, GuildMemberPayload>;
-  roles?: Record<snowflake, RolePayload>;
-  channels?: Record<snowflake, ChannelPayload>;
-  messages?: Record<snowflake, MessagePayload>;
   attachments?: Record<snowflake, AttachmentPayload>;
+  channels?: Record<snowflake, ChannelPayload>;
+  members?: Record<snowflake, GuildMemberPayload>;
+  messages?: Record<snowflake, MessagePayload>;
+  roles?: Record<snowflake, RolePayload>;
+  users?: Record<snowflake, UserPayload>;
 }
 
 export interface MessageInteractionPayload {
   id: snowflake;
-  type: InteractionType;
-  name: string;
-  user: UserPayload;
   member?: GuildMemberPayload;
+  name: string;
+  type: InteractionType;
+  user: UserPayload;
 }
 
 export interface InteractionResponsePayload {
-  type: InteractionCallbackType;
   data?:
-    | MessageInteractionCallbackData
     | AutocompleteInteractionCallbackData
+    | MessageInteractionCallbackData
     | ModalInteractionCallbackPayload;
+  type: InteractionCallbackType;
 }
 
 export enum InteractionCallbackType {
@@ -114,14 +114,14 @@ export enum InteractionCallbackType {
 }
 
 export interface MessageInteractionCallbackData {
-  tts?: boolean;
+  allowed_mentions?: AllowedMentionsPayload;
+  attachments?: AttachmentPayload[];
+  components?: ComponentPayload[];
   content?: string;
   embeds?: EmbedPayload[];
-  allowed_mentions?: AllowedMentionsPayload;
   flags?: number;
-  components?: ComponentPayload[];
-  attachments?: AttachmentPayload[];
   poll?: PollCreateRequestPayload;
+  tts?: boolean;
 }
 
 export interface AutocompleteInteractionCallbackData {
@@ -129,7 +129,7 @@ export interface AutocompleteInteractionCallbackData {
 }
 
 export interface ModalInteractionCallbackPayload {
+  components: ComponentPayload[];
   custom_id: string;
   title: string;
-  components: ComponentPayload[];
 }

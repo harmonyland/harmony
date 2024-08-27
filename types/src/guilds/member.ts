@@ -3,55 +3,55 @@ import { Reasonable } from "../etc/reasonable.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface GuildMemberPayload {
-  user?: UserPayload;
-  nick?: string | null;
-  avatar?: string | null;
-  roles: snowflake[];
-  joined_at: string;
-  premium_since?: string | null;
+  avatar?: null | string;
+  communication_disabled_until?: null | string;
   deaf: boolean;
-  mute: boolean;
   flags: number;
+  joined_at: string;
+  mute: boolean;
+  nick?: null | string;
   pending?: boolean;
   permissions?: string;
-  communication_disabled_until?: string | null;
+  premium_since?: null | string;
+  roles: snowflake[];
+  user?: UserPayload;
 }
 
 export enum GuildMemberFlags {
-  DID_REJOIN = 1,
   COMPLETED_ONBOARDING = 1 << 1,
   BYPASSES_VERIFICATION = 1 << 2,
   STARTED_ONBOARDING = 1 << 3,
+  DID_REJOIN = 1,
 }
 
 export interface ListGuildMembersParams {
-  limit?: number;
   after?: snowflake;
+  limit?: number;
 }
 
 export interface SearchGuildMembersParams {
-  query: string;
   limit?: number;
+  query: string;
 }
 
 export interface AddGuildMemberPayload {
   access_token: string;
+  deaf?: boolean;
+  mute?: boolean;
   nick?: string;
   roles?: snowflake[];
-  mute?: boolean;
-  deaf?: boolean;
 }
 
 export interface EditGuildMemberPayload extends Reasonable {
-  nick?: string | null;
-  roles?: snowflake[] | null;
-  mute?: boolean | null;
+  channel_id?: null | snowflake;
+  communication_disabled_until?: null | string;
   deaf?: boolean | null;
-  channel_id?: snowflake | null;
-  communication_disabled_until?: string | null;
-  flags?: number | null;
+  flags?: null | number;
+  mute?: boolean | null;
+  nick?: null | string;
+  roles?: null | snowflake[];
 }
 
 export interface EditGuildCurrentMemberPayload extends Reasonable {
-  nick?: string | null;
+  nick?: null | string;
 }

@@ -1,17 +1,17 @@
 import { snowflake } from "../common.ts";
 
 export interface AutoModerationRulePayload {
-  id: snowflake;
-  guild_id: snowflake;
-  name: string;
-  creator_id: snowflake;
-  event_type: AutoModerationRuleEventType;
-  trigger_type: AutoModerationRuleTriggerType;
-  trigger_metadata: AutoModerationRuleTriggerMetadata;
   actions: AutoModerationRuleAction[];
+  creator_id: snowflake;
   enabled: boolean;
-  exempt_roles: snowflake[];
+  event_type: AutoModerationRuleEventType;
   exempt_channels: snowflake[];
+  exempt_roles: snowflake[];
+  guild_id: snowflake;
+  id: snowflake;
+  name: string;
+  trigger_metadata: AutoModerationRuleTriggerMetadata;
+  trigger_type: AutoModerationRuleTriggerType;
 }
 
 export enum AutoModerationRuleEventType {
@@ -26,12 +26,12 @@ export enum AutoModerationRuleTriggerType {
 }
 
 export interface AutoModerationRuleTriggerMetadata {
-  keyword_filter: string[];
-  regex_patterns: string[];
-  presets: AutoModerationRuleKeywordPreset[];
   allow_list: string[];
-  mention_total_limit: number;
+  keyword_filter: string[];
   mention_raid_protection_enabled: boolean;
+  mention_total_limit: number;
+  presets: AutoModerationRuleKeywordPreset[];
+  regex_patterns: string[];
 }
 
 export enum AutoModerationRuleKeywordPreset {
@@ -41,8 +41,8 @@ export enum AutoModerationRuleKeywordPreset {
 }
 
 export interface AutoModerationRuleAction {
-  type: AutoModerationRuleActionType;
   metadata?: AutoModerationRuleActionMetadata;
+  type: AutoModerationRuleActionType;
 }
 
 export enum AutoModerationRuleActionType {
@@ -53,27 +53,27 @@ export enum AutoModerationRuleActionType {
 
 export interface AutoModerationRuleActionMetadata {
   channel_id: snowflake;
-  duration_seconds: number;
   custom_message?: string;
+  duration_seconds: number;
 }
 
 export interface AutoModerationRuleCreatePayload {
-  name: string;
-  event_type: AutoModerationRuleEventType;
-  trigger_type: AutoModerationRuleTriggerType;
-  trigger_metadata?: AutoModerationRuleTriggerMetadata;
   actions: AutoModerationRuleAction[];
   enabled?: boolean;
-  exempt_roles?: snowflake[];
+  event_type: AutoModerationRuleEventType;
   exempt_channels?: snowflake[];
+  exempt_roles?: snowflake[];
+  name: string;
+  trigger_metadata?: AutoModerationRuleTriggerMetadata;
+  trigger_type: AutoModerationRuleTriggerType;
 }
 
 export interface AutoModerationRuleUpdatePayload {
-  name?: string;
-  event_type?: AutoModerationRuleEventType;
-  trigger_metadata?: AutoModerationRuleTriggerMetadata;
   actions?: AutoModerationRuleAction[];
   enabled?: boolean;
-  exempt_roles?: snowflake[];
+  event_type?: AutoModerationRuleEventType;
   exempt_channels?: snowflake[];
+  exempt_roles?: snowflake[];
+  name?: string;
+  trigger_metadata?: AutoModerationRuleTriggerMetadata;
 }

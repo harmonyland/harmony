@@ -8,7 +8,7 @@ export interface GatewayIntegrationCreatePayload extends IntegrationPayload {
 export type GatewayIntegrationUpdatePayload = GatewayIntegrationCreatePayload;
 
 export interface GatewayIntegrationDeletePayload {
-  id: string;
-  guild_id: snowflake;
   application_id?: snowflake;
+  guild_id: snowflake;
+  id: string;
 }

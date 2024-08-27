@@ -22,27 +22,27 @@ import { GuildThreadChannelPayload } from "./thread.ts";
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-mention-object-channel-mention-structure */
 export interface ChannelMentionPayload {
-  id: snowflake;
   guild_id: snowflake;
-  type: ChannelType;
+  id: snowflake;
   name: string;
+  type: ChannelType;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure */
 export interface AttachmentPayload {
-  id: snowflake;
-  filename: string;
-  description?: string;
   content_type?: string;
+  description?: string;
+  duration_secs?: number;
+  ephemeral?: boolean;
+  filename: string;
+  flags?: number;
+  height?: number;
+  id: snowflake;
+  proxy_url: string;
   size: number;
   url: string;
-  proxy_url: string;
-  height?: number;
-  width?: number;
-  ephemeral?: boolean;
-  duration_secs?: number;
   waveform?: string;
-  flags?: number;
+  width?: number;
 }
 
 export enum AttachmentFlags {
@@ -51,12 +51,12 @@ export enum AttachmentFlags {
 
 /** @link https://discord.com/developers/docs/resources/channel#reaction-object-reaction-structure */
 export interface ReactionPayload {
+  burst_colors: string[];
   count: number;
   count_details: ReactionCountDetailsPayload;
+  emoji: EmojiPayload;
   me: boolean;
   me_burst: boolean;
-  emoji: EmojiPayload;
-  burst_colors: string[];
 }
 
 export interface ReactionCountDetailsPayload {
@@ -109,16 +109,16 @@ export enum MessageActivityType {
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure */
 export interface MessageActivityPayload {
-  type: MessageActivityType;
   party_id?: string;
+  type: MessageActivityType;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-reference-object */
 export interface MessageReferencePayload {
-  message_id?: snowflake;
   channel_id?: snowflake;
-  guild_id?: snowflake;
   fail_if_not_exists?: boolean;
+  guild_id?: snowflake;
+  message_id?: snowflake;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-flags */
@@ -137,82 +137,82 @@ export enum MessageFlags {
 }
 
 export interface RoleSubscriptionDataPayload {
+  is_renewal: boolean;
   role_subscription_listing_id: snowflake;
   tier_name: string;
   total_months_subscribed: number;
-  is_renewal: boolean;
 }
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-structure
 export interface MessagePayload {
-  id: snowflake;
-  channel_id: snowflake;
-  guild_id?: snowflake;
-  author: UserPayload;
-  member?: GuildMemberPayload;
-  content?: string; // Check second note on https://discord.com/developers/docs/resources/channel#message-object-message-structure
-  timestamp: string;
-  edited_timestamp: string | null;
-  tts: boolean;
-  mention_everyone: boolean;
-  mentions: UserPayload[];
-  mention_roles: string[];
-  mention_channels?: ChannelMentionPayload[];
-  attachments?: AttachmentPayload[];
-  embeds?: EmbedPayload[];
-  reactions?: ReactionPayload[];
-  nonce?: string | number;
-  pinned: boolean;
-  webhook_id?: snowflake;
-  type: MessageType;
   activity?: MessageActivityPayload;
   application?: ApplicationPayload;
   application_id?: snowflake;
-  message_reference?: MessageReferencePayload;
+  attachments?: AttachmentPayload[];
+  author: UserPayload;
+  channel_id: snowflake;
+  components?: ComponentPayload[];
+  content?: string; // Check second note on https://discord.com/developers/docs/resources/channel#message-object-message-structure
+  edited_timestamp: null | string;
+  embeds?: EmbedPayload[];
   flags?: number;
-  referenced_message?: MessagePayload | null;
+  guild_id?: snowflake;
+  id: snowflake;
   interaction?: MessageInteractionPayload;
   interaction_metadata?: MessageInteractionMetadataPayload;
-  thread?: GuildThreadChannelPayload;
-  components?: ComponentPayload[];
-  sticker_items?: StickerItemPayload[];
-  position?: number;
-  role_subscription_data?: RoleSubscriptionDataPayload;
-  resolved?: ResolvedDataPayload;
+  member?: GuildMemberPayload;
+  mention_channels?: ChannelMentionPayload[];
+  mention_everyone: boolean;
+  mention_roles: string[];
+  mentions: UserPayload[];
+  message_reference?: MessageReferencePayload;
+  nonce?: number | string;
+  pinned: boolean;
   poll?: PollCreateRequestPayload;
+  position?: number;
+  reactions?: ReactionPayload[];
+  referenced_message?: MessagePayload | null;
+  resolved?: ResolvedDataPayload;
+  role_subscription_data?: RoleSubscriptionDataPayload;
+  sticker_items?: StickerItemPayload[];
+  thread?: GuildThreadChannelPayload;
+  timestamp: string;
+  tts: boolean;
+  type: MessageType;
+  webhook_id?: snowflake;
 }
 
 export interface MessageInteractionMetadataPayload {
+  authorizing_integration_owners: Record<ApplicationIntegrationType, string[]>;
   id: snowflake;
+  interacted_message_id?: snowflake;
+  original_response_message_id?: snowflake;
+  triggering_interaction_metadata?: MessageInteractionMetadataPayload;
   type: InteractionType;
   user: UserPayload;
-  authorizing_integration_owners: Record<ApplicationIntegrationType, string[]>;
-  original_response_message_id?: snowflake;
-  interacted_message_id?: snowflake;
-  triggering_interaction_metadata?: MessageInteractionMetadataPayload;
 }
 
 export interface GetChannelMessagesParams {
+  after?: snowflake;
   around?: snowflake;
   before?: snowflake;
-  after?: snowflake;
   limit?: number;
 }
 
 export interface CreateMessagePayload {
-  content: string;
-  nonce?: number | string;
-  tts?: boolean;
-  embeds?: EmbedPayload[];
   allowed_mentions?: AllowedMentionsPayload;
-  message_reference?: MessageReferencePayload;
-  components: ComponentPayload[];
-  sticker_ids?: snowflake[];
-  file?: AttachmentPayload;
   attachments?: AttachmentPayload[];
-  flags?: number;
+  components: ComponentPayload[];
+  content: string;
+  embeds?: EmbedPayload[];
   enforce_nonce?: boolean;
+  file?: AttachmentPayload;
+  flags?: number;
+  message_reference?: MessageReferencePayload;
+  nonce?: number | string;
   poll?: PollCreateRequestPayload;
+  sticker_ids?: snowflake[];
+  tts?: boolean;
 }
 
 export interface GetMessageReactionParams {
@@ -221,13 +221,13 @@ export interface GetMessageReactionParams {
 }
 
 export interface EditMessagePayload {
-  content?: string | null;
-  embeds?: EmbedPayload[] | null;
-  flags?: number | null;
-  file?: AttachmentPayload | null;
   allowed_mentions?: AllowedMentionsPayload | null;
   attachments?: AttachmentPayload[] | null;
   components?: ComponentPayload[] | null;
+  content?: null | string;
+  embeds?: EmbedPayload[] | null;
+  file?: AttachmentPayload | null;
+  flags?: null | number;
 }
 
 export interface BulkDeleteMessagesPayload extends Reasonable {

@@ -3,25 +3,25 @@ import { EmojiPayload } from "../emojis/emoij.ts";
 import { GuildMemberPayload } from "../guilds/member.ts";
 
 export interface GatewayMessageDeletePayload {
-  id: snowflake;
   channel_id: snowflake;
   guild_id?: snowflake;
+  id: snowflake;
 }
 
 export interface GatewayMessageDeleteBulkPayload {
-  ids: snowflake;
   channel_id: snowflake;
   guild_id?: snowflake;
+  ids: snowflake;
 }
 
 export interface GatewayMessageReactionAddPayload {
-  user_id: snowflake;
   channel_id: snowflake;
-  message_id: snowflake;
+  emoji: EmojiPayload;
   guild_id?: snowflake;
   member?: GuildMemberPayload;
-  emoji: EmojiPayload;
   message_author_id?: snowflake;
+  message_id: snowflake;
+  user_id: snowflake;
 }
 export type GatewayMessageReactionRemovePayload = Omit<
   GatewayMessageReactionAddPayload,
@@ -30,8 +30,8 @@ export type GatewayMessageReactionRemovePayload = Omit<
 
 export interface GatewayMessageReactionRemoveAllPayload {
   channel_id: snowflake;
-  message_id: snowflake;
   guild_id?: snowflake;
+  message_id: snowflake;
 }
 
 export interface GatewayMessageReactionRemoveEmojiPayload

@@ -10,83 +10,83 @@ import { AttachmentPayload } from "./message.ts";
 
 /** @link https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure */
 export interface ThreadMetadataPayload {
+  archive_timestamp: string;
   archived: boolean;
   auto_archive_duration: number;
-  archive_timestamp: string;
-  locked: boolean;
+  create_timestamp?: null | string;
   invitable?: boolean;
-  create_timestamp?: string | null;
+  locked: boolean;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#thread-member-object-thread-member-structure */
 export interface ThreadMemberPayload {
-  id?: snowflake;
-  user_id?: snowflake;
-  join_timestamp: string;
   flags: number;
+  id?: snowflake;
+  join_timestamp: string;
   member?: GuildMemberPayload;
+  user_id?: snowflake;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-thread-channel */
 export interface GuildThreadChannelPayload extends GuildTextChannelPayload {
-  message_count: number;
-  member_count: number;
-  thread_metadata: ThreadMetadataPayload;
-  member: ThreadMemberPayload;
-  permissions: string;
   applied_tags?: snowflake[];
+  member: ThreadMemberPayload;
+  member_count: number;
+  message_count: number;
+  permissions: string;
+  thread_metadata: ThreadMetadataPayload;
 }
 
 // https://discord.com/developers/docs/resources/channel#modify-channel-json-params-thread
 export interface EditGuildThreadChannelPayload extends Reasonable {
-  name?: string;
+  applied_tags?: snowflake[];
   archived?: boolean;
   /** Duration in minute */
   auto_archive_duration?: number;
-  locked?: boolean;
-  invitable?: boolean;
-  /** Duration in second */
-  rate_limit_per_user?: number | null;
   flags?: number;
-  applied_tags?: snowflake[];
+  invitable?: boolean;
+  locked?: boolean;
+  name?: string;
+  /** Duration in second */
+  rate_limit_per_user?: null | number;
 }
 
 export interface StartThreadWithMessagePayload extends Reasonable {
-  name: string;
   auto_archive_duration?: number;
-  rate_limit_per_user?: number | null;
+  name: string;
+  rate_limit_per_user?: null | number;
 }
 
 export interface StartThreadWithoutMessagePayload extends Reasonable {
-  name: string;
   auto_archive_duration?: number;
-  type?: ChannelType;
   invitable?: boolean;
-  rate_limit_per_user?: number | null;
+  name: string;
+  rate_limit_per_user?: null | number;
+  type?: ChannelType;
 }
 
 export interface ForumThreadMessageParams {
+  allowed_mentions?: AllowedMentionsPayload;
+  attachments?: AttachmentPayload[];
+  components?: ComponentPayload[];
   content?: string;
   embeds?: EmbedPayload[];
-  allowed_mentions?: AllowedMentionsPayload;
-  components?: ComponentPayload[];
-  sticker_ids?: snowflake[];
-  attachments?: AttachmentPayload[];
   flags?: number;
+  sticker_ids?: snowflake[];
 }
 
 export interface StartThreadInForumChannelPayload extends Reasonable {
-  name: string;
-  auto_archive_duration?: number;
-  rate_limit_per_user?: number | null;
-  message: ForumThreadMessageParams;
   applied_tags?: snowflake[];
+  auto_archive_duration?: number;
+  message: ForumThreadMessageParams;
+  name: string;
+  rate_limit_per_user?: null | number;
 }
 
 export interface ListThreadsPayload {
-  threads: GuildThreadChannelPayload[];
-  members: ThreadMemberPayload[];
   has_more: boolean;
+  members: ThreadMemberPayload[];
+  threads: GuildThreadChannelPayload[];
 }
 
 export interface ListThreadsParams {
@@ -99,9 +99,9 @@ export interface GetThreadMemberPayload {
 }
 
 export interface ListThreadMembersPayload {
-  with_member?: boolean;
   after?: snowflake;
   limit?: number;
+  with_member?: boolean;
 }
 
 export type ListPublicArchivedThreadsPayload = ListThreadsPayload;

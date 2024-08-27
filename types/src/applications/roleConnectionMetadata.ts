@@ -1,12 +1,12 @@
 import { Locales } from "../etc/locales.ts";
 
 export interface ApplicationRoleConnectionMetadata {
-  type: ApplicationRoleConnectionMetadataType;
+  description: string;
+  description_localization?: Record<Locales, string>;
   key: string;
   name: string;
   name_localization?: Record<Locales, string>;
-  description: string;
-  description_localization?: Record<Locales, string>;
+  type: ApplicationRoleConnectionMetadataType;
 }
 
 export enum ApplicationRoleConnectionMetadataType {

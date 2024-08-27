@@ -17,8 +17,4 @@ export class Channel {
   get type(): ChannelType {
     return this.payload.type;
   }
-
-  get flags(): number {
-    return this.payload.flags;
-  }
 }

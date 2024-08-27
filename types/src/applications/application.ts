@@ -1,39 +1,39 @@
-import { UserPayload } from "../users/user.ts";
-import { TeamPayload } from "../teams/team.ts";
 import { snowflake } from "../common.ts";
+import { TeamPayload } from "../teams/team.ts";
+import { UserPayload } from "../users/user.ts";
 
 export interface ApplicationPayload {
-  id: snowflake;
-  name: string;
-  icon: string | null;
-  description: string;
-  rpc_origins?: string[];
+  approximate_guild_count?: number;
   bot_public: boolean;
   bot_require_code_grant: boolean;
-  terms_of_service_url?: string;
-  privacy_policy_url?: string;
-  owner?: UserPayload;
-  /** @deprecated It will be removed in v11. */
-  summary: string;
-  verify_key: string;
-  team: TeamPayload | null;
-  guild_id?: snowflake;
-  primary_sku_id?: snowflake;
-  slug?: string;
   cover_image?: string;
+  custom_install_url?: string;
+  description: string;
   /** Use it with ApplicationFlags. */
   flags?: number;
-  approximate_guild_count?: number;
-  redirect_uris?: string[];
-  interactions_endpoint_url?: string;
-  tags?: string[];
+  guild_id?: snowflake;
+  icon: null | string;
+  id: snowflake;
   install_params?: ApplicationInstallParams;
-  custom_install_url?: string;
-  role_connections_verification_url?: string;
   integration_types_config?: Record<
     keyof ApplicationIntegrationType,
     ApplicationIntegrationTypeConfig
   >;
+  interactions_endpoint_url?: string;
+  name: string;
+  owner?: UserPayload;
+  primary_sku_id?: snowflake;
+  privacy_policy_url?: string;
+  redirect_uris?: string[];
+  role_connections_verification_url?: string;
+  rpc_origins?: string[];
+  slug?: string;
+  /** @deprecated It will be removed in v11. */
+  summary: string;
+  tags?: string[];
+  team: null | TeamPayload;
+  terms_of_service_url?: string;
+  verify_key: string;
 }
 
 export enum ApplicationIntegrationType {
@@ -46,8 +46,8 @@ export interface ApplicationIntegrationTypeConfig {
 }
 
 export interface ApplicationInstallParams {
-  scopes: string[];
   permissions: string;
+  scopes: string[];
 }
 
 export enum ApplicationFlags {
@@ -64,17 +64,17 @@ export enum ApplicationFlags {
 }
 
 export interface EditApplicationPayload {
+  cover_image?: null | string;
   custom_install_url?: string;
   description?: string;
-  role_connections_verification_url?: string;
+  flags?: number;
+  icon?: null | string;
   install_params?: ApplicationInstallParams;
   integration_types_config?: Record<
     keyof ApplicationIntegrationType,
     ApplicationIntegrationTypeConfig
   >;
-  flags?: number;
-  icon?: string | null;
-  cover_image?: string | null;
   interactions_endpoint_url?: string;
+  role_connections_verification_url?: string;
   tags?: string[];
 }

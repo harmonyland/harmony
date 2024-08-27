@@ -14,8 +14,8 @@ export interface GatewayGuildBanAddPayload {
 export type GatewayGuildBanRemovePayload = GatewayGuildBanAddPayload;
 
 export interface GatewayGuildEmojisUpdatePayload {
-  guild_id: snowflake;
   emojis: EmojiPayload[];
+  guild_id: snowflake;
 }
 
 export interface GatewayGuildStickersUpdatePayload {
@@ -37,27 +37,27 @@ export interface GatewayGuildMemberRemovePayload {
 }
 
 export interface GatewayGuildMemberUpdatePayload {
+  avatar: null | string;
+  communication_disabled_until?: null | string;
+  deaf?: boolean;
   guild_id: snowflake;
+  joined_at: null | string;
+  mute?: boolean;
+  nick?: null | string;
+  pending?: boolean;
+  premium_since?: null | string;
   roles: snowflake[];
   user: UserPayload;
-  nick?: string | null;
-  avatar: string | null;
-  joined_at: string | null;
-  premium_since?: string | null;
-  deaf?: boolean;
-  mute?: boolean;
-  pending?: boolean;
-  communication_disabled_until?: string | null;
 }
 
 export interface GatewayGuildMemberChunkPayload {
+  chunk_count: number;
+  chunk_index: number;
   guild_id: snowflake;
   members: GuildMemberPayload[];
-  chunk_index: number;
-  chunk_count: number;
+  nonce?: string;
   not_found?: string[];
   presences?: EditGatewayPresencePayload;
-  nonce?: string;
 }
 
 export interface GatewayGuildRoleCreatePayload {

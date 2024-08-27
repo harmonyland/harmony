@@ -11,24 +11,24 @@ export enum OverwriteType {
 
 /** @link https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure */
 export interface OverwritePayload {
-  id: snowflake;
-  type: OverwriteType;
   allow: string;
   deny: string;
+  id: snowflake;
+  type: OverwriteType;
 }
 
 export interface GuildForumTagPayload {
+  emoji_id: null | snowflake;
+  emoji_name: null | string;
   id: snowflake;
-  name: string;
   moderated: boolean;
-  emoji_id: snowflake | null;
-  emoji_name: string | null;
+  name: string;
 }
 
 export interface GuildVoiceBasedChannelPayload extends GuildChannelPayload {
   bitrate: number;
+  rtc_region: null | string;
   user_limit: number;
-  rtc_region: string | null;
 }
 
 export interface GuildTextBasedChannelPayload
@@ -45,20 +45,21 @@ export interface GuildThreadAvailableChannelPayload
 export interface GuildChannelPayload extends ChannelPayload {
   guild_id: snowflake;
   name: string;
-  position: number;
-  permission_overwrites: OverwritePayload[];
   nsfw: boolean;
-  parent_id: snowflake | null;
-  topic: string | null;
+  parent_id: null | snowflake;
+  permission_overwrites: OverwritePayload[];
+  position: number;
+  topic: null | string;
 }
 
 export interface GuildForumChannelPayload
   extends GuildThreadAvailableChannelPayload, GuildTextBasedChannelPayload {
-  type: ChannelType.GUILD_FORUM;
+  available_tags: GuildForumTagPayload[];
+  default_forum_layout?: ForumLayout;
   default_reaction_emoji?: ForumDefaultReactionPayload | null;
   default_sort_order?: ForumSortOrder;
-  default_forum_layout?: ForumLayout;
-  available_tags: GuildForumTagPayload[];
+  flags?: number;
+  type: ChannelType.GUILD_FORUM;
 }
 
 export enum ForumSortOrder {
@@ -73,8 +74,8 @@ export enum ForumLayout {
 }
 
 export interface ForumDefaultReactionPayload {
-  emoji_id: snowflake | null;
-  emoji_name: string | null;
+  emoji_id: null | snowflake;
+  emoji_name: null | string;
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#channel-object-example-guild-text-channel */
@@ -115,54 +116,54 @@ export interface GuildStageChannelPayload
 /** @link https://discord.com/developers/docs/resources/channel#modify-channel-json-params-guild-channel */
 export interface EditGuildChannelPayload extends Reasonable {
   name?: string;
-  position?: number | null;
-  permission_overwrites?: OverwritePayload[] | null;
+  permission_overwrites?: null | OverwritePayload[];
+  position?: null | number;
 }
 
 export type EditGuildCategoryPayload = EditGuildChannelPayload;
 
 export interface EditGuildAnnouncementChannelPayload
   extends EditGuildChannelPayload {
-  type?: ChannelType.GUILD_TEXT | ChannelType.GUILD_ANNOUNCEMENT;
-  topic?: string | null;
-  parent_id?: snowflake | null;
-  default_auto_archive_duration?: number | null;
+  default_auto_archive_duration?: null | number;
   nsfw?: boolean | null;
+  parent_id?: null | snowflake;
+  topic?: null | string;
+  type?: ChannelType.GUILD_ANNOUNCEMENT | ChannelType.GUILD_TEXT;
 }
 
 export interface EditGuildTextChannelPayload extends EditGuildChannelPayload {
-  type?: ChannelType.GUILD_TEXT | ChannelType.GUILD_ANNOUNCEMENT;
-  topic?: string | null;
-  parent_id?: snowflake | null;
-  rate_limit_per_user?: number | null;
+  default_auto_archive_duration?: null | number;
   default_thread_rate_limit_per_user?: number;
-  default_auto_archive_duration?: number | null;
   nsfw?: boolean | null;
+  parent_id?: null | snowflake;
+  rate_limit_per_user?: null | number;
+  topic?: null | string;
+  type?: ChannelType.GUILD_ANNOUNCEMENT | ChannelType.GUILD_TEXT;
 }
 
 export interface EditGuildVoiceChannelPayload extends EditGuildChannelPayload {
-  bitrate?: number | null;
-  user_limit?: number | null;
-  rtc_region?: string | null;
-  video_quality_mode?: VideoQualityModes | null;
-  parent_id?: snowflake | null;
+  bitrate?: null | number;
   nsfw?: boolean | null;
+  parent_id?: null | snowflake;
+  rtc_region?: null | string;
+  user_limit?: null | number;
+  video_quality_mode?: null | VideoQualityModes;
 }
 
 export type EditGuildStageChannelPayload = EditGuildVoiceChannelPayload;
 
 export interface EditGuildForumChannelPayload extends EditGuildChannelPayload {
-  flags?: number;
   available_tags?: GuildForumTagPayload[];
-  default_reaction_emoji?: ForumDefaultReactionPayload | null;
-  default_thread_rate_limit_per_user?: number;
-  default_sort_order?: ForumSortOrder | null;
+  default_auto_archive_duration?: null | number;
   default_forum_layout?: ForumLayout;
-  parent_id?: snowflake | null;
+  default_reaction_emoji?: ForumDefaultReactionPayload | null;
+  default_sort_order?: ForumSortOrder | null;
+  default_thread_rate_limit_per_user?: number;
+  flags?: number;
   nsfw?: boolean | null;
-  topic?: string | null;
-  rate_limit_per_user?: number | null;
-  default_auto_archive_duration?: number | null;
+  parent_id?: null | snowflake;
+  rate_limit_per_user?: null | number;
+  topic?: null | string;
 }
 
 export interface EditChannelPermissionsPayload extends Reasonable {

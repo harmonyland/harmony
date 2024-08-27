@@ -55,129 +55,129 @@ import {
 } from "./thread.ts";
 
 export interface GatewayPayload {
-  op: GatewayOpcode;
   d: GatewayDataType | null;
-  s: number | null;
+  op: GatewayOpcode;
+  s: null | number;
   t: GatewayEventNames | null;
 }
 
 export type GatewayEventNames =
-  | "READY"
-  | "RESUMED"
   | "CHANNEL_CREATE"
-  | "CHANNEL_UPDATE"
   | "CHANNEL_DELETE"
   | "CHANNEL_PINS_UPDATE"
-  | "THREAD_CREATE"
-  | "THREAD_UPDATE"
-  | "THREAD_DELETE"
-  | "THREAD_LIST_SYNC"
-  | "THREAD_MEMBER_UPDATE"
-  | "THREAD_MEMBERS_UPDATE"
-  | "GUILD_CREATE"
-  | "GUILD_UPDATE"
-  | "GUILD_DELETE"
+  | "CHANNEL_UPDATE"
   | "GUILD_BAN_ADD"
   | "GUILD_BAN_REMOVE"
+  | "GUILD_CREATE"
+  | "GUILD_DELETE"
   | "GUILD_EMOJIS_UPDATE"
-  | "GUILD_STICKERS_UPDATE"
   | "GUILD_INTEGRATIONS_UPDATE"
   | "GUILD_MEMBER_ADD"
   | "GUILD_MEMBER_REMOVE"
   | "GUILD_MEMBER_UPDATE"
   | "GUILD_MEMBERS_CHUNK"
   | "GUILD_ROLE_CREATE"
-  | "GUILD_ROLE_UPDATE"
   | "GUILD_ROLE_DELETE"
+  | "GUILD_ROLE_UPDATE"
   | "GUILD_SCHEDULED_EVENT_CREATE"
-  | "GUILD_SCHEDULED_EVENT_UPDATE"
   | "GUILD_SCHEDULED_EVENT_DELETE"
+  | "GUILD_SCHEDULED_EVENT_UPDATE"
   | "GUILD_SCHEDULED_EVENT_USER_ADD"
   | "GUILD_SCHEDULED_EVENT_USER_REMOVE"
+  | "GUILD_STICKERS_UPDATE"
+  | "GUILD_UPDATE"
   | "INTEGRATION_CREATE"
-  | "INTEGRATION_UPDATE"
   | "INTEGRATION_DELETE"
+  | "INTEGRATION_UPDATE"
   | "INTERACTION_CREATE"
   | "INVITE_CREATE"
   | "INVITE_DELETE"
   | "MESSAGE_CREATE"
-  | "MESSAGE_UPDATE"
   | "MESSAGE_DELETE"
   | "MESSAGE_DELETE_BULK"
+  | "MESSAGE_POLL_VOTE_ADD"
+  | "MESSAGE_POLL_VOTE_REMOVE"
   | "MESSAGE_REACTION_ADD"
   | "MESSAGE_REACTION_REMOVE"
   | "MESSAGE_REACTION_REMOVE_ALL"
   | "MESSAGE_REACTION_REMOVE_EMOJI"
+  | "MESSAGE_UPDATE"
   | "PRESENCE_UPDATE"
+  | "READY"
+  | "RESUMED"
   | "STAGE_INSTANCE_CREATE"
   | "STAGE_INSTANCE_DELETE"
   | "STAGE_INSTANCE_UPDATE"
+  | "THREAD_CREATE"
+  | "THREAD_DELETE"
+  | "THREAD_LIST_SYNC"
+  | "THREAD_MEMBER_UPDATE"
+  | "THREAD_MEMBERS_UPDATE"
+  | "THREAD_UPDATE"
   | "TYPING_START"
   | "USER_UPDATE"
-  | "VOICE_STATE_UPDATE"
   | "VOICE_SERVER_UPDATE"
-  | "WEBHOOKS_UPDATE"
-  | "MESSAGE_POLL_VOTE_ADD"
-  | "MESSAGE_POLL_VOTE_REMOVE";
+  | "VOICE_STATE_UPDATE"
+  | "WEBHOOKS_UPDATE";
 
 export type GatewayDataType =
-  | GatewayHelloPayload
-  | GatewayIdentifyPayload
-  | GatewayResumePayload
-  | HeartbeatPayload
-  | GetGatewayGuildMembersPayload
-  | EditGatewayPresencePayload
-  | GatewayReadyPayload
-  | Reasumable
   | ChannelPayload
-  | GatewayThreadListSyncPayload
-  | GatewayThreadMemberUpdatePayload
-  | GatewayThreadMembersUpdatePayload
+  | EditGatewayPresencePayload
+  | GatewayAutoModerationActionExecutionEventPayload
   | GatewayChannelPinsUpdatePayload
-  | GuildPayload
   | GatewayGuildBanAddPayload
   | GatewayGuildBanRemovePayload
   | GatewayGuildEmojisUpdatePayload
-  | GatewayGuildStickersUpdatePayload
   | GatewayGuildIntegrationsUpdatePayload
   | GatewayGuildMemberAddPayload
+  | GatewayGuildMemberChunkPayload
   | GatewayGuildMemberRemovePayload
   | GatewayGuildMemberUpdatePayload
-  | GatewayGuildMemberChunkPayload
   | GatewayGuildRoleCreatePayload
-  | GatewayGuildRoleUpdatePayload
   | GatewayGuildRoleDeletePayload
-  | ScheduledEventPayload
-  | GatewayScheduledEventUserAddPayload
-  | GatewayScheduledEventUserRemovePayload
+  | GatewayGuildRoleUpdatePayload
+  | GatewayGuildStickersUpdatePayload
+  | GatewayHelloPayload
+  | GatewayIdentifyPayload
   | GatewayIntegrationCreatePayload
-  | GatewayIntegrationUpdatePayload
   | GatewayIntegrationDeletePayload
-  | InteractionPayload
+  | GatewayIntegrationUpdatePayload
   | GatewayInviteCreatePayload
   | GatewayInviteDeletePayload
-  | MessagePayload
-  | GatewayMessageDeletePayload
   | GatewayMessageDeleteBulkPayload
+  | GatewayMessageDeletePayload
   | GatewayMessageReactionAddPayload
-  | GatewayMessageReactionRemovePayload
   | GatewayMessageReactionRemoveAllPayload
   | GatewayMessageReactionRemoveEmojiPayload
-  | GatewayWebhookUpdatePayload
-  | StageInstancePayload
-  | UserPayload
-  | VoiceStatePayload
+  | GatewayMessageReactionRemovePayload
   | GatewayPresenceUpdatePayload
+  | GatewayReadyPayload
+  | GatewayResumePayload
+  | GatewayScheduledEventUserAddPayload
+  | GatewayScheduledEventUserRemovePayload
+  | GatewayThreadListSyncPayload
+  | GatewayThreadMembersUpdatePayload
+  | GatewayThreadMemberUpdatePayload
   | GatewayTypingStartPayload
   | GatewayVoiceServerUpdatePayload
-  | GatewayAutoModerationActionExecutionEventPayload
+  | GatewayWebhookUpdatePayload
+  | GetGatewayGuildMembersPayload
+  | GuildPayload
+  | HeartbeatPayload
+  | InteractionPayload
+  | MessagePayload
   | MessagePollVoteAddPayload
-  | MessagePollVoteRemovePayload;
+  | MessagePollVoteRemovePayload
+  | Reasumable
+  | ScheduledEventPayload
+  | StageInstancePayload
+  | UserPayload
+  | VoiceStatePayload;
 
 export interface ConnectGatewayParams {
-  v: number;
-  encoding: "json" | "etf";
   compress?: "zlib-stream";
+  encoding: "etf" | "json";
+  v: number;
 }
 
 export interface GatewayHelloPayload {
@@ -185,81 +185,81 @@ export interface GatewayHelloPayload {
 }
 
 export interface GatewayIdentifyPayload {
-  token: string;
+  compress?: boolean;
   intents: number;
+  large_threshold?: number;
+  presence?: EditGatewayPresencePayload;
   properties: {
-    os: string;
     browser: string;
     device: string;
+    os: string;
   };
-  compress?: boolean;
-  large_threshold?: number;
   shard?: [number, number];
-  presence?: EditGatewayPresencePayload;
+  token: string;
 }
 
 export interface GatewayResumePayload {
-  token: string;
-  session_id: snowflake;
   seq: number;
+  session_id: snowflake;
+  token: string;
 }
 
-export type HeartbeatPayload = number | null;
+export type HeartbeatPayload = null | number;
 export type Reasumable = boolean;
 
 export interface GetGatewayGuildMembersPayload {
   guild_id: snowflake;
-  query?: string;
   limit: number;
-  presence?: boolean;
-  user_ids?: snowflake | snowflake[];
   nonce?: string;
+  presence?: boolean;
+  query?: string;
+  user_ids?: snowflake | snowflake[];
 }
 
 export interface EditGatewayPresencePayload {
-  since: number | null;
   activities: ActivityPayload[];
-  status: StatusType;
   afk: boolean;
+  since: null | number;
+  status: StatusType;
 }
 
-export type StatusType = "online" | "dnd" | "idle" | "invisible" | "offline";
+export type StatusType = "dnd" | "idle" | "invisible" | "offline" | "online";
 
 export interface GatewayReadyPayload {
-  v: number;
-  user: UserPayload;
+  application: ApplicationPayload;
   guilds: GuildPayload[];
+  resume_gateway_url: string;
   session_id: string;
   shard?: [number, number];
-  application: ApplicationPayload;
-  resume_gateway_url: string;
+  user: UserPayload;
+  v: number;
 }
 
 export interface GatewayChannelPinsUpdatePayload {
-  guild_id?: snowflake;
   channel_id: snowflake;
-  last_pin_timestamp?: string | null;
+  guild_id?: snowflake;
+  last_pin_timestamp?: null | string;
 }
 
 export interface GatewayWebhookUpdatePayload {
-  guild_id: snowflake;
   channel_id: snowflake;
+  guild_id: snowflake;
 }
 
 export interface GetGatewayBotPayload {
-  url: string;
-  shards: number;
   session_start_limit: SessionStartLimitPayload;
+  shards: number;
+  url: string;
 }
 
 export interface SessionStartLimitPayload {
-  total: number;
+  max_concurrency: number;
   remaning: number;
   reset_after: number;
-  max_concurrency: number;
+  total: number;
 }
 
-export type ClientStatusType = "online" | "idle" | "dnd";
+export type ClientStatusType = "dnd" | "idle" | "online";
 
 export interface ClientStatusPayload {
   desktop?: ClientStatusType;
@@ -268,47 +268,47 @@ export interface ClientStatusPayload {
 }
 
 export interface GatewayPresenceUpdatePayload {
-  user: UserPayload;
-  guild_id: snowflake;
-  status: StatusType;
   activities: ActivityPayload[];
   client_status: ClientStatusPayload;
+  guild_id: snowflake;
+  status: StatusType;
+  user: UserPayload;
 }
 
 export interface GatewayTypingStartPayload {
   channel_id: snowflake;
   guild_id?: snowflake;
-  user_id: snowflake;
-  timestamp: number;
   member?: GuildMemberPayload;
+  timestamp: number;
+  user_id: snowflake;
 }
 
 export interface GatewayVoiceServerUpdatePayload {
-  token: string;
+  endpoint: null | string;
   guild_id: snowflake;
-  endpoint: string | null;
+  token: string;
 }
 
 export interface GatewayAutoModerationActionExecutionEventPayload {
-  guild_id: snowflake;
   action: AutoModerationRuleAction;
+  alert_system_message_id?: snowflake;
+  channel_id?: snowflake;
+  content?: string;
+  guild_id: snowflake;
+  matched_content?: null | string;
+  matched_keyword: null | string;
+  message_id?: snowflake;
   rule_id: string;
   rule_trigger_type: AutoModerationRuleTriggerType;
   user_id: snowflake;
-  channel_id?: snowflake;
-  message_id?: snowflake;
-  alert_system_message_id?: snowflake;
-  content?: string;
-  matched_keyword: string | null;
-  matched_content?: string | null;
 }
 
 export interface MessagePollVoteAddPayload {
-  user_id: snowflake;
-  channel_id: snowflake;
-  message_id: snowflake;
-  guild_id?: snowflake;
   answer_id: number;
+  channel_id: snowflake;
+  guild_id?: snowflake;
+  message_id: snowflake;
+  user_id: snowflake;
 }
 
 export type MessagePollVoteRemovePayload = MessagePollVoteAddPayload;

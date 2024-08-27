@@ -9,18 +9,18 @@ import { PollPayload } from "../poll/poll.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface WebhookPayload {
+  application_id: null | snowflake;
+  avatar: null | string;
+  channel_id: null | snowflake;
+  guild_id?: null | snowflake;
   id: snowflake;
-  type: WebhookType;
-  guild_id?: snowflake | null;
-  channel_id: snowflake | null;
-  user?: UserPayload;
-  name: string | null;
-  avatar: string | null;
-  token?: string;
-  application_id: snowflake | null;
-  source_guild?: GuildPayload;
+  name: null | string;
   source_channel?: ChannelPayload;
+  source_guild?: GuildPayload;
+  token?: string;
+  type: WebhookType;
   url?: string;
+  user?: UserPayload;
 }
 
 export enum WebhookType {
@@ -30,35 +30,35 @@ export enum WebhookType {
 }
 
 export interface CreateWebhookPayload {
+  avatar?: null | string;
   // Fun fact: name cannot include 'clyde' or 'discord' in it
   name: string;
-  avatar?: string | null;
 }
 
 export interface EditWebhookPayload {
-  name: string;
-  avatar: string | null;
+  avatar: null | string;
   channel_id: snowflake;
+  name: string;
 }
 
 export interface ExecuteWebhookParams {
-  wait?: boolean;
   thread_id?: snowflake;
+  wait?: boolean;
 }
 
 export interface ExecuteWebhookPayload {
-  content?: string;
-  username?: string;
-  avatar_url?: string;
-  tts?: boolean;
-  embeds?: EmbedPayload[];
   allowed_mentions?: AllowedMentionsPayload[];
-  components?: ComponentPayload[];
-  attachments?: AttachmentPayload[];
-  flags?: number;
-  thread_name?: string;
   applied_tags?: snowflake[];
+  attachments?: AttachmentPayload[];
+  avatar_url?: string;
+  components?: ComponentPayload[];
+  content?: string;
+  embeds?: EmbedPayload[];
+  flags?: number;
   poll?: PollPayload;
+  thread_name?: string;
+  tts?: boolean;
+  username?: string;
 }
 
 export type ExecuteSlackCompatibleWebhookParams = ExecuteWebhookParams;
@@ -70,11 +70,11 @@ export interface GetWebhookMessageParams {
 
 export type EditWebhookMessageParams = GetWebhookMessageParams;
 export interface EditWebhookMessagePayload {
-  content?: string | null;
-  embeds?: EmbedPayload[] | null;
   allowed_mentions?: AllowedMentionsPayload[] | null;
-  components?: ComponentPayload[] | null;
   attachments?: AttachmentPayload[] | null;
+  components?: ComponentPayload[] | null;
+  content?: null | string;
+  embeds?: EmbedPayload[] | null;
 }
 
 export type DeleteWebhookMessageParams = GetWebhookMessageParams;

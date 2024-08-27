@@ -2,13 +2,13 @@ import { snowflake } from "../common.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 
 export interface StageInstancePayload {
-  id: snowflake;
-  guild_id: snowflake;
   channel_id: snowflake;
-  topic: string;
-  privacy_level: StagePrivacyLevel;
   discoverable_disabled: boolean;
-  guild_scheduled_event_id: snowflake | null;
+  guild_id: snowflake;
+  guild_scheduled_event_id: null | snowflake;
+  id: snowflake;
+  privacy_level: StagePrivacyLevel;
+  topic: string;
 }
 
 export enum StagePrivacyLevel {
@@ -18,13 +18,13 @@ export enum StagePrivacyLevel {
 
 export interface CreateStageInstancePayload extends Reasonable {
   channel_id: snowflake;
-  topic: string;
+  guild_scheduled_event_id?: snowflake;
   privacy_level?: StagePrivacyLevel;
   send_start_notification?: boolean;
-  guild_scheduled_event_id?: snowflake;
+  topic: string;
 }
 
 export interface EditStageInstancePayload extends Reasonable {
-  topic?: string;
   privacy_level?: StagePrivacyLevel;
+  topic?: string;
 }

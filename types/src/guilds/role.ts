@@ -8,39 +8,39 @@ export interface RoleTagsPayload {
 }
 
 export interface RolePayload {
-  id: snowflake;
-  name: string;
   color: number;
   hoist: boolean;
-  icon?: string | null;
-  unicode_emoji?: string | null;
-  position: number;
-  permissions: string;
+  icon?: null | string;
+  id: snowflake;
   managed: boolean;
+  name: string;
+  permissions: string;
+  position: number;
   tags?: RoleTagsPayload;
+  unicode_emoji?: null | string;
 }
 
 export interface CreateGuildRolePayload extends Reasonable {
-  name?: string;
-  permissions?: string;
   color?: number;
   hoist?: boolean;
-  icon?: string | null;
-  unicode_emoji?: string | null;
+  icon?: null | string;
   mentionable?: boolean;
+  name?: string;
+  permissions?: string;
+  unicode_emoji?: null | string;
 }
 
 export interface EditGuildRolePositionPayload extends Reasonable {
   id: snowflake;
-  position?: number | null;
+  position?: null | number;
 }
 
 export interface EditGuildRolePayload extends Reasonable {
-  name?: string | null;
-  permissions?: string | null;
-  color?: number | null;
+  color?: null | number;
   hoist?: boolean | null;
-  icon?: string | null;
-  unicode_emoji?: string | null;
+  icon?: null | string;
   mentionable?: boolean | null;
+  name?: null | string;
+  permissions?: null | string;
+  unicode_emoji?: null | string;
 }

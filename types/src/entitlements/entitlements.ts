@@ -1,16 +1,16 @@
 import { snowflake } from "../common.ts";
 
 export interface EntitlementPayload {
-  id: snowflake;
-  sku_id: snowflake;
   application_id: snowflake;
-  user_id?: snowflake;
-  type: EntitlementType;
+  consumed?: boolean;
   deleted: boolean;
-  starts_at?: string;
   ends_at?: string;
   guild_id?: snowflake;
-  consumed?: boolean;
+  id: snowflake;
+  sku_id: snowflake;
+  starts_at?: string;
+  type: EntitlementType;
+  user_id?: snowflake;
 }
 
 export enum EntitlementType {
@@ -25,19 +25,19 @@ export enum EntitlementType {
 }
 
 export interface ListEntitlementsParams {
-  user_id?: snowflake;
-  sku_id?: string;
-  before?: snowflake;
   after?: snowflake;
-  limit?: number;
-  guild_id?: snowflake;
+  before?: snowflake;
   exclude_ended?: boolean;
+  guild_id?: snowflake;
+  limit?: number;
+  sku_id?: string;
+  user_id?: snowflake;
 }
 
 export interface CreateTestEntitlementPayload {
-  sku_id: snowflake;
   owner_id: snowflake;
   owner_type: TestEntitlementOwnerType;
+  sku_id: snowflake;
 }
 
 export enum TestEntitlementOwnerType {

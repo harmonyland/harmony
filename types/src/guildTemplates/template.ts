@@ -4,29 +4,29 @@ import { UserPayload } from "../users/user.ts";
 
 export interface GuildTemplatePayload {
   code: string;
-  name: string;
-  description: string | null;
-  usage_count: number;
-  creator_id: snowflake;
-  creator: UserPayload;
   created_at: string;
-  updated_at: string;
-  source_guild_id: snowflake;
-  serialized_source_guild: GuildPayload;
+  creator: UserPayload;
+  creator_id: snowflake;
+  description: null | string;
   is_dirty: boolean | null;
+  name: string;
+  serialized_source_guild: GuildPayload;
+  source_guild_id: snowflake;
+  updated_at: string;
+  usage_count: number;
 }
 
 export interface CreateGuildFromGuildTemplatePayload {
-  name: string;
   icon?: string;
+  name: string;
 }
 
 export interface CreateGuildTemplatePayload {
+  description?: null | string;
   name: string;
-  description?: string | null;
 }
 
 export interface EditGuildTemplatePayload {
+  description?: null | string;
   name?: string;
-  description?: string | null;
 }

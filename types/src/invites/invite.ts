@@ -7,18 +7,18 @@ import { ScheduledEventPayload } from "../scheduledEvent/scheduledEvent.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface InvitePayload {
-  code: string;
-  guild?: GuildPayload;
+  approximate_member_count?: number;
+  approximate_presence_count?: number;
   channel: ChannelPayload | null;
+  code: string;
+  expires_at?: null | string;
+  guild?: GuildPayload;
+  guild_scheduled_event?: ScheduledEventPayload;
   inviter?: UserPayload;
+  stage_instance?: InviteStageInstancePayload;
+  target_application?: ApplicationPayload;
   target_type?: InviteTargetType;
   target_user?: UserPayload;
-  target_application?: ApplicationPayload;
-  approximate_presence_count?: number;
-  approximate_member_count?: number;
-  expires_at?: string | null;
-  stage_instance?: InviteStageInstancePayload;
-  guild_scheduled_event?: ScheduledEventPayload;
 }
 
 export enum InviteTargetType {
@@ -34,15 +34,15 @@ export interface InviteStageInstancePayload {
 }
 
 export interface InviteMetadataPayload {
-  uses: number;
-  max_uses: number;
-  max_age: number;
-  temporary: boolean;
   created_at: string;
+  max_age: number;
+  max_uses: number;
+  temporary: boolean;
+  uses: number;
 }
 
 export interface GetInviteParams {
+  guild_scheduled_event_id?: snowflake;
   with_counts?: boolean;
   with_expiration?: boolean;
-  guild_scheduled_event_id?: snowflake;
 }

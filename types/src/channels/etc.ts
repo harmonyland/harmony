@@ -8,15 +8,15 @@ export interface FollowedChannelPayload {
 
 /** @link https://discord.com/developers/docs/resources/channel#allowed-mentions-object-allowed-mention-types */
 export enum AllowedMentionType {
+  EVERYONE = "everyone",
   ROLES = "roles",
   USERS = "users",
-  EVERYONE = "everyone",
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#allowed-mentions-object-allowed-mentions-structure */
 export interface AllowedMentionsPayload {
   parse: AllowedMentionType[];
+  replied_user: boolean;
   roles: snowflake[];
   users: snowflake[];
-  replied_user: boolean;
 }

@@ -16,6 +16,9 @@ export class GroupDMChannel extends DMBasedChannel {
   get icon(): string | null {
     return this.payload.icon;
   }
+  get ownerID(): string {
+    return this.payload.owner_id;
+  }
   get owner(): User | undefined {
     return this.client.users.get(this.payload.owner_id);
   }

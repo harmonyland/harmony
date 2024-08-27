@@ -4,22 +4,22 @@ import { GuildMemberPayload } from "../guilds/member.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface ScheduledEventPayload {
-  id: snowflake;
-  guild_id: snowflake;
-  channel_id: snowflake | null;
-  creator_id?: snowflake | null;
-  name: string;
-  description?: string;
-  scheduled_start_time: string;
-  scheduled_end_time: string | null;
-  privacy_level: ScheduledEventPrivacyLevel;
-  status: ScheduledEventStatus;
-  entity_type: ScheduledEventEntityType;
-  entity_id: snowflake | null;
-  entity_metadata: ScheduledEventEntityMetadataPayload;
+  channel_id: null | snowflake;
   creator?: UserPayload;
+  creator_id?: null | snowflake;
+  description?: string;
+  entity_id: null | snowflake;
+  entity_metadata: ScheduledEventEntityMetadataPayload;
+  entity_type: ScheduledEventEntityType;
+  guild_id: snowflake;
+  id: snowflake;
+  image?: null | string;
+  name: string;
+  privacy_level: ScheduledEventPrivacyLevel;
+  scheduled_end_time: null | string;
+  scheduled_start_time: string;
+  status: ScheduledEventStatus;
   user_cound?: number;
-  image?: string | null;
 }
 
 export enum ScheduledEventPrivacyLevel {
@@ -45,8 +45,8 @@ export interface ScheduledEventEntityMetadataPayload {
 
 export interface ScheduledEventUserPayload {
   guild_scheduled_event_id: snowflake;
-  user: UserPayload;
   member?: GuildMemberPayload;
+  user: UserPayload;
 }
 
 export interface GetScheduledEventsPayload {
@@ -55,14 +55,14 @@ export interface GetScheduledEventsPayload {
 
 export interface CreateScheduledEventPayload extends Reasonable {
   channel_id?: snowflake;
-  entity_metadata?: ScheduledEventEntityMetadataPayload;
-  name: string;
-  privacy_level: ScheduledEventPrivacyLevel;
-  scheduled_start_time: string;
-  scheduled_end_time?: string;
   description?: string;
+  entity_metadata?: ScheduledEventEntityMetadataPayload;
   entity_type: ScheduledEventEntityType;
   image?: string;
+  name: string;
+  privacy_level: ScheduledEventPrivacyLevel;
+  scheduled_end_time?: string;
+  scheduled_start_time: string;
 }
 
 export interface GetScheduledEventPayload {
@@ -70,21 +70,21 @@ export interface GetScheduledEventPayload {
 }
 
 export interface EditScheduledEventPayload extends Reasonable {
-  channel_id?: snowflake | null;
-  entity_metadata?: ScheduledEventEntityMetadataPayload | null;
+  channel_id?: null | snowflake;
+  description?: null | string;
+  entity_metadata?: null | ScheduledEventEntityMetadataPayload;
+  entity_type: ScheduledEventEntityType;
+  image?: string;
   name?: string;
   privacy_level?: ScheduledEventPrivacyLevel;
-  scheduled_start_time?: string;
   scheduled_end_time?: string;
-  description?: string | null;
-  entity_type: ScheduledEventEntityType;
+  scheduled_start_time?: string;
   status?: ScheduledEventStatus;
-  image?: string;
 }
 
 export interface GetScheduledEventUsersParams {
+  after?: snowflake;
+  before?: snowflake;
   limit?: number;
   with_member?: boolean;
-  before?: snowflake;
-  after?: snowflake;
 }

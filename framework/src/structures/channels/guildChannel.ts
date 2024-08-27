@@ -1,6 +1,7 @@
 import { Channel } from "./channel.ts";
 import type { GuildChannelPayload } from "../../../../types/mod.ts";
 import type { Client } from "../../client/mod.ts";
+import { Guild } from "../guilds/guild.ts";
 
 export class GuildChannel extends Channel {
   payload: GuildChannelPayload;
@@ -11,6 +12,9 @@ export class GuildChannel extends Channel {
 
   get guildID(): string {
     return this.payload.guild_id;
+  }
+  get guild(): Guild | undefined {
+    return this.client.guilds.get(this.payload.guild_id);
   }
   get name(): string {
     return this.payload.name;
@@ -26,6 +30,9 @@ export class GuildChannel extends Channel {
   }
   get parentID(): string | null {
     return this.payload.parent_id;
+  }
+  get parent(): GuildChannel | undefined {
+    return this.client.channels.get(this.payload.parent_id!) as GuildChannel;
   }
   get topic(): string | null {
     return this.payload.topic;

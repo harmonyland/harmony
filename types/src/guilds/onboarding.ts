@@ -3,11 +3,11 @@ import { EmojiPayload } from "../emojis/emoij.ts";
 import { Reasonable } from "../etc/reasonable.ts";
 
 export interface GuildOnboardingPayload {
-  guild_id: snowflake;
-  prompts: GuildOnboardingPromptPayload[];
   default_channel_ids: snowflake[];
   enabled: boolean;
+  guild_id: snowflake;
   mode: GuildOnboardingMode;
+  prompts: GuildOnboardingPromptPayload[];
 }
 
 export enum GuildOnboardingMode {
@@ -17,24 +17,24 @@ export enum GuildOnboardingMode {
 
 export interface GuildOnboardingPromptPayload {
   id: snowflake;
-  type: GuildOnboardingPromptType;
-  options: GuildOnboardingPromptOptions;
-  title: string;
-  single_select: boolean;
-  required: boolean;
   in_onboarding: boolean;
+  options: GuildOnboardingPromptOptions;
+  required: boolean;
+  single_select: boolean;
+  title: string;
+  type: GuildOnboardingPromptType;
 }
 
 export interface GuildOnboardingPromptOptions {
-  id: snowflake;
   channel_ids: snowflake[];
-  role_ids: snowflake[];
+  description: null | string;
   emoji?: EmojiPayload;
+  emoji_animated?: boolean;
   emoji_id?: snowflake;
   emoji_name?: string;
-  emoji_animated?: boolean;
+  id: snowflake;
+  role_ids: snowflake[];
   title: string;
-  description: string | null;
 }
 
 export enum GuildOnboardingPromptType {
@@ -43,8 +43,8 @@ export enum GuildOnboardingPromptType {
 }
 
 export interface EditGuildOnboardingPayload extends Reasonable {
-  prompts?: GuildOnboardingPromptPayload[];
   default_channel_ids?: snowflake[];
   enabled?: boolean;
   mode?: GuildOnboardingMode;
+  prompts?: GuildOnboardingPromptPayload[];
 }

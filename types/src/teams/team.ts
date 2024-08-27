@@ -2,7 +2,7 @@ import { snowflake } from "../common.ts";
 import { UserPayload } from "../users/user.ts";
 
 export interface TeamPayload {
-  icon: string | null;
+  icon: null | string;
   id: snowflake;
   members: TeamMemberPayload[];
   name: string;
@@ -11,9 +11,9 @@ export interface TeamPayload {
 
 export interface TeamMemberPayload {
   membership_state: MembershipState;
+  role: string;
   team_id: snowflake;
   user: UserPayload;
-  role: string;
 }
 
 export enum MembershipState {
