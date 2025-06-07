@@ -10,8 +10,6 @@ export enum MessageComponentType {
   ACTION_ROW = 1,
   /** A clickable button */
   BUTTON = 2,
-  /** Dropdown menu, Deprecated, use STRING_SELECT instead */
-  SELECT = 3,
   /** Dropdown menu with defined text options */
   STRING_SELECT = 3,
   /** Text Input (only for modals) */
@@ -93,7 +91,7 @@ export interface SelectComponentOption {
 }
 
 export interface SelectComponentPayload {
-  type: MessageComponentType.SELECT
+  type: MessageComponentType.STRING_SELECT
   custom_id: string
   placeholder?: string
   options: SelectComponentOption[]
@@ -103,7 +101,7 @@ export interface SelectComponentPayload {
 }
 
 export interface SelectComponent {
-  type: MessageComponentType.SELECT | 'SELECT'
+  type: MessageComponentType.STRING_SELECT | 'STRING_SELECT'
   customID: string
   placeholder?: string
   options: SelectComponentOption[]
