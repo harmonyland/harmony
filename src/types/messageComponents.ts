@@ -10,10 +10,20 @@ export enum MessageComponentType {
   ACTION_ROW = 1,
   /** A clickable button */
   BUTTON = 2,
-  /** Dropdown menu */
+  /** Dropdown menu, Deprecated, use STRING_SELECT instead */
   SELECT = 3,
+  /** Dropdown menu with defined text options */
+  STRING_SELECT = 3,
   /** Text Input (only for modals) */
-  TEXT_INPUT = 4
+  TEXT_INPUT = 4,
+  /** Dropdown menu with user options */
+  USER_SELECT = 5,
+  /** Dropdown menu with role options */
+  ROLE_SELECT = 6,
+  /** Dropdown menu with user and role options */
+  MENTIONABLE_SELECT = 7,
+  /** Dropdown menu with channel options */
+  CHANNEL_SELECT = 8,
 }
 
 export enum ButtonStyle {
