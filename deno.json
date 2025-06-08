@@ -1,5 +1,5 @@
 {
-  "nodeModulesDir": "auto",
+  "nodeModulesDir": true,
   "tasks": {
     "fmt": "npx prettier --write src/ test/ mod.ts deploy.ts deps.ts",
     "lint": "npx eslint src/ test/ mod.ts deploy.ts deps.ts",
