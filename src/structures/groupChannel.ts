@@ -12,7 +12,7 @@ export class GroupDMChannel extends Channel {
     this.readFromData(data)
   }
 
-  readFromData(data: GroupDMChannelPayload): void {
+  override readFromData(data: GroupDMChannelPayload): void {
     super.readFromData(data)
     this.name = data.name ?? this.name
     this.icon = data.icon ?? this.icon

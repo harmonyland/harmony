@@ -1,12 +1,11 @@
 {
   "tasks": {
-    "fmt": "npx prettier --write src/ test/ mod.ts deploy.ts deps.ts",
-    "lint": "npx eslint src/ test/ mod.ts deploy.ts deps.ts",
+    "fmt": "deno run -A npm:prettier --write src/ test/ mod.ts deploy.ts deps.ts",
+    "lint": "deno run -A npm:eslint src/ test/ mod.ts deploy.ts deps.ts",
     "check": "deno run -A --check mod.ts",
-    "build-npm": "deno run -A --no-check ./scripts/build_npm.ts"
   },
   "name": "@harmony/harmony",
-  "version": "2.9.1",
+  "version": "2.9.2",
   "exports": "./mod.ts",
   "publish": {
     "include": [
@@ -18,6 +17,13 @@
       "README.md",
       "tsconfig.json",
       "deno.json"
+    ]
+  },
+  "compilerOptions": {
+    "lib": [
+      "deno.ns",      
+      "deno.window",  
+      "esnext"        
     ]
   }
 }

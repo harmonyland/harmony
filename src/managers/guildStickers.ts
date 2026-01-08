@@ -17,7 +17,7 @@ export class GuildStickersManager extends BaseChildManager<
   }
 
   /** Fetches Guild Sticker from API */
-  async fetch(id: string): Promise<MessageSticker> {
+  override async fetch(id: string): Promise<MessageSticker> {
     const sticker = await this.client.stickers.fetch(id)
     if (sticker.guildID === this.guild.id)
       throw new Error(
@@ -27,7 +27,10 @@ export class GuildStickersManager extends BaseChildManager<
   }
 
   /** Delete a Guild Sticker */
-  async delete(id: string | MessageSticker, reason?: string): Promise<boolean> {
+  override async delete(
+    id: string | MessageSticker,
+    reason?: string
+  ): Promise<boolean> {
     return this.client.stickers.delete(this.guild, id, reason)
   }
 
@@ -50,7 +53,7 @@ export class GuildStickersManager extends BaseChildManager<
   }
 
   /** Returns a list of IDs of all Stickers in this Guild */
-  async keys(): Promise<string[]> {
+  override async keys(): Promise<string[]> {
     const keys = []
     for (const sticker of ((await this.client.cache.array('stickers')) ??
       []) as MessageStickerPayload[]) {
@@ -60,7 +63,7 @@ export class GuildStickersManager extends BaseChildManager<
   }
 
   /** Returns an Array of all Stickers in this Guild */
-  async array(): Promise<MessageSticker[]> {
+  override async array(): Promise<MessageSticker[]> {
     const stickers = []
     for (const sticker of ((await this.client.cache.array('stickers')) ??
       []) as MessageStickerPayload[]) {

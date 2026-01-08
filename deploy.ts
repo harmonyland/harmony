@@ -1,5 +1,5 @@
-import { Interaction } from './src/structures/interactions.ts'
-import {
+import type { Interaction } from './src/structures/interactions.ts'
+import type {
   ApplicationCommandsManager,
   InteractionsClient,
   ApplicationCommandHandler,
@@ -10,7 +10,7 @@ import {
   InteractionResponseType,
   InteractionType
 } from './src/types/interactions.ts'
-import { ApplicationCommandType } from './src/types/applicationCommand.ts'
+import type { ApplicationCommandType } from './src/types/applicationCommand.ts'
 
 export interface DeploySlashInitOptions {
   env?: boolean

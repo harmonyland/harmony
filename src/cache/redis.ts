@@ -1,17 +1,17 @@
-import { ICacheAdapter } from './adapter.ts'
+import type { ICacheAdapter } from './adapter.ts'
 // Not in deps.ts to allow optional dep loading
-import { createClient, RedisClientOptions } from 'npm:redis@4.6.13'
+import { Redis } from '../../deps.ts'
 
 /** Redis Cache Adapter for using Redis as a cache-provider. */
 export class RedisCacheAdapter implements ICacheAdapter {
-  _redis: Promise<ReturnType<typeof createClient>>
-  redis?: ReturnType<typeof createClient>
+  _redis: Promise<ReturnType<typeof Redis.createClient>>
+  redis?: ReturnType<typeof Redis.createClient>
   ready: boolean = false
   readonly _expireIntervalTimer: number = 5000
   private _expireInterval?: number
 
-  constructor(options: RedisClientOptions) {
-    this._redis = createClient(options).connect()
+  constructor(options: Redis.RedisClientOptions) {
+    this._redis = Redis.createClient(options).connect()
     this._redis.then(
       (redis) => {
         this.redis = redis
@@ -26,21 +26,24 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   private _startExpireInterval(): void {
     this._expireInterval = setInterval(() => {
-      this.redis?.scan(0, { MATCH: '*:expires' }).then(({ keys: names }) => {
-        for (const name of names) {
-          this.redis?.hVals(name).then((vals) => {
-            for (const val of vals) {
-              const expireVal: {
-                name: string
-                key: string
-                at: number
-              } = JSON.parse(val)
-              const expired = new Date().getTime() > expireVal.at
-              if (expired) this.redis?.hDel(expireVal.name, expireVal.key)
-            }
-          })
-        }
-      })
+      void this.redis
+        ?.scan(0, { MATCH: '*:expires' })
+        .then(({ keys: names }) => {
+          for (const name of names) {
+            void this.redis?.hVals(name).then((vals) => {
+              for (const val of vals) {
+                const expireVal: {
+                  name: string
+                  key: string
+                  at: number
+                } = JSON.parse(val)
+                const expired = new Date().getTime() > expireVal.at
+                if (expired)
+                  void this.redis?.hDel(expireVal.name, expireVal.key)
+              }
+            })
+          }
+        })
     }, this._expireIntervalTimer)
   }
 

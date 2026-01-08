@@ -7,11 +7,11 @@ import type {
 import { CHANNEL } from '../types/endpoint.ts'
 
 export class CategoryChannel extends GuildChannel {
-  readFromData(data: GuildCategoryChannelPayload): void {
+  override readFromData(data: GuildCategoryChannelPayload): void {
     super.readFromData(data)
   }
 
-  async edit(
+  override async edit(
     options?: ModifyGuildCategoryChannelOption
   ): Promise<CategoryChannel> {
     const body: ModifyGuildCategoryChannelPayload = {

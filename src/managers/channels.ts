@@ -39,7 +39,9 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   }
 
   // Override get method as Generic
-  async get<T extends Channel = Channel>(key: string): Promise<T | undefined> {
+  override async get<T extends Channel = Channel>(
+    key: string
+  ): Promise<T | undefined> {
     const data = await this._get(key)
     if (data === undefined) return
     let guild
@@ -53,7 +55,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
     return res as T
   }
 
-  async array(): Promise<Channel[]> {
+  override async array(): Promise<Channel[]> {
     const arr = await (this.client.cache.array(
       this.cacheName
     ) as ChannelPayload[])
@@ -72,7 +74,7 @@ export class ChannelsManager extends BaseManager<ChannelPayload, Channel> {
   }
 
   /** Fetches a Channel by ID, cache it, resolve it */
-  async fetch<T = Channel>(id: string): Promise<T> {
+  override async fetch<T = Channel>(id: string): Promise<T> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(CHANNEL(id))

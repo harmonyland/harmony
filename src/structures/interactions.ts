@@ -144,7 +144,7 @@ export class Interaction extends SnowflakeBase {
   /** Interaction Token */
   token: string
   /** Interaction ID */
-  id: string
+  override id: string
   /** Channel in which Interaction was initiated */
   channel?: TextChannel | GuildTextChannel
   /** Guild in which Interaction was initiated */

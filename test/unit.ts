@@ -1,7 +1,7 @@
 /* eslint-disable spaced-comment */
 // TODO: Add tests
 import { Client, GatewayIntents as GI, Embed } from '../mod.ts'
-import { TOKEN } from '../src/test/config.ts'
+import { TOKEN } from './config.ts'
 import { assertEquals, assertExists } from './deps.ts'
 
 //#region Lib Tests

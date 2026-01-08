@@ -24,7 +24,7 @@ export class ThreadsManager extends BaseChildManager<
     super(client, parent as any)
   }
 
-  async set(
+  override async set(
     id: string,
     data: ThreadChannelPayload & { members?: ThreadMemberPayload[] }
   ): Promise<void> {
@@ -37,13 +37,13 @@ export class ThreadsManager extends BaseChildManager<
     await super.set(id, data)
   }
 
-  async get(id: string): Promise<ThreadChannel | undefined> {
+  override async get(id: string): Promise<ThreadChannel | undefined> {
     const res = await this.parent.get(id)
     if (res === undefined || !ThreadTypes.includes(res.type)) return undefined
     else return res
   }
 
-  async array(): Promise<ThreadChannel[]> {
+  override async array(): Promise<ThreadChannel[]> {
     const arr = await this.parent.array()
     return arr.filter((e) => ThreadTypes.includes(e.type))
   }

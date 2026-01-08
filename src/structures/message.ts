@@ -15,10 +15,7 @@ import { Embed } from './embed.ts'
 import { CHANNEL_MESSAGE } from '../types/endpoint.ts'
 import { MessageMentions } from './messageMentions.ts'
 import type { TextChannel } from './textChannel.ts'
-import type {
-  GuildTextBasedChannel,
-  GuildTextChannel
-} from './guildTextChannel.ts'
+import type { GuildTextBasedChannel } from './guildTextChannel.ts'
 import type { Guild } from './guild.ts'
 import { MessageReactionsManager } from '../managers/messageReactions.ts'
 import { MessageStickerItem } from './messageSticker.ts'
@@ -33,7 +30,7 @@ import { CreateThreadOptions } from './guildThreadAvailableChannel.ts'
 type AllMessageOptions = MessageOptions | Embed
 
 export class MessageInteraction extends SnowflakeBase {
-  id: string
+  override id: string
   name: string
   type: InteractionType
   user: User
@@ -48,7 +45,7 @@ export class MessageInteraction extends SnowflakeBase {
 }
 
 export class Message extends SnowflakeBase {
-  id: string
+  override id: string
   channelID!: string
   channel!: TextChannel
   guildID?: string
@@ -218,8 +215,7 @@ export class Message extends SnowflakeBase {
 
   async startThread(options: CreateThreadOptions): Promise<ThreadChannel> {
     if (this.channel.isGuildText() === true) {
-      const chan = this.channel as unknown as GuildTextChannel
-      return chan.startThread(options, this)
+      return this.channel.startThread(options, this)
     } else throw new Error('Threads can only be made in Guild Text Channels')
   }
 
@@ -246,9 +242,9 @@ export class MessageAttachment {
     this.name = name
     this.blob =
       typeof blob === 'string'
-        ? new Blob([encodeText(blob)])
+        ? new Blob([encodeText(blob) as BufferSource])
         : blob instanceof Uint8Array
-        ? new Blob([blob])
+        ? new Blob([blob as BufferSource])
         : blob
     this.description = description
   }

@@ -1,9 +1,10 @@
 // Note: can't change this any to unknown now, it'd be breaking
 
 /** Enhanced Map with various utility functions */
+// deno-lint-ignore no-explicit-any
 export class Collection<K = string, V = any> extends Map<K, V> {
   /** Set a key to value in Collection */
-  set(key: K, value: V): this {
+  override set(key: K, value: V): this {
     return super.set(key, value)
   }
 
@@ -20,7 +21,7 @@ export class Collection<K = string, V = any> extends Map<K, V> {
     if (amount < 0) return this.last(amount * -1)
     amount = Math.min(this.size, amount)
     const iter = this.values()
-    return Array.from({ length: amount }, (): V => iter.next().value)
+    return Array.from({ length: amount }, (): V => iter.next().value as V)
   }
 
   /** Get last value(s) in Collection */
