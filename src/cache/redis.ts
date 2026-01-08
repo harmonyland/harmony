@@ -1,6 +1,6 @@
-import { ICacheAdapter } from './adapter.ts'
+import type { ICacheAdapter } from './adapter.ts'
 // Not in deps.ts to allow optional dep loading
-import { createClient, RedisClientOptions } from 'npm:redis@4.6.13'
+import { createClient, type RedisClientOptions } from 'redis'
 
 /** Redis Cache Adapter for using Redis as a cache-provider. */
 export class RedisCacheAdapter implements ICacheAdapter {
@@ -26,21 +26,24 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   private _startExpireInterval(): void {
     this._expireInterval = setInterval(() => {
-      this.redis?.scan(0, { MATCH: '*:expires' }).then(({ keys: names }) => {
-        for (const name of names) {
-          this.redis?.hVals(name).then((vals) => {
-            for (const val of vals) {
-              const expireVal: {
-                name: string
-                key: string
-                at: number
-              } = JSON.parse(val)
-              const expired = new Date().getTime() > expireVal.at
-              if (expired) this.redis?.hDel(expireVal.name, expireVal.key)
-            }
-          })
-        }
-      })
+      void this.redis
+        ?.scan(0, { MATCH: '*:expires' })
+        .then(({ keys: names }) => {
+          for (const name of names) {
+            void this.redis?.hVals(name).then((vals) => {
+              for (const val of vals) {
+                const expireVal: {
+                  name: string
+                  key: string
+                  at: number
+                } = JSON.parse(val)
+                const expired = new Date().getTime() > expireVal.at
+                if (expired)
+                  void this.redis?.hDel(expireVal.name, expireVal.key)
+              }
+            })
+          }
+        })
     }, this._expireIntervalTimer)
   }
 
@@ -97,7 +100,7 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   async keys(cacheName: string): Promise<string[] | undefined> {
     await this._checkReady()
-    return this.redis?.hKeys(cacheName)
+    return await this.redis?.hKeys(cacheName)
   }
 
   async deleteCache(cacheName: string): Promise<boolean> {
@@ -107,6 +110,6 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   async size(cacheName: string): Promise<number | undefined> {
     await this._checkReady()
-    return this.redis?.hLen(cacheName)
+    return await this.redis?.hLen(cacheName)
   }
 }

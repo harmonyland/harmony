@@ -25,7 +25,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
     super(client, 'guilds', Guild)
   }
 
-  async fetch(id: string): Promise<Guild> {
+  override async fetch(id: string): Promise<Guild> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD(id))
@@ -146,7 +146,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
   }
 
   /** Sets a value to Cache */
-  async set(key: string, value: GuildPayload): Promise<void> {
+  override async set(key: string, value: GuildPayload): Promise<void> {
     value = { ...value }
     // Don't duplicate these in Guild cache as they have separate
     // caches already.
@@ -245,7 +245,7 @@ export class GuildManager extends BaseManager<GuildPayload, Guild> {
    * Deletes a guild. Returns deleted guild.
    * @param guild Guild or guild id
    */
-  async delete(guild: Guild | string): Promise<Guild | undefined> {
+  override async delete(guild: Guild | string): Promise<Guild | undefined> {
     if (guild instanceof Guild) {
       guild = guild.id
     }

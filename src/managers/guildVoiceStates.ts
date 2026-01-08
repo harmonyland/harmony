@@ -24,7 +24,7 @@ export class GuildVoiceStatesManager extends BaseManager<
   }
 
   /** Get a Voice State by User ID */
-  async get(key: string): Promise<VoiceState | undefined> {
+  override async get(key: string): Promise<VoiceState | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
 
@@ -47,7 +47,7 @@ export class GuildVoiceStatesManager extends BaseManager<
     })
   }
 
-  async array(): Promise<VoiceState[]> {
+  override async array(): Promise<VoiceState[]> {
     let arr = await (this.client.cache.array(
       this.cacheName
     ) as VoiceStatePayload[])

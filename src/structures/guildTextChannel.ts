@@ -1,4 +1,3 @@
-import { Mixin } from '../../deps.ts'
 import { TextChannel } from './textChannel.ts'
 import { GuildChannel } from './channel.ts'
 import type { Client } from '../client/mod.ts'
@@ -10,31 +9,22 @@ import type {
 import type { Guild } from './guild.ts'
 import { CHANNEL } from '../types/endpoint.ts'
 import type { Message } from './message.ts'
-import { GuildThreadAvailableChannel } from './guildThreadAvailableChannel.ts'
-
-const GuildTextBasedChannelSuper: (abstract new (
-  client: Client,
-  data: GuildTextBasedChannelPayload,
-  guild: Guild
-) => TextChannel & GuildChannel) &
-  Pick<typeof TextChannel, keyof typeof TextChannel> &
-  Pick<typeof GuildChannel, keyof typeof GuildChannel> = Mixin(
-  TextChannel,
-  GuildChannel
-)
+import { CreateThreadOptions } from './guildThreadAvailableChannel.ts'
+import { ThreadChannel } from './threadChannel.ts'
 
 /** Represents a Text Channel but in a Guild */
-export class GuildTextBasedChannel extends GuildTextBasedChannelSuper {
+export class GuildTextBasedChannel extends TextChannel {
   constructor(
     client: Client,
     data: GuildTextBasedChannelPayload,
     guild: Guild
   ) {
-    super(client, data, guild)
+    super(client, data)
+    this.guild = guild
     this.readFromData(data)
   }
 
-  readFromData(data: GuildTextBasedChannelPayload): void {
+  override readFromData(data: GuildTextBasedChannelPayload): void {
     super.readFromData(data)
   }
 
@@ -90,18 +80,53 @@ export class GuildTextBasedChannel extends GuildTextBasedChannelSuper {
 
     return this
   }
+
+  async startThread(
+    options: CreateThreadOptions,
+    message?: Message | string
+  ): Promise<ThreadChannel> {
+    const payload =
+      message !== undefined
+        ? await this.client.rest.endpoints.startPublicThreadFromMessage(
+            this.id,
+            typeof message === 'string' ? message : message.id,
+            {
+              name: options.name,
+              auto_archive_duration: options.autoArchiveDuration,
+              rate_limit_per_user: options.slowmode
+            }
+          )
+        : await this.client.rest.endpoints.startThreadWithoutMessage(this.id, {
+            name: options.name,
+            auto_archive_duration: options.autoArchiveDuration,
+            rate_limit_per_user: options.slowmode,
+            invitable: options.invitable,
+            type: options.type
+          })
+    await this.client.channels.set(payload.id, payload)
+    return (await this.client.channels.get<ThreadChannel>(payload.id))!
+  }
 }
 
-const GuildTextChannelSuper: (abstract new (
-  client: Client,
-  data: any,
-  guild: Guild
-) => GuildTextBasedChannel & GuildThreadAvailableChannel) &
-  Pick<typeof GuildTextBasedChannel, keyof typeof GuildTextBasedChannel> &
-  Pick<
-    typeof GuildThreadAvailableChannel,
-    keyof typeof GuildThreadAvailableChannel
-  > = Mixin(GuildTextBasedChannel, GuildThreadAvailableChannel)
+export interface GuildTextBasedChannel extends GuildChannel {}
 
-// Still exist for API compatibility
-export class GuildTextChannel extends GuildTextChannelSuper {}
+export class GuildTextChannel extends GuildTextBasedChannel {
+  topic?: string
+  defaultThreadSlowmode?: number
+  defaultAutoArchiveDuration?: number
+
+  constructor(client: Client, data: any, guild: Guild) {
+    super(client, data, guild)
+    this.readFromData(data)
+  }
+
+  override readFromData(data: any): void {
+    super.readFromData(data)
+    // Manually include the Thread logic
+    this.topic = data.topic ?? this.topic
+    this.defaultThreadSlowmode =
+      data.default_thread_rate_limit_per_user ?? this.defaultThreadSlowmode
+    this.defaultAutoArchiveDuration =
+      data.default_auto_archive_duration ?? this.defaultAutoArchiveDuration
+  }
+}

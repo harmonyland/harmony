@@ -34,7 +34,7 @@ export class TextChannel extends Channel {
     this.readFromData(data)
   }
 
-  readFromData(data: TextChannelPayload): void {
+  override readFromData(data: TextChannelPayload): void {
     super.readFromData(data)
     this.lastMessageID = data.last_message_id ?? this.lastMessageID
     this.lastPinTimestamp = data.last_pin_timestamp ?? this.lastPinTimestamp

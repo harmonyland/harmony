@@ -16,7 +16,7 @@ import {
 import type { Client } from '../client/mod.ts'
 import { RESTManager } from '../rest/mod.ts'
 import { ApplicationCommandsModule } from './commandModule.ts'
-import { edverify, decodeHex, readAll } from '../../deps.ts'
+import { decodeHex, readAll, Reader } from '../../deps.ts'
 import { User } from '../structures/user.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
 import { decodeText, encodeText } from '../utils/encoding.ts'
@@ -471,11 +471,11 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   }
 
   /** Verify HTTP based Interaction */
-  verifyKey(
+  async verifyKey(
     rawBody: string | Uint8Array,
     signature: string | Uint8Array,
     timestamp: string | Uint8Array
-  ): boolean {
+  ): Promise<boolean> {
     if (this.publicKey === undefined) {
       throw new Error('Public Key is not present')
     }
@@ -485,11 +485,22 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       ...(typeof rawBody === 'string' ? encodeText(rawBody) : rawBody)
     ])
 
-    return edverify(
-      decodeHex(this.publicKey),
-      decodeHex(
-        signature instanceof Uint8Array ? decodeText(signature) : signature
-      ),
+    const signatureBytes =
+      typeof signature === 'string' ? decodeHex(signature) : signature
+    const keyBytes = decodeHex(this.publicKey)
+
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyBytes as BufferSource,
+      { name: 'Ed25519' },
+      false,
+      ['verify']
+    )
+
+    return crypto.subtle.verify(
+      'Ed25519',
+      cryptoKey,
+      signatureBytes as BufferSource,
       fullBody
     )
   }
@@ -503,7 +514,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   async verifyServerRequest(req: {
     headers: Headers
     method: string
-    body: Deno.Reader | Uint8Array
+    body: ReadableStream | Uint8Array
     respond: (options: {
       status?: number
       headers?: Headers
@@ -517,8 +528,10 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
     if (signature === null || timestamp === null) return false
 
     const rawbody =
-      req.body instanceof Uint8Array ? req.body : await readAll(req.body)
-    const verify = this.verifyKey(rawbody, signature, timestamp)
+      req.body instanceof Uint8Array
+        ? req.body
+        : await readAll(req.body as unknown as Reader)
+    const verify = await this.verifyKey(rawbody, signature, timestamp)
     if (!verify) return false
 
     try {
@@ -711,7 +724,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   async verifyOpineRequest<
     T extends {
       headers: Headers
-      body: Deno.Reader
+      body: ReadableStream
     }
   >(req: T): Promise<boolean> {
     const signature = req.headers.get('x-signature-ed25519')
@@ -722,8 +735,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
       return false
     }
 
-    const body = new Uint8Array(parseInt(contentLength))
-    await req.body.read(body)
+    const body = await readAll(req.body as unknown as Reader)
 
     const verified = await this.verifyKey(body, signature, timestamp)
     if (!verified) return false
@@ -735,7 +747,7 @@ export class InteractionsClient extends HarmonyEventEmitter<InteractionsClientEv
   async verifyOpineMiddleware<
     Req extends {
       headers: Headers
-      body: Deno.Reader
+      body: ReadableStream
     },
     Res extends {
       setStatus: (code: number) => Res

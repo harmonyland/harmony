@@ -58,7 +58,7 @@ export class GuildForumChannel extends GuildThreadAvailableChannel {
     this.readFromData(data)
   }
 
-  readFromData(data: GuildForumChannelPayload): void {
+  override readFromData(data: GuildForumChannelPayload): void {
     super.readFromData(data)
     this.availableTags =
       data.available_tags?.map((tag) => new GuildForumTag(tag)) ??
@@ -73,7 +73,7 @@ export class GuildForumChannel extends GuildThreadAvailableChannel {
     this.defaultSortOrder = data.default_sort_order ?? this.defaultSortOrder
   }
 
-  async edit(
+  override async edit(
     options?: ModifyGuildForumChannelOption
   ): Promise<GuildForumChannel> {
     if (options?.defaultReactionEmoji !== undefined) {

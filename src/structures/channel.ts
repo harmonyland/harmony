@@ -56,7 +56,7 @@ export class Channel extends SnowflakeBase {
     return `<#${this.id}>`
   }
 
-  toString(): string {
+  override toString(): string {
     return this.mention
   }
 
@@ -147,7 +147,7 @@ export class GuildChannel extends Channel {
     this.parentID = data.parent_id
   }
 
-  readFromData(data: GuildChannelPayloads): void {
+  override readFromData(data: GuildChannelPayloads): void {
     super.readFromData(data)
     this.guildID = data.guild_id ?? this.guildID
     this.name = data.name ?? this.name

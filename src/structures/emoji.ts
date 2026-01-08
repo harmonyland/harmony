@@ -40,7 +40,7 @@ export class Emoji extends Base {
     }
   }
 
-  toString(): string {
+  override toString(): string {
     return this.getEmojiString
   }
 

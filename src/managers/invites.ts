@@ -27,14 +27,17 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
     this.guild = guild
   }
 
-  async get(key: string): Promise<Invite | undefined> {
+  override async get(key: string): Promise<Invite | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
     return new Invite(this.client, raw)
   }
 
   /** Fetch an Invite */
-  async fetch(id: string, withCounts: boolean = true): Promise<Invite> {
+  override async fetch(
+    id: string,
+    withCounts: boolean = true
+  ): Promise<Invite> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(`${INVITE(id)}${withCounts ? '?with_counts=true' : ''}`)
@@ -66,7 +69,7 @@ export class InviteManager extends BaseManager<InvitePayload, Invite> {
   }
 
   /** Delete an Invite */
-  async delete(invite: string | Invite): Promise<boolean> {
+  override async delete(invite: string | Invite): Promise<boolean> {
     await this.client.rest.delete(
       INVITE(typeof invite === 'string' ? invite : invite.code)
     )

@@ -30,7 +30,7 @@ export class MessageReactionsManager extends BaseManager<
     await this.message.updateRefs()
   }
 
-  async get(id: string): Promise<MessageReaction | undefined> {
+  override async get(id: string): Promise<MessageReaction | undefined> {
     const raw = await this._get(id)
     if (raw === undefined) return
 
@@ -44,7 +44,7 @@ export class MessageReactionsManager extends BaseManager<
     return reaction
   }
 
-  async set(key: string, value: Reaction): Promise<void> {
+  override async set(key: string, value: Reaction): Promise<void> {
     await this.client.cache.set(
       this.cacheName,
       key,
@@ -53,7 +53,7 @@ export class MessageReactionsManager extends BaseManager<
     )
   }
 
-  async array(): Promise<MessageReaction[]> {
+  override async array(): Promise<MessageReaction[]> {
     let arr = await (this.client.cache.array(this.cacheName) as Reaction[])
     if (arr === undefined) arr = []
 
@@ -68,7 +68,7 @@ export class MessageReactionsManager extends BaseManager<
     )
   }
 
-  async flush(): Promise<void> {
+  override async flush(): Promise<void> {
     await this.client.cache.deleteCache(`reaction_users:${this.message.id}`)
     await this.client.cache.deleteCache(this.cacheName)
   }

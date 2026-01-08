@@ -16,13 +16,13 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     this.guild = guild
   }
 
-  async get(id: string): Promise<Emoji | undefined> {
+  override async get(id: string): Promise<Emoji | undefined> {
     const res = await this.parent.get(id)
     if (res !== undefined && res.guild?.id === this.guild.id) return res
     else return undefined
   }
 
-  async size(): Promise<number> {
+  override async size(): Promise<number> {
     return (
       (await this.client.cache.size(
         this.parent.cacheName,
@@ -31,11 +31,11 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     )
   }
 
-  async delete(id: string): Promise<boolean> {
+  override async delete(id: string): Promise<boolean> {
     return this.client.rest.delete(CHANNEL(id))
   }
 
-  async fetch(id: string): Promise<Emoji | undefined> {
+  override async fetch(id: string): Promise<Emoji | undefined> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD_EMOJI(this.guild.id, id))
@@ -105,7 +105,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     })
   }
 
-  async array(): Promise<Emoji[]> {
+  override async array(): Promise<Emoji[]> {
     const arr = await this.parent.array()
     return arr.filter(
       (c) => c.guild !== undefined && c.guild.id === this.guild.id
@@ -121,7 +121,7 @@ export class GuildEmojisManager extends BaseChildManager<EmojiPayload, Emoji> {
     return true
   }
 
-  async keys(): Promise<string[]> {
+  override async keys(): Promise<string[]> {
     const result = []
     for (const raw of ((await this.client.cache.array(this.parent.cacheName)) ??
       []) as EmojiPayload[]) {

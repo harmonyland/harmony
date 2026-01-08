@@ -85,7 +85,7 @@ export class Member extends SnowflakeBase {
       : this.user.displayName ?? this.user.username
   }
 
-  toString(): string {
+  override toString(): string {
     return this.user.nickMention
   }
 

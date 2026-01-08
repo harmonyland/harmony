@@ -14,21 +14,8 @@ import type {
   VoiceChannelJoinOptions,
   VoiceServerData
 } from '../client/voice.ts'
-import { Mixin } from '../../deps.ts'
-import { TextChannel } from './textChannel.ts'
 
-const VoiceChannelSuper: (abstract new (
-  client: Client,
-  data: GuildVoiceChannelPayload,
-  guild: Guild
-) => TextChannel & GuildChannel) &
-  Pick<typeof TextChannel, keyof typeof TextChannel> &
-  Pick<typeof GuildChannel, keyof typeof GuildChannel> = Mixin(
-  TextChannel,
-  GuildChannel
-)
-
-export class VoiceChannel extends VoiceChannelSuper {
+export class VoiceChannel extends GuildChannel {
   bitrate!: string
   userLimit!: number
   voiceStates: GuildChannelVoiceStatesManager =
@@ -53,13 +40,15 @@ export class VoiceChannel extends VoiceChannelSuper {
     return this.client.voice.leave(this.guild)
   }
 
-  readFromData(data: GuildVoiceChannelPayload): void {
+  override readFromData(data: GuildVoiceChannelPayload): void {
     super.readFromData(data)
     this.bitrate = data.bitrate ?? this.bitrate
     this.userLimit = data.user_limit ?? this.userLimit
   }
 
-  async edit(options?: ModifyVoiceChannelOption): Promise<VoiceChannel> {
+  override async edit(
+    options?: ModifyVoiceChannelOption
+  ): Promise<VoiceChannel> {
     const body: ModifyVoiceChannelPayload = {
       name: options?.name,
       position: options?.position,

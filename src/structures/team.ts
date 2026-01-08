@@ -22,7 +22,7 @@ export class TeamMember extends User {
 }
 
 export class Team extends SnowflakeBase {
-  id: string
+  override id: string
   name: string
   icon: string
   owner: TeamMember

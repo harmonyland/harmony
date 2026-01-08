@@ -15,7 +15,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     this.channel = channel
   }
 
-  async get(key: string): Promise<Message | undefined> {
+  override async get(key: string): Promise<Message | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
 
@@ -41,7 +41,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     return res
   }
 
-  async set(key: string, value: MessagePayload): Promise<void> {
+  override async set(key: string, value: MessagePayload): Promise<void> {
     await this.client.cache.set(
       this.cacheName,
       key,
@@ -58,7 +58,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     }
   }
 
-  async array(): Promise<Message[]> {
+  override async array(): Promise<Message[]> {
     let arr = await (this.client.cache.array(
       this.cacheName
     ) as MessagePayload[])
@@ -94,7 +94,7 @@ export class MessagesManager extends BaseManager<MessagePayload, Message> {
     return result
   }
 
-  async fetch(id: string): Promise<Message> {
+  override async fetch(id: string): Promise<Message> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(CHANNEL_MESSAGE(this.channel.id, id))

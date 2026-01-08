@@ -15,7 +15,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
     this.guild = guild
   }
 
-  async get(key: string): Promise<Member | undefined> {
+  override async get(key: string): Promise<Member | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
     // it will always be present, see `set` impl for details
@@ -40,12 +40,12 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
     return res
   }
 
-  async set(id: string, payload: MemberPayload): Promise<void> {
+  override async set(id: string, payload: MemberPayload): Promise<void> {
     await this.client.users.set(payload.user.id, payload.user)
     await super.set(id, payload)
   }
 
-  async array(): Promise<Member[]> {
+  override async array(): Promise<Member[]> {
     let arr = await (this.client.cache.array(this.cacheName) as MemberPayload[])
     if (arr === undefined) arr = []
     const roles = await this.guild.roles.array()
@@ -66,7 +66,7 @@ export class MembersManager extends BaseManager<MemberPayload, Member> {
   }
 
   /** Fetch a Guild Member */
-  async fetch(id: string): Promise<Member> {
+  override async fetch(id: string): Promise<Member> {
     return await new Promise((resolve, reject) => {
       this.client.rest
         .get(GUILD_MEMBER(this.guild.id, id))
