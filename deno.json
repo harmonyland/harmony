@@ -1,5 +1,5 @@
 {
-  "nodeModulesDir": true,
+  "nodeModulesDir": "auto",
   "tasks": {
     "fmt": "deno run -A npm:prettier --write src/ test/ mod.ts deploy.ts deps.ts",
     "lint": "deno run -A npm:eslint src/ test/ mod.ts deploy.ts deps.ts",
