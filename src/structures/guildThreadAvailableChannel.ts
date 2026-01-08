@@ -43,7 +43,7 @@ export class GuildThreadAvailableChannel extends GuildChannel {
     )
   }
 
-  readFromData(data: GuildThreadAvailableChannelPayload): void {
+  override readFromData(data: GuildThreadAvailableChannelPayload): void {
     super.readFromData(data)
     this.defaultThreadSlowmode =
       data.default_thread_rate_limit_per_user ?? this.defaultThreadSlowmode
@@ -53,7 +53,7 @@ export class GuildThreadAvailableChannel extends GuildChannel {
   }
 
   /** Edit the Guild Text Channel */
-  async edit(
+  override async edit(
     options?: ModifyGuildThreadAvailableChannelOption
   ): Promise<GuildThreadAvailableChannel> {
     const body: ModifyGuildThreadAvailableChannelPayload = {

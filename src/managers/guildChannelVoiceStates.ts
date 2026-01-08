@@ -20,13 +20,13 @@ export class GuildChannelVoiceStatesManager extends BaseChildManager<
     this.channel = channel
   }
 
-  async get(id: string): Promise<VoiceState | undefined> {
+  override async get(id: string): Promise<VoiceState | undefined> {
     const res = await this.parent.get(id)
     if (res !== undefined && res.channel?.id === this.channel.id) return res
     else return undefined
   }
 
-  async size(): Promise<number> {
+  override async size(): Promise<number> {
     return (
       (await this.client.cache.size(
         this.parent.cacheName,
@@ -35,7 +35,7 @@ export class GuildChannelVoiceStatesManager extends BaseChildManager<
     )
   }
 
-  async array(): Promise<VoiceState[]> {
+  override async array(): Promise<VoiceState[]> {
     const arr = (await this.parent.array()) as VoiceState[]
     return arr.filter((c) => c.channel?.id === this.channel.id)
   }

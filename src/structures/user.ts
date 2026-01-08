@@ -6,12 +6,12 @@ import { ImageURL } from './cdn.ts'
 import type { ImageSize, ImageFormats } from '../types/cdn.ts'
 import { DEFAULT_USER_AVATAR, USER_AVATAR } from '../types/endpoint.ts'
 import type { DMChannel } from './dmChannel.ts'
-import { AllMessageOptions } from './textChannel.ts'
-import { Message } from './message.ts'
-import { IResolvable } from './resolvable.ts'
+import type { AllMessageOptions } from './textChannel.ts'
+import type { Message } from './message.ts'
+import type { IResolvable } from './resolvable.ts'
 
 export class User extends SnowflakeBase {
-  id: string
+  override id: string
   username!: string
   displayName!: string
   discriminator!: string
@@ -83,7 +83,7 @@ export class User extends SnowflakeBase {
         : this.publicFlags
   }
 
-  toString(): string {
+  override toString(): string {
     return this.mention
   }
 
@@ -114,7 +114,7 @@ export class User extends SnowflakeBase {
 }
 
 export class UserResolvable extends SnowflakeBase implements IResolvable<User> {
-  constructor(client: Client, public id: string) {
+  constructor(client: Client, public override id: string) {
     super(client)
   }
 

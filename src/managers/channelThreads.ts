@@ -31,21 +31,21 @@ export class ChannelThreadsManager extends BaseChildManager<
     this.channel = channel
   }
 
-  async get(id: string): Promise<ThreadChannel | undefined> {
+  override async get(id: string): Promise<ThreadChannel | undefined> {
     const res = await this.parent.get(id)
     if (res !== undefined && res.parentID === this.channel.id) return res
     else return undefined
   }
 
   /** Delete a Thread Channel */
-  async delete(id: string | ThreadChannel): Promise<boolean> {
+  override async delete(id: string | ThreadChannel): Promise<boolean> {
     const v = typeof id === 'string' ? id : id.id
     if ((await this.get(v))?.parentID !== this.channel.id) return false
     await this.parent.delete(typeof id === 'string' ? id : id.id)
     return true
   }
 
-  async array(): Promise<ThreadChannel[]> {
+  override async array(): Promise<ThreadChannel[]> {
     const arr = await this.parent.array()
     return arr.filter((c) => c.parentID === this.channel.id)
   }

@@ -1,5 +1,5 @@
 import type { Client } from '../client/client.ts'
-import {
+import type {
   ThreadChannelPayload,
   ThreadMemberPayload,
   ThreadMetadataPayload
@@ -63,7 +63,7 @@ export class ThreadResolvable
   extends SnowflakeBase
   implements IResolvable<ThreadChannel>
 {
-  constructor(client: Client, public id: string) {
+  constructor(client: Client, public override id: string) {
     super(client)
   }
 
@@ -113,14 +113,14 @@ export class ThreadChannel extends GuildTextBasedChannel {
     this.appliedTags = data.applied_tags ?? this.appliedTags
   }
 
-  readFromData(data: ThreadChannelPayload): this {
+  override readFromData(data: ThreadChannelPayload): this {
     super.readFromData(data)
     this._readFromData(data)
     return this
   }
 
   /** Edit the Guild Thread Channel */
-  async edit(options: {
+  override async edit(options: {
     slowmode?: number
     name?: string
     autoArchiveDuration?: number

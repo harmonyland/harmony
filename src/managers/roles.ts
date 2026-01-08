@@ -40,13 +40,13 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
     })
   }
 
-  async get(key: string): Promise<Role | undefined> {
+  override async get(key: string): Promise<Role | undefined> {
     const raw = await this._get(key)
     if (raw === undefined) return
     return new Role(this.client, raw, this.guild)
   }
 
-  async array(): Promise<Role[]> {
+  override async array(): Promise<Role[]> {
     let arr = await (this.client.cache.array(this.cacheName) as RolePayload[])
     if (arr === undefined) arr = []
     return arr.map((e) => new Role(this.client, e, this.guild))
@@ -91,7 +91,7 @@ export class RolesManager extends BaseManager<RolePayload, Role> {
   }
 
   /** Delete a Guild Role */
-  async delete(role: Role | string): Promise<Role | undefined> {
+  override async delete(role: Role | string): Promise<Role | undefined> {
     const oldRole = await this.get(typeof role === 'object' ? role.id : role)
 
     await this.client.rest.delete(

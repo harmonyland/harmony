@@ -1,0 +1,64 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@denosaurs/event@2.0.2": "2.0.2",
+    "jsr:@std/bytes@^1.0.5": "1.0.6",
+    "jsr:@std/encoding@1.0.10": "1.0.10",
+    "jsr:@std/fs@1.0.21": "1.0.21",
+    "jsr:@std/internal@^1.0.12": "1.0.12",
+    "jsr:@std/io@0.225.2": "0.225.2",
+    "jsr:@std/path@^1.1.4": "1.1.4"
+  },
+  "jsr": {
+    "@denosaurs/event@2.0.2": {
+      "integrity": "3310ba1a9e94dd60ccb09c6084fc818cc1cd50e543c56ef0c6199f1b89073392"
+    },
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
+    "@std/encoding@1.0.10": {
+      "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
+    },
+    "@std/fs@1.0.21": {
+      "integrity": "d720fe1056d78d43065a4d6e0eeb2b19f34adb8a0bc7caf3a4dbf1d4178252cd",
+      "dependencies": [
+        "jsr:@std/path"
+      ]
+    },
+    "@std/internal@1.0.12": {
+      "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
+    },
+    "@std/io@0.225.2": {
+      "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
+      "dependencies": [
+        "jsr:@std/bytes"
+      ]
+    },
+    "@std/path@1.1.4": {
+      "integrity": "1d2d43f39efb1b42f0b1882a25486647cb851481862dc7313390b2bb044314b5",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@typescript-eslint/eslint-plugin@^5.33.0",
+        "npm:@typescript-eslint/parser@^5.33.0",
+        "npm:eslint-config-prettier@^8.5.0",
+        "npm:eslint-config-standard-with-typescript@22",
+        "npm:eslint-config-standard@17",
+        "npm:eslint-plugin-import@^2.22.1",
+        "npm:eslint-plugin-n@^15.2.5",
+        "npm:eslint-plugin-node@^11.1.0",
+        "npm:eslint-plugin-prettier@^4.2.1",
+        "npm:eslint-plugin-promise@6",
+        "npm:eslint@^8.21.0",
+        "npm:prettier@^2.8.8",
+        "npm:redis@^5.10.0",
+        "npm:typescript@4.7.4"
+      ]
+    }
+  }
+}

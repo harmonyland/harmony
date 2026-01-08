@@ -12,7 +12,7 @@ export class ApplicationFlagsManager extends BitField {
 }
 
 export class Application extends SnowflakeBase {
-  id: string
+  override id: string
   name: string
   icon: string
   description: string

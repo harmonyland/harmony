@@ -17,7 +17,7 @@ export class GuildPresencesManager extends BaseManager<
     this.guild = guild
   }
 
-  async get(id: string): Promise<Presence | undefined> {
+  override async get(id: string): Promise<Presence | undefined> {
     const raw = await this._get(id)
     if (raw === undefined) return
     let user = await this.client.users.get(raw.user.id)
@@ -28,7 +28,10 @@ export class GuildPresencesManager extends BaseManager<
     return presence
   }
 
-  async set(id: string, payload: PresenceUpdatePayload): Promise<void> {
+  override async set(
+    id: string,
+    payload: PresenceUpdatePayload
+  ): Promise<void> {
     await this.client.users.set(payload.user.id, payload.user)
     // see Members Manager's set method for more info
     payload = { ...payload }
@@ -36,7 +39,7 @@ export class GuildPresencesManager extends BaseManager<
     await super.set(id, payload)
   }
 
-  async fetch(id: string): Promise<Presence | undefined> {
+  override async fetch(id: string): Promise<Presence | undefined> {
     await this.guild.chunk({
       users: [id],
       presences: true
@@ -44,7 +47,7 @@ export class GuildPresencesManager extends BaseManager<
     return await this.get(id)
   }
 
-  async array(): Promise<Presence[]> {
+  override async array(): Promise<Presence[]> {
     let arr = await (this.client.cache.array(
       this.cacheName
     ) as PresenceUpdatePayload[])

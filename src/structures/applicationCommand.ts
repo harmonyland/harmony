@@ -33,7 +33,7 @@ export class ApplicationCommandInteraction extends Interaction {
   declare guildLocale: string
 
   /** Data sent with Interaction. Only applies to Application Command */
-  data: InteractionApplicationCommandData
+  override data: InteractionApplicationCommandData
   /** Resolved data for Snowflakes in Slash Command Arguments */
   resolved: InteractionApplicationCommandResolved
 

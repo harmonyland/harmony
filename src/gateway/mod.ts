@@ -1,4 +1,3 @@
-import { unzlib } from '../../deps.ts'
 import type { Client } from '../client/mod.ts'
 import { GatewayResponse } from '../types/gatewayResponse.ts'
 import {
@@ -14,7 +13,7 @@ import { delay } from '../utils/delay.ts'
 import type { VoiceChannel } from '../structures/guildVoiceChannel.ts'
 import type { Guild } from '../structures/guild.ts'
 import { HarmonyEventEmitter } from '../utils/events.ts'
-import { decodeText } from '../utils/encoding.ts'
+import { decodeText, decompress } from '../utils/encoding.ts'
 import { Constants } from '../types/constants.ts'
 
 export interface RequestMembersOptions {
@@ -107,7 +106,7 @@ export class Gateway extends HarmonyEventEmitter<GatewayTypedEvents> {
       data = new Uint8Array(data)
     }
     if (data instanceof Uint8Array) {
-      data = unzlib(data, 0, (e: Uint8Array) => decodeText(e))
+      data = decodeText(await decompress(data))
     }
 
     const { op, d, s, t }: GatewayResponse = JSON.parse(data)

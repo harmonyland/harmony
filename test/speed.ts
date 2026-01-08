@@ -1,9 +1,9 @@
 import * as discord from '../mod.ts'
-import { TOKEN2 } from './config.ts'
+import { TOKEN } from './config.ts'
 
 const client = new discord.Client({
   intents: ['GUILDS'],
-  token: TOKEN2,
+  token: TOKEN,
   shardCount: 20
 })
 

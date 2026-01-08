@@ -1558,7 +1558,7 @@ The `emoji` must be [URL Encoded](https://en.wikipedia.org/wiki/Percent-encoding
     data.append(
       'file',
       options.file instanceof Uint8Array
-        ? new Blob([options.file])
+        ? new Blob([options.file as BufferSource])
         : options.file
     )
 

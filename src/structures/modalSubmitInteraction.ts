@@ -1,15 +1,15 @@
 import type { Client } from '../client/client.ts'
-import { InteractionPayload } from '../types/interactions.ts'
+import type { InteractionPayload } from '../types/interactions.ts'
 import {
-  InteractionModalSubmitData,
+  type InteractionModalSubmitData,
   MessageComponentType
 } from '../types/messageComponents.ts'
-import { Guild } from './guild.ts'
-import { GuildTextChannel } from './guildTextChannel.ts'
+import type { Guild } from './guild.ts'
+import type { GuildTextChannel } from './guildTextChannel.ts'
 import { Interaction } from './interactions.ts'
-import { Member } from './member.ts'
-import { TextChannel } from './textChannel.ts'
-import { User } from './user.ts'
+import type { Member } from './member.ts'
+import type { TextChannel } from './textChannel.ts'
+import type { User } from './user.ts'
 
 export interface ModalSubmitComponentActionRow {
   type: MessageComponentType.ACTION_ROW
@@ -25,7 +25,7 @@ export interface ModalSubmitComponentTextInput {
 }
 
 export class ModalSubmitInteraction extends Interaction {
-  data: InteractionModalSubmitData
+  override data: InteractionModalSubmitData
   components: ModalSubmitComponentActionRow[] = []
 
   constructor(

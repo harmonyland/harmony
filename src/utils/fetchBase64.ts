@@ -31,7 +31,8 @@ export const fetchAuto = async (
 ): Promise<string> => {
   try {
     const url = new URL(path)
-    if (url.protocol.startsWith('http')) return await fetchRemote(url, onlyData)
+    if (url.protocol.startsWith('http') === true)
+      return await fetchRemote(url, onlyData)
     else return await fetchLocal(url, onlyData)
   } catch (e) {
     return await fetchLocal(path, onlyData)

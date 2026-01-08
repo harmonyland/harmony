@@ -38,7 +38,7 @@ export class Invite extends Base {
     return `https://discord.gg/${this.code}`
   }
 
-  toString(): string {
+  override toString(): string {
     return this.link
   }
 

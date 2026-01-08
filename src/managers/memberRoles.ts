@@ -28,7 +28,7 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
     }
   }
 
-  async get(id: string): Promise<Role | undefined> {
+  override async get(id: string): Promise<Role | undefined> {
     const res = await this.parent.get(id)
     const mem = await this._resolveMemberPayload()
     if (
@@ -39,13 +39,13 @@ export class MemberRolesManager extends BaseChildManager<RolePayload, Role> {
     else return undefined
   }
 
-  async size(): Promise<number> {
+  override async size(): Promise<number> {
     const payload = await this.member.guild.members._get(this.member.id)
     if (payload === undefined) return 0
     return payload.roles.length
   }
 
-  async array(): Promise<Role[]> {
+  override async array(): Promise<Role[]> {
     const arr = await this.parent.array()
     const mem = await this._resolveMemberPayload()
     return arr.filter(

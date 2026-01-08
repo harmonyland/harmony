@@ -1,8 +1,8 @@
 import { simplifyAPIError } from '../utils/err_fmt.ts'
-import { DiscordAPIErrorPayload } from './types.ts'
+import type { DiscordAPIErrorPayload } from './types.ts'
 
 export class DiscordAPIError extends Error {
-  name = 'DiscordAPIError'
+  override name = 'DiscordAPIError'
   status: number
   error?: DiscordAPIErrorPayload
 
@@ -35,8 +35,8 @@ export class DiscordAPIError extends Error {
 
 export class HTTPError extends Error {
   constructor(
-    public message: string,
-    public name: string,
+    public override message: string,
+    public override name: string,
     public code: number,
     public method: string,
     public path: string
