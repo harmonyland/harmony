@@ -32,7 +32,7 @@ jobs:
           deno-version: ${{ matrix.deno }} # tests across multiple Deno versions
 
       - name: Deno Install
-        run: deno Install
+        run: deno install
 
       - name: Check
         run: deno run --allow-read mod.ts
