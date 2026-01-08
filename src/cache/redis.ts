@@ -1,17 +1,17 @@
 import type { ICacheAdapter } from './adapter.ts'
 // Not in deps.ts to allow optional dep loading
-import { createClient, type RedisClientOptions } from 'redis'
+import { Redis } from '../../deps.ts'
 
 /** Redis Cache Adapter for using Redis as a cache-provider. */
 export class RedisCacheAdapter implements ICacheAdapter {
-  _redis: Promise<ReturnType<typeof createClient>>
-  redis?: ReturnType<typeof createClient>
+  _redis: Promise<ReturnType<typeof Redis.createClient>>
+  redis?: ReturnType<typeof Redis.createClient>
   ready: boolean = false
   readonly _expireIntervalTimer: number = 5000
   private _expireInterval?: number
 
-  constructor(options: RedisClientOptions) {
-    this._redis = createClient(options).connect()
+  constructor(options: Redis.RedisClientOptions) {
+    this._redis = Redis.createClient(options).connect()
     this._redis.then(
       (redis) => {
         this.redis = redis
@@ -100,7 +100,7 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   async keys(cacheName: string): Promise<string[] | undefined> {
     await this._checkReady()
-    return await this.redis?.hKeys(cacheName)
+    return this.redis?.hKeys(cacheName)
   }
 
   async deleteCache(cacheName: string): Promise<boolean> {
@@ -110,6 +110,6 @@ export class RedisCacheAdapter implements ICacheAdapter {
 
   async size(cacheName: string): Promise<number | undefined> {
     await this._checkReady()
-    return await this.redis?.hLen(cacheName)
+    return this.redis?.hLen(cacheName)
   }
 }
