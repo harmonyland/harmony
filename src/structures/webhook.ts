@@ -91,7 +91,7 @@ export class Webhook {
   ): Promise<Message> {
     if (typeof text === 'object') {
       option = text
-      text = undefined
+      text = option.content
     }
 
     if (text === undefined && option === undefined) {
