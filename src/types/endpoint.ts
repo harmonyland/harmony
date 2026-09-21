@@ -67,6 +67,8 @@ const CHANNEL_MESSAGES = (channelID: string): string =>
   `${Constants.DISCORD_API_URL}/v${Constants.DISCORD_API_VERSION}/channels/${channelID}/messages`
 const CHANNEL_CROSSPOST = (channelID: string, messageID: string): string =>
   `${Constants.DISCORD_API_URL}/v${Constants.DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/crosspost`
+const CHANNEL_VOICE_STATUS = (channelID: string): string =>
+  `${Constants.DISCORD_API_URL}/v${Constants.DISCORD_API_VERSION}/channels/${channelID}/voice-status`
 const MESSAGE_REACTIONS = (channelID: string, messageID: string): string =>
   `${Constants.DISCORD_API_URL}/v${Constants.DISCORD_API_VERSION}/channels/${channelID}/messages/${messageID}/reactions`
 const MESSAGE_REACTION = (
@@ -254,6 +256,7 @@ export {
   CHANNEL_MESSAGE,
   CHANNEL_MESSAGES,
   CHANNEL_CROSSPOST,
+  CHANNEL_VOICE_STATUS,
   MESSAGE_REACTIONS,
   MESSAGE_REACTION,
   MESSAGE_REACTION_ME,
